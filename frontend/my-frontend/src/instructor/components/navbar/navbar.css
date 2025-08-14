@@ -1,0 +1,31 @@
+
+.logo{
+  display: flex;
+  align-items: center;
+  
+}
+
+.logo img{
+    width: 50px;
+    margin-right: 10px;
+}
+
+
+.profile-img{
+    width: 40px;
+}
+
+.nav-right{
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.add-course{
+    color: white;  
+    cursor: pointer;
+}
+
+.logout{
+    cursor: pointer;
+}
