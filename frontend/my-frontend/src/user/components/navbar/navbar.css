@@ -1,0 +1,71 @@
+.navbar {
+  background-color: rgb(88, 163, 249);
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo{
+  display: flex;
+  align-items: center;
+  
+}
+
+.logo img{
+    width: 50px;
+    margin-right: 10px;
+}
+
+.logout-btn {
+  margin-left: 10px;
+  margin-right: 10px;
+  padding: 6px 12px;
+  border: none;
+  background-color: #5c10ce;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.hamburger {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.profile-section{
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.profile-section img{
+    width: 40px;
+}
+
+.search-bar {
+  flex: 1;
+  margin: 0 20px;
+  max-width: 400px;
+}
+
+
+
+
+
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+
+  .profile-section {
+    gap: 15px;
+  }
+}

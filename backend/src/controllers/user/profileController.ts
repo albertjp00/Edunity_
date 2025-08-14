@@ -1,0 +1,74 @@
+import { Request, Response } from 'express';
+import { UserRepository } from '../../repositories/userRepository.js';
+import { ProfileService } from '../../services/user/profileService.js';
+import { AuthRequest } from '../../middleware/authMiddleware.js';
+
+export class ProfileController {
+    private profileService: ProfileService;
+
+    constructor() {
+        const repo = new UserRepository();
+        this.profileService = new ProfileService(repo);
+    }
+
+
+
+    getProfile = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.user?.id
+
+            if (!userId) {
+                res.status(401).json({ error: 'Unauthorized' });
+                return;
+            }
+
+            const profile = await this.profileService.getProfile(userId);
+            console.log(profile);
+            
+
+            if (profile) {
+                res.status(200).json({data:profile});
+            } else {
+                res.status(404).json({ error: 'Profile not found' });
+            }
+        } catch (error) {
+            console.error('Get profile error:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    };
+
+
+
+    editProfile = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            console.log('user profiel ', req.user?.id , req.file)
+            const userId = req.user?.id; // Assuming `req.user` is set by auth middleware
+            const updateData = req.body;
+    
+
+            const data = {...req.body}
+            const file = req.file?.filename
+
+            data.profileImage = file
+            
+            if (!userId) {
+                res.status(401).json({ error: 'Unauthorized' });
+                return;
+            }
+
+              const updatedProfile = await this.profileService.editProfileRequest(userId, data);
+
+              if (updatedProfile) {
+                res.status(200).json({
+                  message: 'Profile updated successfully',
+                  profile: updatedProfile
+                });
+              } else {
+                res.status(404).json({ error: 'Profile not found' });
+              }
+        } catch (error) {
+            console.error('Update profile error:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    };
+}

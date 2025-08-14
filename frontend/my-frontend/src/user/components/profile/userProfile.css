@@ -1,0 +1,226 @@
+.profile-container1 {
+  display: flex;
+  align-items: flex-start;
+  padding: 20px 50px;
+  gap: 1px;
+}
+
+.profile-left {
+  flex: .7;
+}
+
+.profile-card1 {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  padding: 30px 50px;
+  width: 100%;
+  max-width: 500px;
+  text-align: left; /* Align text to left */
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.user-name-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  background-color: #fefefe;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+.user-name-card h2 {
+  font-size: 1.5rem;
+  margin-bottom: 6px;
+}
+
+.user-name-card h5 {
+  color: #666;
+  font-weight: normal;
+}
+
+
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #007bff;
+}
+
+.about-me {
+  margin-top: 10px;
+  padding: 15px 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #fcfcfc;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.about-me h4 {
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.about-me p {
+  margin: 0;
+  color: #555;
+  line-height: 1.5;
+}
+
+.profile-card1 p {
+  padding: 8px 0;
+  margin: 0;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.profile-card1 p strong {
+  color: #111;
+  margin-right: 5px;
+}
+
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #007bff;
+  margin-bottom: 20px;
+}
+
+.profile-card h2 {
+  font-size: 26px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.profile-card p {
+  font-size: 16px;
+  color: #555;
+  margin: 6px 0;
+}
+
+.profile-card p strong {
+  color: #444;
+}
+
+
+.user-details-box {
+  margin-top: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  background-color: #fafafa;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.user-details-box p {
+  margin: 10px 0;
+  font-size: 1rem;
+  color: #444;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-details-box i {
+  color: #007bff;
+  min-width: 20px;
+}
+
+
+.btn-edit {
+  display: flex;
+  justify-content: flex-start; /* Align buttons left */
+  margin-top: 25px;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.btn-edit button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #007bff;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-edit button:hover {
+  background-color: #0056b3;
+}
+
+.change-password-btn {
+  background-color: #28a745;
+}
+
+.change-password-btn:hover {
+  background-color: #1e7e34;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+.profile-right {
+  flex: 1;
+  background: #ffffff;
+  padding: 20px 25px;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
+
+.enrolled-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.enrolled-courses {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.course-details-mini {
+  margin-left: 10px;
+}
+
+.course-details-mini p {
+  margin: 2px 0;
+  font-size: 14px;
+}
+
+.view-course-btn {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.view-course-btn:hover {
+  background-color: #45a049;
+}
+
+
+@media (max-width: 768px) {
+  .profile-container1 {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
