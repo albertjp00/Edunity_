@@ -1,11 +1,12 @@
 import React from 'react'
+import InstructorNavbar from '../../components/navbar/navbar'
 
-const Home = () => {
+const InstructorHome = () => {
   return (
     <div>
-      
+      <InstructorNavbar />
     </div>
   )
 }
 
-export default Home
+export default InstructorHome

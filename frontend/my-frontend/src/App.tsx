@@ -8,10 +8,13 @@ import Login from './user/components/login/login'
 import Register from './user/components/register/register'
 import VerifyOtp from './user/components/register/verifyOtp'
 import ProtectedRoute from './user/components/protectedRoute'
-import Profile from './user/components/profile/userProfile'
 import UserProfile from './user/pages/profile/profile'
 import EditProfile from './user/components/profile/editProfile'
+
+
+
 import InstructorLogin from './instructor/pages/login/instructorLogin'
+import InstructorHome from './instructor/pages/home/home'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -51,10 +54,10 @@ function App() {
             {/* Instructor */}
             <Route path='/instructor/login' element={<InstructorLogin />} />
             {/* <Route path='/instructor/register' element={<InstructorRegister />} />
-            <Route path='/instructor/otpVerify' element={<OtpVerify />} />
+            <Route path='/instructor/otpVerify' element={<OtpVerify />} /> */}
 
             <Route path='/instructor/home' element={<InstructorHome />} />
-            <Route path='/instructor/profile' element={<Profile />} />
+            {/* <Route path='/instructor/profile' element={<Profile />} />
             <Route path='/instructor/editProfile' element={<ProfileEdit />} />
             <Route path='/instrcutor/passwordChange' element={<PasswordChange />} />
             <Route path='/instructor/kyc' element={<KycVerification />} />

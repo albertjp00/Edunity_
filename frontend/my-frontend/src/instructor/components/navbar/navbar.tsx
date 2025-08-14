@@ -6,7 +6,7 @@ import logo from '../../../assets/logo.png'
 
 
 
-const Navbar = () => {
+const InstructorNavbar = () => {
 
     const navigate = useNavigate()
 
@@ -18,6 +18,7 @@ const Navbar = () => {
   const addCourse = ()=>{
     navigate('/instructor/addCourse')
   }
+
 
   return (
     <div className='navbar'>
@@ -47,4 +48,4 @@ const Navbar = () => {
   )
 }
 
-export default Navbar
+export default InstructorNavbar
