@@ -44,10 +44,47 @@ export const authMiddleware = (
     }
 
     const decoded = jwt.verify(token, secret) as JwtUserPayload;
-    req.user = decoded; // no casting needed now
+    req.user = decoded;
 
     next();
   } catch {
     res.status(401).json({ success: false, message: "Invalid or expired token" });
   }
+}
+
+
+export interface InstAuthRequest extends Request {
+  instructor?: JwtPayload | undefined;
+  file?: Express.Multer.File | undefined;
+  files?: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] } | undefined;
+}
+
+export const instAuthMiddleware = (
+  req: InstAuthRequest,
+  res: Response,
+  next: NextFunction
+): void => {
+  console.log("instAuthMiddleware");
+
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader?.startsWith("Bearer ")) {
+    res.status(401).json({ message: "Unauthorized: No token provided" });
+    return;
+  }
+
+  const token = authHeader.split(" ")[1];
+  if (!token) {
+    res.status(401).json({ message: "Unauthorized: Token missing after Bearer" });
+    return;
+  }
+
+  try {
+    const decoded = jwt.verify(token, secret); // secret is already defined above
+    req.instructor = decoded as JwtPayload | undefined;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: "Unauthorized: Invalid token" });
+  }
 };
+

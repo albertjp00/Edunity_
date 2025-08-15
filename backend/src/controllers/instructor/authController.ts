@@ -6,26 +6,41 @@ import { Request, Response } from 'express';
 
 
 
-export class InsAuthController{
-    private instAuthService : InstAuthService
-    
-    constructor (){
+export class InsAuthController {
+    private instAuthService: InstAuthService
+
+    constructor() {
         const repo = new InstructorRepository();
         this.instAuthService = new InstAuthService(repo)
     }
 
-     login = async (req : Request , res : Response): Promise<void> => {
+    login = async (req: Request, res: Response): Promise<void> => {
         try {
-            // console.log(req.body);
-            
-            const {email , password } = req.body
+            const { email, password } = req.body;
+            const response = await this.instAuthService.instructorLogin(email, password);
 
-            const response = await this.instAuthService.login(email,password)
-
-            res.status(200).json({success : true})
+            if (response.success) {
+                res.status(200).json({
+                    success: true,
+                    message: response.message,
+                    instructor: response.instructor,
+                    token: response.accessToken,
+                    refreshToken: response.refreshToken
+                });
+            } else {
+                res.status(response.statusCode || 401).json({
+                    success: false,
+                    message: response.message
+                });
+            }
         } catch (error) {
-            console.log(error);
-            
+            console.error(error);
+            res.status(500).json({
+                success: false,
+                message: "Server error"
+            });
         }
-    }
+    };
+
+
 }

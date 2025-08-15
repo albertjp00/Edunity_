@@ -15,6 +15,8 @@ import EditProfile from './user/components/profile/editProfile'
 
 import InstructorLogin from './instructor/pages/login/instructorLogin'
 import InstructorHome from './instructor/pages/home/home'
+import ProfilePage from './instructor/pages/profile/profilePage'
+import InstructoreditProfilePage from './instructor/pages/profile/editProfilePage'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -57,9 +59,9 @@ function App() {
             <Route path='/instructor/otpVerify' element={<OtpVerify />} /> */}
 
             <Route path='/instructor/home' element={<InstructorHome />} />
-            {/* <Route path='/instructor/profile' element={<Profile />} />
-            <Route path='/instructor/editProfile' element={<ProfileEdit />} />
-            <Route path='/instrcutor/passwordChange' element={<PasswordChange />} />
+            <Route path='/instructor/profile' element={<ProfilePage />} />
+            <Route path='/instructor/editProfile' element={<InstructoreditProfilePage />} />
+            {/* <Route path='/instrcutor/passwordChange' element={<PasswordChange />} />
             <Route path='/instructor/kyc' element={<KycVerification />} />
 
             <Route path='/instructor/addCourse' element={<AddCourse />} />

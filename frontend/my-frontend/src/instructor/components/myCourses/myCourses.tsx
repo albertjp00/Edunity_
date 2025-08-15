@@ -2,17 +2,25 @@ import React, { useEffect, useState } from 'react';
 import './MyCourses.css'
 import { useNavigate } from 'react-router-dom';
 import instructorApi from '../../../api/instructorApi';
+import axios from 'axios';
+
+interface Course {
+  _id: string;
+  title: string;
+  description?: string;
+  thumbnail?: string;
+  price?: number;
+}
 
 const MyCourses = () => {
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState<Course[]>([]);
 
   const navigate = useNavigate()
 
-  const instructorId = localStorage.getItem('instructor');
 
   const fetchCourses = async () => {
     try {
-      const res = await instructorApi.get(`/instructor/getCourse?id=${instructorId}`,{
+      const res = await instructorApi.get(`/instructor/getCourse`,{
         
       });
       if (res.data.success) {
@@ -25,7 +33,7 @@ const MyCourses = () => {
     }
   };
 
-  const selectCourse = (id)=>{
+  const selectCourse = (id:string)=>{
     navigate(`/instructor/courseDetails/${id}`)
 
   }
@@ -46,7 +54,7 @@ const MyCourses = () => {
             <div key={course._id} className="course-card" onClick={()=>selectCourse(course._id)}>
               {course.thumbnail && (
                 <img
-                  src={`http://localhost:4000/assets/${course.thumbnail}`}
+                  src={`http://localhost:5000/assets/${course.thumbnail}`}
                   alt="Thumbnail"
                   className="course-thumbnail"
                 />
