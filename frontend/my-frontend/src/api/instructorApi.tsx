@@ -13,7 +13,7 @@ const instructorApi: AxiosInstance = axios.create({
 
 
 instructorApi.interceptors.request.use((config) => {
-  const token = localStorage.getItem("Inst");
+  const token  : string | undefined = localStorage.getItem("instructor") ?? '';
   console.log('api token',token);
   
   if (token) {

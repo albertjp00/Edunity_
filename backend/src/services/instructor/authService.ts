@@ -8,35 +8,37 @@ import { sendOtp } from "../../utils/sendMail.js";
 
 dotenv.config()
 
-const secret : string = process.env.SECRET_KEY  || '';
-const refresh : string = process.env.REFRESH_KEY  || '';
+const secret: string = process.env.SECRET_KEY || '';
+const refresh: string = process.env.REFRESH_KEY || '';
 
 
-interface LoginResult{
+interface LoginResult {
     success: boolean;
     message: string;
     instructor?: any;
     accessToken?: string;
     refreshToken?: string;
+    statusCode? : number
 }
 
 
 export class InstAuthService {
     constructor(private instructorRepository: IInsRepository) { }
 
-    login = async (email: string, password: string): Promise<LoginResult> => {
+    instructorLogin = async (email: string, password: string): Promise<LoginResult> => {
         const instructor = await this.instructorRepository.findByEmail(email);
 
-
-        console.log('inst login ');
-        
         if (!instructor) {
-            return { success: false, message: "User not found" };
+            return { success: false, message: "Invalid email or password" };
+        }
+
+        if (instructor.blocked) {
+            return { success: false, message: "Your account is blocked", statusCode: 403};
         }
 
         const isMatch = await bcrypt.compare(password, instructor.password);
         if (!isMatch) {
-            return { success: false, message: "Invalid password" };
+            return { success: false, message: "Invalid email or password" };
         }
 
         const accessToken = jwt.sign({ id: instructor._id }, secret, { expiresIn: "3h" });
@@ -47,7 +49,8 @@ export class InstAuthService {
             message: "Login successful",
             instructor,
             accessToken,
-            refreshToken,
+            refreshToken
         };
     };
+
 }
