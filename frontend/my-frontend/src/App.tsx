@@ -17,6 +17,8 @@ import InstructorLogin from './instructor/pages/login/instructorLogin'
 import InstructorHome from './instructor/pages/home/home'
 import ProfilePage from './instructor/pages/profile/profilePage'
 import InstructoreditProfilePage from './instructor/pages/profile/editProfilePage'
+import InstructorPasswordChange from './instructor/pages/profile/passwordChange'
+import InstructorCourseDetails from './instructor/components/myCourses/courseDetails'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -61,12 +63,12 @@ function App() {
             <Route path='/instructor/home' element={<InstructorHome />} />
             <Route path='/instructor/profile' element={<ProfilePage />} />
             <Route path='/instructor/editProfile' element={<InstructoreditProfilePage />} />
-            {/* <Route path='/instrcutor/passwordChange' element={<PasswordChange />} />
-            <Route path='/instructor/kyc' element={<KycVerification />} />
+            <Route path='/instrcutor/passwordChange' element={<InstructorPasswordChange />} />
+            {/* <Route path='/instructor/kyc' element={<KycVerification />} />
 
-            <Route path='/instructor/addCourse' element={<AddCourse />} />
-            <Route path='/instructor/courseDetails/:id' element={<CourseDetails />} />
-            <Route path='/instructor/editCourse/:id' element={<EditCourse />} /> */}
+            <Route path='/instructor/addCourse' element={<AddCourse />} /> */}
+            <Route path='/instructor/courseDetails/:id' element={<InstructorCourseDetails />} />
+            {/* <Route path='/instructor/editCourse/:id' element={<EditCourse />} /> */}
 
 
 

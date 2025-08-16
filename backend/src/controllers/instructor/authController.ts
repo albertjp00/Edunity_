@@ -1,3 +1,4 @@
+import { InstAuthRequest } from "../../middleware/authMiddleware.js";
 import { InstructorRepository } from "../../repositories/instructorRepository.js"
 import { InstAuthService } from "../../services/instructor/authService.js";
 import { Request, Response } from 'express';
@@ -41,6 +42,18 @@ export class InsAuthController {
             });
         }
     };
+
+    logout = async (req:InstAuthRequest , res:Response):Promise<void> =>{
+        try {
+            
+            const id = req.instructor?.id
+            const result = await this.instAuthService.instLogout(id)
+
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
 
 
 }

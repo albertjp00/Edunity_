@@ -11,7 +11,9 @@ export interface IInsRepository {
     findByEmail(email: string): Promise<IInstructor | null>
     findById(id:string):Promise<IInstructor | null>
     updateProfile(id:string ,data:any):Promise<IInstructor | null>
+    updatePassword(id:string , newPassword:string):Promise<IInstructor | null>
     getCourses(id:string , skip: number, limit: number): Promise<ICourse[] | null>
+    getCourseDetails(id:string , courseId : string): Promise<ICourse | null>
     countCourses(): Promise<number>;
     findSkills():Promise<ISkills>;
 }
@@ -23,19 +25,27 @@ export class InstructorRepository implements IInsRepository {
         return user
     }
 
+
+
     async findById(id: string): Promise<IInstructor | null> {
         return await InstructorModel.findById(id);
       }
 
     async  updateProfile(id:string , data:any):Promise<IInstructor | null>{
-        return await CourseModel.findByIdAndUpdate(id,data,{new:true})
+        return await InstructorModel.findByIdAndUpdate(id,data,{new:true})
+    }
+
+    async updatePassword(id:string , newPassword : string):Promise<IInstructor | null>{
+        return await InstructorModel.findByIdAndUpdate(id,{password : newPassword},{new:true})
     }
 
     async getCourses(id :string ,skip: number, limit: number): Promise<ICourse[]> {
-        const courses =  await CourseModel.find({instructorId : id}).skip(skip).limit(limit);
-        console.log('courses ',courses);
-        
+        const courses =  await CourseModel.find({instructorId : id}).skip(skip).limit(limit);        
          return courses || [];
+    }
+
+    async getCourseDetails(id:string , courseId :string):Promise<ICourse | null>{
+        return await CourseModel.findOne({instructorId : id , _id : courseId})
     }
 
     async countCourses(): Promise<number> {

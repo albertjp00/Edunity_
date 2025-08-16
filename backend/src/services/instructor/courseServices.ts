@@ -29,11 +29,16 @@ interface CourseResult {
   totalItems: number;
 }
 
+interface CourseDetails{
+  course:ICourse | null;
+}
+
 export class CourseService {
   constructor(private instructorRepository: IInsRepository) {}
 
   fetchCourses = async (id:string , page: number, limit: number): Promise<CourseResult> => {
-    const skip = (page - 1) * limit;
+    try {
+      const skip = (page - 1) * limit;
 
     const [courses, totalItems , skills] = await Promise.all([
       this.instructorRepository.getCourses(id,skip, limit),
@@ -48,5 +53,23 @@ export class CourseService {
       currentPage: page,
       totalItems
     };
+    } catch (error) {
+      console.log(error);
+      throw error
+    }
   };
+
+
+
+
+  fetchCourseDetails = async(id:string , courseId : string):Promise<CourseDetails> =>{
+    try {
+      const course = await this.instructorRepository.getCourseDetails(id,courseId)
+
+      return {course}
+    } catch (error) {
+      console.log(error);
+      return {course : null}
+    }
+  }
 }

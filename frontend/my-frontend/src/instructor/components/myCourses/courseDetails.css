@@ -1,0 +1,42 @@
+.course-detail-page {
+  max-width: 900px;
+  margin: auto;
+  padding: 2rem;
+  background-color: #fdfdfd;
+  border-radius: 10px;
+}
+
+.course-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.edit-buttons {
+  margin-left: auto;
+}
+
+.edit-button {
+  background-color: #0ea5e9;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.detail-thumbnail {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  margin: 1rem 0;
+  border-radius: 10px;
+}
+
+.module {
+  border: 1px solid #e2e8f0;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background: #f9fafb;
+}

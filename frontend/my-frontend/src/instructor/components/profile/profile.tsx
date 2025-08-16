@@ -75,7 +75,7 @@ const InstructorProfile: React.FC = () => {
               <img
                 src={
                   user.profileImage
-                    ? `http://localhost:4000/assets/${user.profileImage}`
+                    ? `http://localhost:5000/assets/${user.profileImage}`
                     : profilePic
                 }
                 alt="Profile"

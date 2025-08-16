@@ -14,7 +14,7 @@ export class InstCourseController {
     myCourses = async (req: InstAuthRequest, res: Response): Promise<void> => {
         try {
             const id = req.instructor?.id
-            console.log("get Courses user",id);
+            console.log("get Courses user");
 
 
             const page = parseInt(req.query.page as string) || 1;
@@ -34,4 +34,18 @@ export class InstCourseController {
             res.status(500).json({ success: false, message: "Failed to get courses" });
         }
     };
+
+    courseDetails = async( req:InstAuthRequest , res:Response):Promise<void> =>{
+        try {
+            const id = req.instructor?.id
+            const courseId = req.params.id!
+            const result = await this.courseService.fetchCourseDetails(id , courseId)
+            console.log("course" ,result);
+            
+            res.json({success:true , course:result})
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
 }

@@ -16,6 +16,7 @@ interface InstructorProfile {
   profileImage?: string;
 }
 
+
 const InstructorProfileEdit: React.FC = () => {
   const navigate = useNavigate();
 
@@ -44,12 +45,7 @@ const InstructorProfileEdit: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem('instructor');
 
-    if (!token) {
-      toast.error('No authentication token found.');
-      return;
-    }
 
     const formData = new FormData();
     formData.append('name', data.name);
@@ -63,11 +59,12 @@ const InstructorProfileEdit: React.FC = () => {
     }
 
     try {
-      const response = await instructorApi.put('/instructor/profile', formData, {
+      const response = await instructorApi.put('/instructor/profile', formData,{
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    "Content-Type": "multipart/form-data",
+  },
       });
+console.log(response);
 
       if (response.data.success) {
         toast.success('Profile updated', { autoClose: 1500 });
@@ -111,7 +108,7 @@ const InstructorProfileEdit: React.FC = () => {
               selectedFile
                 ? URL.createObjectURL(selectedFile)
                 : data.profileImage
-                ? `http://localhost:4000/assets/${data.profileImage}`
+                ? `http://localhost:5000/assets/${data.profileImage}`
                 : profilePic
             }
             alt="Profile"

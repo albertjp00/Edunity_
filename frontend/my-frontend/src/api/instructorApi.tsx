@@ -31,7 +31,7 @@ instructorApi.interceptors.response.use(
       if (error.response.data?.message?.toLowerCase().includes("expired")) {
         toast.error("Your session has expired. Please log in again.");
       }
-      localStorage.removeItem("token");
+      localStorage.removeItem("instructor");
       window.location.href = "/instructor/login";
     }
     return Promise.reject(error);
