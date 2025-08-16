@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import { otpStore } from "../../utils/otpStore.js";
 import { generateOtp } from "../../utils/otp.js";
 import { sendOtp } from "../../utils/sendMail.js";
+import { InstAuthRequest } from "../../middleware/authMiddleware.js";
 
 dotenv.config()
 
@@ -52,5 +53,18 @@ export class InstAuthService {
             refreshToken
         };
     };
+
+    instLogout = async (id : string):Promise<boolean | undefined> =>{
+        try {
+            
+            
+            return true
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
+
+    
 
 }
