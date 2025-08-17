@@ -4,6 +4,7 @@ import Navbar from "../../components/navbar/navbar";
 
 import './home.css';
 import Banner from "../../components/banner/banner";
+import ShowCourses from "../../components/showCourses/showCourses";
 
 
 const Home: React.FC = () => {
@@ -21,8 +22,7 @@ const Home: React.FC = () => {
                 subtitle="Your learning journey starts here"
                 imageUrl="/assets/banner.jpg"
             />
-            <p>filter</p>
-            <p>Courses</p>
+            <ShowCourses />
             <p>instructors</p>
         </div>
     )

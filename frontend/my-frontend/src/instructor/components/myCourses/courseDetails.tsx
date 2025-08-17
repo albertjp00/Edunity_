@@ -31,12 +31,17 @@ const InstructorCourseDetails: React.FC = () => {
 
   const fetchCourse = async (): Promise<void> => {
     try {
-      const res = await instructorApi.get(`/instructor/courseDetails?id=${id}`);
+      const res = await instructorApi.get(`/instructor/courseDetails/${id}`);
+      console.log(res.data);
+      if(res.data.success){
       setCourse(res.data.course as Course);
+    }
     } catch (err) {
       console.error('Error fetching course:', err);
     }
   };
+
+
 
   const handleEdit = (id: string): void => {
     navigate(`/instructor/editCourse/${id}`);
@@ -75,7 +80,7 @@ const InstructorCourseDetails: React.FC = () => {
 
         {course.thumbnail && (
           <img
-            src={`http://localhost:4000/assets/${course.thumbnail}`}
+            src={`http://localhost:5000/assets/${course.thumbnail}`}
             alt="Course Thumbnail"
             className="detail-thumbnail"
           />

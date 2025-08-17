@@ -9,12 +9,23 @@ export interface ISkills {
 
 export interface IInsRepository {
     findByEmail(email: string): Promise<IInstructor | null>
+
     findById(id:string):Promise<IInstructor | null>
+
     updateProfile(id:string ,data:any):Promise<IInstructor | null>
+
     updatePassword(id:string , newPassword:string):Promise<IInstructor | null>
+
+    addCourse(id:string , data:any):Promise<ICourse | null>
+
     getCourses(id:string , skip: number, limit: number): Promise<ICourse[] | null>
-    getCourseDetails(id:string , courseId : string): Promise<ICourse | null>
+
+    getCourseDetails( courseId : string): Promise<ICourse | null>
+
+    editCourse(id :string , data : any) :Promise<ICourse | null>
+
     countCourses(): Promise<number>;
+
     findSkills():Promise<ISkills>;
 }
 
@@ -39,14 +50,24 @@ export class InstructorRepository implements IInsRepository {
         return await InstructorModel.findByIdAndUpdate(id,{password : newPassword},{new:true})
     }
 
+    async addCourse(id:string , data:any):Promise<ICourse | null>{
+        return await CourseModel.create({instructorId:id, data})
+    }
+
     async getCourses(id :string ,skip: number, limit: number): Promise<ICourse[]> {
         const courses =  await CourseModel.find({instructorId : id}).skip(skip).limit(limit);        
          return courses || [];
     }
 
-    async getCourseDetails(id:string , courseId :string):Promise<ICourse | null>{
-        return await CourseModel.findOne({instructorId : id , _id : courseId})
+    async getCourseDetails( courseId :string):Promise<ICourse | null>{
+        const course = await CourseModel.findById(courseId)
+        return course   
     }
+
+    async editCourse(id: string, data: Partial<ICourse>): Promise<ICourse | null> {
+  return await CourseModel.findByIdAndUpdate(id, data, { new: true });
+}
+
 
     async countCourses(): Promise<number> {
          return  await CourseModel.countDocuments();

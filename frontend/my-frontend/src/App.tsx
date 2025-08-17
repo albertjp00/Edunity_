@@ -19,6 +19,9 @@ import ProfilePage from './instructor/pages/profile/profilePage'
 import InstructoreditProfilePage from './instructor/pages/profile/editProfilePage'
 import InstructorPasswordChange from './instructor/pages/profile/passwordChange'
 import InstructorCourseDetails from './instructor/components/myCourses/courseDetails'
+import InstructorEditCourse from './instructor/pages/profile/editCourse'
+import AddCourse from './instructor/components/addCourse/addCourse'
+import UserPasswordChange from './user/components/profile/changePassword'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -41,8 +44,8 @@ function App() {
 
             <Route path='/user/profile' element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
             <Route path='/user/editProfile' element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
-            {/* <Route path='/user/changePassword' element={<ChangePassword />} />
-            <Route path='/user/verify-otp' element={<ForgotPassVerifyOtp />} />
+            <Route path='/user/changePassword' element={<UserPasswordChange />} />
+            {/* <Route path='/user/verify-otp' element={<ForgotPassVerifyOtp />} />
             <Route path='/user/purchaseHistory' element={<PurchaseHistory />} />
 
             <Route path='/user/resetPassword' element={<ResetPassword />} />
@@ -64,11 +67,11 @@ function App() {
             <Route path='/instructor/profile' element={<ProfilePage />} />
             <Route path='/instructor/editProfile' element={<InstructoreditProfilePage />} />
             <Route path='/instrcutor/passwordChange' element={<InstructorPasswordChange />} />
-            {/* <Route path='/instructor/kyc' element={<KycVerification />} />
+            {/* <Route path='/instructor/kyc' element={<KycVerification />} /> */}
 
-            <Route path='/instructor/addCourse' element={<AddCourse />} /> */}
+            <Route path='/instructor/addCourse' element={<AddCourse />} />
             <Route path='/instructor/courseDetails/:id' element={<InstructorCourseDetails />} />
-            {/* <Route path='/instructor/editCourse/:id' element={<EditCourse />} /> */}
+            <Route path='/instructor/editCourse/:id' element={<InstructorEditCourse />} />
 
 
 

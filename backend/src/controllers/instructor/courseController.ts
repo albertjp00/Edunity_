@@ -39,8 +39,8 @@ export class InstCourseController {
         try {
             const id = req.instructor?.id
             const courseId = req.params.id!
-            const result = await this.courseService.fetchCourseDetails(id , courseId)
-            console.log("course" ,result);
+            const result = await this.courseService.fetchCourseDetails(courseId)
+            // console.log("course" ,result);
             
             res.json({success:true , course:result})
         } catch (error) {
@@ -48,4 +48,50 @@ export class InstCourseController {
             
         }
     }
+
+    editCourse = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const courseId = req.params.id!;
+
+    const data = {
+      ...req.body,
+      skills:JSON.parse(req.body.skills),
+      modules: JSON.parse(req.body.modules),
+
+    };
+    data.thumbnail = req.file?.filename
+    console.log(courseId , data);
+    
+
+    const result = await this.courseService.editCourseRequest(courseId, data);
+
+    if (!result) {
+      res.status(404).json({ success: false, message: "Course not found" });
+      return;
+    }
+
+    res.status(200).json({ success: true, course: result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+addCourse = async(req:InstAuthRequest , res:Response ):Promise<void> =>{
+    try {
+        const id = req.instructor?.id
+        const data = {
+            ...req.body,
+            modules : JSON.parse(req.body.modules),
+            skills : JSON.parse(req.body.skills)
+        }
+
+        const result = await this.courseService.addCourseRequest(id,data)
+        res.json({success:true})
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
 }

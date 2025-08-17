@@ -1,0 +1,145 @@
+.edit-container {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.add-course-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.add-course-form input,
+.add-course-form textarea,
+.add-course-form select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background-color: #fdfdfd;
+  color: #333;
+  transition: border-color 0.2s ease;
+}
+
+.add-course-form input:focus,
+.add-course-form textarea:focus,
+.add-course-form select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.3);
+}
+
+/* Module Card */
+.module-card {
+  border: 1px solid #e0e0e0;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  background: #f9f9f9;
+  transition: box-shadow 0.2s ease;
+}
+
+.module-card:hover {
+  box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Skills Section */
+.skills-checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.skill-checkbox {
+  background: #eef6ff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: #004085;
+  border: 1px solid #007bff20;
+  cursor: default;
+}
+
+/* Selected skills list */
+.selected-skills ul {
+  margin: 0;
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
+/* Level Dropdown */
+.add-course-form .level {
+  background-color: #eef6ff;
+  border: 1px solid #007bff;
+  color: #003366;
+  font-weight: 500;
+  border-radius: 6px;
+  padding: 6px;
+  width: 120px;
+  margin: 20px 0;
+}
+
+/* General Button Style */
+button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Save Button */
+.add-course-btn {
+  background: #4caf50;
+  color: white;
+  margin-top: 16px;
+}
+
+.add-course-btn:hover {
+  background: #43a047;
+  transform: translateY(-2px);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Add Module Button */
+button[type="button"] {
+  background: #2196f3;
+  color: white;
+  margin: 10px 0;
+}
+
+button[type="button"]:hover {
+  background: #1976d2;
+  transform: translateY(-2px);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Remove Module Button (inside module-card only) */
+.module-card button {
+  background: #e53935;
+  color: white;
+  margin-top: 10px;
+}
+
+.module-card button:hover {
+  background: #c62828;
+  transform: translateY(-2px);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Disabled State */
+button:disabled {
+  background: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  box-shadow: none;
+}
