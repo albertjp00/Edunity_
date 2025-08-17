@@ -30,7 +30,10 @@ instructor.get('/getCourse',instAuthMiddleware,courseController.myCourses)
 instructor.get('/profile',instAuthMiddleware,profileController.getProfile)
 instructor.put('/profile',instAuthMiddleware,upload.single("profileImage"),profileController.editProfile)
 instructor.put('/passwordChange',instAuthMiddleware,profileController.changePassword)
-instructor.put('/courseDetails/:id',instAuthMiddleware,courseController.courseDetails)
+instructor.get('/courseDetails/:id', instAuthMiddleware, courseController.courseDetails);
+instructor.put('/editCourse/:id', instAuthMiddleware,upload.single("thumbnail"), courseController.editCourse);
+instructor.post('/addCourse',instAuthMiddleware,upload.single('thumbnail'),courseController.addCourse) 
+
 
 
 export default instructor

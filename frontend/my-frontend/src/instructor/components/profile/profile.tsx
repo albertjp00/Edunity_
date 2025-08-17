@@ -154,7 +154,7 @@ const InstructorProfile: React.FC = () => {
                   onClick={() => courseDetails(course._id)}
                 >
                   <img
-                    src={`http://localhost:4000/assets/${course.thumbnail}`}
+                    src={`http://localhost:5000/assets/${course.thumbnail}`}
                     alt={course.title}
                     className="course-thumb-mini"
                   />

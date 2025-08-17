@@ -1,4 +1,5 @@
 import { UserRepository } from '../../repositories/userRepository.js';
+import bcrypt from 'bcrypt'
 
 export class ProfileService {
   private userRepository: UserRepository;
@@ -8,24 +9,24 @@ export class ProfileService {
   }
 
 
-//   interface userDetails {
-//     name  : string ,
-//     email : string ,
-//     role: string,
+  //   interface userDetails {
+  //     name  : string ,
+  //     email : string ,
+  //     role: string,
 
-//   }
+  //   }
 
   // Get profile by user ID
   async getProfile(userId: string) {
     try {
-        console.log("profile services " ,userId);
-        
+      console.log("profile services ", userId);
+
       const user = await this.userRepository.findById(userId);
       if (!user) return null;
 
       const { password, ...userWithoutPassword } = user.toObject();
-    //   console.log(userWithoutPassword);
-      
+      //   console.log(userWithoutPassword);
+
       return userWithoutPassword;
     } catch (error) {
       console.error('ProfileService.getProfile error:', error);
@@ -33,12 +34,11 @@ export class ProfileService {
     }
   }
 
-  // Update profile by user ID
   async editProfileRequest(userId: string, updateData: Partial<any>) {
     try {
-      console.log('id data',userId , updateData);
-      
-      const updatedUser = await this.userRepository.updateById(userId, updateData);
+      console.log('id data', userId, updateData);
+
+      const updatedUser = await this.userRepository.updateProfile(userId, updateData);
       if (!updatedUser) return null;
 
       const { password, ...userWithoutPassword } = updatedUser.toObject();
@@ -46,6 +46,24 @@ export class ProfileService {
     } catch (error) {
       console.error('ProfileService.updateProfile error:', error);
       throw new Error('Failed to update profile');
+    }
+  }
+
+  async passwordChange(id: string, newPassword: string, oldPassword: string): Promise<boolean> {
+    try {
+      const instructor = await this.userRepository.findById(id);
+      if (!instructor) return false;
+
+      const isMatch = await bcrypt.compare(oldPassword, instructor.password);
+      if (!isMatch) return false;
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      await this.userRepository.changePassword(id, hashedPassword);
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
     }
   }
 }
