@@ -35,6 +35,10 @@ router.put('/passwordChange',authMiddleware,profileController.changePassword)
 router.put("/profile",authMiddleware,upload.single("profileImage"),profileController.editProfile);
 
 router.get('/getCourses',authMiddleware, courseController.showCourses)
+router.get('/courseDetails',authMiddleware,courseController.courseDetails)
+router.get('/myCourses',authMiddleware , courseController.myCourses)
+router.get('/myCourses',authMiddleware , courseController.myCourses)
+router.get('/buyCourse/:id',authMiddleware , courseController.buyCourse)
 
 
 

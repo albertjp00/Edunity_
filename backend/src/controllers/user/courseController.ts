@@ -2,13 +2,19 @@ import { RequestHandler, Response } from "express";
 import { AuthRequest } from "../../middleware/authMiddleware.js";
 import { UserRepository } from "../../repositories/userRepository.js";
 import { UserCourseService } from "../../services/user/userCourseService.js";
+import { InstructorRepository } from "../../repositories/instructorRepository.js";
 
 export class UserCourseController {
     private courseService: UserCourseService;
 
     constructor() {
-        const repo = new UserRepository();
-        this.courseService = new UserCourseService(repo);
+        // const repo = new UserRepository();
+        // this.courseService = new UserCourseService(repo);
+
+        const userRepo = new UserRepository();
+        const instructorRepo = new InstructorRepository();
+
+        this.courseService = new UserCourseService(userRepo, instructorRepo);
     }
 
     // Explicitly type as Express RequestHandler
@@ -33,4 +39,51 @@ export class UserCourseController {
             res.status(500).json({ success: false, message: "Failed to get courses" });
         }
     };
+
+
+    courseDetails = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const id = req.user?.id!
+            const courseId = req.query.id as string
+            const result = await this.courseService.fetchCourseDetails(id, courseId)
+            // console.log("course", result);
+
+            res.json({ success: true, course: result })
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+    buyCourse = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const id = req.user?.id!
+
+            const courseId = req.params.id
+            console.log('buyong' , courseId);
+            
+
+            const response = await this.courseService.buyCourseService(id, courseId)
+            res.json({ success: true })
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+    myCourses = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const id = req.user?.id!
+            console.log(id);
+
+            const result = await this.courseService.myCoursesRequest(id)
+            console.log('result ', result);
+
+            res.status(200).json({ success: true, course: result })
+
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
 }
