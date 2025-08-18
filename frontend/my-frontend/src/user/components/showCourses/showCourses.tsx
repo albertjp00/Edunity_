@@ -49,7 +49,7 @@ const ShowCourses: React.FC = () => {
       );
       if (res.data.success) {
         setCourses(res.data.course);
-        setSkills(res.data.skills);
+        setSkills(res.data.skills?.uniqueSkills || []);
         setTotalPages(res.data.totalPages);
         setCurrentPage(res.data.currentPage);
       }
@@ -143,7 +143,7 @@ const ShowCourses: React.FC = () => {
             >
               <div className="thumbnail-wrapper">
                 <img
-                  src={`http://localhost:4000/assets/${course.thumbnail}`}
+                  src={`http://localhost:5000/assets/${course.thumbnail}`}
                   alt={course.title}
                   className="course-thumbnail"
                 />

@@ -1,5 +1,6 @@
 import { CourseModel, ICourse } from "../models/course.js";
 import { IInstructor, InstructorModel } from "../models/instructor.js";
+import { IMyCourse, MyCourseModel } from "../models/myCourses.js";
 
 
 export interface ISkills {
@@ -27,6 +28,7 @@ export interface IInsRepository {
     countCourses(): Promise<number>;
 
     findSkills():Promise<ISkills>;
+
 }
 
 
@@ -83,6 +85,9 @@ export class InstructorRepository implements IInsRepository {
 
         return result[0]
     }
+
+
+    
 }
 
 

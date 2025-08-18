@@ -1,4 +1,5 @@
 import { CourseModel, ICourse } from '../models/course.js';
+import { IMyCourse, MyCourseModel } from '../models/myCourses.js';
 import { IUser, UserModel } from '../models/user.js';
 import { ISkills } from './instructorRepository.js';
 
@@ -9,10 +10,20 @@ export interface IUserRepository {
   updateProfile(id: string, data: Partial<IUser>): Promise<IUser | null>;
   changePassword(id: string, password: string): Promise<IUser | null>;
 
-  getCourses(skip:number , limit:number): Promise<ICourse[] | null>
+  getCourse(id: string): Promise<ICourse | null>
+
+  getCourses(skip: number, limit: number): Promise<ICourse[] | null>
+
   countCourses(): Promise<number>;
 
   findSkills(): Promise<ISkills>;
+
+  getCourseDetails(id: string, courseId: string): Promise<IMyCourse | null>
+
+  addMyCourse(id: string, data: any): Promise<IMyCourse | null>
+
+  findMyCourses(id:string ):Promise<IMyCourse[] | null>
+
 }
 
 export class UserRepository implements IUserRepository {
@@ -37,18 +48,20 @@ export class UserRepository implements IUserRepository {
     return await UserModel.findByIdAndUpdate(id, { password: password })
   }
 
-
+  async getCourse(id: string): Promise<ICourse | null> {
+    return await CourseModel.findById(id)
+  }
 
   async getCourses(skip: number, limit: number): Promise<ICourse[]> {
-        return await CourseModel.find()
-            .skip(skip)
-            .limit(limit)
-            .exec();
-    }
+    return await CourseModel.find()
+      .skip(skip)
+      .limit(limit)
+      .exec();
+  }
 
-    async countCourses(): Promise<number> {
-        return await CourseModel.countDocuments();
-    }
+  async countCourses(): Promise<number> {
+    return await CourseModel.countDocuments();
+  }
 
   async findSkills(): Promise<ISkills> {
     const result = await CourseModel.aggregate([
@@ -59,5 +72,43 @@ export class UserRepository implements IUserRepository {
 
     return result[0]
   }
+
+  async getCourseDetails(id: string, courseId: string): Promise<IMyCourse | null> {
+    const course = await MyCourseModel.findOne({ userId: id, 'course.id': courseId })
+    return course
+  }
+
+  async addMyCourse(userId: string, courseData: any): Promise<IMyCourse | null> {
+    try {
+
+      const existingCourse = await MyCourseModel.findOne({
+        userId,
+        "course.id": courseData._id,
+      });
+
+      if (existingCourse) {
+
+        return existingCourse;
+      }
+
+      // Create a new course entry
+      const newCourse = new MyCourseModel({
+        userId,
+        course: courseData,
+        progress: { completedModules: [] },
+      });
+
+      return await newCourse.save();
+    } catch (error) {
+      console.error("Error in addMyCourse:", error);
+      return null;
+    }
+  }
+
+  async findMyCourses(id:string ):Promise<IMyCourse[] | null>{
+    return await MyCourseModel.find({userId : id})
+  }
+
+
 
 }

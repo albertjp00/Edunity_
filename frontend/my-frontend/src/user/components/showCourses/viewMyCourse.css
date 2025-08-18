@@ -1,0 +1,33 @@
+.module-dropdown {
+  border: 1px solid #ccc;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.module-header {
+  background-color: #f4f4f4;
+  padding: 1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lesson-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background: #fff;
+}
+
+.lesson-item {
+  padding: 0.8rem 1.2rem;
+  cursor: pointer;
+  border-top: 1px solid #eee;
+}
+
+.lesson-item:hover,
+.lesson-item.active {
+  background-color: #e3f2fd;
+}

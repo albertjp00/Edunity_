@@ -22,6 +22,9 @@ import InstructorCourseDetails from './instructor/components/myCourses/courseDet
 import InstructorEditCourse from './instructor/pages/profile/editCourse'
 import AddCourse from './instructor/components/addCourse/addCourse'
 import UserPasswordChange from './user/components/profile/changePassword'
+import UserCourseDetails from './user/pages/courseDetail/courseDetails'
+import ShowUserMyCourses from './user/pages/myCourses/myCourses'
+import UserViewMyCourse from './user/pages/myCourses/viewMyCourse'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -48,11 +51,11 @@ function App() {
             {/* <Route path='/user/verify-otp' element={<ForgotPassVerifyOtp />} />
             <Route path='/user/purchaseHistory' element={<PurchaseHistory />} />
 
-            <Route path='/user/resetPassword' element={<ResetPassword />} />
+            <Route path='/user/resetPassword' element={<ResetPassword />} /> */}
 
-            <Route path='/user/courseDetails/:id' element={<CourseDetailsUser />} />
-            <Route path='/user/myCourses' element={<MyCourses />} />
-            <Route path='/user/viewMyCourse/:id' element={<ViewMyCourse />} /> */}
+            <Route path='/user/courseDetails/:id' element={<UserCourseDetails />} />
+            <Route path='/user/myCourses' element={<ShowUserMyCourses />} />
+            <Route path='/user/viewMyCourse/:id' element={<UserViewMyCourse />} />
 
 
 

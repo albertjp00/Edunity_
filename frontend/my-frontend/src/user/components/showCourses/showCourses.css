@@ -1,0 +1,191 @@
+.course-container {
+  padding: 40px;
+}
+
+.course-container h2 {
+  margin-bottom: 20px;
+  font-size: 2rem;
+  color: #333;
+}
+
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.course-card {
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* .course-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+} */
+
+.thumbnail-wrapper {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+}
+
+.course-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.course-info {
+  padding: 16px;
+}
+
+.course-info h3 {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  color: #222;
+}
+
+.description {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 16px;
+}
+
+.bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price {
+  font-weight: bold;
+  color: #007bff;
+}
+
+.view-btn {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* .view-btn:hover {
+  background-color: #0056b3;
+} */
+
+.no-courses {
+  color: #888;
+  font-style: italic;
+}
+
+
+
+.filter-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0;
+  /* align-items: center; */
+}
+
+.filter-group {
+  display: flex;
+  gap: 42px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-group span {
+  font-weight: bold;
+  color: #333;
+  margin-right: 8px;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+  color: black  ;
+}
+
+.filter-btn:hover {
+  background-color: #e6e6e6;
+}
+
+.filter-btn.active {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+
+.search-bar-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.search-input {
+  width: 50%;
+  padding: 10px 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  color: black;
+  background-color: white;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+
+.search-bar input:focus {
+  outline: none;
+  border-color: #007bff;
+  background-color: #fff;
+}
+
+
+.pagination-controls {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.pagination-controls button {
+  margin: 0 5px;
+  padding: 8px 12px;
+  border: none;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  border-radius: 6px;
+  color: black;
+}
+
+.pagination-controls button.active {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+}
+
+.pagination-controls button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
