@@ -1,0 +1,41 @@
+.navbar {
+  background-color: rgb(88, 163, 249);
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo-image{
+    width: 40px;
+}
+
+.logout-btn {
+  margin-left: 10px;
+  padding: 6px 12px;
+  border: none;
+  background-color: #5c10ce;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.hamburger {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+
+  .profile-section {
+    gap: 15px;
+  }
+}

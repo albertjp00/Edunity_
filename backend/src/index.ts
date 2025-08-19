@@ -1,6 +1,7 @@
 import express from 'express';
 import userRoutes from './routes/userRoutes.js';
 import instructorRoutes from './routes/instructorRoutes.js'
+import adminRoutes from './routes/adminRoutes.js'
 import { connectDB } from './utils/db.js';
 import cors from 'cors'
 import dotenv from 'dotenv'
@@ -26,6 +27,7 @@ app.use("/assets", express.static(path.join(process.cwd(), "src/assets")));
 app.use(express.json());
 app.use('/user', userRoutes);
 app.use('/instructor',instructorRoutes)
+app.use('/admin',adminRoutes)
 
 
 

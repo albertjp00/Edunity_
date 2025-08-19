@@ -60,8 +60,8 @@ export class UserCourseController {
             const id = req.user?.id!
 
             const courseId = req.params.id
-            console.log('buyong' , courseId);
-            
+            console.log('buyong', courseId);
+
 
             const response = await this.courseService.buyCourseService(id, courseId)
             res.json({ success: true })
@@ -86,4 +86,40 @@ export class UserCourseController {
 
         }
     }
+
+    viewMyCourse = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const id = req.user?.id!
+            const myCourseId = req.params.id!
+            console.log('viewMyCourse', myCourseId, id);
+
+            const result = await this.courseService.viewMyCourseRequest(id, myCourseId)
+            console.log('result', result);
+
+            res.json({ success: true, course: result })
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    // controllers/courseController.ts
+    updateProgress = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.user?.id as string;
+            const { courseId, moduleTitle } = req.body;
+
+            if (!userId || !courseId || !moduleTitle) {
+                res.status(400).json({ success: false, message: "Missing required fields" });
+                return;
+            }
+
+            const result = await this.courseService.updateProgress(userId, courseId, moduleTitle);
+
+            res.json({ success: true, progress: result });
+        } catch (error) {
+            console.error("Error updating progress:", error);
+            res.status(500).json({ success: false, message: "Internal server error" });
+        }
+    };
+
 }

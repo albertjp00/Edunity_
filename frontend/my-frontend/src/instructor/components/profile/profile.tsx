@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import profilePic from './../../../assets/profilePic.png';
 import { Link, useNavigate } from 'react-router-dom';
-import './instructorProfile.css';
-import axios from 'axios';
+import './profile.css'
 import instructorApi from '../../../api/instructorApi';
 import Navbar from '../../components/navbar/navbar';
 

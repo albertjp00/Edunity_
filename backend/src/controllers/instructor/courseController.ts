@@ -77,21 +77,26 @@ export class InstCourseController {
   }
 };
 
-addCourse = async(req:InstAuthRequest , res:Response ):Promise<void> =>{
-    try {
-        const id = req.instructor?.id
-        const data = {
-            ...req.body,
-            modules : JSON.parse(req.body.modules),
-            skills : JSON.parse(req.body.skills)
-        }
+addCourse = async (req: InstAuthRequest, res: Response): Promise<void> => {
+  try {
+    const id = req.instructor?.id; // should be ObjectId from middleware
+    console.log("add Course ", id, req.body, req.file);
 
-        const result = await this.courseService.addCourseRequest(id,data)
-        res.json({success:true})
-    } catch (error) {
-        console.log(error);
-        
-    }
-}
+    const data = {
+      ...req.body,
+      modules: JSON.parse(req.body.modules),
+      skills: JSON.parse(req.body.skills),
+      thumbnail: req.file ? req.file.filename : undefined,
+    };
+
+    const result = await this.courseService.addCourseRequest(id, data);
+
+    res.json({ success: !!result, course: result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Error adding course" });
+  }
+};
+
 
 }

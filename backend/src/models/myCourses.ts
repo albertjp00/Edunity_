@@ -54,8 +54,4 @@ const myCourseSchema: Schema<IMyCourse> = new Schema({
   },
 });
 
-// Export model
-export const MyCourseModel: Model<IMyCourse> = mongoose.model<IMyCourse>(
-  "MyCourse",
-  myCourseSchema
-);
+export const MyCourseModel = mongoose.model<IMyCourse>("MyCourse",myCourseSchema);

@@ -3,7 +3,6 @@ import "./myCourses.css";
 import { useNavigate } from "react-router-dom";
 import api from "../../../api/userApi";
 
-// Define interfaces for course data
 interface IModule {
   title: string;
   videoUrl: string;
@@ -11,8 +10,7 @@ interface IModule {
 }
 
 interface ICourse {
-  _id: string; // MongoDB document ID
-  id: string; // course.id from schema
+  _id: string; 
   title: string;
   description: string;
   price: string;
@@ -33,7 +31,6 @@ interface IMyCourse {
 const UserMyCourses: React.FC = () => {
   const [courses, setCourses] = useState<IMyCourse[]>([]);
   const navigate = useNavigate();
-  
 
   const fetchCourses = async (): Promise<void> => {
     try {
@@ -47,9 +44,9 @@ const UserMyCourses: React.FC = () => {
     }
   };
 
-  const selectCourse = (id: string): void => {
-    console.log("coursessss", id, courses);
-    navigate(`/user/viewMyCourse/${id}`);
+  const selectCourse = (courseId: string): void => {
+    console.log("Selected course:", courseId);
+    navigate(`/user/viewMyCourse/${courseId}`);
   };
 
   useEffect(() => {
@@ -57,39 +54,35 @@ const UserMyCourses: React.FC = () => {
   }, []);
 
   return (
-    <div>
+    <div className="course-container">
+      <h2>My Courses</h2>
+      {courses.length === 0 ? (
+        <p>No courses yet.</p>
+      ) : (
+        <div className="course-list">
+          {courses.map((myCourse) => (
+            <div
+              key={myCourse._id}
+              className="course-card"
+              onClick={() => selectCourse(myCourse._id)}
+            >
+              {myCourse.course.thumbnail && (
+                <img
+                  src={`http://localhost:5000/assets/${myCourse.course.thumbnail}`}
+                  alt="Thumbnail"
+                  className="course-thumbnail"
+                />
+              )}
 
-      <div className="course-container">
-        <h2>My Courses</h2>
-        {courses.length === 0 ? (
-          <p>No courses yet.</p>
-        ) : (
-          <div className="course-list">
-            {courses.map((myCourse) => (
-  <div
-    key={myCourse._id}
-    className="course-card"
-    onClick={() => selectCourse(myCourse.course.id)}
-  >
-    {myCourse.course.thumbnail && (
-      <img
-        src={`http://localhost:5000/assets/${myCourse.course.thumbnail}`}
-        alt="Thumbnail"
-        className="course-thumbnail"
-      />
-    )}
-
-    <div className="course-details">
-      <h3 className="course-title">{myCourse.course.title}</h3>
-      <p className="course-description">{myCourse.course.description}</p>
-      <p className="course-price">₹{myCourse.course.price}</p>
-    </div>
-  </div>
-))}
-
-          </div>
-        )}
-      </div>
+              <div className="course-details">
+                <h3 className="course-title">{myCourse.course.title}</h3>
+                <p className="course-description">{myCourse.course.description}</p>
+                <p className="course-price">₹{myCourse.course.price}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -22,7 +22,11 @@ export interface IUserRepository {
 
   addMyCourse(id: string, data: any): Promise<IMyCourse | null>
 
-  findMyCourses(id:string ):Promise<IMyCourse[] | null>
+  findMyCourses(id: string): Promise<IMyCourse[] | null>
+
+  viewMyCourse(id: string, courseId: string): Promise<IMyCourse | null>
+
+  updateProgress(userId: string, courseId: string, moduleTitle: string):Promise<IMyCourse | null>
 
 }
 
@@ -91,12 +95,19 @@ export class UserRepository implements IUserRepository {
         return existingCourse;
       }
 
-      // Create a new course entry
       const newCourse = new MyCourseModel({
         userId,
-        course: courseData,
+        course: {
+          id: courseData._id.toString(),  
+          title: courseData.title,
+          description: courseData.description,
+          price: courseData.price,
+          thumbnail: courseData.thumbnail,
+          modules: courseData.modules,
+        },
         progress: { completedModules: [] },
       });
+
 
       return await newCourse.save();
     } catch (error) {
@@ -105,8 +116,22 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async findMyCourses(id:string ):Promise<IMyCourse[] | null>{
-    return await MyCourseModel.find({userId : id})
+  async findMyCourses(id: string): Promise<IMyCourse[] | null> {
+    return await MyCourseModel.find({ userId: id })
+  }
+
+  async viewMyCourse(id: string, myCourseId: string): Promise<IMyCourse | null> {
+  const data = MyCourseModel.findById(myCourseId)
+  return data
+  
+  }
+
+  async updateProgress(userId: string, courseId: string, moduleTitle: string):Promise<IMyCourse | null>{
+    return MyCourseModel.findOneAndUpdate(
+      { userId, "course.id": courseId },
+      { $addToSet: { "progress.completedModules": moduleTitle } },
+      { new: true }
+    );
   }
 
 

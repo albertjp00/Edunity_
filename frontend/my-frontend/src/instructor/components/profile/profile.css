@@ -1,0 +1,149 @@
+.profile-container1 {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(to right, #f8f9fa, #e9ecef);
+  gap: 2rem;
+}
+
+/* LEFT COLUMN */
+.profile-left {
+  flex: 1;
+  max-width: 400px;
+}
+
+.profile-card1 {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  width: 100%;
+  transition: transform 0.3s ease;
+}
+
+.profile-card1:hover {
+  transform: translateY(-5px);
+}
+
+.user-name-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #007bff;
+}
+
+.profile-card1 h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.profile-card1 h5 {
+  margin: 0.3rem 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.about-me {
+  margin-top: 1.5rem;
+}
+
+.about-me h4 {
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.about-me p {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.user-details-box {
+  margin-top: 1.5rem;
+}
+
+.user-details-box p {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.edit-btn {
+  margin-top: 0.8rem;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  background-color: #434049;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.pass-btn, .kyc-button {
+  margin-top: 10px;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  background-color: #007bff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* RIGHT COLUMN */
+.profile-right {
+  flex: 2;
+}
+
+.education-box,
+.enrolled-courses {
+  margin-bottom: 30px;
+  border: 1px solid #ddd;
+  padding: 15px 20px;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+}
+
+.education-box h3,
+.enrolled-courses h3 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.course-card-mini {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.course-thumb-mini {
+  width: 60px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.course-card-mini h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.course-card-mini p {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: #777;
+}

@@ -1,0 +1,70 @@
+.instructor-list {
+  padding: 30px;
+  background-color: #f5f7fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.instructor-list h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.instructor-list table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.instructor-list th,
+.instructor-list td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.instructor-list th {
+  background-color: #f0f0f0;
+  color: #555;
+  font-weight: 600;
+}
+
+
+.verify-btn{
+    padding: 12px;
+  background-color: #76c3ff;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+/* .instructor-list tr:hover {
+  background-color: #f9f9f9;
+} */
+
+/* .instructor-list img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+} */
+
+
+.btn-verified {
+  background-color: #22c55e; /* green */
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: default;
+  opacity: 0.9;
+  transition: transform 0.2s ease;
+  pointer-events: none;
+}

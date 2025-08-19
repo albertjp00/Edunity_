@@ -25,6 +25,7 @@ import UserPasswordChange from './user/components/profile/changePassword'
 import UserCourseDetails from './user/pages/courseDetail/courseDetails'
 import ShowUserMyCourses from './user/pages/myCourses/myCourses'
 import UserViewMyCourse from './user/pages/myCourses/viewMyCourse'
+import AdminHome from './admin/pages/home'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -82,9 +83,9 @@ function App() {
 
 
               // {/* admin  */}
-            {/* <Route path='/admin/login' element={<AdminLogin />} />
+            {/* <Route path='/admin/login' element={<AdminLogin />} /> */}
             <Route path='/admin/*' element={<AdminHome />} />
-            <Route path='/admin/viewKyc/:id' element={<ViewKYC />} />
+            {/* <Route path='/admin/viewKyc/:id' element={<ViewKYC />} />
 
 
             <Route path="*" element={<NotFound />} /> */}

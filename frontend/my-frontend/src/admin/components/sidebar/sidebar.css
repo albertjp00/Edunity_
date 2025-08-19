@@ -1,0 +1,39 @@
+.sidebar {
+  width: 300px;
+  background-color: #f3f3f3;
+  padding: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  height: 100vh;
+}
+
+.sidebar p {
+  padding: 10px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  background: #ddd;
+  border-radius: 5px;
+
+}
+
+.sidebar-option {
+  text-decoration: none;
+  color: inherit; 
+  display: block; 
+  padding: 10px;
+}
+
+
+/* .sidebar-option{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #a9a9a9;
+    border-right: 0;
+    padding: 8px 10px;
+    border-radius: 3px 0px  0px 3px;
+    cursor: pointer;
+} */

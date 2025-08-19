@@ -3,9 +3,7 @@ import React, { useEffect, useState } from "react";
 import profilePic from "../../../assets/profilePic.png";
 import { Link, useNavigate } from "react-router-dom";
 import "./userProfile.css";
-import Navbar from "../../components/navbar/navbar";
 import api from "../../../api/userApi";
-import { toast } from "react-toastify";
 
 interface User {
   name?: string;
@@ -39,7 +37,7 @@ const Profile: React.FC = () => {
     try {
       const response = await api.get("/user/profile");
       console.log(response.data);
-      
+
       setUser(response.data.data);
 
       if (response.data.data.blocked) {
@@ -48,16 +46,18 @@ const Profile: React.FC = () => {
       }
     } catch (error) {
       console.error("Error fetching profile:", error);
-      
+
     }
   };
 
   const fetchCourses = async () => {
     try {
-      // const res = await api.get(`/user/myCourses?id=${token}`);
-      // if (res.data.success) {
-      //   setCourses(res.data.courses);
-      // }
+      const res = await api.get(`/user/myCourses`);
+
+
+      if (res.data.success) {
+        setCourses(res.data.course);
+      }
     } catch (err) {
       console.error("Error fetching courses:", err);
     }
@@ -156,8 +156,9 @@ const Profile: React.FC = () => {
                     </p>
                     <p>
                       <strong>Description:</strong>{" "}
-                      {course.description.slice(0, 80)}...
+                      {course.description ? course.description.slice(0, 80) : "No description"}...
                     </p>
+
                     <p>
                       <strong>Modules:</strong> {course.modules.length}
                     </p>

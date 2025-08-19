@@ -1,0 +1,50 @@
+.user-list {
+  padding: 30px;
+  background-color: #f5f7fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.user-list h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.user-list input{
+  background-color: white;
+  border: .5px solid;
+  color: black;
+}
+
+.user-list table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.user-list th,
+.user-list td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.user-list th {
+  background-color: #f0f0f0;
+  color: #555;
+  font-weight: 600;
+}
+
+/* .user-list tr:hover {
+  background-color: #f9f9f9;
+} */
+
+/* .user-list img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+} */
