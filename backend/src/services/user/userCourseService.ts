@@ -45,9 +45,9 @@ export class UserCourseService {
       let hasAccess = false
       const course: any = await this.userRepository.getCourse(courseId);
       const myCourse = await this.userRepository.getCourseDetails(userId, courseId);
-      console.log('myCoursessss',myCourse);
-      
-      if(myCourse){
+      console.log('myCoursessss', myCourse);
+
+      if (myCourse) {
         hasAccess = true
       }
 
@@ -70,8 +70,8 @@ export class UserCourseService {
 
       const course = await this.userRepository.getCourse(courseId)
       const data = course
-      const myCourse = await this.userRepository.addMyCourse(userId , data);
-      return !myCourse; 
+      const myCourse = await this.userRepository.addMyCourse(userId, data);
+      return !myCourse;
     } catch (error) {
       console.error(error);
       return false;
@@ -79,18 +79,46 @@ export class UserCourseService {
   };
 
 
-  myCoursesRequest = async (id:string):Promise<IMyCourse[] | null> =>{
-    try { 
+  myCoursesRequest = async (id: string): Promise<IMyCourse[] | null> => {
+    try {
 
 
       const myCourses = await this.userRepository.findMyCourses(id)
 
       return myCourses
-      
+
     } catch (error) {
       console.log(error);
       return null
     }
+  }
+
+  viewMyCourseRequest = async (id: string, myCourseId: string): Promise<IMyCourse | null> => {
+    try {
+
+
+      const myCourse = await this.userRepository.viewMyCourse(id, myCourseId)
+      // const progress = await this.userRepository.getProgress(id)
+
+      return myCourse
+
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+  }
+
+  // services/courseService.ts
+  async updateProgress(userId: string, courseId: string, moduleTitle: string) {
+
+   try {
+     const update = await this.userRepository.updateProgress(userId , courseId , moduleTitle)
+    
+    return update
+   } catch (error) {
+    console.log(error);
+    
+   }
   }
 
 

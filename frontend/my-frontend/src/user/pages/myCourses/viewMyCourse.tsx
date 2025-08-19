@@ -1,6 +1,6 @@
 import React from 'react'
 import Navbar from '../../components/navbar/navbar'
-import ViewMyCourse from '../../components/showCourses/viewCourse'
+import ViewMyCourse from '../../components/myCourses/viewCourse'
 
 const UserViewMyCourse = () => {
   return (

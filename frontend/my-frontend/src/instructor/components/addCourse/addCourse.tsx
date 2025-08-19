@@ -82,14 +82,9 @@ const AddCourse: React.FC = () => {
     // if (!validateForm()) return;
 
     try {
-      const instructorId = localStorage.getItem("instructor");
-      if (!instructorId) {
-        toast.error("Instructor not found.");
-        return;
-      }
+      
 
       const formData = new FormData();
-      formData.append("instructorId", instructorId);
       formData.append("title", form.title);
       formData.append("description", form.description);
       formData.append("skills", JSON.stringify(form.skills));

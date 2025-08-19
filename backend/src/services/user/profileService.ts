@@ -16,7 +16,6 @@ export class ProfileService {
 
   //   }
 
-  // Get profile by user ID
   async getProfile(userId: string) {
     try {
       console.log("profile services ", userId);

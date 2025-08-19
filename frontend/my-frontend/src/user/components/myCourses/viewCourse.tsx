@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "./viewMyCourse.css";
-import Navbar from "../../components/navbar/navbar";
+import Navbar from "../navbar/navbar";
 import api from "../../../api/userApi";
 
 // Interfaces
@@ -36,19 +36,19 @@ const ViewMyCourse: React.FC = () => {
   const [expandedModule, setExpandedModule] = useState<number | null>(null);
   const [completedModules, setCompletedModules] = useState<string[]>([]);
 
-  const token = localStorage.getItem("token");
 
   const fetchCourse = async (): Promise<void> => {
-    try {
-      const res = await api.get(`/user/viewMyCourse?id=${id}`);
+  try {
+    const res = await api.get(`/user/viewMyCourse/${id}`);
 
-      const fetchedCourse: IMyCourse = res.data.course;
-      setCourse(fetchedCourse.course);
-      setCompletedModules(fetchedCourse.progress?.completedModules || []);
-    } catch (err) {
-      console.error("Error fetching course:", err);
-    }
-  };
+    const fetchedMyCourse: IMyCourse = res.data.course; // the whole object
+    setCourse(fetchedMyCourse.course);                  // set inner course
+    setCompletedModules(fetchedMyCourse.progress?.completedModules || []);
+  } catch (err) {
+    console.error("Error fetching course:", err);
+  }
+};
+
 
   useEffect(() => {
     fetchCourse();
@@ -70,11 +70,7 @@ const ViewMyCourse: React.FC = () => {
       await api.post(
         "/user/updateProgress",
         { courseId: id, moduleTitle },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        
       );
       setCompletedModules((prev) => [...prev, moduleTitle]);
     } catch (err) {
@@ -90,14 +86,13 @@ const ViewMyCourse: React.FC = () => {
 
   return (
     <div>
-      <Navbar />
 
       <div className="course-detail-page">
         <h2>{course.title}</h2>
 
         {course.thumbnail && (
           <img
-            src={`http://localhost:4000/assets/${course.thumbnail}`}
+            src={`http://localhost:5000/assets/${course.thumbnail}`}
             alt="Course Thumbnail"
             className="detail-thumbnail"
           />
