@@ -17,18 +17,25 @@ interface User {
   blocked?: boolean;
 }
 
-interface Course {
+interface CourseData {
   id: string;
   title: string;
-  price: number;
-  description: string;
+  price: number | string;
+  description?: string;
   thumbnail: string;
-  modules: { id: string; title: string }[];
+  modules?: { id: string; title: string }[];
 }
+
+interface EnrolledCourse {
+  course: CourseData;
+  progress: { completedModules: string[] };
+  userId: string;
+}
+
 
 const Profile: React.FC = () => {
   const [user, setUser] = useState<User>({});
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<EnrolledCourse[]>([]);
   const navigate = useNavigate();
 
   // const token = localStorage.getItem("token");
@@ -56,6 +63,8 @@ const Profile: React.FC = () => {
 
 
       if (res.data.success) {
+        console.log(res.data);
+
         setCourses(res.data.course);
       }
     } catch (err) {
@@ -138,45 +147,48 @@ const Profile: React.FC = () => {
           <h3 className="enrolled-title">Purchased Courses</h3>
           <div className="enrolled-courses">
             {courses.length > 0 ? (
-              courses.map((course) => (
+              courses.map((enrolled) => (
                 <div
                   className="course-card-mini"
-                  key={course.id}
-                  onClick={() => gotoCourse(course.id)}
+                  key={enrolled.course.id}
+                  onClick={() => gotoCourse(enrolled.course.id)}
                 >
                   <img
-                    src={`http://localhost:4000/assets/${course.thumbnail}`}
-                    alt={course.title}
+                    src={`http://localhost:5000/assets/${enrolled.course.thumbnail}`}
+                    alt={enrolled.course.title}
                     className="course-thumb-mini"
                   />
                   <div className="course-details-mini">
-                    <h4>{course.title}</h4>
+                    <h4>{enrolled.course.title}</h4>
                     <p>
-                      <strong>Price:</strong> ₹{course.price}
+                      <strong>Price:</strong> ₹{enrolled.course.price}
                     </p>
                     <p>
                       <strong>Description:</strong>{" "}
-                      {course.description ? course.description.slice(0, 80) : "No description"}...
+                      {enrolled.course.description
+                        ? enrolled.course.description.slice(0, 80)
+                        : "No description"}...
                     </p>
-
                     <p>
-                      <strong>Modules:</strong> {course.modules.length}
+                      <strong>Modules:</strong>{" "}
+                      {enrolled.course.modules?.length ?? 0}
                     </p>
-                    <button
+                    {/* <button
                       className="view-course-btn"
                       onClick={(e) => {
                         e.stopPropagation();
-                        gotoCourse(course.id);
+                        gotoCourse(enrolled.course.id);
                       }}
                     >
                       View Course
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               ))
             ) : (
               <p>No enrolled courses.</p>
             )}
+
           </div>
         </div>
       </div>

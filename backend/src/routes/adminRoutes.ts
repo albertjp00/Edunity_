@@ -12,4 +12,14 @@ admin.put('/block-user/:id',dashboardController.blockUser)
 
 admin.put('/unblock-users/:id',dashboardController.unblockUser)
 
+admin.get('/get-instructors',dashboardController.getInstructors)
+
+admin.get('/get-kyc/:id' , dashboardController.getKyc)
+
+admin.put('/verify-kyc/:id' , dashboardController.verifyKyc)
+
+admin.put('/reject-kyc/:id' , dashboardController.rejectKyc)
+
+
+
 export default admin

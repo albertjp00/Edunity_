@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import './adminInstructors.css';
 import { Link } from 'react-router-dom';
@@ -13,21 +12,31 @@ interface Instructor {
 }
 
 const InstructorsAdmin: React.FC = () => {
-  const [instructor, setInstructor] = useState<Instructor[]>([]);
+  const [instructors, setInstructors] = useState<Instructor[]>([]);
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
 
-  const getInstructors = async (): Promise<void> => {
+  const getInstructors = async (currentPage: number): Promise<void> => {
     try {
-      const response = await adminApi.get<{ data: Instructor[] }>('/admin/get-instructors');
-      console.log(response.data.data);
-      setInstructor(response.data.data);
+      const response = await adminApi.get(`/admin/get-instructors?page=${currentPage}&limit=5`);
+      setInstructors(response.data.data);
+      setPages(response.data.pages);
     } catch (error) {
       console.error("Error fetching instructors:", error);
     }
   };
 
   useEffect(() => {
-    getInstructors();
-  }, []);
+    getInstructors(page);
+  }, [page]);
+
+  const handlePrev = () => {
+    if (page > 1) setPage((prev) => prev - 1);
+  };
+
+  const handleNext = () => {
+    if (page < pages) setPage((prev) => prev + 1);
+  };
 
   return (
     <div className="instructor-list">
@@ -43,14 +52,14 @@ const InstructorsAdmin: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {instructor.map((user) => (
+          {instructors.map((user) => (
             <tr key={user._id}>
               <td>{user.name}</td>
               <td>{user.email}</td>
               <td>
                 {user.profileImage && (
                   <img
-                    src={`http://localhost:4000/assets/${user.profileImage}`}
+                    src={`http://localhost:5000/assets/${user.profileImage}`}
                     alt={user.name}
                     width="40"
                     height="40"
@@ -74,6 +83,19 @@ const InstructorsAdmin: React.FC = () => {
           ))}
         </tbody>
       </table>
+
+      {/* Pagination Controls */}
+      <div className="pagination">
+        <button onClick={handlePrev} disabled={page === 1}>
+          Prev
+        </button>
+        <span>
+          Page {page} of {pages}
+        </span>
+        <button onClick={handleNext} disabled={page === pages}>
+          Next
+        </button>
+      </div>
     </div>
   );
 };

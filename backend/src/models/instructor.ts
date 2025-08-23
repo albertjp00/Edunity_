@@ -1,7 +1,5 @@
-// models/Instructor.ts
 import mongoose, { Document, Schema } from "mongoose";
 
-// Interface for Instructor document
 export interface IInstructor extends Document {
   name: string;
   email: string;
@@ -19,7 +17,6 @@ export interface IInstructor extends Document {
 
 
 
-// Schema definition
 const InstructorSchema: Schema<IInstructor> = new Schema({
   name: {
     type: String,

@@ -54,16 +54,7 @@ export class InstAuthService {
         };
     };
 
-    instLogout = async (id : string):Promise<boolean | undefined> =>{
-        try {
-            
-            
-            return true
-        } catch (error) {
-            console.log(error);
-            
-        }
-    }
+
 
     
 

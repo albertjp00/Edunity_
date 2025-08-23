@@ -99,4 +99,28 @@ export class InstProfileController {
         }
     };
 
+
+    kycSubmit = async (req: InstAuthRequest, res: Response): Promise<void> => {
+        try {
+            const id = req.instructor?.id
+
+            const idProofFile = (req.files as { [fieldname: string]: Express.Multer.File[] })["idProof"]?.[0]
+            const addressProofFile = (req.files as { [fieldname: string]: Express.Multer.File[] })["addressProof"]?.[0]
+
+            if (!id || !idProofFile || !addressProofFile) {
+                res.status(400).json({ success: false, message: "Missing required fields" })
+                return
+            }
+
+            const result = await this.profileService.kycSubmit(id,idProofFile.filename,addressProofFile.filename)
+
+            res.json({ success: true, data: result })
+        } catch (error) {
+            console.error(error)
+            res.status(500).json({ success: false, message: "Server error" })
+        }
+    }
+
+
+
 }

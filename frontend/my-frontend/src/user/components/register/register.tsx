@@ -125,7 +125,7 @@ const Register = () => {
       
       />
 
-      <button type="submit" className="button">Register</button>
+      <button type="submit" className="register-button">Register</button>
       {message && <p className="message">{message}</p>}
 
     </form>

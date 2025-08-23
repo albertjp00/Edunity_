@@ -60,6 +60,16 @@ export class InstructorProfileService {
     }
   }
 
+  kycSubmit = async(id : string , idProof:string,addressProof:string):Promise<boolean | null>=>{
+    try {
+      const save = await this.instructorRepository.kycSubmit(id , idProof,addressProof)
+      return true
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+  }
+
 
 
 }

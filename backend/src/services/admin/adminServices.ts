@@ -41,4 +41,44 @@ export class AdminService{
         }
     }
 
+    getInstructors = async():Promise<IUser[] | null> =>{
+        try {
+            const result = await this.adminRepository.findInstructors()
+            return result
+        } catch (error) {
+            console.log(error);
+            return null
+        }
+    }
+
+    getKycDetails = async(id:string):Promise<void | null>=>{
+        try {
+            const result = await this.adminRepository.getKycDetails(id)
+            return result
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
+
+    verifyKyc = async(id:string):Promise<void | null>=>{
+        try {
+            const result = await this.adminRepository.verifyKyc(id)
+            return result
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
+
+    rejectKyc = async(id:string):Promise<void | null>=>{
+        try {
+            const result = await this.adminRepository.rejectKyc(id)
+            return result
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
+
 }

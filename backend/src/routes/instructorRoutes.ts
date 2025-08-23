@@ -4,6 +4,7 @@ import { InstCourseController } from "../controllers/instructor/courseController
 import { instAuthMiddleware } from "../middleware/authMiddleware.js"
 import { InstProfileController } from "../controllers/instructor/profileController.js"
 import multer from "multer"
+import { EventController } from "../controllers/instructor/eventController.js"
 
 
 const storage = multer.diskStorage({
@@ -18,9 +19,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-const authController =new InsAuthController()
+const authController =new InsAuthController
 const courseController = new InstCourseController
 const profileController = new InstProfileController
+const eventController = new EventController
 
 const instructor = express.Router()
 
@@ -30,9 +32,19 @@ instructor.get('/getCourse',instAuthMiddleware,courseController.myCourses)
 instructor.get('/profile',instAuthMiddleware,profileController.getProfile)
 instructor.put('/profile',instAuthMiddleware,upload.single("profileImage"),profileController.editProfile)
 instructor.put('/passwordChange',instAuthMiddleware,profileController.changePassword)
+instructor.post('/kycSubmit' ,instAuthMiddleware ,
+  upload.fields([
+    { name: 'idProof', maxCount: 1 },
+    { name: 'addressProof', maxCount: 1 }
+  ]),
+  profileController.kycSubmit
+);
+
 instructor.get('/courseDetails/:id', instAuthMiddleware, courseController.courseDetails);
 instructor.put('/editCourse/:id', instAuthMiddleware,upload.single("thumbnail"), courseController.editCourse);
 instructor.post('/addCourse',instAuthMiddleware,upload.single('thumbnail'),courseController.addCourse) 
+
+instructor.post('/event',instAuthMiddleware ,eventController.createEvents)
 
 
 
