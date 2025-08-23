@@ -1,106 +1,41 @@
-/* editProfile.css */
-
-.edit {
-  display: flex;
-  /* justify-content: center; */
-  padding: 40px 20px;
-  background-color: #f7f7f7;
-  min-height: 100vh;
+.event-form {
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  background-color: #f9f9f9;
+  max-width: 400px;
 }
 
-.edit-container {
+.event-form input,
+.event-form textarea {
+  display: block;
   width: 100%;
-  max-width: 800px;
-  background-color: white;
-  padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-
-}
-
-.edit-container img{
-  width: 80px;
-  height: 80px;
-}
-
-.edit-title {
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  text-align: left;
-  color: #333;
-}
-
-.edit-form {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* 👈 Align form items to the left */
-}
-
-.edit-inputs {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  color: black;
-}
-
-.edit-inputs label {
-  font-weight: 600;
-  color: #444;
-  margin-bottom: 4px;
-}
-
-.edit-inputs input,
-.edit-inputs textarea,
-.edit-inputs select {
-  padding: 12px 14px;
+  margin-bottom: 12px;
+  padding: 10px;
   border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 16px;
-  width: 100%;
-  background-color: #fafafa;
-  transition: border 0.3s;
-  color: black;
-}
-
-.edit-inputs input:focus,
-.edit-inputs textarea:focus,
-.edit-inputs select:focus {
-  border-color: #007bff;
+  border-radius: 6px;
+  font-size: 14px;
   outline: none;
-  background-color: white;
+  transition: border 0.2s;
 }
 
-.edit-inputs textarea {
-  resize: vertical;
-  min-height: 80px;
+.event-form input:focus,
+.event-form textarea:focus {
+  border-color: #4a90e2;
 }
 
-.profile-avatar {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 20px;
-}
-
-.submit-btn {
-  margin-top: 24px;
-}
-
-.submit-btn button {
-  padding: 12px 20px;
-  background-color: #007bff;
-  border: none;
+.event-form button {
+  background-color: #4a90e2;
   color: white;
-  font-weight: 600;
-  font-size: 16px;
-  border-radius: 8px;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  font-size: 15px;
+  transition: background 0.2s;
 }
 
-.submit-btn button:hover {
-  background-color: #0056b3;
+.event-form button:hover {
+  background-color: #357abd;
 }

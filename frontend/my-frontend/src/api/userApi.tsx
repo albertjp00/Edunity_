@@ -1,21 +1,17 @@
-import axios,{ AxiosError, type AxiosInstance } from "axios";
+import axios, { type AxiosInstance } from "axios";
 import { toast } from "react-toastify";
 
-
 const api: AxiosInstance = axios.create({
-  baseURL: "http://localhost:5000", 
+  baseURL: "http://localhost:5000",
   headers: {
     "Content-Type": "application/json",
   },
-  
+  withCredentials: true,
 });
 
-
-
+// Attach access token before each request
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-  console.log('api token',token);
-  
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -23,16 +19,59 @@ api.interceptors.request.use((config) => {
 });
 
 
+
+const refreshAccessToken = async () => {
+  try {
+    const res = await axios.post(
+      "http://localhost:5000/user/refresh-token",
+      {},
+      { withCredentials: true } 
+    );
+    console.log('refresh token',res.data);
+    
+    localStorage.setItem("token", res.data.accessToken);
+    return res.data.accessToken;
+  } catch (err) {
+    return null;
+  }
+};
+
+
+
+
+// Response interceptor
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      if (error.response.data?.message?.toLowerCase().includes("expired")) {
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Case 1: Access token expired
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      // Try refreshing
+      const newAccessToken = await refreshAccessToken();
+
+      if (newAccessToken) {
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return api(originalRequest); // Retry the original request
+      } else {
+        // Refresh failed → log out
         toast.error("Your session has expired. Please log in again.");
+        localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/user/login";
       }
+    }
+
+    // Case 2: Blocked user or other auth error
+    if (error.response?.status === 403) {
+      toast.error("Your account has been blocked. Contact support.");
       localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
       window.location.href = "/user/login";
     }
+
     return Promise.reject(error);
   }
 );

@@ -10,8 +10,8 @@ import ShowCourses from "../../components/showCourses/showCourses";
 const Home: React.FC = () => {
     console.log("Home component mounted");
     useEffect(() => {
-        console.log("Home mounted");
-        console.log("Token in storage:", localStorage.getItem("token"));
+        // console.log("Home mounted");
+        // console.log("Token in storage:", localStorage.getItem("token"));
     }, []);
 
     return (

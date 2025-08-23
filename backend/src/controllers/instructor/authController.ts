@@ -43,17 +43,7 @@ export class InsAuthController {
         }
     };
 
-    logout = async (req:InstAuthRequest , res:Response):Promise<void> =>{
-        try {
-            
-            const id = req.instructor?.id
-            const result = await this.instAuthService.instLogout(id)
 
-        } catch (error) {
-            console.log(error);
-            
-        }
-    }
 
 
 }

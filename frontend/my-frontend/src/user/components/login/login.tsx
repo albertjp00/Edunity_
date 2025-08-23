@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from "react";
-import type { FormEvent, ChangeEvent } from "react";
+import React, { useState, useEffect, type FormEvent, type ChangeEvent } from "react";
 import "./login.css";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 // import { GoogleLogin } from "@react-oauth/google";
 import type { CredentialResponse } from "@react-oauth/google";
-
 import { jwtDecode } from "jwt-decode";
 import api from "../../../api/userApi";
+import type { AxiosError } from "axios";
 
 interface LoginFormData {
   email: string;
@@ -16,6 +15,7 @@ interface LoginFormData {
 
 interface LoginResponse {
   accessToken: string;
+  refreshToken?: string;
   success?: boolean;
   message?: string;
 }
@@ -28,69 +28,70 @@ const Login: React.FC = () => {
     password: "",
   });
 
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setValue({
+      ...value,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   const onSubmitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("UI sending:", value);
 
     try {
-      const response = await api.post<LoginResponse>("/user/login", value);
-
-      // console.log("Login API response:", response);
+      const response = await api.post("/user/login", value);
 
       if (response.status === 200 && response.data.accessToken) {
         localStorage.setItem("token", response.data.accessToken);
-        console.log("Token saved, navigating...");
         navigate("/user/home");
+      }
+    } catch (error) {
+      const err = error as AxiosError<{ message: string }>;
+      const message = err.response?.data?.message || "Something went wrong";
+
+      if (err.response?.status === 403) {
+        toast.warning(message); // account blocked
+      } else if (err.response?.status === 401) {
+        toast.error(message); // invalid credentials
+      } else {
         
-      } else {
-        console.warn("Unexpected response, not redirecting.");
-      }
-    } catch (error: any) {
-      console.error("Error logging in:", error);
-
-      const message = error.response?.data?.message || "Something went wrong";
-
-      if (error.response?.status === 403) {
-        toast.warning(message);
-      } else {
-        toast.error(message);
+        toast.error("Login failed. Please try again.");
       }
     }
   };
 
+  // const handleSuccess = async (credentialResponse: CredentialResponse) => {
+  //   try {
+  //     if (!credentialResponse.credential) {
+  //       throw new Error("No Google credential received");
+  //     }
 
-  const handleSuccess = async (credentialResponse: CredentialResponse) => {
-    try {
-      console.log(credentialResponse);
+  //     const decoded: any = jwtDecode(credentialResponse.credential);
+  //     console.log("Google user:", decoded);
 
-      if (!credentialResponse.credential) {
-        throw new Error("No Google credential received");
-      }
+  //     const response = await api.post<LoginResponse>("/user/googleLogin", {
+  //       token: credentialResponse.credential,
+  //     });
 
-      const decoded: any = jwtDecode(credentialResponse.credential);
-      console.log("Google user:", decoded);
-
-      const response = await api.post<LoginResponse>("/user/googleLogin", {
-        token: credentialResponse.credential,
-      });
-
-      if (response.data.success) {
-        localStorage.setItem("token", response.data.accessToken);
-        navigate("/user/home");
-      }
-    } catch (err) {
-      console.error("Login failed", err);
-    }
-  };
+  //     if (response.data.success && response.data.accessToken) {
+  //       localStorage.setItem("token", response.data.accessToken);
+  //       if (response.data.refreshToken) {
+  //         localStorage.setItem("refreshToken", response.data.refreshToken);
+  //       }
+  //       navigate("/user/home");
+  //     }
+  //   } catch (err) {
+  //     console.error("Google login failed", err);
+  //     toast.error("Google login failed. Please try again.");
+  //   }
+  // };
 
   // useEffect(() => {
-  //   console.log("useEffect");
-
   //   const token = localStorage.getItem("token");
   //   if (token) {
   //     navigate("/user/home");
   //   }
-  // }, []);
+  // }, [navigate]);
 
   return (
     <>

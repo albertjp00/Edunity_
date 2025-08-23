@@ -24,6 +24,9 @@ const profileController = new ProfileController();
 const courseController = new UserCourseController()
 // Auth Routes
 router.post("/login", authController.login);
+router.post("/refresh-token", authController.refreshToken);
+router.post("/logout", authController.logoutUser);
+
 router.post("/register", authController.register);
 router.post("/verifyOtp", authController.verifyOtp);
 router.post("/resendOtp", authController.resendOtp);

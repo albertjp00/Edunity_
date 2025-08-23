@@ -7,7 +7,7 @@ import { ToastContainer } from 'react-toastify'
 import Login from './user/components/login/login'
 import Register from './user/components/register/register'
 import VerifyOtp from './user/components/register/verifyOtp'
-import ProtectedRoute from './user/components/protectedRoute'
+import ProtectedRoute from './user/components/protectedRoutes/protectedRoute'
 import UserProfile from './user/pages/profile/profile'
 import EditProfile from './user/components/profile/editProfile'
 
@@ -26,6 +26,10 @@ import UserCourseDetails from './user/pages/courseDetail/courseDetails'
 import ShowUserMyCourses from './user/pages/myCourses/myCourses'
 import UserViewMyCourse from './user/pages/myCourses/viewMyCourse'
 import AdminHome from './admin/pages/home'
+import InstProtectedRoute from './instructor/components/InsProtected'
+import KycVerification from './instructor/pages/profile/kyc'
+import ViewKyc from './instructor/components/kyc/viewKyc'
+import CreateEvents from './instructor/pages/events/createEvents'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -48,15 +52,15 @@ function App() {
 
             <Route path='/user/profile' element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
             <Route path='/user/editProfile' element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
-            <Route path='/user/changePassword' element={<UserPasswordChange />} />
+            <Route path='/user/changePassword' element={<ProtectedRoute><UserPasswordChange /></ProtectedRoute>} />
             {/* <Route path='/user/verify-otp' element={<ForgotPassVerifyOtp />} />
             <Route path='/user/purchaseHistory' element={<PurchaseHistory />} />
 
             <Route path='/user/resetPassword' element={<ResetPassword />} /> */}
 
-            <Route path='/user/courseDetails/:id' element={<UserCourseDetails />} />
-            <Route path='/user/myCourses' element={<ShowUserMyCourses />} />
-            <Route path='/user/viewMyCourse/:id' element={<UserViewMyCourse />} />
+            <Route path='/user/courseDetails/:id' element={<ProtectedRoute><UserCourseDetails /></ProtectedRoute>} />
+            <Route path='/user/myCourses' element={<ProtectedRoute><ShowUserMyCourses /></ProtectedRoute>} />
+            <Route path='/user/viewMyCourse/:id' element={<ProtectedRoute><UserViewMyCourse /></ProtectedRoute>} />
 
 
 
@@ -67,28 +71,28 @@ function App() {
             {/* <Route path='/instructor/register' element={<InstructorRegister />} />
             <Route path='/instructor/otpVerify' element={<OtpVerify />} /> */}
 
-            <Route path='/instructor/home' element={<InstructorHome />} />
-            <Route path='/instructor/profile' element={<ProfilePage />} />
-            <Route path='/instructor/editProfile' element={<InstructoreditProfilePage />} />
-            <Route path='/instrcutor/passwordChange' element={<InstructorPasswordChange />} />
-            {/* <Route path='/instructor/kyc' element={<KycVerification />} /> */}
+            <Route path='/instructor/home' element={<InstProtectedRoute><InstructorHome /></InstProtectedRoute>} />
+            <Route path='/instructor/profile' element={<InstProtectedRoute><ProfilePage /></InstProtectedRoute>} />
+            <Route path='/instructor/editProfile' element={<InstProtectedRoute><InstructoreditProfilePage /></InstProtectedRoute>} />
+            <Route path='/instrcutor/passwordChange' element={<InstProtectedRoute><InstructorPasswordChange /></InstProtectedRoute>} />
+            <Route path='/instructor/kyc' element={<KycVerification />} />
 
-            <Route path='/instructor/addCourse' element={<AddCourse />} />
-            <Route path='/instructor/courseDetails/:id' element={<InstructorCourseDetails />} />
-            <Route path='/instructor/editCourse/:id' element={<InstructorEditCourse />} />
+            <Route path='/instructor/addCourse' element={<InstProtectedRoute><AddCourse /></InstProtectedRoute>} />
+            <Route path='/instructor/courseDetails/:id' element={<InstProtectedRoute><InstructorCourseDetails /></InstProtectedRoute>} />
+            <Route path='/instructor/editCourse/:id' element={<InstProtectedRoute><InstructorEditCourse /></InstProtectedRoute>} />
 
-
-
+            <Route path='/instructor/createEvent' element={<InstProtectedRoute><CreateEvents /></InstProtectedRoute>}></Route>
+            
 
 
 
               // {/* admin  */}
             {/* <Route path='/admin/login' element={<AdminLogin />} /> */}
             <Route path='/admin/*' element={<AdminHome />} />
-            {/* <Route path='/admin/viewKyc/:id' element={<ViewKYC />} />
+            <Route path='/admin/viewKyc/:id' element={<ViewKyc />} />
 
 
-            <Route path="*" element={<NotFound />} /> */}
+            {/* <Route path="*" element={<NotFound />} /> */}
 
 
 

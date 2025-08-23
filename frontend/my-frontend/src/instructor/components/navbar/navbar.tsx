@@ -21,6 +21,10 @@ const InstructorNavbar = () => {
     navigate('/instructor/addCourse')
   }
 
+  const addEvent = ()=>{
+    navigate('/instructor/createEvent')
+  }
+
 
   return (
     <div className='navbar'>
@@ -38,6 +42,8 @@ const InstructorNavbar = () => {
         <div className="nav-right">
 
           <p className='add-course' onClick={addCourse}>Create Course</p>
+          <p className='add-course' onClick={addEvent}>Create Event</p>
+
 
 
           <p className='logout' onClick={handleLogout}>Logout</p>

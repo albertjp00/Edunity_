@@ -9,15 +9,15 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
 
-  const handleLogout = async  () => {
-    const res = await api.get('/user/logout')
-    if(res.data.success){
-      
-      localStorage.removeItem('token');
-      navigate('/user/login');
-
-    }
-  };
+const handleLogout = async () => {
+  try {
+    await api.post("/user/logout", {}, { withCredentials: true }); 
+    localStorage.removeItem("token"); 
+    navigate("/user/login");
+  } catch (err) {
+    console.error("Logout failed", err);
+  }
+};
 
 //   const handleSearch = (e) => {
 //     if (e.key === 'Enter' && searchTerm.trim()) {

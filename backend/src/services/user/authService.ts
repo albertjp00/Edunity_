@@ -43,7 +43,7 @@ interface RegisterRequestPayload {
 export class AuthService {
     constructor(private userRepository: IUserRepository) { }
 
-    login = async (email: string, password: string): Promise<LoginResult> => {
+    loginRequest = async (email: string, password: string): Promise<LoginResult> => {
         const user = await this.userRepository.findByEmail(email);
 
 
@@ -52,13 +52,18 @@ export class AuthService {
             return { success: false, message: "User not found" };
         }
 
+        if (user.blocked) {
+  return { success: false, message: "Your account is blocked" };
+}
+
+
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return { success: false, message: "Invalid password" };
         }
 
         const accessToken = jwt.sign({ id: user._id }, secret, { expiresIn: "3h" });
-        const refreshToken = jwt.sign({ id: user._id }, refresh, { expiresIn: "1d" });
+        const refreshToken = jwt.sign({ id: user._id }, refresh, { expiresIn: "7d" });
 
         return {
             success: true,
@@ -108,16 +113,16 @@ export class AuthService {
     async resendOtpRequest(email: string): Promise<{ success: boolean }> {
 
         try {
-            const otp = generateOtp();  
-            console.log('request resend otp',otp , email);
-            
+            const otp = generateOtp();
+            console.log('request resend otp', otp, email);
+
 
             const storedData = otpStore.get(email)
             if (!storedData) {
                 return { success: false }
             }
             console.log(storedData);
-            
+
 
             const defaultEmail = "albertjpaul@gmail.com";
             await sendOtp(defaultEmail, otp);
@@ -128,7 +133,7 @@ export class AuthService {
                 expiresAt: Date.now() + 5 * 60 * 1000,
             });
             console.log(otpStore);
-            
+
 
             return { success: true }
         } catch (error) {
@@ -161,7 +166,7 @@ export class AuthService {
 
             // Check if OTP matches
             if (storedData.otp !== otp) {
-                return { success: false, message: "Incorrect OTP" }; 
+                return { success: false, message: "Incorrect OTP" };
             }
 
             // Hash password before saving user

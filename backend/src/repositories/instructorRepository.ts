@@ -1,5 +1,7 @@
 import { CourseModel, ICourse } from "../models/course.js";
+import { EventModel, IEvent } from "../models/events.js";
 import { IInstructor, InstructorModel } from "../models/instructor.js";
+import { IKyc, KycModel } from "../models/kyc.js";
 import { IMyCourse, MyCourseModel } from "../models/myCourses.js";
 
 
@@ -17,6 +19,8 @@ export interface IInsRepository {
 
     updatePassword(id: string, newPassword: string): Promise<IInstructor | null>
 
+    kycSubmit(id: string, idProof: string, addressProof: string): Promise<IKyc | null>
+
     addCourse(id: string, data: any): Promise<ICourse | null>
 
     getCourses(id: string, skip: number, limit: number): Promise<ICourse[] | null>
@@ -28,6 +32,8 @@ export interface IInsRepository {
     countCourses(): Promise<number>;
 
     findSkills(): Promise<ISkills>;
+
+    addEvent(id: string, data: Partial<IEvent>): Promise<IEvent>
 
 }
 
@@ -50,6 +56,11 @@ export class InstructorRepository implements IInsRepository {
 
     async updatePassword(id: string, newPassword: string): Promise<IInstructor | null> {
         return await InstructorModel.findByIdAndUpdate(id, { password: newPassword }, { new: true })
+    }
+
+    async kycSubmit(id: string, idProof: string, addressProof: string): Promise<IKyc | null> {
+        await InstructorModel.findByIdAndUpdate(id, { KYCstatus: 'pending' }, { new: true })
+        return await KycModel.create({ instructorId: id, idProof: idProof, addressProof: addressProof })
     }
 
     async addCourse(id: string, data: any): Promise<ICourse | null> {
@@ -86,6 +97,11 @@ export class InstructorRepository implements IInsRepository {
 
         return result[0]
     }
+
+    async addEvent(id: string, data: Partial<IEvent>):Promise<IEvent>{
+        return await EventModel.create({instructorId:id , ...data })
+    }
+
 
 
 

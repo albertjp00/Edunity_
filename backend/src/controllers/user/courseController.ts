@@ -60,7 +60,7 @@ export class UserCourseController {
             const id = req.user?.id!
 
             const courseId = req.params.id
-            console.log('buyong', courseId);
+            console.log('buying course', courseId);
 
 
             const response = await this.courseService.buyCourseService(id, courseId)
@@ -77,7 +77,7 @@ export class UserCourseController {
             console.log(id);
 
             const result = await this.courseService.myCoursesRequest(id)
-            console.log('result ', result);
+            console.log('my courses result ');
 
             res.status(200).json({ success: true, course: result })
 
@@ -94,7 +94,6 @@ export class UserCourseController {
             console.log('viewMyCourse', myCourseId, id);
 
             const result = await this.courseService.viewMyCourseRequest(id, myCourseId)
-            console.log('result', result);
 
             res.json({ success: true, course: result })
         } catch (error) {
