@@ -30,6 +30,7 @@ import InstProtectedRoute from './instructor/components/InsProtected'
 import KycVerification from './instructor/pages/profile/kyc'
 import ViewKyc from './instructor/components/kyc/viewKyc'
 import CreateEvents from './instructor/pages/events/createEvents'
+import InstructorDetails from './admin/pages/adminInstructors/instructorDetails'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -90,6 +91,7 @@ function App() {
             {/* <Route path='/admin/login' element={<AdminLogin />} /> */}
             <Route path='/admin/*' element={<AdminHome />} />
             <Route path='/admin/viewKyc/:id' element={<ViewKyc />} />
+            <Route path='/admin/instructors/details' element={<InstructorDetails />} />
 
 
             {/* <Route path="*" element={<NotFound />} /> */}

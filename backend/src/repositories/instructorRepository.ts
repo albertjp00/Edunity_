@@ -33,7 +33,10 @@ export interface IInsRepository {
 
     findSkills(): Promise<ISkills>;
 
-    addEvent(id: string, data: Partial<IEvent>): Promise<IEvent>
+    addEvent(id: string,name:string , data: Partial<IEvent>): Promise<IEvent>
+
+    getMyEvents(id:string):Promise<IEvent[] | null>
+
 
 }
 
@@ -98,12 +101,13 @@ export class InstructorRepository implements IInsRepository {
         return result[0]
     }
 
-    async addEvent(id: string, data: Partial<IEvent>):Promise<IEvent>{
-        return await EventModel.create({instructorId:id , ...data })
+    async addEvent(id: string,name:string, data: Partial<IEvent>):Promise<IEvent>{
+        return await EventModel.create({instructorId:id , instructorName:name  , ...data })
     }
 
-
-
+    async getMyEvents(id:string):Promise<IEvent[] | null>{
+        return await EventModel.find({instructorId : id})
+    }
 
 }
 
