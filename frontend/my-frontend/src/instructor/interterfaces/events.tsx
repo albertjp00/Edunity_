@@ -2,7 +2,9 @@
 
 
 export interface Ievent {
-    title: '',
-    description : '',
-    date : ''
+  _id?: string;     
+  title: string;
+  instructorName?:string;
+  description: string;
+  date: string;        
 }

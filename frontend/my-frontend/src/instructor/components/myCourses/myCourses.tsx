@@ -25,7 +25,7 @@ const MyCourses = () => {
       });
       if (res.data.success) {
         setCourses(res.data.course);
-        console.log(res.data.course);
+        // console.log(res.data.course);
         
       }
     } catch (err) {

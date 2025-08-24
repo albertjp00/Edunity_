@@ -45,6 +45,8 @@ instructor.put('/editCourse/:id', instAuthMiddleware,upload.single("thumbnail"),
 instructor.post('/addCourse',instAuthMiddleware,upload.single('thumbnail'),courseController.addCourse) 
 
 instructor.post('/event',instAuthMiddleware ,eventController.createEvents)
+instructor.get('/event',instAuthMiddleware ,eventController.getMyEvents)
+
 
 
 

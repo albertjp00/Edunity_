@@ -54,7 +54,12 @@ const InstructorsAdmin: React.FC = () => {
         <tbody>
           {instructors.map((user) => (
             <tr key={user._id}>
-              <td>{user.name}</td>
+              {/* ✅ Clicking name goes to details page */}
+              <td>
+                <Link to={`/admin/instructor/details/${user._id}`} className="instructor-link">
+                  {user.name}
+                </Link>
+              </td>
               <td>{user.email}</td>
               <td>
                 {user.profileImage && (
