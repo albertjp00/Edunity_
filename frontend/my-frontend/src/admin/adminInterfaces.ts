@@ -1,4 +1,4 @@
-export interface IUser {
+export interface IInstructor {
   _id?: string;
   name?: string;
   email?: string;
@@ -16,4 +16,36 @@ export interface ICourse {
   thumbnail?: string;
   level?: string;
   price?: number;
+}
+
+
+
+// to show user details
+
+export interface User {
+  _id?: string;
+  name?: string;
+  email?: string;
+  profileImage?: string;
+  bio?: string;
+  gender?: string;
+  dob?: string;
+  location?: string;
+  phone?: string;
+  blocked?: boolean;
+}
+
+export interface CourseData {
+  _id: string;
+  title: string;
+  price: number | string;
+  description?: string;
+  thumbnail: string;
+  modules?: { id: string; title: string }[];
+}
+
+export interface EnrolledCourse {
+  course: CourseData;
+  progress: { completedModules: string[] };
+  userId: string;
 }

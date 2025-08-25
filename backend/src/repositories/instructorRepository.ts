@@ -37,7 +37,6 @@ export interface IInsRepository {
 
     getMyEvents(id:string):Promise<IEvent[] | null>
 
-
 }
 
 
@@ -73,6 +72,8 @@ export class InstructorRepository implements IInsRepository {
 
     async getCourses(id: string, skip: number, limit: number): Promise<ICourse[]> {
         const courses = await CourseModel.find({ instructorId: id }).skip(skip).limit(limit);
+        console.log(courses);
+        
         return courses || [];
     }
 

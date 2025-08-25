@@ -3,6 +3,7 @@ import "./adminUsers.css";
 import { toast } from "react-toastify";
 import profilePic from "../../../assets/profilePic.png";
 import { getUsers, blockUser, unblockUser } from "../../../services/admin/adminService";
+import { Link } from "react-router-dom";
 
 interface User {
   _id: string;
@@ -18,7 +19,7 @@ const UsersAdmin: React.FC = () => {
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const usersPerPage = 4; // show 5 per page
+  const usersPerPage = 4;
 
   const loadUsers = async (): Promise<void> => {
     try {
@@ -79,32 +80,36 @@ const UsersAdmin: React.FC = () => {
 
   return (
     <div className="user-list">
-      <h2>Users List</h2>
+      <h2>👥 Users Management</h2>
 
       <input
         type="text"
         name="search"
-        placeholder="Search by name or email"
+        placeholder="🔍 Search by name or email"
         value={searchTerm}
         onChange={(e: ChangeEvent<HTMLInputElement>) =>
           setSearchTerm(e.target.value)
         }
-        style={{ marginBottom: "1rem", padding: "0.5rem", width: "300px" }}
+        className="search-box"
       />
 
-      <table>
+      <table className="styled-table">
         <thead>
           <tr>
             <th>Name</th>
             <th>Email</th>
             <th>Picture</th>
-            <td></td>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
           {currentUsers.map((user) => (
             <tr key={user._id}>
-              <td>{user.name}</td>
+              <td>
+                <Link to={`/admin/user/${user._id}`} className="user-link">
+                  {user.name}
+                </Link>
+              </td>
               <td>{user.email}</td>
               <td>
                 <img
@@ -114,15 +119,14 @@ const UsersAdmin: React.FC = () => {
                       : profilePic
                   }
                   alt={user.name}
-                  width="40"
-                  height="40"
+                  className="profile-pic"
                 />
               </td>
               <td>
                 {user.blocked ? (
-                  <button onClick={() => handleUnblock(user._id)}>Unblock</button>
+                  <button className="btn-unblock" onClick={() => handleUnblock(user._id)}>Unblock</button>
                 ) : (
-                  <button onClick={() => handleBlock(user._id)}>Block</button>
+                  <button className="btn-block" onClick={() => handleBlock(user._id)}>Block</button>
                 )}
               </td>
             </tr>
@@ -131,22 +135,19 @@ const UsersAdmin: React.FC = () => {
       </table>
 
       {/* Pagination Controls */}
-      <div style={{ marginTop: "1rem" }}>
+      <div className="pagination">
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
-          Prev
+          ⬅ Prev
         </button>
 
         {[...Array(totalPages)].map((_, index) => (
           <button
             key={index}
             onClick={() => handlePageChange(index + 1)}
-            style={{
-              fontWeight: currentPage === index + 1 ? "bold" : "normal",
-              margin: "0 5px",
-            }}
+            className={currentPage === index + 1 ? "active" : ""}
           >
             {index + 1}
           </button>
@@ -156,7 +157,7 @@ const UsersAdmin: React.FC = () => {
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
-          Next
+          Next ➡
         </button>
       </div>
     </div>
