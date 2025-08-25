@@ -1,10 +1,12 @@
 import React from 'react'
 import AdminInstructorDetails from '../../components/adminInstructor/instructorDetails'
+import InstructorNavbar from '../../../instructor/components/navbar/navbar'
 
 const InstructorDetails = () => {
   return (
     <div>
-      <AdminInstructorDetails />
+        <InstructorNavbar />
+        <AdminInstructorDetails />
     </div>
   )
 }

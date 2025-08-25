@@ -56,7 +56,7 @@ const InstructorsAdmin: React.FC = () => {
             <tr key={user._id}>
               {/* ✅ Clicking name goes to details page */}
               <td>
-                <Link to={`/admin/instructor/details/${user._id}`} className="instructor-link">
+                <Link to={`/admin/instructors/${user._id}`} className="instructor-link">
                   {user.name}
                 </Link>
               </td>

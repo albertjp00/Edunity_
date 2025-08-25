@@ -30,6 +30,7 @@ const AdminHome: React.FC = () => {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="users" element={<UsersAdmin />} />
             <Route path="instructors" element={<InstructorsAdmin />} />
+            {/* <Route path='courses' element={<CourseAdmin />}/> */}
           </Routes>
         </div>
 

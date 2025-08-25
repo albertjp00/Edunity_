@@ -3,9 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./showCourses.css";
 import api from "../../../api/userApi";
 
-// --------------------
-// Types
-// --------------------
+
 interface Course {
   _id: string;
   title: string;
@@ -24,9 +22,7 @@ interface ApiResponse {
   currentPage: number;
 }
 
-// --------------------
-// Component
-// --------------------
+
 const ShowCourses: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [skills, setSkills] = useState<string[]>([]);
@@ -39,9 +35,7 @@ const ShowCourses: React.FC = () => {
 
   const navigate = useNavigate();
 
-  // --------------------
-  // API Call
-  // --------------------
+
   const fetchCourses = async (page: number = 1): Promise<void> => {
     try {
       const res = await api.get(

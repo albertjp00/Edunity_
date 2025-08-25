@@ -31,6 +31,9 @@ import KycVerification from './instructor/pages/profile/kyc'
 import ViewKyc from './instructor/components/kyc/viewKyc'
 import CreateEvents from './instructor/pages/events/createEvents'
 import InstructorDetails from './admin/pages/adminInstructors/instructorDetails'
+import UserDetails from './admin/pages/adminUsers/adminUserDetails'
+import AdminCourses from './admin/pages/courses/adminCourses'
+import AdminCourseDetails from './admin/pages/courses/adminCourseDetails'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -91,7 +94,14 @@ function App() {
             {/* <Route path='/admin/login' element={<AdminLogin />} /> */}
             <Route path='/admin/*' element={<AdminHome />} />
             <Route path='/admin/viewKyc/:id' element={<ViewKyc />} />
-            <Route path='/admin/instructors/details' element={<InstructorDetails />} />
+            <Route path='/admin/instructors/:id' element={<InstructorDetails />} />
+            <Route path='/admin/user/:id' element={<UserDetails />} />
+            <Route path='/admin/courses' element={<AdminCourses />} />
+            <Route path='/admin/courseDetails/:id' element={<AdminCourseDetails />} />
+
+
+
+            
 
 
             {/* <Route path="*" element={<NotFound />} /> */}

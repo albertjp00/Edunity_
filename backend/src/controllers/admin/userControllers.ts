@@ -2,36 +2,36 @@ import { Response , Request } from "express";
 import { AdminRepository } from "../../repositories/adminRepositories.js";
 import { IKyc } from "../../models/kyc.js";
 import { AdminInstructorService } from "../../services/admin/instructorServices.js";
-import { InstructorRepository } from "../../repositories/instructorRepository.js";
+import { UserRepository } from "../../repositories/userRepository.js";
+import { AdminUserService } from "../../services/admin/userServices.js";
 
-export class AdminInstructorController {
-    private instructorService: AdminInstructorService
+export class AdminUserController {
+    private userService: AdminUserService
 
     constructor() {
         const repo = new AdminRepository();
-        const Irepo = new InstructorRepository()
-        this.instructorService = new AdminInstructorService(repo,Irepo)
+        const Urepo = new UserRepository()
+        this.userService = new AdminUserService(repo,Urepo)
     }
 
-    getInstructors = async(req:Request , res:Response):Promise<void>=>{
+    getUser = async(req:Request , res:Response):Promise<void>=>{
         try {
             const id = req.params.id!
-            console.log('get instructorssssss ',id);
+            console.log('get user ',id);
             
-            const result = await this.instructorService.getInstructorsRequest(id)
-            res.json({success:true , instructor:result})
+            const result = await this.userService.getUserRequest(id)
+            res.json({success:true , user:result})
         } catch (error) {
             console.log(error);
-            
         }
     }
 
-    getInstructorsCourses = async(req:Request , res:Response):Promise<void>=>{
+    getUserCourses = async(req:Request , res:Response):Promise<void>=>{
         try {
             const id = req.params.id!
             console.log('get instructor courses ',id);
             
-            const result = await this.instructorService.getInstructorsCoursesRequest(id)
+            const result = await this.userService.getUsersCoursesRequest(id)
             console.log(result);
             
             res.json({success:true , courses:result})
