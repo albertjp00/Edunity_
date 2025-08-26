@@ -95,7 +95,7 @@ const AddCourse: React.FC = () => {
 
       const token = localStorage.getItem("instructor");
 
-      const res = await instructorApi.post("/instructor/addCourse", formData, {
+      const res = await instructorApi.post("/instructor/course", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

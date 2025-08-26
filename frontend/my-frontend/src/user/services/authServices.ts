@@ -1,0 +1,53 @@
+import api from "../../api/userApi";
+
+
+
+export const login = async(value:any)=>{
+    try {
+        const res = await api.post("/user/login", value);
+        return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
+
+export const logout = async()=>{
+    try {
+        const res = await api.post("/user/logout");
+        return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
+
+export const userRegister = async(formData:any)=>{
+    try {
+        const res = await api.post("/user/register",formData);
+        console.log('result',res);
+        
+        return res
+    } catch (error) {
+        console.log(error);
+        throw error
+    }
+}
+
+
+
+
+export const userVerifyOtp = async(email:string , otp:string)=>{
+    try {
+        const res = await api.post("/user/register",{
+            email,
+            otp
+        });
+        return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}

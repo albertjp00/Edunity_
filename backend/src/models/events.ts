@@ -22,7 +22,7 @@ const EventSchema = new Schema<IEvent>(
     description: { type: String },
 
     date: { type: Date, required: true },
-    duration: { type: Number },
+    duration: { type: Number  },
     participants: [{ type: Number ,default:10 }],
   },
   { timestamps: true }

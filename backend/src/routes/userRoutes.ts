@@ -5,6 +5,7 @@ import { authMiddleware } from "../middleware/authMiddleware.js";
 import { ProfileController } from "../controllers/user/profileController.js";
 import path from "path";
 import { UserCourseController } from "../controllers/user/courseController.js";
+import { UserEventController } from "../controllers/user/eventController.js";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -22,6 +23,8 @@ const router = express.Router();
 const authController = new AuthController();
 const profileController = new ProfileController();
 const courseController = new UserCourseController()
+const eventController = new UserEventController()
+
 // Auth Routes
 router.post("/login", authController.login);
 router.post("/refresh-token", authController.refreshToken);
@@ -45,7 +48,7 @@ router.get('/buyCourse/:id',authMiddleware , courseController.buyCourse)
 router.get('/viewMyCourse/:id',authMiddleware , courseController.viewMyCourse)
 router.post("/updateProgress", authMiddleware, courseController.updateProgress);
 
-
+router.get('/events',authMiddleware , eventController.getEvents)
 
 
 export default router;

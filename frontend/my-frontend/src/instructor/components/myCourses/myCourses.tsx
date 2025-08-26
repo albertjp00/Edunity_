@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './MyCourses.css'
+import './myCourses.css'
 import { useNavigate } from 'react-router-dom';
 import instructorApi from '../../../api/instructorApi';
 import axios from 'axios';
@@ -49,7 +49,7 @@ const MyCourses = () => {
       {courses.length === 0 ? (
         <p>No courses yet.</p>
       ) : (
-        <div className="course-list">
+        <div className="show-course-list">
           {courses.map(course => (
             <div key={course._id} className="course-card" onClick={()=>selectCourse(course._id)}>
               {course.thumbnail && (

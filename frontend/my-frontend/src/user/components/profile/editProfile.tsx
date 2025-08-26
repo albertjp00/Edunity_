@@ -5,6 +5,7 @@ import profilePic from '../../../assets/profilePic.png'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../../components/navbar/navbar'
 import api from '../../../api/userApi'
+import { getEditProfile, getUserProfile } from '../../services/profileServices'
 
 
 interface EditForm {
@@ -92,13 +93,9 @@ const EditProfile = () => {
         }
 
         try {
-            const response = await api.put('/user/profile',formData,
-                {
-                    headers: { "Content-Type": "multipart/form-data" }
-                }
-            );
+            const response = await getEditProfile(formData)
 
-            if (response.data.success) {
+            if (response?.data.success) {
                 toast.success('Profile updated', { autoClose: 1500 });
                 navigate('/user/profile')
             }
@@ -110,15 +107,10 @@ const EditProfile = () => {
 
 
     const getProfile = async () => {
-        const token = localStorage.getItem('token')
-        const response = await api.get('/user/profile', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        })
+        const response = await getUserProfile()
 
-        console.log(response.data.data);
-        setData(response.data.data)
+        console.log(response?.data.data);
+        setData(response?.data.data)
     }
 
 

@@ -1,13 +1,13 @@
 import { AuthRequest } from "../../middleware/authMiddleware.js";
 import { UserRepository } from "../../repositories/userRepository.js";
-import { UserEventService } from "../../services/user/eventservice.js";
 import { Response } from "express"
+import { UserEventService } from "../../services/user/eventService.js";
 
 
 
 
 
-class EventController{
+export class UserEventController{
     private userEventService : UserEventService;
 
     constructor(){

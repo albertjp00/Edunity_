@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import profilePic from './../../../assets/profilePic.png';
 import logo from '../../../assets/logo.png';
 import api from '../../../api/userApi';
+import { logout } from '../../services/authServices';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ const Navbar = () => {
 
 const handleLogout = async () => {
   try {
-    await api.post("/user/logout", {}, { withCredentials: true }); 
+    await logout(); 
     localStorage.removeItem("token"); 
     navigate("/user/login");
   } catch (err) {

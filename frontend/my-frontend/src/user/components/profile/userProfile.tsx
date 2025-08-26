@@ -4,6 +4,7 @@ import profilePic from "../../../assets/profilePic.png";
 import { Link, useNavigate } from "react-router-dom";
 import "./userProfile.css";
 import api from "../../../api/userApi";
+import { getUserMyCourses, getUserProfile } from "../../services/profileServices";
 
 interface User {
   name?: string;
@@ -40,14 +41,14 @@ const Profile: React.FC = () => {
 
   // const token = localStorage.getItem("token");
 
-  const getProfile = async () => {
+  const fetchProfile = async () => {
     try {
-      const response = await api.get("/user/profile");
-      console.log(response.data);
+      const response = await getUserProfile()
+      console.log(response?.data);
 
-      setUser(response.data.data);
+      setUser(response?.data.data);
 
-      if (response.data.data.blocked) {
+      if (response?.data.data.blocked) {
         localStorage.removeItem("token");
         navigate("/user/login");
       }
@@ -59,10 +60,10 @@ const Profile: React.FC = () => {
 
   const fetchCourses = async () => {
     try {
-      const res = await api.get(`/user/myCourses`);
+      const res = await getUserMyCourses()
 
 
-      if (res.data.success) {
+      if (res?.data.success) {
         console.log(res.data);
 
         setCourses(res.data.course);
@@ -77,7 +78,7 @@ const Profile: React.FC = () => {
   };
 
   useEffect(() => {
-    getProfile();
+    fetchProfile();
     fetchCourses();
   }, []);
 

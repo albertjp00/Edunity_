@@ -24,7 +24,8 @@ export class AuthController {
       }
 
       const result = await this.authService.loginRequest(email, password);
-
+      console.log(result);
+      
       if (result.success) {
         res.cookie("refreshToken", result.refreshToken, {
           httpOnly: true,
@@ -77,6 +78,7 @@ export class AuthController {
         expiresIn: "15m",
       });
 
+
       res.json({ accessToken: newAccessToken });
     });
     } catch (error) {
@@ -102,16 +104,26 @@ logoutUser = async (req: Request, res: Response) => {
 
 
 
-  register = async (req: Request, res: Response): Promise<void> => {
-    try {
-      const { name, email, password } = req.body;
-      const result = await this.authService.registerRequest(name, email, password);
+register = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { name, email, password } = req.body;
+    const result = await this.authService.registerRequest(name, email, password);
 
-      if (result) res.status(200).json({ success: true });
-    } catch (error) {
-      console.log(error);
+    if (result.success) {
+      res.status(200).json(result); // OK
+    } else {
+      console.log('result',result);
+      
+      res.status(400).json(result); // Failure
     }
-  };
+  } catch (error: any) {
+    console.error("Register error:", error);
+    res
+      .status(400)
+      .json({ success: false, message: error.message || "Registration failed" });
+  }
+};
+
 
   resendOtp = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -135,7 +147,8 @@ logoutUser = async (req: Request, res: Response) => {
     try {
       const { otp, email } = req.body;
       const result = await this.authService.verifyOtpRequest(otp, email);
-
+      console.log(result);
+      
       if (result.success) {
         res.status(200).json({ success: true });
       } else {

@@ -3,10 +3,12 @@ import { getMyEvents } from "../../../services/Instructor/instructorServices";
 import type { Ievent } from "../../interterfaces/events";
 import './myEvents.css'
 import webinarImage from '../../../assets/webinar_thumnail.png'
+import { useNavigate } from "react-router-dom";
 
 const EventList: React.FC = () => {
   const [events, setEvents] = useState<Ievent[]>([]);
 
+  const navigate = useNavigate()
 
   const fetchEvents = async () => {
       try {
@@ -16,6 +18,10 @@ const EventList: React.FC = () => {
       } catch (error) {
         console.error("Error fetching events:", error);
       }
+    }
+
+    const gotoEdit = (id:string)=>{
+      navigate(`/instructor/editEvent/${id}`)
     }
 
 
@@ -41,6 +47,7 @@ return (
                   className="event-thumbnail"
                 />
                 <span className="event-instructor">{event.instructorName}</span>
+                <span className="event-edit" onClick={()=>gotoEdit(event._id!)}>Edit</span>
               </div>
             )}
 

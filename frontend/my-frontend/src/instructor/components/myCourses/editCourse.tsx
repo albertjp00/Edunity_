@@ -92,7 +92,7 @@ const EditCourse: React.FC = () => {
 
             formData.append('modules', JSON.stringify(form.modules));
 
-            const res = await instructorApi.put(`/instructor/editCourse/${id}`,
+            const res = await instructorApi.put(`/instructor/course/${id}`,
                 formData,
                 {
                     headers: {
@@ -113,7 +113,7 @@ const EditCourse: React.FC = () => {
 
     const fetchData = async () => {
         try {
-            const res = await instructorApi.get(`/instructor/courseDetails/${id}`);
+            const res = await instructorApi.get(`/instructor/course/${id}`);
             if (res.data.success) {
 
                 console.log(res.data.course);
