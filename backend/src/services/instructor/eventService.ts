@@ -31,4 +31,15 @@ export class EventService {
             return null
         }
     }
+
+    getEventRequest = async (id: string): Promise<IEvent | null> => {
+        try {
+
+            const event = await this.InstructorRepository.getEvent(id)
+            return event
+        } catch (error) {
+            console.log(error);
+            return null
+        }
+    }
 }

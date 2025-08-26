@@ -28,7 +28,6 @@ const instructor = express.Router()
 
 
 instructor.post('/login',authController.login)
-instructor.get('/getCourse',instAuthMiddleware,courseController.myCourses)
 instructor.get('/profile',instAuthMiddleware,profileController.getProfile)
 instructor.put('/profile',instAuthMiddleware,upload.single("profileImage"),profileController.editProfile)
 instructor.put('/passwordChange',instAuthMiddleware,profileController.changePassword)
@@ -40,12 +39,15 @@ instructor.post('/kycSubmit' ,instAuthMiddleware ,
   profileController.kycSubmit
 );
 
-instructor.get('/courseDetails/:id', instAuthMiddleware, courseController.courseDetails);
-instructor.put('/editCourse/:id', instAuthMiddleware,upload.single("thumbnail"), courseController.editCourse);
-instructor.post('/addCourse',instAuthMiddleware,upload.single('thumbnail'),courseController.addCourse) 
+instructor.get('/getCourse',instAuthMiddleware,courseController.myCourses)
+instructor.get('/course/:id', instAuthMiddleware, courseController.courseDetails);
+instructor.put('/course/:id', instAuthMiddleware,upload.single("thumbnail"), courseController.editCourse);
+instructor.post('/course',instAuthMiddleware,upload.single('thumbnail'),courseController.addCourse) 
 
 instructor.post('/event',instAuthMiddleware ,eventController.createEvents)
 instructor.get('/event',instAuthMiddleware ,eventController.getMyEvents)
+instructor.get('/getEvent/:id',instAuthMiddleware ,eventController.getEvent)
+instructor.patch('/event/:id',instAuthMiddleware ,eventController.editEvent)
 
 
 
