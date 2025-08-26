@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "./viewMyCourse.css";
-import Navbar from "../navbar/navbar";
 import api from "../../../api/userApi";
+import { viewMyCourse } from "../../services/courseServices";
+const API_URL = import.meta.env.VITE_API_URL
 
 // Interfaces
 interface IModule {
@@ -38,16 +39,21 @@ const ViewMyCourse: React.FC = () => {
 
 
   const fetchCourse = async (): Promise<void> => {
-  try {
-    const res = await api.get(`/user/viewMyCourse/${id}`);
+    try {
+      if (!id) {
+        console.error("Course ID is missing");
+        return;
+      }
+      const res :any= await viewMyCourse(id)
 
-    const fetchedMyCourse: IMyCourse = res.data.course; // the whole object
-    setCourse(fetchedMyCourse.course);                  // set inner course
-    setCompletedModules(fetchedMyCourse.progress?.completedModules || []);
-  } catch (err) {
-    console.error("Error fetching course:", err);
-  }
-};
+      if(!res) return
+      const fetchedMyCourse: IMyCourse = res.data.course; 
+      setCourse(fetchedMyCourse.course);                 
+      setCompletedModules(fetchedMyCourse.progress?.completedModules || []);
+    } catch (err) {
+      console.error("Error fetching course:", err);
+    }
+  };
 
 
   useEffect(() => {
@@ -70,7 +76,7 @@ const ViewMyCourse: React.FC = () => {
       await api.post(
         "/user/updateProgress",
         { courseId: id, moduleTitle },
-        
+
       );
       setCompletedModules((prev) => [...prev, moduleTitle]);
     } catch (err) {
@@ -92,7 +98,7 @@ const ViewMyCourse: React.FC = () => {
 
         {course.thumbnail && (
           <img
-            src={`http://localhost:5000/assets/${course.thumbnail}`}
+            src={`${API_URL}/assets/${course.thumbnail}`}
             alt="Course Thumbnail"
             className="detail-thumbnail"
           />
@@ -145,7 +151,7 @@ const ViewMyCourse: React.FC = () => {
                   <div className="module-body" style={{ padding: "10px 20px" }}>
                     {/* Video */}
                     {module.videoUrl.includes("youtube.com") ||
-                    module.videoUrl.includes("youtu.be") ? (
+                      module.videoUrl.includes("youtu.be") ? (
                       <iframe
                         width="100%"
                         height="315"

@@ -1,0 +1,42 @@
+.edit-event-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.edit-event-form .form-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.edit-event-form label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.edit-event-form input,
+.edit-event-form textarea {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: white;
+  color: black;
+}
+
+.btn-save {
+  padding: 0.7rem 1.2rem;
+  background: #4cafef;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-save:hover {
+  background: #3a8ed6;
+}

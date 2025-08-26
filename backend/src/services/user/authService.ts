@@ -51,6 +51,8 @@ export class AuthService {
         if (!user) {
             return { success: false, message: "User not found" };
         }
+        // console.log('user exist ',user);
+        
 
         if (user.blocked) {
   return { success: false, message: "Your account is blocked" };
@@ -82,7 +84,7 @@ export class AuthService {
         try {
             const userExists = await this.userRepository.findByEmail(email);
             if (userExists) {
-                throw new Error("Email already registered");
+                return {success:false ,message:"Email already registered"};
             }
 
             const otp = generateOtp();
@@ -102,10 +104,7 @@ export class AuthService {
             return { success: true, message: "OTP sent to your email" };
         } catch (error) {
             console.error(error);
-            return {
-                success: false,
-                message: (error as Error).message || "Registration failed",
-            };
+            throw error
         }
     };
 
@@ -146,30 +145,24 @@ export class AuthService {
 
 
 
-    async verifyOtpRequest(
-        otp: string,
-        email: string
-    ): Promise<{ success: boolean; message: string }> {
+    async verifyOtpRequest(otp: string,email: string): Promise<{ success: boolean; message: string }> {
         try {
-            // Retrieve stored OTP details
             const storedData = otpStore.get(email);
-
+            console.log('verify otp',email);
+            
             if (!storedData) {
                 return { success: false, message: "OTP not found or expired" };
             }
 
-            // Check if OTP expired
             if (Date.now() > storedData.expiresAt) {
                 otpStore.delete(email);
                 return { success: false, message: "OTP expired" };
             }
 
-            // Check if OTP matches
             if (storedData.otp !== otp) {
                 return { success: false, message: "Incorrect OTP" };
             }
 
-            // Hash password before saving user
             const hashedPassword = await bcrypt.hash(storedData.password, 10);
 
             await this.userRepository.create({
@@ -178,7 +171,6 @@ export class AuthService {
                 password: hashedPassword,
             });
 
-            // Remove OTP from store after successful verification
             otpStore.delete(email);
 
             return { success: true, message: "OTP verified, user registered successfully" };

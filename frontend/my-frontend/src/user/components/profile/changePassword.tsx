@@ -3,6 +3,7 @@ import './changePassword.css';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../api/userApi';
+import { userPasswordChange } from '../../services/profileServices';
 
 
 
@@ -50,11 +51,9 @@ const UserPasswordChange: React.FC = () => {
     }
 
     try {
-      const response = await api.put('/user/passwordChange',
-        { oldPassword, newPassword }
-      );
+      const response = await userPasswordChange(oldPassword,newPassword)
 
-      if (response.data.success) {
+      if (response?.data.success) {
         toast.success('Password updated successfully!', { autoClose: 1500 });
 
         setOldPassword('');
@@ -64,7 +63,7 @@ const UserPasswordChange: React.FC = () => {
         localStorage.removeItem('user');
         navigate('/user/login');
       } else {
-        toast.error(response.data.message);
+        toast.error(response?.data.message);
       }
     } catch (error: any) {
       console.error(error);

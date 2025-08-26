@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import './CourseDetails.css';
+import './courseDetails.css';
 import Navbar from '../../components/navbar/navbar';
 import instructorApi from '../../../api/instructorApi';
 
@@ -31,7 +31,7 @@ const InstructorCourseDetails: React.FC = () => {
 
   const fetchCourse = async (): Promise<void> => {
     try {
-      const res = await instructorApi.get(`/instructor/courseDetails/${id}`);
+      const res = await instructorApi.get(`/instructor/course/${id}`);
       console.log(res.data);
       if(res.data.success){
       setCourse(res.data.course as Course);

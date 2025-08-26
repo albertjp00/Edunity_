@@ -40,4 +40,31 @@ export class EventController{
             
         }
     }
+
+    getEvent = async(req:InstAuthRequest , res:Response):Promise<void>=>{
+        try {
+            const id = req.params.id!
+            console.log(id);
+            const result = await this.eventService.getEventRequest(id)
+            console.log(result);
+            
+            res.json({success:true , event:result})
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
+
+    editEvent = async(req:InstAuthRequest , res:Response):Promise<void>=>{
+        try {
+            const id = req.params.id
+            const data = req.body
+            
+            
+            
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
 } 

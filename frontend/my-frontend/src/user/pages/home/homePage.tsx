@@ -5,6 +5,7 @@ import Navbar from "../../components/navbar/navbar";
 import './home.css';
 import Banner from "../../components/banner/banner";
 import ShowCourses from "../../components/showCourses/showCourses";
+import Events from "../../components/events/showEvents";
 
 
 const Home: React.FC = () => {
@@ -23,6 +24,7 @@ const Home: React.FC = () => {
                 imageUrl="/assets/banner.jpg"
             />
             <ShowCourses />
+            <Events />
             <p>instructors</p>
         </div>
     )
