@@ -45,18 +45,14 @@ const Login: React.FC = () => {
         localStorage.setItem("token", response.data.accessToken);
         navigate("/user/home");
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.log(error);
+
       const err = error as AxiosError<{ message: string }>;
       const message = err.response?.data?.message || "Something went wrong";
+      toast.error(message);
 
-      if (err.response?.status === 403) {
-        toast.warning(message); // account blocked
-      } else if (err.response?.status === 401) {
-        toast.error(message); // invalid credentials
-      } else {
-        
-        toast.error("Login failed. Please try again.");
-      }
+
     }
   };
 
@@ -86,12 +82,12 @@ const Login: React.FC = () => {
   //   }
   // };
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      navigate("/user/home");
-    }
-  }, [navigate]);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (token) {
+  //     navigate("/user/home");
+  //   }
+  // }, [navigate]);
 
   return (
     <>

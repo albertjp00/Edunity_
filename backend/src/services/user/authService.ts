@@ -43,38 +43,42 @@ interface RegisterRequestPayload {
 export class AuthService {
     constructor(private userRepository: IUserRepository) { }
 
-    loginRequest = async (email: string, password: string): Promise<LoginResult> => {
-        const user = await this.userRepository.findByEmail(email);
 
 
+loginRequest = async (email: string, password: string): Promise<LoginResult> => {
+  try {
+    const user = await this.userRepository.findByEmail(email);
 
-        if (!user) {
-            return { success: false, message: "User not found" };
-        }
-        // console.log('user exist ',user);
-        
+    if (!user) {
+      return { success: false, message: "User not found" };
+    }
 
-        if (user.blocked) {
-  return { success: false, message: "Your account is blocked" };
-}
+    if (user.blocked) {
+      return { success: false, message: "Your account is blocked" };
+    }
 
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return { success: false, message: "Invalid password" };  // ✅ return, not throw
+    }
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return { success: false, message: "Invalid password" };
-        }
+    const accessToken = jwt.sign({ id: user._id }, secret, { expiresIn: "3h" });
+    const refreshToken = jwt.sign({ id: user._id }, refresh, { expiresIn: "7d" });
 
-        const accessToken = jwt.sign({ id: user._id }, secret, { expiresIn: "3h" });
-        const refreshToken = jwt.sign({ id: user._id }, refresh, { expiresIn: "7d" });
-
-        return {
-            success: true,
-            message: "Login successful",
-            user,
-            accessToken,
-            refreshToken,
-        };
+    return {
+      success: true,
+      message: "Login successful",
+      user,
+      accessToken,
+      refreshToken,
     };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Internal server error" }; // ✅ safe fallback
+  }
+};
+
+
 
     registerRequest = async (
         name: string,

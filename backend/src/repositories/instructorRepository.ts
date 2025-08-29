@@ -39,6 +39,9 @@ export interface IInsRepository {
 
     getEvent(id:string):Promise<IEvent | null>
 
+    updateEvent(id:string , data:any):Promise<IEvent | null>
+
+
 }
 
 
@@ -116,6 +119,10 @@ export class InstructorRepository implements IInsRepository {
         return EventModel.findById(id)
     }
 
+
+    async updateEvent(id:string , data:any):Promise<IEvent | null>{
+        return await EventModel.findByIdAndUpdate(id,{...data})
+    }
 
 }
 

@@ -14,7 +14,7 @@ export interface IAdminRepository {
 
     unblockUser(id: string): Promise<boolean | null>
 
-    findInstructors(): Promise<IUser[] | null>
+    findInstructors(): Promise<IInstructor[] | null>
 
     getKycDetails(id: string): Promise<void | null>
 
@@ -26,9 +26,9 @@ export interface IAdminRepository {
 
     getCourseDetails(courseId: string): Promise<ICourse | null>;
 
-    findByCourseId(courseId: string):Promise<IMyCourse[] | null>
+    findByCourseId(courseId: string): Promise<IMyCourse[] | null>
 
-     getFullCourseDetails(courseId: string): Promise<{
+    getFullCourseDetails(courseId: string): Promise<{
         course: ICourse;
         instructor: IInstructor | null;
         enrolledUsers: IUser[];
@@ -38,8 +38,9 @@ export interface IAdminRepository {
 
 export class AdminRepository implements IAdminRepository {
     async findUsers(): Promise<IUser[] | null> {
-        return UserModel.find()
+        return UserModel.find({ name: { $ne: "admin" } });
     }
+
 
     async blockUser(id: string): Promise<boolean | null> {
         return await UserModel.findByIdAndUpdate(id, { blocked: true }, { new: true })
@@ -49,8 +50,8 @@ export class AdminRepository implements IAdminRepository {
         return await UserModel.findByIdAndUpdate(id, { blocked: false }, { new: true })
     }
 
-    async findInstructors(): Promise<IUser[] | null> {
-        return InstructorModel.find()
+    async findInstructors(): Promise<IInstructor[] | null> {
+        return await InstructorModel.find()
     }
 
     async getKycDetails(id: string): Promise<void | null> {
@@ -77,7 +78,7 @@ export class AdminRepository implements IAdminRepository {
     }
 
 
-    async findByCourseId(courseId: string):Promise<IMyCourse[] | null> {
+    async findByCourseId(courseId: string): Promise<IMyCourse[] | null> {
         return await MyCourseModel.find({ "course.id": courseId });
     }
 

@@ -40,3 +40,8 @@
 .btn-save:hover {
   background: #3a8ed6;
 }
+
+
+.error{
+  color: red;
+}
