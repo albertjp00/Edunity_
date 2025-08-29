@@ -1,0 +1,115 @@
+/* src/pages/admin/courseDetails.css */
+
+.course-details-container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Course Info */
+.course-details-container h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #1e293b;
+}
+
+.course-details-container p {
+  margin-bottom: 0.5rem;
+  color: #475569;
+}
+
+.course-thumbnail {
+  width: 280px;
+  height: 160px;
+  border-radius: 12px;
+  object-fit: cover;
+  margin: 1rem 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Instructor */
+.instructor-card {
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  margin-bottom: 2rem;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+}
+
+.instructor-card h2 {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #0f172a;
+}
+
+.instructor-card img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+}
+
+.instructor-card p {
+  margin: 0.4rem 0;
+  font-size: 0.95rem;
+}
+
+/* Modules */
+.modules-section h2 {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #0f172a;
+}
+
+.modules-section ul {
+  padding-left: 1.5rem;
+}
+
+.modules-section li {
+  margin-bottom: 1rem;
+  padding: 0.8rem;
+  border-left: 3px solid #3b82f6;
+  background: #f9fafb;
+  border-radius: 6px;
+}
+
+.modules-section p {
+  margin: 0.2rem 0;
+  font-size: 0.95rem;
+}
+
+.modules-section a {
+  color: #2563eb;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.modules-section a:hover {
+  text-decoration: underline;
+}
+
+/* Enrolled Users */
+.enrolled-users h2 {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 0.8rem;
+  color: #0f172a;
+}
+
+.enrolled-users ul {
+  padding-left: 1.5rem;
+}
+
+.enrolled-users li {
+  margin-bottom: 0.4rem;
+  font-size: 0.95rem;
+}

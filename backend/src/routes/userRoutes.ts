@@ -44,11 +44,14 @@ router.get('/getCourses',authMiddleware, courseController.showCourses)
 router.get('/courseDetails',authMiddleware,courseController.courseDetails)
 router.get('/myCourses',authMiddleware , courseController.myCourses)
 router.get('/myCourses',authMiddleware , courseController.myCourses)
+router.get('/getInstructors',authMiddleware , courseController.getInstructors)
 router.get('/buyCourse/:id',authMiddleware , courseController.buyCourse)
 router.get('/viewMyCourse/:id',authMiddleware , courseController.viewMyCourse)
 router.post("/updateProgress", authMiddleware, courseController.updateProgress);
 
-router.get('/events',authMiddleware , eventController.getEvents)
 
+router.get('/events',authMiddleware , eventController.getEvents)
+router.get('/event/:id',authMiddleware , eventController.getEventDetails)
+router.get('/eventEnroll/:id',authMiddleware , eventController.enrollEvent)
 
 export default router;

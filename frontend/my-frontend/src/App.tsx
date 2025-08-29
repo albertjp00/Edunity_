@@ -35,6 +35,7 @@ import UserDetails from './admin/pages/adminUsers/adminUserDetails'
 import AdminCourses from './admin/pages/courses/adminCourses'
 import AdminCourseDetails from './admin/pages/courses/adminCourseDetails'
 import InstructorEditEvents from './instructor/pages/events/editEvents'
+import UserEventDetails from './user/pages/event/eventDetails'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -66,6 +67,9 @@ function App() {
             <Route path='/user/courseDetails/:id' element={<ProtectedRoute><UserCourseDetails /></ProtectedRoute>} />
             <Route path='/user/myCourses' element={<ProtectedRoute><ShowUserMyCourses /></ProtectedRoute>} />
             <Route path='/user/viewMyCourse/:id' element={<ProtectedRoute><UserViewMyCourse /></ProtectedRoute>} />
+
+            <Route path='/user/eventDetails/:id' element={<ProtectedRoute><UserEventDetails /></ProtectedRoute>} />
+
 
 
 

@@ -1,6 +1,8 @@
 import { ICourse } from '../../models/course.js';
 import { IInstructor } from '../../models/instructor.js';
 import { IMyCourse } from '../../models/myCourses.js';
+import { IUser } from '../../models/user.js';
+import { AdminRepository } from '../../repositories/adminRepositories.js';
 import { InstructorRepository } from '../../repositories/instructorRepository.js';
 import { UserRepository } from '../../repositories/userRepository.js';
 
@@ -16,11 +18,12 @@ export interface ICourseDetails extends ICourse {
 export class UserCourseService {
   private userRepository: UserRepository;
   private instructorRepository: InstructorRepository;
+  private adminRepository: AdminRepository;
 
-  constructor(userRepository: UserRepository, instructorRepository: InstructorRepository) {
+  constructor(userRepository: UserRepository, instructorRepository: InstructorRepository , adminRepository : AdminRepository) {
     this.userRepository = userRepository;
     this.instructorRepository = instructorRepository;
-
+    this.adminRepository = adminRepository
 
   }
 
@@ -108,7 +111,6 @@ export class UserCourseService {
     }
   }
 
-  // services/courseService.ts
   async updateProgress(userId: string, courseId: string, moduleTitle: string) {
 
    try {
@@ -118,6 +120,19 @@ export class UserCourseService {
    } catch (error) {
     console.log(error);
     
+   }
+  }
+
+
+  async getInstructorsRequest():Promise<IInstructor[] | null> {
+
+   try {
+     const update = await this.adminRepository.findInstructors()
+    
+    return update
+   } catch (error) {
+    console.log(error);
+    return null
    }
   }
 

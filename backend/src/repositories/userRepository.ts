@@ -1,6 +1,7 @@
 import { CourseModel, ICourse } from '../models/course.js';
 import { EventModel, IEvent } from '../models/events.js';
 import { IMyCourse, MyCourseModel } from '../models/myCourses.js';
+import { IMyEvent, MyEventModel } from '../models/myEvents.js';
 import { IUser, UserModel } from '../models/user.js';
 import { ISkills } from './instructorRepository.js';
 
@@ -28,6 +29,8 @@ export interface IUserRepository {
   viewMyCourse(id: string, courseId: string): Promise<IMyCourse | null>
 
   updateProgress(userId: string, courseId: string, moduleTitle: string):Promise<IMyCourse | null>
+
+  getMyEvent(id:string):Promise<IMyEvent | null>
 
   getEvents():Promise<IEvent[] | null>
 
@@ -143,6 +146,14 @@ export class UserRepository implements IUserRepository {
     return await EventModel.find()
   }
 
+  async getMyEvent(id:string):Promise<IMyEvent | null> {    
+    return await MyEventModel.findOne({eventId:id})
+  }
 
+  async enrollEvent(id:string , eventId : string):Promise<IMyEvent | null>{
+    await EventModel.findByIdAndUpdate(eventId , {$inc: {participants : 1}},{new :true})
+    return await MyEventModel.create({userId : id ,eventId})
+  }
 
 }
+

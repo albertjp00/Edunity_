@@ -1,17 +1,22 @@
-// components/Events.tsx
 import React, { useEffect, useState } from "react";
 import { getEvents } from "../../services/eventServices";
-import type { Event } from "../../interfaces";
-import thumbnail from '../../../assets/webinar_thumnail.png'
-import './showEvents.css'
+import type { UEvent } from "../../interfaces";
+import thumbnail from "../../../assets/webinar_thumnail.png";
+import "./showEvents.css";
 
 const Events: React.FC = () => {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<UEvent[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchEvents = async () => {
-    const response = await getEvents();
-    if (response?.data.success) {
-      setEvents(response.data.events);
+    try {
+      setLoading(true);
+      const response = await getEvents();
+      if (response?.data.success) {
+        setEvents(response.data.events);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -20,35 +25,63 @@ const Events: React.FC = () => {
   }, []);
 
   return (
-    <div className="events-container">
-      <h2 className="events-title">Upcoming Events</h2>
-      {events.length === 0 ? (
-        <p>No events found</p>
+    <section className="events-wrapper">
+      <p className="events-subtitle">📅 Our Events</p>
+      <h2 className="events-heading">Yearly Events And Program</h2>
+
+      {loading ? (
+        <p className="events-loading">Loading events...</p>
+      ) : events.length === 0 ? (
+        <p className="events-empty">No upcoming events found.</p>
       ) : (
         <div className="events-grid">
-          {events.map((event) => (
-            <div key={event._id} className="event-card">
-              {thumbnail && (
-                <img
-                  src={thumbnail}
-                  alt={event.title}
-                  className="event-thumbnail"
-                />
-              )}
-              <div className="event-details">
-                <h3>{event.title}</h3>
-                <p>{event.description}</p>
-                <p>
-                  By <b>{event.instructorName}</b> on{" "}
-                  {new Date(event.date).toLocaleDateString()}
-                </p>
-                <p>Duration: 1 Hour</p>
-              </div>
-            </div>
-          ))}
+          {events.map((event) => {
+            const eventDate = new Date(event.date);
+            const day = eventDate.getDate();
+            const month = eventDate.toLocaleString("default", {
+              month: "long",
+            });
+
+            return (
+              <article key={event._id} className="event-card">
+                <div className="event-image-wrapper">
+                  <img
+                    src={thumbnail}
+                    alt={event.title}
+                    className="event-thumbnail"
+                  />
+                  <div className="event-date-badge">
+                    <span className="event-day">{day}</span>
+                    <span className="event-month">{month}</span>
+                  </div>
+                </div>
+
+                <div className="event-info">
+                  <h3 className="event-title">{event.title}</h3>
+                  <p className="event-description">
+                    {event.description ?? "No description provided."}
+                  </p>
+
+                  <div className="event-meta">
+                    <p>⏰ Time: 11:00am - 03:00pm</p>
+                    <p>
+                      📆 Date:{" "}
+                      {eventDate.toLocaleDateString(undefined, {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+
+                  <button className="event-register-btn">Register</button>
+                </div>
+              </article>
+            );
+          })}
         </div>
       )}
-    </div>
+    </section>
   );
 };
 

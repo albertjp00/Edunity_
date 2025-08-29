@@ -102,7 +102,7 @@ const CoursesAdmin: React.FC = () => {
             <th>Thumbnail</th>
             <th>Title</th>
             <th>Price</th>
-            <th>Status</th>
+            {/* <th>Status</th> */}
           </tr>
         </thead>
         <tbody>
@@ -128,7 +128,7 @@ const CoursesAdmin: React.FC = () => {
                 {/* <td>{course.instructorName}</td> */}
                 {/* <td>{course.category}</td> */}
                 <td>₹{course.price}</td>
-                <td>
+                {/* <td>
                   {course.blocked ? (
                     <button
                       className="btn-unblock"
@@ -144,7 +144,7 @@ const CoursesAdmin: React.FC = () => {
                       Block
                     </button>
                   )}
-                </td>
+                </td> */}
               </tr>
             ))
           ) : (

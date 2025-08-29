@@ -45,18 +45,24 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Case 1: Access token expired
+    if (
+      originalRequest.url?.includes("/user/login") ||
+      originalRequest.url?.includes("/user/register")
+    ) {
+      return Promise.reject(error);
+    }
+
+    // Access token expired
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      // Try refreshing
       const newAccessToken = await refreshAccessToken();
 
       if (newAccessToken) {
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return api(originalRequest); // Retry the original request
+        return api(originalRequest);
       } else {
-        // Refresh failed → log out
+        // Refresh failed - log out
         toast.error("Your session has expired. Please log in again.");
         localStorage.removeItem("token");
         localStorage.removeItem("refreshToken");
@@ -66,7 +72,7 @@ api.interceptors.response.use(
 
     // Case 2: Blocked user or other auth error
     if (error.response?.status === 403) {
-      toast.error("Your account has been blocked. Contact support.");
+      toast.warning("Your account has been blocked. Contact support.");
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
       window.location.href = "/user/login";

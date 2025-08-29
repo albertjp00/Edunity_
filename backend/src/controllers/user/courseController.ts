@@ -3,6 +3,7 @@ import { AuthRequest } from "../../middleware/authMiddleware.js";
 import { UserRepository } from "../../repositories/userRepository.js";
 import { UserCourseService } from "../../services/user/userCourseService.js";
 import { InstructorRepository } from "../../repositories/instructorRepository.js";
+import { AdminRepository } from "../../repositories/adminRepositories.js";
 
 export class UserCourseController {
     private courseService: UserCourseService;
@@ -13,8 +14,9 @@ export class UserCourseController {
 
         const userRepo = new UserRepository();
         const instructorRepo = new InstructorRepository();
+        const adminRepo = new AdminRepository()
 
-        this.courseService = new UserCourseService(userRepo, instructorRepo);
+        this.courseService = new UserCourseService(userRepo, instructorRepo ,adminRepo);
     }
 
     // Explicitly type as Express RequestHandler
@@ -115,6 +117,17 @@ export class UserCourseController {
             const result = await this.courseService.updateProgress(userId, courseId, moduleTitle);
 
             res.json({ success: true, progress: result });
+        } catch (error) {
+            console.error("Error updating progress:", error);
+            res.status(500).json({ success: false, message: "Internal server error" });
+        }
+    };
+
+    getInstructors = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const instructor = await this.courseService.getInstructorsRequest()
+
+            res.json({ success: true, instructors : instructor});
         } catch (error) {
             console.error("Error updating progress:", error);
             res.status(500).json({ success: false, message: "Internal server error" });

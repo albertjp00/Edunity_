@@ -40,6 +40,7 @@ const UserSchema: Schema = new Schema<IUser>({
 
   profileImage: {
     type: String,
+    default:'profilePic.png'
   },
 
   bio: {

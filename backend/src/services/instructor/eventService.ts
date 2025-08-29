@@ -42,4 +42,15 @@ export class EventService {
             return null
         }
     }
+
+        updateEventRequest = async (id: string , data:any): Promise<IEvent | null> => {
+        try {
+
+            const event = await this.InstructorRepository.updateEvent(id , data)
+            return event
+        } catch (error) {
+            console.log(error);
+            return null
+        }
+    }
 }

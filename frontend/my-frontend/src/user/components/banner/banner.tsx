@@ -1,22 +1,45 @@
 import React from "react";
-import "./banner.css"; // optional styles
-import bannerImage from '../../../assets/banner.jpeg'
+import "./banner.css";
+import { useNavigate } from "react-router-dom";
 
-interface BannerProps {
-  title: string;
-  subtitle?: string;
-  imageUrl?: string;
-}
+const Banner: React.FC = () => {
+  const navigate = useNavigate();
 
-const Banner: React.FC<BannerProps> = ({ title, subtitle, imageUrl }) => {
   return (
-    <div className="banner">
-      {imageUrl && <img src={bannerImage} alt={title} className="banner-image" />}
-      <div className="banner-text">
-        <h1>{title}</h1>
-        {subtitle && <p>{subtitle}</p>}
+    <header className="hero">
+      {/* background image */}
+      <div className="hero__bg" role="img" aria-label="Students learning together" />
+
+      {/* overlay */}
+      <div className="hero__overlay" />
+
+      {/* content */}
+      <div className="hero__content">
+        <span className="hero__eyebrow">Start Learning Today</span>
+        <h1 className="hero__title">
+          Learn <span className="accent">Skills</span> for the Future
+        </h1>
+        <p className="hero__subtitle">
+          Join thousands of learners improving their careers with industry-ready courses.
+        </p>
+
+        <div className="hero__cta">
+          <button className="btn btn--primary" onClick={() => navigate("/register")}>
+            Get Started
+          </button>
+          <button className="btn btn--ghost" onClick={() => navigate("/courses")}>
+            Explore Courses
+          </button>
+        </div>
+
+        {/* quick stats (optional) */}
+        <ul className="hero__stats">
+          <li><strong>500+</strong><span>Courses</span></li>
+          <li><strong>20k+</strong><span>Students</span></li>
+          <li><strong>4.8/5</strong><span>Avg. Rating</span></li>
+        </ul>
       </div>
-    </div>
+    </header>
   );
 };
 

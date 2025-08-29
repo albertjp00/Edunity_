@@ -13,3 +13,26 @@ export const getEvents = async()=>{
         
     }
 }
+
+
+export const getDetailsEvent = async(id:string)=>{
+    try {
+        const res = await api.get(`/user/event/${id}`);
+        return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
+
+export const eventEnroll = async(id:string)=>{
+    try {
+        const res = await api.get(`/user/eventEnroll/${id}`);
+        return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
