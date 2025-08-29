@@ -8,7 +8,7 @@ export interface IEvent extends Document {
 
   date: Date;
   duration: number; 
-  participants: string[];
+  participants: number;
   createdAt: Date;
 
 }
@@ -23,9 +23,11 @@ const EventSchema = new Schema<IEvent>(
 
     date: { type: Date, required: true },
     duration: { type: Number  },
-    participants: [{ type: Number ,default:10 }],
+    participants: { type: Number, default: 0 }
   },
   { timestamps: true }
 );
+
+
 
 export const EventModel = mongoose.model<IEvent>("Event", EventSchema); 

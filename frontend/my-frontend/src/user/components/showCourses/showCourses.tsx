@@ -68,7 +68,7 @@ const ShowCourses: React.FC = () => {
       : true;
     const matchesSearch = searchQuery
       ? course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.description.toLowerCase().includes(searchQuery.toLowerCase())
+      course.description.toLowerCase().includes(searchQuery.toLowerCase())
       : true;
 
     return matchesLevel && matchesSkill && matchesSearch;
@@ -95,9 +95,8 @@ const ShowCourses: React.FC = () => {
           {["Beginner", "Intermediate", "Advanced"].map((level) => (
             <button
               key={level}
-              className={`filter-btn ${
-                levelFilter === level ? "active" : ""
-              }`}
+              className={`filter-btn ${levelFilter === level ? "active" : ""
+                }`}
               onClick={() =>
                 setLevelFilter(levelFilter === level ? "" : level)
               }
@@ -112,9 +111,8 @@ const ShowCourses: React.FC = () => {
           {skills.map((skill) => (
             <button
               key={skill}
-              className={`filter-btn ${
-                skillFilter === skill ? "active" : ""
-              }`}
+              className={`filter-btn ${skillFilter === skill ? "active" : ""
+                }`}
               onClick={() =>
                 setSkillFilter(skillFilter === skill ? "" : skill)
               }
@@ -128,32 +126,73 @@ const ShowCourses: React.FC = () => {
       {filteredCourses.length === 0 ? (
         <p className="no-courses">No matching courses found.</p>
       ) : (
-        <div className="course-grid">
-          {filteredCourses.map((course) => (
-            <div
-              key={course._id}
-              className="course-card"
-              onClick={() => selectCourse(course._id)}
-            >
-              <div className="thumbnail-wrapper">
-                <img
-                  src={`http://localhost:5000/assets/${course.thumbnail}`}
-                  alt={course.title}
-                  className="course-thumbnail"
-                />
-              </div>
-              <div className="course-info">
-                <h3>{course.title}</h3>
-                <p className="description">{course.description}</p>
-                <div className="bottom-row">
-                  <span className="price">₹{course.price}</span>
-                  <button className="view-btn">View</button>
-                </div>
-              </div>
-            </div>
-          ))}
+        <section className="courses-section">
+      {/* Section Header */}
+      <div className="section-header">
+        <div className="section-text">
+          <span className="tag">TOP POPULAR COURSE</span>
+          <h2>
+            Edunity Course <span className="highlight">Student</span> Can Join
+            With Us.
+          </h2>
         </div>
-      )}
+        <button
+          className="load-more-btn"
+          onClick={() => fetchCourses(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Load More Course →
+        </button>
+      </div>
+
+      {/* Courses Grid */}
+      <div className="course-grid">
+        {courses.map((course) => (
+          <div key={course._id} className="course-card">
+            <div className="course-thumbnail-wrapper">
+              <img
+                src={`http://localhost:5000/assets/${course.thumbnail}`}
+                alt={course.title}
+                className="course-thumbnail"
+              />
+              <span className="course-category">Digital Marketing</span>
+            </div>
+
+            <div className="course-details">
+              <h3 className="course-title">{course.title}</h3>
+
+              <div className="course-meta">
+                <span>📚 Lesson 10</span>
+                <span>⏰ 19h 30m</span>
+                <span>👨‍🎓 Students 20+</span>
+              </div>
+
+              <div className="course-footer">
+                <div className="instructor">
+                  <img
+                    src="/default-profile.png"
+                    alt="instructor"
+                    className="instructor-img"
+                  />
+                  <span>Instructor</span>
+                </div>
+                <span className="price">₹{course.price}</span>
+              </div>
+
+              <button
+                className="enroll-btn"
+                onClick={() => selectCourse(course._id)}
+              >
+                Enroll →
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+      
 
       <div className="pagination-controls">
         <button
