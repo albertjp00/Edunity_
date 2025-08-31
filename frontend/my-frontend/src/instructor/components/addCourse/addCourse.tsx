@@ -19,6 +19,7 @@ interface CourseForm {
   thumbnail: File | null;
   level: string;
   modules: Module[];
+  category: string
 }
 
 const AddCourse: React.FC = () => {
@@ -32,6 +33,7 @@ const AddCourse: React.FC = () => {
     thumbnail: null,
     level: "Beginner",
     modules: [],
+    category: ''
   });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -82,7 +84,7 @@ const AddCourse: React.FC = () => {
     // if (!validateForm()) return;
 
     try {
-      
+
 
       const formData = new FormData();
       formData.append("title", form.title);
@@ -90,6 +92,7 @@ const AddCourse: React.FC = () => {
       formData.append("skills", JSON.stringify(form.skills));
       formData.append("price", form.price);
       formData.append("level", form.level);
+      formData.append('level', form.category)
       if (form.thumbnail) formData.append("thumbnail", form.thumbnail);
       formData.append("modules", JSON.stringify(form.modules));
 
@@ -151,12 +154,35 @@ const AddCourse: React.FC = () => {
           </div>
         )}
 
-        <label htmlFor="level">Course Level</label>
-        <select className="level" name="level" value={form.level} onChange={handleChange} required>
-          <option value="Beginner">Beginner</option>
-          <option value="Intermediate">Intermediate</option>
-          <option value="Advanced">Advanced</option>
-        </select>
+        <label htmlFor="select-level">Course Level</label>
+<select
+  className="select-level"
+  name="level"
+  value={form.level}
+  onChange={handleChange}
+  required
+>
+  <option value="Beginner">Beginner</option>
+  <option value="Intermediate">Intermediate</option>
+  <option value="Advanced">Advanced</option>
+</select>
+
+<label htmlFor="select-category">Category</label>
+<select
+  className="select-category"
+  name="category"
+  value={form.category}
+  onChange={handleChange}
+  required
+>
+  <option value="Web development">Web development</option>
+  <option value="Mobile Development">Mobile Development</option>
+  <option value="Data Science">Data science</option>
+  <option value="Cyber Security">Cyber Security</option>
+  <option value="Design">Design</option>
+  <option value="Language">Language</option>
+</select>
+
 
         <br />
         <label>Price</label>

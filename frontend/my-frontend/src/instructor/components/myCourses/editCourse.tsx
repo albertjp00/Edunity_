@@ -19,6 +19,7 @@ interface CourseForm {
     thumbnail: File | string;
     level: string;
     modules: Module[];
+    category:string
 }
 
 interface ApiResponse<T> {
@@ -39,6 +40,7 @@ const EditCourse: React.FC = () => {
         thumbnail: '',
         level: '',
         modules: [],
+        category:''
     });
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -83,6 +85,7 @@ const EditCourse: React.FC = () => {
             formData.append('skills', JSON.stringify(form.skills));
             formData.append('price', form.price);
             formData.append('level', form.level);
+            formData.append('category',form.category)
 
             if (form.thumbnail instanceof File) {
                 formData.append('thumbnail', form.thumbnail);
@@ -150,6 +153,22 @@ const EditCourse: React.FC = () => {
                         onChange={handleChange}
                         value={form.description}
                     ></textarea>
+
+                    <label htmlFor="select-category">Category</label>
+                    <select
+                        className="select-category"
+                        name="category"
+                        value={form.category}
+                        onChange={handleChange}
+                        required
+                    >
+                        <option value="Web development">Web development</option>
+                        <option value="Mobile Development">Mobile Development</option>
+                        <option value="Data Science">Data science</option>
+                        <option value="Cyber Security">Cyber Security</option>
+                        <option value="Design">Design</option>
+                        <option value="Language">Language</option>
+                    </select>
 
                     <label>Skills</label>
                     <div className="skills-checkbox-group">

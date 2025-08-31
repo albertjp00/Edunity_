@@ -51,3 +51,18 @@ export const userVerifyOtp = async(email:string , otp:string)=>{
         
     }
 }
+
+
+
+// export const googleLogin = async(email:string , otp:string)=>{
+//     try {
+//         const res = await api..post("http://localhost:5000/api/auth/google", {
+//         token: credentialResponse.credential,
+//       }, { withCredentials: true });
+
+//         return res
+//     } catch (error) {
+//         console.log(error);
+        
+//     }
+// }

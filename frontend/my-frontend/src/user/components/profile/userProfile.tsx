@@ -16,6 +16,7 @@ interface User {
   location?: string;
   phone?: string;
   blocked?: boolean;
+  googleId?:string
 }
 
 interface CourseData {
@@ -136,9 +137,11 @@ const Profile: React.FC = () => {
               <Link to="/user/editProfile">
                 <button>Edit</button>
               </Link>
+              {!user.googleId &&
               <Link to="/user/changePassword">
-                <button className="change-password-btn">Change Password</button>
+                <button className="change-password-btn">Change Password</button> 
               </Link>
+              }
             </div>
           </div>
         </div>

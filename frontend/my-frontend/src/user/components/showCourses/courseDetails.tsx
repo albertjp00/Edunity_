@@ -30,12 +30,12 @@ interface Instructor {
 }
 
 interface ApiResponse {
-  success: boolean;
-  course: Course & {
-    instructor: Instructor;
-    hasAccess: boolean;
-    completedModules?: string[];
-  };
+    success: boolean;
+    course: Course & {
+        instructor: Instructor;
+        hasAccess: boolean;
+        completedModules?: string[];
+    };
 }
 
 const CourseDetailsUser: React.FC = () => {
@@ -86,6 +86,39 @@ const CourseDetailsUser: React.FC = () => {
         } catch (err) {
             console.error("Error during purchase:", err);
         }
+    };
+
+    const buyCourse = async (courseId: string) => {
+        const { data } = await api.post(`/api/courses/buy/${courseId}`);
+
+        const options = {
+            key: data.key,
+            amount: data.amount,
+            currency: data.currency,
+            name: "Your Platform",
+            description: "Course Purchase",
+            order_id: data.orderId,
+            handler: async function (response: any) {
+                // Send payment details to backend for verification
+                await api.post("/api/courses/verify-payment", {
+                    courseId: data.courseId,
+                    paymentId: response.razorpay_payment_id,
+                    orderId: response.razorpay_order_id,
+                    signature: response.razorpay_signature,
+                });
+                alert("Payment Successful 🎉");
+            },
+            prefill: {
+                name: "User",
+                email: "user@example.com",
+            },
+            theme: {
+                color: "#3399cc",
+            },
+        };
+
+        const razor = new (window as any).Razorpay(options);
+        razor.open();
     };
 
     useEffect(() => {

@@ -23,3 +23,20 @@ export const viewMyCourse = async(id:string)=>{
     }
 }
 
+
+export const getAllCourses = async (page: number, limit: number) => {
+  try {
+    const response = await api.get(`/user/getAllCourses?${new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    })}`);
+    console.log(response);
+    
+    return response.data;  // { courses, totalCount }
+  } catch (error) {
+    console.error("Error fetching courses:", error);
+    throw error;
+  }
+};
+
+

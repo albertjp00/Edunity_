@@ -1,78 +1,96 @@
-
-
-.login{
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    
+.login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #f8f9ff;
 }
 
-.login-container{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
-
-
-.inputs{
-    width: 100%;
-  padding: 20px;
-  margin-top: 30px;
-  color: black;
-  border: 1px solid black;
-  border-radius: 4px;
-  background-color: white;
-  box-sizing: border-box;
-  
-}
-
-.login h2{
-    color: black;
-}
-
-.button-container{
-    display: flex;
-    justify-content: center;
-    
-}
-
-.btn{
-    margin-top: 20px;
-    width: 100%;
-    height: 40px;
-    border-radius: 5px;
-    background-color: black;
-    border: 0;
-    cursor: pointer;
-}
-
-.login-links {
-  margin-top: 20px;
+.login-container {
+  background: #fff;
+  padding: 2rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  width: 450px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   text-align: center;
 }
 
-.login-links p {
-  margin: 6px 0;
-  font-size: 14px;
+.login-container h2 {
+  margin-bottom: 1.5rem;
+  color: #3c1fc6;
+  font-size: 1.3rem;
+  font-weight: 600;
 }
 
-.login-links .link {
-  color: #3b82f6;
-  text-decoration: none;
-  font-weight: 500;
+.inputs {
+  width: 100%;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: white;
+  color: black;
 }
 
-.login-links .link:hover {
-  text-decoration: underline;
+.button-container {
+  margin: 1rem 0;
 }
 
+.btn {
+  width: 100%;
+  padding: 0.9rem;
+  border: none;
+  border-radius: 25px;
+  background: #5e2ced;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #4a20b5;
+}
 
 .google-login-container {
-  display: flex;
-  justify-content: center;
   margin-top: 1rem;
+}
+
+.or-text {
+  margin-bottom: 0.8rem;
+  color: #777;
+  font-size: 0.9rem;
+  position: relative;
+}
+
+.or-text::before,
+.or-text::after {
+  content: "";
+  height: 1px;
+  width: 40%;
+  background: #ddd;
+  position: absolute;
+  top: 50%;
+}
+
+.or-text::before {
+  left: 0;
+}
+
+.or-text::after {
+  right: 0;
+}
+
+.login-links {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.link {
+  color: #5e2ced;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
 }

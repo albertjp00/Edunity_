@@ -27,6 +27,7 @@ const eventController = new UserEventController()
 
 // Auth Routes
 router.post("/login", authController.login);
+router.post("/auth/googleLogin", authController.googleSignIn);
 router.post("/refresh-token", authController.refreshToken);
 router.post("/logout", authController.logoutUser);
 
@@ -41,13 +42,14 @@ router.put('/passwordChange',authMiddleware,profileController.changePassword)
 router.put("/profile",authMiddleware,upload.single("profileImage"),profileController.editProfile);
 
 router.get('/getCourses',authMiddleware, courseController.showCourses)
+router.get('/getAllCourses',authMiddleware, courseController.getAllCourses)
 router.get('/courseDetails',authMiddleware,courseController.courseDetails)
 router.get('/myCourses',authMiddleware , courseController.myCourses)
 router.get('/myCourses',authMiddleware , courseController.myCourses)
 router.get('/getInstructors',authMiddleware , courseController.getInstructors)
 router.get('/buyCourse/:id',authMiddleware , courseController.buyCourse)
 router.get('/viewMyCourse/:id',authMiddleware , courseController.viewMyCourse)
-router.post("/updateProgress", authMiddleware, courseController.updateProgress);
+router.post("/updateProgress", authMiddleware, courseController.updateProgress);``
 
 
 router.get('/events',authMiddleware , eventController.getEvents)

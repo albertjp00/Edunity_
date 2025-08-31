@@ -13,6 +13,7 @@ export interface IUser extends Document {
   gender?: 'Male' | 'Female' | 'Other';
   blocked: boolean;
   createdAt: string;
+  googleId : string;
 }
 
 const UserSchema: Schema = new Schema<IUser>({
@@ -29,7 +30,6 @@ const UserSchema: Schema = new Schema<IUser>({
 
   password: {
     type: String,
-    required: true,
   },
 
   role: {
@@ -74,6 +74,10 @@ const UserSchema: Schema = new Schema<IUser>({
     type: String,
     default: () => new Date().toISOString(),
   },
+
+  googleId : {
+    type:String
+  }
 });
 
 

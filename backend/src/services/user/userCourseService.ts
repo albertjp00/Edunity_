@@ -20,7 +20,7 @@ export class UserCourseService {
   private instructorRepository: InstructorRepository;
   private adminRepository: AdminRepository;
 
-  constructor(userRepository: UserRepository, instructorRepository: InstructorRepository , adminRepository : AdminRepository) {
+  constructor(userRepository: UserRepository, instructorRepository: InstructorRepository, adminRepository: AdminRepository) {
     this.userRepository = userRepository;
     this.instructorRepository = instructorRepository;
     this.adminRepository = adminRepository
@@ -34,6 +34,10 @@ export class UserCourseService {
     const totalCourses = await this.userRepository.countCourses();
     const skills = await this.userRepository.findSkills();
 
+
+    console.log('courses' ,courses);
+    
+
     return {
       courses,
       skills,
@@ -41,6 +45,31 @@ export class UserCourseService {
       currentPage: page,
     };
   }
+
+  // service
+  // services/courseService.ts
+  getAllCourses = async (query: any, page: number, limit: number) => {
+    try {
+      const skip = (page - 1) * limit;
+
+      const courses = await this.userRepository.getAllCourses(query, skip, limit);
+      const totalCount = await this.userRepository.countAllCourses(query);
+      console.log(courses);
+      
+
+      return {
+        courses,
+        totalPages: Math.ceil(totalCount / limit),
+        currentPage: page,
+        totalCount
+      };
+    } catch (error) {
+      console.log("Error in courseService.getAllCourses:", error);
+      throw error;
+    }
+  };
+
+
 
   fetchCourseDetails = async (userId: string, courseId: string): Promise<ICourseDetails | null> => {
     try {
@@ -113,27 +142,27 @@ export class UserCourseService {
 
   async updateProgress(userId: string, courseId: string, moduleTitle: string) {
 
-   try {
-     const update = await this.userRepository.updateProgress(userId , courseId , moduleTitle)
-    
-    return update
-   } catch (error) {
-    console.log(error);
-    
-   }
+    try {
+      const update = await this.userRepository.updateProgress(userId, courseId, moduleTitle)
+
+      return update
+    } catch (error) {
+      console.log(error);
+
+    }
   }
 
 
-  async getInstructorsRequest():Promise<IInstructor[] | null> {
+  async getInstructorsRequest(): Promise<IInstructor[] | null> {
 
-   try {
-     const update = await this.adminRepository.findInstructors()
-    
-    return update
-   } catch (error) {
-    console.log(error);
-    return null
-   }
+    try {
+      const update = await this.adminRepository.findInstructors()
+
+      return update
+    } catch (error) {
+      console.log(error);
+      return null
+    }
   }
 
 

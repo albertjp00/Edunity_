@@ -10,6 +10,8 @@ import { OAuth2Client } from "google-auth-library";
 const ACCESS_SECRET = process.env.SECRET_KEY || "access_secret";
 const REFRESH_SECRET = process.env.REFRESH_KEY || "refresh_secret";
 
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || "");
+
 export class AuthController {
   private authService: AuthService;
 
@@ -161,51 +163,31 @@ export class AuthController {
 
 
 
-  googleSignIn = async (req: AuthRequest,res: Response): Promise<void> => {
-    try {
-      const { token } = req.body; // frontend sends Google ID token
 
+  googleSignIn = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { token } = req.body;
+      // console.log(req.body);
+      
       if (!token) {
         res.status(400).json({ message: "Token is required" });
         return;
       }
-
-      // Verify token with Google
-      const ticket = await client.verifyIdToken({
-        idToken: token,
-        audience: process.env.GOOGLE_CLIENT_ID,
-      });
-
-      const payload = ticket.getPayload();
-      if (!payload) {
-        res.status(401).json({ message: "Invalid Google token" });
-        return;
-      }
-
-      const { sub, email, name, picture } = payload;
-
-      // ✅ Check in DB if user exists or create new
-      let user = await UserModel.findOne({ email });
-      if (!user) {
-        user = await UserModel.create({
-          googleId: sub,
-          name,
-          email,
-          profileImage: picture,
+      const { accessToken, refreshToken , user } = await this.authService.googleLogin(token);
+      // console.log(accessToken);
+      if (refreshToken) {
+        res.cookie("refreshToken", refreshToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 24 * 60 * 60 * 1000, // 1 day
         });
       }
-
-      // ✅ Generate JWT for session
-      const accessToken = jwt.sign(
-        { id: user._id, email: user.email },
-        process.env.SECRET_KEY || "access_secret",
-        { expiresIn: "1h" }
-      );
-
-      res.json({ token: accessToken, user });
-    } catch (error) {
+      
+      res.json({success:true , token: accessToken });
+    } catch (error: any) {
       console.error("Google Sign-In error:", error);
-      res.status(500).json({ message: "Google Sign-In failed" });
+      res.status(500).json({ message: error.message || "Google Sign-In failed" });
     }
   };
 
