@@ -16,7 +16,7 @@ export class UserCourseController {
         const instructorRepo = new InstructorRepository();
         const adminRepo = new AdminRepository()
 
-        this.courseService = new UserCourseService(userRepo, instructorRepo ,adminRepo);
+        this.courseService = new UserCourseService(userRepo, instructorRepo, adminRepo);
     }
 
     // Explicitly type as Express RequestHandler
@@ -41,6 +41,64 @@ export class UserCourseController {
             res.status(500).json({ success: false, message: "Failed to get courses" });
         }
     };
+
+    // controller
+getAllCourses = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    console.log("get all courses");
+
+    const { 
+      categories, 
+      price, 
+      level, 
+      priceMin, 
+      priceMax, 
+      page = 1, 
+      limit = 10 
+    } = req.query;
+
+    const query: any = {};
+
+    // ✅ Category filter (multiple categories with comma-separated values)
+    if (categories) {
+      query.category = { $in: (categories as string).split(",") };
+    }
+
+    // ✅ Instructors filter
+
+
+    // ✅ Price filter
+    if (price === "free") query.price = 0;
+    if (price === "paid") query.price = { $gt: 0 };
+
+    // ✅ Price range filter
+    if (priceMin || priceMax) {
+      query.price = {};
+      if (priceMin) query.price.$gte = Number(priceMin);
+      if (priceMax) query.price.$lte = Number(priceMax);
+    }
+
+    // ✅ Level filter
+    if (level) query.level = level;
+
+    const { courses, totalCount } = await this.courseService.getAllCourses(
+      query,
+      Number(page),
+      Number(limit)
+    );
+
+    res.json({
+      courses,
+      totalPages: Math.ceil(totalCount / Number(limit)),
+      totalCount,
+    });
+  } catch (error) {
+    console.log("Error in getAllCourses:", error);
+    res.status(500).json({ message: "Failed to fetch courses" });
+  }
+};
+
+
 
 
     courseDetails = async (req: AuthRequest, res: Response): Promise<void> => {
@@ -69,7 +127,6 @@ export class UserCourseController {
             res.json({ success: true })
         } catch (error) {
             console.log(error);
-
         }
     }
 
@@ -127,7 +184,7 @@ export class UserCourseController {
         try {
             const instructor = await this.courseService.getInstructorsRequest()
 
-            res.json({ success: true, instructors : instructor});
+            res.json({ success: true, instructors: instructor });
         } catch (error) {
             console.error("Error updating progress:", error);
             res.status(500).json({ success: false, message: "Internal server error" });

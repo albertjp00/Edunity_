@@ -5,11 +5,17 @@ import dotenv from "dotenv";
 import { otpStore } from "../../utils/otpStore.js";
 import { generateOtp } from "../../utils/otp.js";
 import { sendOtp } from "../../utils/sendMail.js";
+import { OAuth2Client } from "google-auth-library";
+import { IUser } from "../../models/user.js";
+import { googleLoginResult } from "../../interfaces/userInterfaces.js";
 
 dotenv.config();
 
 const secret: string = process.env.SECRET_KEY || "";
 const refresh: string = process.env.REFRESH_KEY || "";
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const SECRET_KEY = process.env.SECRET_KEY || "access_secret";
 
 // Interfaces
 interface LoginResult {
@@ -45,38 +51,38 @@ export class AuthService {
 
 
 
-loginRequest = async (email: string, password: string): Promise<LoginResult> => {
-  try {
-    const user = await this.userRepository.findByEmail(email);
+    loginRequest = async (email: string, password: string): Promise<LoginResult> => {
+        try {
+            const user = await this.userRepository.findByEmail(email);
 
-    if (!user) {
-      return { success: false, message: "User not found" };
-    }
+            if (!user) {
+                return { success: false, message: "User not found" };
+            }
 
-    if (user.blocked) {
-      return { success: false, message: "Your account is blocked" };
-    }
+            if (user.blocked) {
+                return { success: false, message: "Your account is blocked" };
+            }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return { success: false, message: "Invalid password" };  // ✅ return, not throw
-    }
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) {
+                return { success: false, message: "Invalid password" };  // ✅ return, not throw
+            }
 
-    const accessToken = jwt.sign({ id: user._id }, secret, { expiresIn: "3h" });
-    const refreshToken = jwt.sign({ id: user._id }, refresh, { expiresIn: "7d" });
+            const accessToken = jwt.sign({ id: user._id }, secret, { expiresIn: "3h" });
+            const refreshToken = jwt.sign({ id: user._id }, refresh, { expiresIn: "7d" });
 
-    return {
-      success: true,
-      message: "Login successful",
-      user,
-      accessToken,
-      refreshToken,
+            return {
+                success: true,
+                message: "Login successful",
+                user,
+                accessToken,
+                refreshToken,
+            };
+        } catch (error) {
+            console.error(error);
+            return { success: false, message: "Internal server error" }; // ✅ safe fallback
+        }
     };
-  } catch (error) {
-    console.error(error);
-    return { success: false, message: "Internal server error" }; // ✅ safe fallback
-  }
-};
 
 
 
@@ -88,7 +94,7 @@ loginRequest = async (email: string, password: string): Promise<LoginResult> => 
         try {
             const userExists = await this.userRepository.findByEmail(email);
             if (userExists) {
-                return {success:false ,message:"Email already registered"};
+                return { success: false, message: "Email already registered" };
             }
 
             const otp = generateOtp();
@@ -149,11 +155,11 @@ loginRequest = async (email: string, password: string): Promise<LoginResult> => 
 
 
 
-    async verifyOtpRequest(otp: string,email: string): Promise<{ success: boolean; message: string }> {
+    async verifyOtpRequest(otp: string, email: string): Promise<{ success: boolean; message: string }> {
         try {
             const storedData = otpStore.get(email);
-            console.log('verify otp',email);
-            
+            console.log('verify otp', email);
+
             if (!storedData) {
                 return { success: false, message: "OTP not found or expired" };
             }
@@ -183,6 +189,35 @@ loginRequest = async (email: string, password: string): Promise<LoginResult> => 
             return { success: false, message: "OTP ve   rification failed" };
         }
     }
+
+
+
+    googleLogin = async (token: string): Promise<googleLoginResult> => {
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID as string,
+        });
+
+        const payload = ticket.getPayload();
+        if (!payload) {
+            throw new Error("Invalid Google token");
+        }
+
+        const { sub, email, name } = payload;
+        const data: any = { name, email, sub };
+
+        let user = await this.userRepository.findByEmail(email as string);
+        if (!user) {
+            data.googleId = data.sub
+            user = await this.userRepository.create(data);
+        }
+
+        const accessToken = jwt.sign( { id: user._id, email: user.email },SECRET_KEY,{ expiresIn: "1h" });
+        const refreshToken = jwt.sign({ id: user._id },refresh, { expiresIn: "7d" });
+
+        return { accessToken, refreshToken, user }; 
+    };
+
 
 
 }

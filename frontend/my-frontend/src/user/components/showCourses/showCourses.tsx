@@ -12,6 +12,8 @@ interface Course {
   level: string;
   thumbnail: string;
   skills: string[];
+  instructorName:string,
+  instructorImage:string
 }
 
 interface ApiResponse {
@@ -42,6 +44,8 @@ const ShowCourses: React.FC = () => {
         `/user/getCourses?page=${page}&limit=6`
       );
       if (res.data.success) {
+        console.log(res);
+        
         setCourses(res.data.course);
         setSkills(res.data.skills?.uniqueSkills || []);
         setTotalPages(res.data.totalPages);
@@ -51,6 +55,10 @@ const ShowCourses: React.FC = () => {
       console.error("Error fetching courses:", err);
     }
   };
+
+  const gotoAllCourses = ()=>{
+    navigate('/user/allCourses')
+  }
 
   useEffect(() => {
     fetchCourses();
@@ -77,9 +85,9 @@ const ShowCourses: React.FC = () => {
 
   return (
     <div className="course-container">
-      <h2>Available Courses</h2>
+      {/* <h2>Available Courses</h2> */}
 
-      <div className="search-bar-container">
+      {/* <div className="search-bar-container">
         <input
           type="text"
           className="search-input"
@@ -87,9 +95,9 @@ const ShowCourses: React.FC = () => {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-      </div>
+      </div> */}
 
-      <div className="filter-controls">
+      {/* <div className="filter-controls">
         <div className="filter-group">
           <span>Level:</span>
           {["Beginner", "Intermediate", "Advanced"].map((level) => (
@@ -121,7 +129,7 @@ const ShowCourses: React.FC = () => {
             </button>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {filteredCourses.length === 0 ? (
         <p className="no-courses">No matching courses found.</p>
@@ -138,8 +146,7 @@ const ShowCourses: React.FC = () => {
         </div>
         <button
           className="load-more-btn"
-          onClick={() => fetchCourses(currentPage + 1)}
-          disabled={currentPage === totalPages}
+          onClick={() => gotoAllCourses()}
         >
           Load More Course →
         </button>
@@ -170,11 +177,11 @@ const ShowCourses: React.FC = () => {
               <div className="course-footer">
                 <div className="instructor">
                   <img
-                    src="/default-profile.png"
+                    src={`http://localhost:5000/assets/${course.instructorImage}`}
                     alt="instructor"
                     className="instructor-img"
                   />
-                  <span>Instructor</span>
+                  <span>{course.instructorName}</span>
                 </div>
                 <span className="price">₹{course.price}</span>
               </div>
@@ -194,7 +201,7 @@ const ShowCourses: React.FC = () => {
 }
       
 
-      <div className="pagination-controls">
+      {/* <div className="pagination-controls">
         <button
           disabled={currentPage === 1}
           onClick={() => fetchCourses(currentPage - 1)}
@@ -218,7 +225,7 @@ const ShowCourses: React.FC = () => {
         >
           Next
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

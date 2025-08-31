@@ -4,12 +4,19 @@ import './App.css'
 import { Route,BrowserRouter as Router, Routes } from 'react-router-dom'
 import Home from './user/pages/home/homePage'
 import { ToastContainer } from 'react-toastify'
-import Login from './user/components/login/login'
+import Login from './user/pages/authentication/Userlogin'
 import Register from './user/components/register/register'
 import VerifyOtp from './user/components/register/verifyOtp'
 import ProtectedRoute from './user/components/protectedRoutes/protectedRoute'
 import UserProfile from './user/pages/profile/profile'
 import EditProfile from './user/components/profile/editProfile'
+import UserPasswordChange from './user/components/profile/changePassword'
+import UserCourseDetails from './user/pages/courseDetail/courseDetails'
+import ShowUserMyCourses from './user/pages/myCourses/myCourses'
+import UserViewMyCourse from './user/pages/myCourses/viewMyCourse'
+import UserEventDetails from './user/pages/event/eventDetails'
+import AllCoursesPage from './user/pages/courses/allCourses'
+
 
 
 
@@ -21,21 +28,21 @@ import InstructorPasswordChange from './instructor/pages/profile/passwordChange'
 import InstructorCourseDetails from './instructor/components/myCourses/courseDetails'
 import InstructorEditCourse from './instructor/pages/profile/editCourse'
 import AddCourse from './instructor/components/addCourse/addCourse'
-import UserPasswordChange from './user/components/profile/changePassword'
-import UserCourseDetails from './user/pages/courseDetail/courseDetails'
-import ShowUserMyCourses from './user/pages/myCourses/myCourses'
-import UserViewMyCourse from './user/pages/myCourses/viewMyCourse'
-import AdminHome from './admin/pages/home'
 import InstProtectedRoute from './instructor/components/InsProtected'
 import KycVerification from './instructor/pages/profile/kyc'
 import ViewKyc from './instructor/components/kyc/viewKyc'
 import CreateEvents from './instructor/pages/events/createEvents'
+import InstructorEditEvents from './instructor/pages/events/editEvents'
+
+
+
 import InstructorDetails from './admin/pages/adminInstructors/instructorDetails'
 import UserDetails from './admin/pages/adminUsers/adminUserDetails'
 import AdminCourses from './admin/pages/courses/adminCourses'
 import AdminCourseDetails from './admin/pages/courses/adminCourseDetails'
-import InstructorEditEvents from './instructor/pages/events/editEvents'
-import UserEventDetails from './user/pages/event/eventDetails'
+
+
+import AdminHome from './admin/pages/home'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -67,6 +74,8 @@ function App() {
             <Route path='/user/courseDetails/:id' element={<ProtectedRoute><UserCourseDetails /></ProtectedRoute>} />
             <Route path='/user/myCourses' element={<ProtectedRoute><ShowUserMyCourses /></ProtectedRoute>} />
             <Route path='/user/viewMyCourse/:id' element={<ProtectedRoute><UserViewMyCourse /></ProtectedRoute>} />
+            <Route path='/user/allCourses' element={<ProtectedRoute><AllCoursesPage /></ProtectedRoute>} />
+
 
             <Route path='/user/eventDetails/:id' element={<ProtectedRoute><UserEventDetails /></ProtectedRoute>} />
 

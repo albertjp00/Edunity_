@@ -27,6 +27,15 @@ instructorApi.interceptors.request.use((config) => {
 instructorApi.interceptors.response.use(
   (response) => response,
   (error) => {
+
+    const originalRequest = error.config;
+
+    if (
+      originalRequest.url?.includes("/instructor/login") ||
+      originalRequest.url?.includes("/instructor/register")
+    ) {
+      return Promise.reject(error);
+    }
     if (error.response?.status === 401) {
       if (error.response.data?.message?.toLowerCase().includes("expired")) {
         toast.error("Your session has expired. Please log in again.");

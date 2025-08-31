@@ -78,19 +78,43 @@
 }
 
 /* Specific style for level dropdown */
-.add-course-form .level {
-  background-color: #eef6ff;
-  border-color: #007bff;
-  color: #003366;
-  font-weight: 500;
-  margin: 30px;
+label {
+  display: block;
+  margin: 12px 0 6px;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
 }
 
-.level{
-  width: 100px;
-  height: 30px;
-  border: 1px solid;
-  border-radius: 4px;
+/* Common select styling */
+select {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
+
+select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+}
+
+/* Specific for level */
+.select-level {
+  background-color: #f9f9ff;
+}
+
+/* Specific for category */
+.select-category {
+  background-color: #f9fff9;
+}
+
+
 
 
