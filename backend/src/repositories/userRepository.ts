@@ -7,9 +7,13 @@ import { ISkills } from './instructorRepository.js';
 
 export interface IUserRepository {
   findByEmail(email: string): Promise<IUser | null>;
+
   create(user: Partial<IUser>): Promise<IUser>;
+
   findById(id: string): Promise<IUser | null>;
+
   updateProfile(id: string, data: Partial<IUser>): Promise<IUser | null>;
+
   changePassword(id: string, password: string): Promise<IUser | null>;
 
   getCourse(id: string): Promise<ICourse | null>
@@ -20,6 +24,8 @@ export interface IUserRepository {
 
   findSkills(): Promise<ISkills>;
 
+  getAllCourses(query: any, skip: number, limit: number): Promise<ICourse[] | null>
+
   getCourseDetails(id: string, courseId: string): Promise<IMyCourse | null>
 
   addMyCourse(id: string, data: any): Promise<IMyCourse | null>
@@ -28,17 +34,22 @@ export interface IUserRepository {
 
   viewMyCourse(id: string, courseId: string): Promise<IMyCourse | null>
 
-  updateProgress(userId: string, courseId: string, moduleTitle: string):Promise<IMyCourse | null>
+  updateProgress(userId: string, courseId: string, moduleTitle: string): Promise<IMyCourse | null>
 
-  getMyEvent(id:string):Promise<IMyEvent | null>
+  getMyEvent(id: string): Promise<IMyEvent | null>
 
-  getEvents():Promise<IEvent[] | null>
+  getEvents(): Promise<IEvent[] | null>
 
 
 }
 
 export class UserRepository implements IUserRepository {
   async create(user: Partial<IUser>): Promise<IUser> {
+    const newUser = new UserModel(user);
+    return await newUser.save();
+  }
+
+  async googleLogIn(user: Partial<IUser>): Promise<IUser> {
     const newUser = new UserModel(user);
     return await newUser.save();
   }
@@ -63,12 +74,46 @@ export class UserRepository implements IUserRepository {
     return await CourseModel.findById(id)
   }
 
-  async getCourses(skip: number, limit: number): Promise<ICourse[]> {
-    return await CourseModel.find()
-      .skip(skip)
-      .limit(limit)
-      .exec();
+  // userRepository.ts
+
+  async getCourses(skip: number, limit: number) {
+    return CourseModel.aggregate([
+      { $skip: skip },
+      { $limit: 3 },
+      {
+        $addFields: {
+          instructorIdObj: { $toObjectId: "$instructorId" }
+        }
+      },
+      {
+        $lookup: {
+          from: "instructors",
+          localField: "instructorIdObj",
+          foreignField: "_id",
+          as: "instructor",
+        },
+      },
+      { $unwind: "$instructor" },
+      {
+        $project: {
+          title: 1,
+          description: 1,
+          thumbnail: 1,
+          price: 1,
+          skills: 1,
+          level: 1,
+          totalEnrolled: 1,
+          category: 1,
+          createdAt: 1,
+          instructorName: "$instructor.name",
+          instructorImage: "$instructor.profileImage",
+        },
+      },
+    ]);
   }
+
+
+
 
   async countCourses(): Promise<number> {
     return await CourseModel.countDocuments();
@@ -83,6 +128,54 @@ export class UserRepository implements IUserRepository {
 
     return result[0]
   }
+
+  async getAllCourses(query: any, skip: number, limit: number): Promise<ICourse[]> {
+    return await CourseModel.aggregate([
+      { $skip: skip },
+      { $limit: limit },
+      {
+        $addFields: {
+          instructorIdObj: { $toObjectId: "$instructorId" },
+          moduleCount: { $size: { $ifNull: ["$modules", []] } }
+        }
+      }
+      ,
+      {
+        $lookup: {
+          from: "instructors",
+          localField: "instructorIdObj",
+          foreignField: "_id",
+          as: "instructor",
+        },
+      },
+      { $unwind: "$instructor" },
+      {
+        $project: {
+          title: 1,
+          description: 1,
+          thumbnail: 1,
+          price: 1,
+          skills: 1,
+          level: 1,
+          totalEnrolled: 1,
+          category: 1,
+          createdAt: 1,
+          instructorName: "$instructor.name",
+          instructorImage: "$instructor.profileImage",
+          moduleCount:1
+        },
+      },
+    ]);
+
+
+
+  }
+
+
+  async countAllCourses(query: any): Promise<number> {
+    return CourseModel.countDocuments(query);
+  }
+
 
   async getCourseDetails(id: string, courseId: string): Promise<IMyCourse | null> {
     const course = await MyCourseModel.findOne({ userId: id, 'course.id': courseId })
@@ -105,7 +198,7 @@ export class UserRepository implements IUserRepository {
       const newCourse = new MyCourseModel({
         userId,
         course: {
-          id: courseData._id.toString(),  
+          id: courseData._id.toString(),
           title: courseData.title,
           description: courseData.description,
           price: courseData.price,
@@ -128,12 +221,12 @@ export class UserRepository implements IUserRepository {
   }
 
   async viewMyCourse(id: string, myCourseId: string): Promise<IMyCourse | null> {
-  const data = MyCourseModel.findById(myCourseId)
-  return data
-  
+    const data = MyCourseModel.findById(myCourseId)
+    return data
+
   }
 
-  async updateProgress(userId: string, courseId: string, moduleTitle: string):Promise<IMyCourse | null>{
+  async updateProgress(userId: string, courseId: string, moduleTitle: string): Promise<IMyCourse | null> {
     return MyCourseModel.findOneAndUpdate(
       { userId, "course.id": courseId },
       { $addToSet: { "progress.completedModules": moduleTitle } },
@@ -142,17 +235,17 @@ export class UserRepository implements IUserRepository {
   }
 
 
-  async getEvents():Promise<IEvent[] | null> {
+  async getEvents(): Promise<IEvent[] | null> {
     return await EventModel.find()
   }
 
-  async getMyEvent(id:string):Promise<IMyEvent | null> {    
-    return await MyEventModel.findOne({eventId:id})
+  async getMyEvent(id: string): Promise<IMyEvent | null> {
+    return await MyEventModel.findOne({ eventId: id })
   }
 
-  async enrollEvent(id:string , eventId : string):Promise<IMyEvent | null>{
-    await EventModel.findByIdAndUpdate(eventId , {$inc: {participants : 1}},{new :true})
-    return await MyEventModel.create({userId : id ,eventId})
+  async enrollEvent(id: string, eventId: string): Promise<IMyEvent | null> {
+    await EventModel.findByIdAndUpdate(eventId, { $inc: { participants: 1 } }, { new: true })
+    return await MyEventModel.create({ userId: id, eventId })
   }
 
 }

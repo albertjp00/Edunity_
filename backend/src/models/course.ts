@@ -17,6 +17,7 @@ export interface ICourse extends Document {
     modules?: IModule[];
     createdAt?: Date;
     totalEnrolled?: number;
+    category:string;
 }
 
 const CourseSchema: Schema = new Schema<ICourse>({
@@ -53,9 +54,14 @@ const CourseSchema: Schema = new Schema<ICourse>({
     type: Date,
     default: Date.now,
   },
+  category:{
+    type:String,
+
+  },
+  
   totalEnrolled: {
     type: Number,
-    default: 0,
+    default: 100,
   },
 });
 
