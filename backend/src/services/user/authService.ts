@@ -65,7 +65,7 @@ export class AuthService {
 
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
-                return { success: false, message: "Invalid password" };  // ✅ return, not throw
+                return { success: false, message: "Invalid password" };  
             }
 
             const accessToken = jwt.sign({ id: user._id }, secret, { expiresIn: "3h" });
@@ -172,7 +172,7 @@ export class AuthService {
             if (storedData.otp !== otp) {
                 return { success: false, message: "Incorrect OTP" };
             }
-
+            
             const hashedPassword = await bcrypt.hash(storedData.password, 10);
 
             await this.userRepository.create({

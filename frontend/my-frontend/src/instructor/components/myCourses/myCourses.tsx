@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './myCourses.css'
 import { useNavigate } from 'react-router-dom';
 import instructorApi from '../../../api/instructorApi';
-import axios from 'axios';
+import type { IInstructor } from '../../../user/interfaces';
 
 interface Course {
   _id: string;
@@ -14,26 +14,30 @@ interface Course {
 
 const MyCourses = () => {
   const [courses, setCourses] = useState<Course[]>([]);
+  const [instructor ,setInstructor] = useState<IInstructor>()
 
   const navigate = useNavigate()
 
 
   const fetchCourses = async () => {
     try {
-      const res = await instructorApi.get(`/instructor/getCourse`,{
-        
+      const res = await instructorApi.get(`/instructor/getCourse`, {
+
       });
       if (res.data.success) {
-        setCourses(res.data.course);
-        // console.log(res.data.course);
+        console.log(res.data.instructor);
         
+        setCourses(res.data.course);
+        setInstructor(res.data.instrcutor)
+        // console.log(res.data.course);
+
       }
     } catch (err) {
       console.error("Error fetching courses:", err);
     }
   };
 
-  const selectCourse = (id:string)=>{
+  const selectCourse = (id: string) => {
     navigate(`/instructor/courseDetails/${id}`)
 
   }
@@ -42,36 +46,48 @@ const MyCourses = () => {
     fetchCourses();
   }, []);
 
- return (
-  <div>
-    <div className="course-container">
-      <h2>Your Courses</h2>
-      {courses.length === 0 ? (
-        <p>No courses yet.</p>
-      ) : (
-        <div className="show-course-list">
-          {courses.map(course => (
-            <div key={course._id} className="course-card" onClick={()=>selectCourse(course._id)}>
-              {course.thumbnail && (
-                <img
-                  src={`http://localhost:5000/assets/${course.thumbnail}`}
-                  alt="Thumbnail"
-                  className="course-thumbnail"
-                />
-              )}
+  return (
+    <div>
+      <div className="course-container">
+        <h2>Your Courses</h2>
+        {courses.length === 0 ? (
+          <p>No courses yet.</p>
+        ) : (
+          <div className="show-course-list">
+            {courses.map(course => (
+              <div key={course._id} className="course-card" onClick={() => selectCourse(course._id)}>
+                {course.thumbnail && (
+                  <img
+                    src={`http://localhost:5000/assets/${course.thumbnail}`}
+                    alt="Thumbnail"
+                    className="course-thumbnail"
+                  />
+                )}
 
-              <div className="course-details">
-                <h3 className="course-title">{course.title}</h3>
-                <p className="course-description">{course.description}</p>
-                <p className="course-price">₹{course.price}</p>
+                <span className="course-price">₹{course.price}</span>
+
+                <div className="course-details">
+                  <h3 className="course-title">{course.title}</h3>
+                  <p className="course-description">{course.description}</p>
+
+                  {/* meta section */}
+                  <div className="course-meta">
+                    <span>Lessons: 10</span>
+                    <span>19h 30m</span>
+                    <span>20+ students</span>
+                  </div>
+
+                  {/* footer */}
+                  
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
 
 
 };

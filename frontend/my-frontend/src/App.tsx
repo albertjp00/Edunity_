@@ -27,12 +27,13 @@ import InstructoreditProfilePage from './instructor/pages/profile/editProfilePag
 import InstructorPasswordChange from './instructor/pages/profile/passwordChange'
 import InstructorCourseDetails from './instructor/components/myCourses/courseDetails'
 import InstructorEditCourse from './instructor/pages/profile/editCourse'
-import AddCourse from './instructor/components/addCourse/addCourse'
 import InstProtectedRoute from './instructor/components/InsProtected'
 import KycVerification from './instructor/pages/profile/kyc'
 import ViewKyc from './instructor/components/kyc/viewKyc'
 import CreateEvents from './instructor/pages/events/createEvents'
 import InstructorEditEvents from './instructor/pages/events/editEvents'
+import AddCoursesInstructor from './instructor/pages/course/addCourses'
+
 
 
 
@@ -43,6 +44,8 @@ import AdminCourseDetails from './admin/pages/courses/adminCourseDetails'
 
 
 import AdminHome from './admin/pages/home'
+import LoginAdmin from './admin/pages/login/adminLogin'
+import AdminProtectedRoute from './admin/components/adminProtectedRoute'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -95,7 +98,7 @@ function App() {
             <Route path='/instrcutor/passwordChange' element={<InstProtectedRoute><InstructorPasswordChange /></InstProtectedRoute>} />
             <Route path='/instructor/kyc' element={<KycVerification />} />
 
-            <Route path='/instructor/addCourse' element={<InstProtectedRoute><AddCourse /></InstProtectedRoute>} />
+            <Route path='/instructor/addCourse' element={<InstProtectedRoute><AddCoursesInstructor /></InstProtectedRoute>} />
             <Route path='/instructor/courseDetails/:id' element={<InstProtectedRoute><InstructorCourseDetails /></InstProtectedRoute>} />
             <Route path='/instructor/editCourse/:id' element={<InstProtectedRoute><InstructorEditCourse /></InstProtectedRoute>} />
 
@@ -106,13 +109,13 @@ function App() {
 
 
               // {/* admin  */}
-            {/* <Route path='/admin/login' element={<AdminLogin />} /> */}
-            <Route path='/admin/*' element={<AdminHome />} />
-            <Route path='/admin/viewKyc/:id' element={<ViewKyc />} />
-            <Route path='/admin/instructors/:id' element={<InstructorDetails />} />
-            <Route path='/admin/user/:id' element={<UserDetails />} />
-            <Route path='/admin/courses' element={<AdminCourses />} />
-            <Route path='/admin/courseDetails/:id' element={<AdminCourseDetails />} />
+            <Route path='/admin/login' element={<LoginAdmin />} />
+            <Route path='/admin/*' element={<AdminProtectedRoute><AdminHome /></AdminProtectedRoute>} />
+            <Route path='/admin/viewKyc/:id' element={<AdminProtectedRoute><ViewKyc /></AdminProtectedRoute>} />
+            <Route path='/admin/instructors/:id' element={<AdminProtectedRoute><InstructorDetails /></AdminProtectedRoute>} />
+            <Route path='/admin/user/:id' element={<AdminProtectedRoute><UserDetails /></AdminProtectedRoute>} />
+            <Route path='/admin/courses' element={<AdminProtectedRoute><AdminCourses /></AdminProtectedRoute>} />
+            <Route path='/admin/courseDetails/:id' element={<AdminProtectedRoute><AdminCourseDetails /></AdminProtectedRoute>} />
 
 
 

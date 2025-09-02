@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./courseDetail.css";
 import Navbar from "../navbar/navbar";
 import api from "../../../api/userApi";
+import { toast } from "react-toastify";
 
 
 interface Module {
@@ -32,6 +33,7 @@ interface Instructor {
 interface ApiResponse {
     success: boolean;
     course: Course & {
+        _id?: string
         instructor: Instructor;
         hasAccess: boolean;
         completedModules?: string[];
@@ -44,6 +46,7 @@ const CourseDetailsUser: React.FC = () => {
     const [hasAccess, setHasAccess] = useState<boolean>(false);
     const [instructor, setInstructor] = useState<Instructor | null>(null);
     const [completedModules, setCompletedModules] = useState<string[]>([]);
+    
 
     const navigate = useNavigate();
 
@@ -69,12 +72,8 @@ const CourseDetailsUser: React.FC = () => {
     };
 
     const handlePurchase = async () => {
-        const userId = localStorage.getItem("token");
-        if (!userId || !id) return;
 
         const formData = new FormData();
-        formData.append("user", userId);
-        formData.append("course", id);
 
         try {
             const res = await api.get(`/user/buyCourse/${id}`
@@ -89,37 +88,42 @@ const CourseDetailsUser: React.FC = () => {
     };
 
     const buyCourse = async (courseId: string) => {
-        const { data } = await api.post(`/api/courses/buy/${courseId}`);
+        try {
+            const { data } = await api.get(`/user/buyCourse/${courseId}`);
+            
+            
 
-        const options = {
-            key: data.key,
-            amount: data.amount,
-            currency: data.currency,
-            name: "Your Platform",
-            description: "Course Purchase",
-            order_id: data.orderId,
-            handler: async function (response: any) {
-                // Send payment details to backend for verification
-                await api.post("/api/courses/verify-payment", {
-                    courseId: data.courseId,
-                    paymentId: response.razorpay_payment_id,
-                    orderId: response.razorpay_order_id,
-                    signature: response.razorpay_signature,
-                });
-                alert("Payment Successful 🎉");
-            },
-            prefill: {
-                name: "User",
-                email: "user@example.com",
-            },
-            theme: {
-                color: "#3399cc",
-            },
-        };
+            const options = {
+                key: data.key, 
+                amount: data.amount, 
+                currency: data.currency,
+                name: "Your App",
+                description: "Course Purchase",
+                order_id: data.orderId,
+                handler: async function (response: any) {
+                 
+                    await api.post("/user/payment/verify", {
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_signature: response.razorpay_signature,
+                        courseId, 
+                    });
+                    toast.success("✅ Payment Successful! Course Unlocked.");
+                },
+                theme: {
+                    color: "#3399cc",
+                },
+            };
 
-        const razor = new (window as any).Razorpay(options);
-        razor.open();
+            const rzp = new (window as any).Razorpay(options);
+            rzp.open();
+        } catch (error) {
+            console.error("Payment error:", error);
+            toast.error("❌ Payment failed. Try again.");
+        }
     };
+
+
 
     useEffect(() => {
         fetchCourse();
@@ -177,16 +181,7 @@ const CourseDetailsUser: React.FC = () => {
                     </div>
                 </div>
 
-                {!hasAccess && (
-                    <div className="purchase-section">
-                        <p>
-                            <strong>Price:</strong> ₹{course.price}
-                        </p>
-                        <button onClick={handlePurchase} className="buy-button">
-                            Buy Course
-                        </button>
-                    </div>
-                )}
+
 
                 <div className="skills-box">
                     <p className="skills-title">Skills you'll gain</p>
@@ -198,6 +193,17 @@ const CourseDetailsUser: React.FC = () => {
                         ))}
                     </div>
                 </div>
+
+                {!hasAccess && (
+                    <div className="purchase-section">
+                        <p>
+                            <strong>Price:</strong> ₹{course.price}
+                        </p>
+                        <button onClick={() => buyCourse(course._id)} className="buy-button">
+                            Buy Course
+                        </button>
+                    </div>
+                )}
 
                 <div className="modules">
                     <h3>Modules:</h3>

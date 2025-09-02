@@ -33,7 +33,9 @@ adminApi.interceptors.response.use(
       localStorage.removeItem("admin");
       window.location.href = "/admin/login";
     }
+    
     return Promise.reject(error);
+
   }
 );
 

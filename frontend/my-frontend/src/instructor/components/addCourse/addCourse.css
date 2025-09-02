@@ -1,120 +1,103 @@
-.add-course-form {
-  max-width: 1000px;
-  margin: 2rem;
-  padding: 2rem;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-  font-family: 'Segoe UI', sans-serif;
-  padding: 30px;
+.addCourse {
+  display: flex;
+  justify-content: flex-start; /* keep everything towards left */
+  padding: 40px;
+  background-color: #f9f9f9;
+  min-height: 100vh;
 }
 
-
+.add-course-form {
+  width: 60%; /* takes 60% width, aligned left */
+  background: #fff;
+  padding: 25px 30px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
+}
 
 .add-course-form h2 {
-  /* text-align: center; */
-  margin-bottom: 1.5rem;
+  margin-bottom: 20px;
+  font-size: 26px;
+  font-weight: bold;
+  color: #333;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+.add-course-form label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #444;
 }
 
 .add-course-form input,
-.add-course-form textarea {
+.add-course-form textarea,
+.add-course-form select {
   width: 100%;
   padding: 10px;
-  margin-bottom: 1rem;
+  margin-bottom: 18px;
   border: 1px solid #ccc;
   border-radius: 8px;
-  font-size: .7rem;
-  background-color: white;
-  color: black;
+  font-size: 15px;
 }
 
-.add-course-form button {
-  width: 20%;
-  padding: 12px;
-  background-color: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
+.add-course-form textarea {
+  resize: vertical;
+  min-height: 100px;
 }
-
-.add-course-form button[type="submit"] {
-  background-color: #10b981; /* Green */
-  color: white;
-  font-weight: bold;
-  border: none;
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  margin-top: 1rem;
-}
-
-
 
 .skills-checkbox-group {
   display: flex;
+  gap: 15px;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .skill-checkbox {
-  background: #f2f2f2;
-  padding: 6px 12px;
-  border-radius: 5px;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-size: 14px;
 }
 
-.selected-skills ul {
-  padding-left: 20px;
-  margin: 5px 0;
-}
-
-/* Specific style for level dropdown */
-label {
-  display: block;
-  margin: 12px 0 6px;
-  font-weight: 600;
-  color: #333;
-  font-size: 14px;
-}
-
-/* Common select styling */
-select {
-  width: 100%;
+.selected-skills {
+  margin-bottom: 20px;
+  background: #f0f4ff;
   padding: 10px;
-  margin: 8px 0 16px;
-  border: 1px solid #ccc;
   border-radius: 6px;
-  background: #fff;
-  font-size: 14px;
-  font-family: inherit;
-  outline: none;
-  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-select:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+.module-card {
+  padding: 15px;
+  background: #f7f7f7;
+  border-radius: 8px;
+  margin-bottom: 15px;
 }
 
-/* Specific for level */
-.select-level {
-  background-color: #f9f9ff;
+button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
 }
 
-/* Specific for category */
-.select-category {
-  background-color: #f9fff9;
+button[type="button"] {
+  background: #eaeaea;
+  color: #333;
+  margin-bottom: 20px;
 }
 
+button[type="button"]:hover {
+  background: #ddd;
+}
 
+.add-course-btn {
+  background: #007bff;
+  color: #fff;
+}
 
-
+.add-course-btn:hover {
+  background: #0056b3;
+}

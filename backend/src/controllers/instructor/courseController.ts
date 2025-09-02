@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { CourseService } from "../../services/instructor/courseServices.js";
 import { InstructorRepository } from "../../repositories/instructorRepository.js";
 import { InstAuthRequest } from "../../middleware/authMiddleware.js";
+import instructor from "../../routes/instructorRoutes.js";
 
 export class InstCourseController {
     private courseService: CourseService;
@@ -27,7 +28,8 @@ export class InstCourseController {
                 course: data.courses,
                 skills: data.skills,
                 totalPages: data.totalPages,
-                currentPage: data.currentPage
+                currentPage: data.currentPage,
+                instructor:data.instructor
             });
         } catch (error) {
             console.error(error);

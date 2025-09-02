@@ -67,6 +67,8 @@ export class UserRepository implements IUserRepository {
   }
 
   async changePassword(id: string, password: string): Promise<IUser | null> {
+    console.log('password changed',id, password);
+    
     return await UserModel.findByIdAndUpdate(id, { password: password })
   }
 
@@ -181,6 +183,8 @@ export class UserRepository implements IUserRepository {
     const course = await MyCourseModel.findOne({ userId: id, 'course.id': courseId })
     return course
   }
+
+
 
   async addMyCourse(userId: string, courseData: any): Promise<IMyCourse | null> {
     try {

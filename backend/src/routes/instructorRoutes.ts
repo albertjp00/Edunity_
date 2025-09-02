@@ -51,5 +51,4 @@ instructor.patch('/event/:id',instAuthMiddleware ,eventController.editEvent)
 
 
 
-
 export default instructor

@@ -8,6 +8,8 @@ import { IUser, UserModel } from "../models/user.js";
 
 
 export interface IAdminRepository {
+    findByEmail(email: string , password :string): Promise<IUser | null>
+
     findUsers(): Promise<IUser[] | null>
 
     blockUser(id: string): Promise<boolean | null>
@@ -37,6 +39,12 @@ export interface IAdminRepository {
 }
 
 export class AdminRepository implements IAdminRepository {
+
+    async findByEmail(email: string , password :string): Promise<IUser | null> {
+        const user = await UserModel.findOne({ email , password })
+        return user
+    }
+
     async findUsers(): Promise<IUser[] | null> {
         return UserModel.find({ name: { $ne: "admin" } });
     }

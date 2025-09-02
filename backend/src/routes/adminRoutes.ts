@@ -3,6 +3,7 @@ import { AdminController } from '../controllers/admin/controller.js'
 import { AdminInstructorController } from '../controllers/admin/instructorController.js'
 import { AdminUserController } from '../controllers/admin/userControllers.js'
 import { AdminCourseController } from '../controllers/admin/adminCourseController.js'
+import { adminAuthMiddleware } from '../middleware/authMiddleware.js'
 
 const admin = express.Router()
 
@@ -12,9 +13,11 @@ const instructorController = new AdminInstructorController()
 const userController = new AdminUserController()
 const courseController = new AdminCourseController()
 
-admin.get('/get-users',dashboardController.getUsers)
+admin.post('/login',dashboardController.adminLogin)
 
-admin.put('/block-user/:id',dashboardController.blockUser)
+admin.get('/getUsers',adminAuthMiddleware,dashboardController.getUsers)
+
+admin.put('/blockUser/:id',dashboardController.blockUser)
 
 admin.put('/unblock-users/:id',dashboardController.unblockUser)
 
