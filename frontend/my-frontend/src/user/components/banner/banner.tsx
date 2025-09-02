@@ -24,9 +24,9 @@ const Banner: React.FC = () => {
         </p>
 
         <div className="hero__cta">
-          <button className="btn btn--primary" onClick={() => navigate("/register")}>
+          {/* <button className="btn btn--primary" onClick={() => navigate("/register")}>
             Get Started
-          </button>
+          </button> */}
           <button className="btn btn--ghost" onClick={() => navigate("/user/allCourses")}>
             Explore Courses
           </button>

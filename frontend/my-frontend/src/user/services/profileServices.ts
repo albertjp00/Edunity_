@@ -41,8 +41,8 @@ export const userPasswordChange = async(oldPassword:string , newPassword:string)
         const res =await api.put('/user/passwordChange',
         { oldPassword, newPassword })
         return res
-    } catch (error) {
+    } catch (error:any) {
         console.log(error);
-        
+        throw error.response ? error.response : error;
     }
 }

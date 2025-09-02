@@ -51,7 +51,10 @@ const UserPasswordChange: React.FC = () => {
     }
 
     try {
-      const response = await userPasswordChange(oldPassword,newPassword)
+      const response = await api.put('/user/passwordChange',
+        { oldPassword, newPassword })
+      console.log(response);
+      
 
       if (response?.data.success) {
         toast.success('Password updated successfully!', { autoClose: 1500 });
@@ -60,7 +63,6 @@ const UserPasswordChange: React.FC = () => {
         setNewPassword('');
         setConfirmPassword('');
 
-        localStorage.removeItem('user');
         navigate('/user/login');
       } else {
         toast.error(response?.data.message);

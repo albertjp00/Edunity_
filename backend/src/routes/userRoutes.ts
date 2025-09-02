@@ -47,7 +47,11 @@ router.get('/courseDetails',authMiddleware,courseController.courseDetails)
 router.get('/myCourses',authMiddleware , courseController.myCourses)
 router.get('/myCourses',authMiddleware , courseController.myCourses)
 router.get('/getInstructors',authMiddleware , courseController.getInstructors)
+
 router.get('/buyCourse/:id',authMiddleware , courseController.buyCourse)
+router.post('/payment/verify',authMiddleware , courseController.verifyPayment)
+
+
 router.get('/viewMyCourse/:id',authMiddleware , courseController.viewMyCourse)
 router.post("/updateProgress", authMiddleware, courseController.updateProgress);``
 

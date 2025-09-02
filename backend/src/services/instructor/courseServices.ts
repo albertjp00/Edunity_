@@ -27,6 +27,7 @@ interface CourseResult {
   totalPages: number;
   currentPage: number;
   totalItems: number;
+  instructor:any
 }
 
 interface CourseDetails {
@@ -45,13 +46,15 @@ export class CourseService {
         this.instructorRepository.countCourses(),
         this.instructorRepository.findSkills()
       ]);
+      const instructor = await this.instructorRepository.findById(id)
 
       return {
         courses,
         skills,
         totalPages: Math.ceil(totalItems / limit),
         currentPage: page,
-        totalItems
+        totalItems,
+        instructor
       };
     } catch (error) {
       console.log(error);

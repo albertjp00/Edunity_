@@ -47,11 +47,7 @@ const AddCourse: React.FC = () => {
     });
   };
 
-  const updateModule = (index: number, field: keyof Module, value: string) => {
-    const updatedModules = [...form.modules];
-    updatedModules[index][field] = value;
-    setForm({ ...form, modules: updatedModules });
-  };
+
 
   const handleSkillChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
@@ -78,22 +74,57 @@ const AddCourse: React.FC = () => {
     return true;
   };
 
+
+  const updateModule = (index: number, field: keyof Module, value: string) => {
+    const updatedModules = [...form.modules];
+    updatedModules[index][field] = value;
+    setForm({ ...form, modules: updatedModules });
+  };
+
+  const checkUrlExists = (url: string): boolean => {
+    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
+    const vimeoRegex = /^(https?:\/\/)?(www\.)?vimeo\.com\/.+$/;
+    const videoFileRegex = /\.(mp4|webm|ogg)$/i;
+
+    return youtubeRegex.test(url) || vimeoRegex.test(url) || videoFileRegex.test(url);
+  };
+
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    // if (!validateForm()) return;
+    // Basic form validation
+    if (!form.title.trim() || !form.description.trim() || !form.price) {
+      toast.error("Please fill all course details.");
+      return;
+    }
+
+    // Validate modules only at submission
+    for (let i = 0; i < form.modules.length; i++) {
+      const mod = form.modules[i];
+      if (!mod.title.trim() || !mod.videoUrl.trim()) {
+        toast.error(`Module ${i + 1} must have a title and video URL.`);
+        return;
+      }
+      if (!checkUrlExists(mod.videoUrl)) {
+        toast.error(`Module ${i + 1} has an invalid video URL.`);
+        return;
+      }
+    }
 
     try {
-
-
       const formData = new FormData();
       formData.append("title", form.title);
       formData.append("description", form.description);
       formData.append("skills", JSON.stringify(form.skills));
       formData.append("price", form.price);
       formData.append("level", form.level);
-      formData.append('level', form.category)
-      if (form.thumbnail) formData.append("thumbnail", form.thumbnail);
+      formData.append("category", form.category);
+
+      if (form.thumbnail) {
+        formData.append("thumbnail", form.thumbnail);
+      }
+
       formData.append("modules", JSON.stringify(form.modules));
 
       const token = localStorage.getItem("instructor");
@@ -101,6 +132,7 @@ const AddCourse: React.FC = () => {
       const res = await instructorApi.post("/instructor/course", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data"
         },
       });
 
@@ -114,9 +146,9 @@ const AddCourse: React.FC = () => {
     }
   };
 
+
   return (
     <div className="addCourse">
-      <Navbar />
       <form className="add-course-form" onSubmit={handleSubmit}>
         <h2>Add New Course</h2>
 
@@ -155,33 +187,33 @@ const AddCourse: React.FC = () => {
         )}
 
         <label htmlFor="select-level">Course Level</label>
-<select
-  className="select-level"
-  name="level"
-  value={form.level}
-  onChange={handleChange}
-  required
->
-  <option value="Beginner">Beginner</option>
-  <option value="Intermediate">Intermediate</option>
-  <option value="Advanced">Advanced</option>
-</select>
+        <select
+          className="select-level"
+          name="level"
+          value={form.level}
+          onChange={handleChange}
+          required
+        >
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
+        </select>
 
-<label htmlFor="select-category">Category</label>
-<select
-  className="select-category"
-  name="category"
-  value={form.category}
-  onChange={handleChange}
-  required
->
-  <option value="Web development">Web development</option>
-  <option value="Mobile Development">Mobile Development</option>
-  <option value="Data Science">Data science</option>
-  <option value="Cyber Security">Cyber Security</option>
-  <option value="Design">Design</option>
-  <option value="Language">Language</option>
-</select>
+        <label htmlFor="select-category">Category</label>
+        <select
+          className="select-category"
+          name="category"
+          value={form.category}
+          onChange={handleChange}
+          required
+        >
+          <option value="Web development">Web development</option>
+          <option value="Mobile Development">Mobile Development</option>
+          <option value="Data Science">Data science</option>
+          <option value="Cyber Security">Cyber Security</option>
+          <option value="Design">Design</option>
+          <option value="Language">Language</option>
+        </select>
 
 
         <br />
