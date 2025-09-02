@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import profilePic from "../../../assets/profilePic.png";
 import { getUsers, blockUser, unblockUser } from "../../../services/admin/adminService";
 import { Link } from "react-router-dom";
+import ConfirmModal from "../../components/adminUsers/modal";
 
 interface User {
   _id: string;
@@ -21,6 +22,11 @@ const UsersAdmin: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const usersPerPage = 4;
 
+  // Modal states
+  const [showModal, setShowModal] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [isBlocking, setIsBlocking] = useState<boolean>(true);
+
   const loadUsers = async (): Promise<void> => {
     try {
       const data = await getUsers();
@@ -30,27 +36,39 @@ const UsersAdmin: React.FC = () => {
     }
   };
 
-  const handleBlock = async (userId: string): Promise<void> => {
-    try {
-      const res = await blockUser(userId);
-      if (res.success) {
-        toast.success("User Blocked", { autoClose: 1500 });
-        loadUsers();
-      }
-    } catch (error) {
-      console.error("Error blocking user:", error);
-    }
+  const handleBlock = (userId: string): void => {
+    setSelectedUserId(userId);
+    setIsBlocking(true);
+    setShowModal(true);
   };
 
-  const handleUnblock = async (userId: string): Promise<void> => {
+  const handleUnblock = (userId: string): void => {
+    setSelectedUserId(userId);
+    setIsBlocking(false);
+    setShowModal(true);
+  };
+
+  const confirmAction = async () => {
+    if (!selectedUserId) return;
+
     try {
-      const res = await unblockUser(userId);
-      if (res.success) {
-        toast.success("User Unblocked", { autoClose: 1500 });
-        loadUsers();
+      if (isBlocking) {
+        const res = await blockUser(selectedUserId);
+        if (res.success) {
+          toast.success("User Blocked", { autoClose: 1500 });
+        }
+      } else {
+        const res = await unblockUser(selectedUserId);
+        if (res.success) {
+          toast.success("User Unblocked", { autoClose: 1500 });
+        }
       }
+      loadUsers();
     } catch (error) {
-      console.error("Error unblocking user:", error);
+      console.error("Error updating user status:", error);
+    } finally {
+      setShowModal(false);
+      setSelectedUserId(null);
     }
   };
 
@@ -124,9 +142,19 @@ const UsersAdmin: React.FC = () => {
               </td>
               <td>
                 {user.blocked ? (
-                  <button className="btn-unblock" onClick={() => handleUnblock(user._id)}>Unblock</button>
+                  <button
+                    className="btn-unblock"
+                    onClick={() => handleUnblock(user._id)}
+                  >
+                    Unblock
+                  </button>
                 ) : (
-                  <button className="btn-block" onClick={() => handleBlock(user._id)}>Block</button>
+                  <button
+                    className="btn-block"
+                    onClick={() => handleBlock(user._id)}
+                  >
+                    Block
+                  </button>
                 )}
               </td>
             </tr>
@@ -160,6 +188,15 @@ const UsersAdmin: React.FC = () => {
           Next ➡
         </button>
       </div>
+
+      {/* ✅ Use ConfirmModal here */}
+      <ConfirmModal
+        isOpen={showModal}
+        title={isBlocking ? "Block User" : "Unblock User"}
+        message={`Are you sure you want to ${isBlocking ? "block" : "unblock"} this user?`}
+        onConfirm={confirmAction}
+        onCancel={() => setShowModal(false)}
+      />
     </div>
   );
 };

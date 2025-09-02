@@ -50,10 +50,13 @@ export class ProfileService {
 
   async passwordChange(id: string, newPassword: string, oldPassword: string): Promise<boolean> {
     try {
-      const instructor = await this.userRepository.findById(id);
-      if (!instructor) return false;
+      const user = await this.userRepository.findById(id);
+      if (!user) return false;
+      
+      const isMatch = await bcrypt.compare(oldPassword, user.password);
 
-      const isMatch = await bcrypt.compare(oldPassword, instructor.password);
+      console.log(isMatch , oldPassword , user.password , newPassword);
+      
       if (!isMatch) return false;
 
       const hashedPassword = await bcrypt.hash(newPassword, 10);

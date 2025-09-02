@@ -79,17 +79,21 @@ export class ProfileController {
             const id = req.user?.id;
             const { newPassword, oldPassword } = req.body;
 
+            // console.log(newPassword);
+            
+
             if (!id) {
-                res.status(401).json({ success: false, message: "Unauthorized" });
+                res.status(401).json({ success: false, message: "Unauthorized" })
                 return;
             }
 
-            const result = await this.profileService.passwordChange(id, newPassword, oldPassword);
-
+            const result = await this.profileService.passwordChange(id, newPassword, oldPassword)
+            console.log(result);
+            
             if (result) {
-                res.json({ success: true, message: "Password updated successfully" });
+                res.json({ success: true, message: "Password updated successfully" })
             } else {
-                res.status(403).json({ success: false, message: "Old password is incorrect" });
+                res.status(400).json({ success: false, message: "Old password is incorrect" })
             }
         } catch (error) {
             console.error(error);

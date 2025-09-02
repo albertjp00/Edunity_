@@ -59,6 +59,13 @@ export interface InstAuthRequest extends Request {
   files?: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] } | undefined;
 }
 
+export interface AdminAuthRequest extends Request {
+  admin?: JwtUserPayload;
+  file?: Express.Multer.File | undefined;
+  files?: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] } | undefined; 
+
+}
+
 export const instAuthMiddleware = (
   req: InstAuthRequest,
   res: Response,
@@ -80,7 +87,7 @@ export const instAuthMiddleware = (
   }
 
   try {
-    const decoded = jwt.verify(token, secret); // secret is already defined above
+    const decoded = jwt.verify(token, secret); 
     req.instructor = decoded as JwtPayload | undefined;
     next();
   } catch (error) {
@@ -88,3 +95,42 @@ export const instAuthMiddleware = (
   }
 };
 
+
+
+
+export const adminAuthMiddleware = (
+  req: AdminAuthRequest,
+  res: Response,
+  next: NextFunction
+): void => {
+  console.log("adminAuthMiddleware");
+
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader?.startsWith("Bearer ")) {
+    res.status(401).json({ message: "Unauthorized: No token provided" });
+    return;
+  }
+
+  const token = authHeader.split(" ")[1];
+  if (!token) {
+    res
+      .status(401)
+      .json({ message: "Unauthorized: Token missing after Bearer" });
+    return;
+  }
+
+  try {
+    const decoded = jwt.verify(token, secret) as JwtUserPayload;
+
+    if (decoded.role !== "admin") {
+      res.status(403).json({ message: "Forbidden: Not an admin" });
+      return;
+    }
+
+    req.admin = decoded;
+    next();
+  } catch {
+    res.status(401).json({ message: "Unauthorized: Invalid token" });
+  }
+};

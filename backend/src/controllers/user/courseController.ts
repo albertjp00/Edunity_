@@ -43,60 +43,60 @@ export class UserCourseController {
     };
 
     // controller
-getAllCourses = async (req: AuthRequest, res: Response): Promise<void> => {
-  try {
-    console.log("get all courses");
+    getAllCourses = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            console.log("get all courses");
 
-    const { 
-      categories, 
-      price, 
-      level, 
-      priceMin, 
-      priceMax, 
-      page = 1, 
-      limit = 10 
-    } = req.query;
+            const {
+                categories,
+                price,
+                level,
+                priceMin,
+                priceMax,
+                page = 1,
+                limit = 10
+            } = req.query;
 
-    const query: any = {};
+            const query: any = {};
 
-    // ✅ Category filter (multiple categories with comma-separated values)
-    if (categories) {
-      query.category = { $in: (categories as string).split(",") };
-    }
+            // ✅ Category filter (multiple categories with comma-separated values)
+            if (categories) {
+                query.category = { $in: (categories as string).split(",") };
+            }
 
-    // ✅ Instructors filter
+            // ✅ Instructors filter
 
 
-    // ✅ Price filter
-    if (price === "free") query.price = 0;
-    if (price === "paid") query.price = { $gt: 0 };
+            // ✅ Price filter
+            if (price === "free") query.price = 0;
+            if (price === "paid") query.price = { $gt: 0 };
 
-    // ✅ Price range filter
-    if (priceMin || priceMax) {
-      query.price = {};
-      if (priceMin) query.price.$gte = Number(priceMin);
-      if (priceMax) query.price.$lte = Number(priceMax);
-    }
+            // ✅ Price range filter
+            if (priceMin || priceMax) {
+                query.price = {};
+                if (priceMin) query.price.$gte = Number(priceMin);
+                if (priceMax) query.price.$lte = Number(priceMax);
+            }
 
-    // ✅ Level filter
-    if (level) query.level = level;
+            // ✅ Level filter
+            if (level) query.level = level;
 
-    const { courses, totalCount } = await this.courseService.getAllCourses(
-      query,
-      Number(page),
-      Number(limit)
-    );
+            const { courses, totalCount } = await this.courseService.getAllCourses(
+                query,
+                Number(page),
+                Number(limit)
+            );
 
-    res.json({
-      courses,
-      totalPages: Math.ceil(totalCount / Number(limit)),
-      totalCount,
-    });
-  } catch (error) {
-    console.log("Error in getAllCourses:", error);
-    res.status(500).json({ message: "Failed to fetch courses" });
-  }
-};
+            res.json({
+                courses,
+                totalPages: Math.ceil(totalCount / Number(limit)),
+                totalCount,
+            });
+        } catch (error) {
+            console.log("Error in getAllCourses:", error);
+            res.status(500).json({ message: "Failed to fetch courses" });
+        }
+    };
 
 
 
@@ -115,20 +115,77 @@ getAllCourses = async (req: AuthRequest, res: Response): Promise<void> => {
         }
     }
 
+    // buyCourse = async (req: AuthRequest, res: Response): Promise<void> => {
+    //     try {
+    //         const id = req.user?.id!
+
+    //         const courseId = req.params.id
+    //         console.log('buying course', courseId);
+
+
+    //         const response = await this.courseService.buyCourseService(id, courseId)
+    //         res.json({ success: true })
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }
+    // controller
     buyCourse = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
-            const id = req.user?.id!
+            const id = req.user?.id!;
+            const courseId = req.params.id!;
+            console.log(id,courseId);
+            
+            const order = await this.courseService.buyCourseRequest(id, courseId);
 
-            const courseId = req.params.id
-            console.log('buying course', courseId);
+            res.json({
+                success: true,
+                orderId: order.id,
+                amount: order.amount,
+                currency: order.currency,
+                key: process.env.RAZORPAY_KEY_ID,
+                courseId,
+            });
 
-
-            const response = await this.courseService.buyCourseService(id, courseId)
-            res.json({ success: true })
         } catch (error) {
-            console.log(error);
+            console.error("Error in buyCourse:", error);
+            res.status(500).json({ success: false, message: "Payment initiation failed" });
         }
-    }
+    };
+
+verifyPayment = async (req: AuthRequest, res: Response) => {
+        try {
+            const { razorpay_order_id, razorpay_payment_id, razorpay_signature, courseId } = req.body;
+            const userId = req.user?.id!;
+            console.log('verify pay',userId);
+            
+
+            const result = await this.courseService.verifyPaymentRequest(
+                razorpay_order_id,
+                razorpay_payment_id,
+                razorpay_signature,
+                courseId,
+                userId
+            );
+
+
+            if (result.success) {
+                return res.json(result);
+            } else {
+                return res.status(400).json(result);
+            }
+        } catch (error) {
+            console.error("Payment verification failed:", error);
+            res.status(500).json({ success: false, message: "Payment verification failed" });
+        }
+    };
+
+
+
+
+
+
+
 
     myCourses = async (req: AuthRequest, res: Response): Promise<void> => {
         try {

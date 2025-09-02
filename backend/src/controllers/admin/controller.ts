@@ -2,16 +2,38 @@ import { Response , Request } from "express";
 import { AdminRepository } from "../../repositories/adminRepositories.js";
 import { AdminService } from "../../services/admin/adminServices.js";
 import { IKyc } from "../../models/kyc.js";
+import { UserRepository } from "../../repositories/userRepository.js";
+import { AdminAuthRequest } from "../../middleware/authMiddleware.js";
 
 export class AdminController {
     private adminService: AdminService
 
     constructor() {
         const repo = new AdminRepository();
-        this.adminService = new AdminService(repo)
+        const uRepo = new UserRepository()
+        this.adminService = new AdminService(repo , uRepo)
+        
     }
 
-    getUsers = async(req:Request , res:Response ):Promise<void>=>{
+
+    adminLogin = async(req:AdminAuthRequest , res:Response ):Promise<void>=>{
+        try {
+            const {email , password} = req.body
+            console.log(email);
+            
+            const result = await this.adminService.loginRequest(email,password)
+            if(result?.success){
+                res.json({success:true , message:result.message , token:result.token})
+            }else{
+                res.json({success:false , message:result?.message})
+            }
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
+
+    getUsers = async(req:AdminAuthRequest , res:Response ):Promise<void>=>{
         try {
             console.log('admin userrsss');
             
@@ -87,12 +109,13 @@ export class AdminController {
             
         }
     }
-    rejectKyc = async (req:Request , res:Response):Promise<void | null>=>{
+    rejectKyc = async (req:AdminAuthRequest , res:Response):Promise<void | null>=>{
         try {
             const id = req.params.id!
-            console.log('kyc verify ',id);
+            const reason = req.body.reason
+            console.log('kyc verify ',id , req.body);
             
-            const data = await this.adminService.rejectKyc(id)
+            const data = await this.adminService.rejectKyc(id,reason)
             
             res.json({success:true})
         } catch (error) {

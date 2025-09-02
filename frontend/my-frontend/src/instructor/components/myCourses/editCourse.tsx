@@ -19,7 +19,7 @@ interface CourseForm {
     thumbnail: File | string;
     level: string;
     modules: Module[];
-    category:string
+    category: string
 }
 
 interface ApiResponse<T> {
@@ -40,7 +40,7 @@ const EditCourse: React.FC = () => {
         thumbnail: '',
         level: '',
         modules: [],
-        category:''
+        category: ''
     });
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -59,11 +59,8 @@ const EditCourse: React.FC = () => {
         setForm({ ...form, modules: updatedModules });
     };
 
-    const updateModule = (index: number, field: keyof Module, value: string) => {
-        const modules = [...form.modules];
-        modules[index][field] = value;
-        setForm({ ...form, modules });
-    };
+
+
 
     const handleSkillChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { value, checked } = e.target;
@@ -75,8 +72,45 @@ const EditCourse: React.FC = () => {
         }
     };
 
+    const updateModule = (index: number, field: keyof Module, value: string) => {
+        const modules = [...form.modules];
+        modules[index][field] = value;
+        setForm({ ...form, modules });
+    };
+
+    const checkUrlExists = async (url: string): Promise<boolean> => {
+        try {
+            // Quick regex for YouTube / Vimeo / direct video links
+            const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
+            const vimeoRegex = /^(https?:\/\/)?(www\.)?vimeo\.com\/.+$/;
+            const videoFileRegex = /\.(mp4|webm|ogg)$/i;
+
+            if (youtubeRegex.test(url) || vimeoRegex.test(url) || videoFileRegex.test(url)) {
+                return true;
+            }
+
+            return false;
+        } catch (error) {
+            return false;
+        }
+    };
+
+
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+
+        
+
+        for (let mod of form.modules) {
+            if (mod.videoUrl.trim()) {
+                const exists = await checkUrlExists(mod.videoUrl);
+                if (!exists) {
+                    toast.error(`Video URL "${mod.videoUrl}" is invalid or not reachable.`);
+                    return;
+                }
+            }
+        }
 
         try {
             const formData = new FormData();
@@ -85,7 +119,7 @@ const EditCourse: React.FC = () => {
             formData.append('skills', JSON.stringify(form.skills));
             formData.append('price', form.price);
             formData.append('level', form.level);
-            formData.append('category',form.category)
+            formData.append('category', form.category)
 
             if (form.thumbnail instanceof File) {
                 formData.append('thumbnail', form.thumbnail);

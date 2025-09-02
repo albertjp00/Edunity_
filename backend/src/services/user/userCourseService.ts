@@ -5,6 +5,8 @@ import { IUser } from '../../models/user.js';
 import { AdminRepository } from '../../repositories/adminRepositories.js';
 import { InstructorRepository } from '../../repositories/instructorRepository.js';
 import { UserRepository } from '../../repositories/userRepository.js';
+import razorpay from '../../utils/razorpay.js';
+import crypto from 'crypto'
 
 
 export interface ICourseDetails extends ICourse {
@@ -35,8 +37,8 @@ export class UserCourseService {
     const skills = await this.userRepository.findSkills();
 
 
-    console.log('courses' ,courses);
-    
+    console.log('courses', courses);
+
 
     return {
       courses,
@@ -55,7 +57,7 @@ export class UserCourseService {
       const courses = await this.userRepository.getAllCourses(query, skip, limit);
       const totalCount = await this.userRepository.countAllCourses(query);
       console.log(courses);
-      
+
 
       return {
         courses,
@@ -77,7 +79,7 @@ export class UserCourseService {
       let hasAccess = false
       const course: any = await this.userRepository.getCourse(courseId);
       const myCourse = await this.userRepository.getCourseDetails(userId, courseId);
-      console.log('myCoursessss', myCourse);
+      // console.log('myCoursessss', myCourse);
 
       if (myCourse) {
         hasAccess = true
@@ -97,18 +99,64 @@ export class UserCourseService {
     }
   };
 
-  buyCourseService = async (userId: string, courseId: any): Promise<boolean> => {
-    try {
 
-      const course = await this.userRepository.getCourse(courseId)
-      const data = course
-      const myCourse = await this.userRepository.addMyCourse(userId, data);
-      return !myCourse;
+
+
+
+  buyCourseRequest = async (userId: string, courseId: string) => {
+    try {
+      console.log('buy course service');
+      const course = await this.userRepository.getCourse(courseId);
+      if (!course) {
+        throw new Error("Course not found");
+      }
+
+      const options = {
+        amount: course.price! * 100,
+        currency: "INR",
+        receipt: `receipt_${Date.now()}`,
+        notes: { userId, courseId },
+      };
+
+      const order = await razorpay.orders.create(options);
+
+      return order;
+
     } catch (error) {
       console.error(error);
-      return false;
+      throw error;
     }
   };
+
+  verifyPaymentRequest = async (razorpay_order_id: string, razorpay_payment_id: string,
+    razorpay_signature: string, courseId: string, userId: string): Promise<{ success: boolean; message: string }> => {
+    try {
+      const sign = razorpay_order_id + "|" + razorpay_payment_id;
+      const expectedSign = crypto
+        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+        .update(sign.toString())
+        .digest("hex");
+
+      if (razorpay_signature === expectedSign) {
+        const course = await this.userRepository.getCourse(courseId)
+        await this.userRepository.addMyCourse(userId, course);
+
+        return { success: true, message: "Payment verified and course added" };
+      } else {
+        return { success: false, message: "Invalid signature" };
+      }
+    } catch (error) {
+      console.log(error);
+      return { success: false, message: "Payment verification failed" }
+
+    }
+
+  }
+
+
+
+
+
 
 
   myCoursesRequest = async (id: string): Promise<IMyCourse[] | null> => {
