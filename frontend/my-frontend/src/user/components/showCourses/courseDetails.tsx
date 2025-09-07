@@ -46,7 +46,7 @@ const CourseDetailsUser: React.FC = () => {
     const [hasAccess, setHasAccess] = useState<boolean>(false);
     const [instructor, setInstructor] = useState<Instructor | null>(null);
     const [completedModules, setCompletedModules] = useState<string[]>([]);
-    
+
 
     const navigate = useNavigate();
 
@@ -90,25 +90,26 @@ const CourseDetailsUser: React.FC = () => {
     const buyCourse = async (courseId: string) => {
         try {
             const { data } = await api.get(`/user/buyCourse/${courseId}`);
-            
-            
+
+
 
             const options = {
-                key: data.key, 
-                amount: data.amount, 
+                key: data.key,
+                amount: data.amount,
                 currency: data.currency,
                 name: "Your App",
                 description: "Course Purchase",
                 order_id: data.orderId,
                 handler: async function (response: any) {
-                 
+
                     await api.post("/user/payment/verify", {
                         razorpay_payment_id: response.razorpay_payment_id,
                         razorpay_order_id: response.razorpay_order_id,
                         razorpay_signature: response.razorpay_signature,
-                        courseId, 
+                        courseId,
                     });
-                    toast.success("✅ Payment Successful! Course Unlocked.");
+                    toast.success("Payment Successful! Course Unlocked.");
+                    navigate('/user/myCourses')
                 },
                 theme: {
                     color: "#3399cc",
@@ -119,7 +120,7 @@ const CourseDetailsUser: React.FC = () => {
             rzp.open();
         } catch (error) {
             console.error("Payment error:", error);
-            toast.error("❌ Payment failed. Try again.");
+            toast.error("Payment failed. Try again.");
         }
     };
 
@@ -213,13 +214,33 @@ const CourseDetailsUser: React.FC = () => {
                                 <summary className="module-title">
                                     📘 {module.title || `Module ${idx + 1}`}
                                 </summary>
+
+                                {/* ✅ Show video only if user has access */}
+                                {hasAccess ? (
+                                    <div className="module-content">
+                                        <video
+                                            width="100%"
+                                            height="400"
+                                            controls
+                                            src={module.videoUrl}
+                                        />
+                                        <p>{module.content}</p>
+                                    </div>
+                                ) : (
+                                    <p className="locked-message">
+                                        Purchase the course to unlock this video.
+                                    </p>
+                                )}
                             </details>
                         </div>
                     ))}
                 </div>
 
+
                 {instructor && (
                     <div className="instructor-details-centered">
+                        <h2>Instructor</h2>
+                        <br></br>
                         <img
                             src={`http://localhost:5000/assets/${instructor.profileImage}`}
                             alt={instructor.name}

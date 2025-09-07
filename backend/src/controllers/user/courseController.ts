@@ -42,7 +42,7 @@ export class UserCourseController {
         }
     };
 
-    // controller
+
     getAllCourses = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
             console.log("get all courses");
@@ -53,38 +53,39 @@ export class UserCourseController {
                 level,
                 priceMin,
                 priceMax,
+                sortBy,
                 page = 1,
                 limit = 10
             } = req.query;
 
             const query: any = {};
 
-            // ✅ Category filter (multiple categories with comma-separated values)
             if (categories) {
                 query.category = { $in: (categories as string).split(",") };
             }
 
-            // ✅ Instructors filter
 
 
-            // ✅ Price filter
             if (price === "free") query.price = 0;
             if (price === "paid") query.price = { $gt: 0 };
 
-            // ✅ Price range filter
+            let sortOption: any = {};
+            if (sortBy === "priceLowToHigh") sortOption.price = 1;
+            if (sortBy === "priceHighToLow") sortOption.price = -1;
+
             if (priceMin || priceMax) {
                 query.price = {};
                 if (priceMin) query.price.$gte = Number(priceMin);
                 if (priceMax) query.price.$lte = Number(priceMax);
             }
 
-            // ✅ Level filter
             if (level) query.level = level;
 
             const { courses, totalCount } = await this.courseService.getAllCourses(
                 query,
                 Number(page),
-                Number(limit)
+                Number(limit),
+                sortOption
             );
 
             res.json({
@@ -134,8 +135,8 @@ export class UserCourseController {
         try {
             const id = req.user?.id!;
             const courseId = req.params.id!;
-            console.log(id,courseId);
-            
+            console.log(id, courseId);
+
             const order = await this.courseService.buyCourseRequest(id, courseId);
 
             res.json({
@@ -153,12 +154,12 @@ export class UserCourseController {
         }
     };
 
-verifyPayment = async (req: AuthRequest, res: Response) => {
+    verifyPayment = async (req: AuthRequest, res: Response) => {
         try {
             const { razorpay_order_id, razorpay_payment_id, razorpay_signature, courseId } = req.body;
             const userId = req.user?.id!;
-            console.log('verify pay',userId);
-            
+            console.log('verify pay', userId);
+
 
             const result = await this.courseService.verifyPaymentRequest(
                 razorpay_order_id,
@@ -222,6 +223,8 @@ verifyPayment = async (req: AuthRequest, res: Response) => {
         try {
             const userId = req.user?.id as string;
             const { courseId, moduleTitle } = req.body;
+            console.log('progress',courseId);
+            
 
             if (!userId || !courseId || !moduleTitle) {
                 res.status(400).json({ success: false, message: "Missing required fields" });

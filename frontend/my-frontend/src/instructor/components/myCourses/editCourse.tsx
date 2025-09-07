@@ -169,7 +169,7 @@ const EditCourse: React.FC = () => {
         <>
 
             <div className="edit-container">
-                <form className="add-course-form" onSubmit={handleSubmit}>
+                <form className="edit-course-form" onSubmit={handleSubmit}>
                     <h2>Edit Course</h2>
 
                     <label>Course Title</label>
@@ -196,7 +196,7 @@ const EditCourse: React.FC = () => {
                         onChange={handleChange}
                         required
                     >
-                        <option value="Web development">Web development</option>
+                        <option value="Web Development">Web Development</option>
                         <option value="Mobile Development">Mobile Development</option>
                         <option value="Data Science">Data science</option>
                         <option value="Cyber Security">Cyber Security</option>

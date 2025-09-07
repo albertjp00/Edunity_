@@ -18,7 +18,7 @@ const InstructorsAdmin: React.FC = () => {
 
   const getInstructors = async (currentPage: number): Promise<void> => {
     try {
-      const response = await adminApi.get(`/admin/get-instructors?page=${currentPage}&limit=5`);
+      const response = await adminApi.get(`/admin/getInstructors?page=${currentPage}&limit=5`);
       setInstructors(response.data.data);
       setPages(response.data.pages);
     } catch (error) {

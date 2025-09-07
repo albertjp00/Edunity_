@@ -1,0 +1,79 @@
+/* Center the form on screen */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #f3f4f6; /* light gray background */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Card style */
+.auth-form {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+  width: 360px;
+  max-width: 90%;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Title */
+.auth-form h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Input fields */
+.auth-input {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+  background-color: white;
+  color: black;
+}
+
+.auth-input:focus {
+  border-color: #0f6afc; /* blue-500 */
+  box-shadow: 0px 0px 4px rgba(59, 130, 246, 0.5);
+}
+
+/* Buttons */
+.auth-button {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: #00040a; /* blue-500 */
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.auth-button:hover {
+  background: #2563eb; /* blue-600 */
+}
+
+/* Error / Success messages */
+.auth-message {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  text-align: center;
+  color: red;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

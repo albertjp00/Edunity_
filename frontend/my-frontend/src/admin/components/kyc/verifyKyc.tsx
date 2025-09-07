@@ -21,7 +21,7 @@ const VerifyKYC: React.FC = () => {
 
   const fetchKyc = async () => {
     try {
-      const res = await adminApi.get(`/admin/get-kyc/${id}`)
+      const res = await adminApi.get(`/admin/getKyc/${id}`)
       setKyc(res.data.data)
     } catch (err) {
       console.error(err)
@@ -32,7 +32,7 @@ const VerifyKYC: React.FC = () => {
   const verifyKyc = async () => {
     if (!kyc) return
     try {
-      const res = await adminApi.put(`/admin/verify-kyc/${kyc.instructorId}`)
+      const res = await adminApi.put(`/admin/verifyKyc/${kyc.instructorId}`)
       if (res.data.success) {
         toast.success("KYC Verified")
         navigate("/admin/instructors")
@@ -52,7 +52,7 @@ const VerifyKYC: React.FC = () => {
 
     try {
       const res = await adminApi.put(
-        `/admin/reject-kyc/${kyc.instructorId}`,
+        `/admin/rejectKyc/${kyc.instructorId}`,
         { reason: selectedReason }
       )
       if (res.data.success) {

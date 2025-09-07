@@ -83,6 +83,8 @@ export class CourseService {
 
   addCourseRequest = async (id:string , data : any):Promise<boolean> =>{
     try {
+      // data.category = data.trim().toLowerCase();
+
       const create = await this.instructorRepository.addCourse(id , data)
       return true
     } catch (error) {
@@ -94,11 +96,12 @@ export class CourseService {
   editCourseRequest = async (id: string, data: Partial<ICourse>): Promise<ICourse | null> => {
     try {
       console.log(data);
-      
+
       return await this.instructorRepository.editCourse(id, data);
     } catch (error) {
       console.log(error);
       return null;
+
     }
   };
 

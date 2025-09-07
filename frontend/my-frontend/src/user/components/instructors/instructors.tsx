@@ -52,7 +52,7 @@ const Instructors: React.FC = () => {
             <div key={index} className="instructor-card">
               <div className="instructor-img-wrapper">
                 <img
-                  src={`${API_URL}/assets/${instructor.profileImage}` || "/default-avatar.png"}
+                  src={`${API_URL}/assets/${instructor.profileImage}`}
                   alt={instructor.name}
                   className="instructor-img"
                 />

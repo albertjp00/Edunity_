@@ -5,7 +5,7 @@ export interface IEvent extends Document {
   instructorName:string;
   title: string;
   description: string;
-
+  topic:string,
   date: Date;
   duration: number; 
   participants: number;
@@ -20,7 +20,7 @@ const EventSchema = new Schema<IEvent>(
     instructorName : {type:String },
     title: { type: String, required: true },
     description: { type: String },
-
+    topic:{type:String},
     date: { type: Date, required: true },
     duration: { type: Number  },
     participants: { type: Number, default: 0 }

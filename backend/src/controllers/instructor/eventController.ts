@@ -22,6 +22,7 @@ export class EventController {
 
 
             const result = await this.eventService.createEventRequest(id, data)
+            res.json({success:true})
         } catch (error) {
             console.log(error);
 
@@ -60,7 +61,7 @@ export class EventController {
             const id = req.params.id!
             const data = req.body
 
-            if (!data.title || !data.description || !data.date) {
+            if (!data.title || !data.description || !data.date || !data.topic) {
                 res.status(400).json({
                     success: false,
                     message: "Title, description, and date are required",

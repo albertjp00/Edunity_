@@ -207,7 +207,7 @@ const AddCourse: React.FC = () => {
           onChange={handleChange}
           required
         >
-          <option value="Web development">Web development</option>
+          <option value="Web Development">Web Development</option>
           <option value="Mobile Development">Mobile Development</option>
           <option value="Data Science">Data science</option>
           <option value="Cyber Security">Cyber Security</option>

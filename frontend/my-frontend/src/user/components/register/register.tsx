@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import api from "../../../api/userApi";
 import { userRegister } from "../../services/authServices";
 import { toast } from "react-toastify";
+import authImage from '../../../assets/authImage.png'
 
 
 interface RegisterForm {
@@ -62,80 +63,98 @@ const Register = () => {
 
 
 
-const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  if (!validate()) return;
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!validate()) return;
 
-  try {
-    localStorage.setItem("otpEmail", formData.email);
+    try {
+      localStorage.setItem("otpEmail", formData.email);
 
-    const res = await userRegister(formData);
-    console.log(res);
-    
-    if (res?.data.success) {
-      navigate("/user/verifyOtp");
-    }else{
+      const res = await userRegister(formData);
       console.log(res);
-      
-      toast.error(res?.data.message)
+
+      if (res?.data.success) {
+        navigate("/user/verifyOtp");
+      } else {
+        console.log(res);
+
+        toast.error(res?.data.message)
+      }
+    } catch (error: any) {
+      console.error(error);
+
+      const errMsg =
+        error.response?.data?.message || error.message || "Registration failed";
+
+      toast.error(errMsg, { autoClose: 1500 });
+      setMessage(errMsg);
     }
-  } catch (error: any) {
-    console.error(error);
-
-    const errMsg =
-      error.response?.data?.message || error.message || "Registration failed";
-
-    toast.error(errMsg, { autoClose: 1500 });
-    setMessage(errMsg);
-  }
-};
+  };
 
 
   return (
     <div className="register-container">
-      <form className="register-form" onSubmit={handleSubmit}>
-        <h2>User Register</h2>
+      {/* Left side - Form */}
+      <div className="register-left">
+        <form className="register-form" onSubmit={handleSubmit}>
+          <h2>Let’s get you started</h2>
 
-        <input
-          className="input"
-          type="text"
-          name="name"
-          placeholder="Name"
-          onChange={handleChange}
-          value={formData.name}
+          <input
+            className="input"
+            type="text"
+            name="name"
+            placeholder="Full name"
+            onChange={handleChange}
+            value={formData.name}
+          />
+
+          <input
+            className="input"
+            type="email"
+            name="email"
+            placeholder="Email address"
+            onChange={handleChange}
+            value={formData.email}
+          />
+
+          <input
+            className="input"
+            type="password"
+            name="password"
+            placeholder="Create password"
+            onChange={handleChange}
+            value={formData.password}
+          />
+
+          <input
+            className="input"
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm password"
+            onChange={handleChange}
+          />
+
+          <button type="submit" className="register-button">
+            Sign Up
+          </button>
+
+          {message && <p className="message">{message}</p>}
+
+          <div className="form-links">
+            Already a user? <a href="/user/login">Login</a>
+          </div>
+        </form>
+      </div>
+
+      {/* Right side - Quote */}
+      <div className="register-right">
+        <img
+          src={authImage}
+          alt="Register Illustration"
+          className="side-image"
         />
+      </div>
 
-        <input
-          className="input"
-          type="email"
-          name="email"
-          placeholder="Email"
-          onChange={handleChange}
-          value={formData.email}
-        />
-
-        <input
-          className="input"
-          type="password"
-          name="password"
-          placeholder="Password"
-          onChange={handleChange}
-          value={formData.password}
-        />
-
-        <input
-          className="input"
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirm Password"
-          onChange={handleChange}
-
-        />
-
-        <button type="submit" className="register-button">Register</button>
-        {message && <p className="message">{message}</p>}
-
-      </form>
     </div>
   );
 
