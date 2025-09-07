@@ -50,7 +50,7 @@ export class AdminService {
         }
     }
 
-    blockUser = async (id: string): Promise<boolean | null> => {
+    blockUnblockUser = async (id: string): Promise<boolean | null> => {
         try {
             console.log('admin service block');
 

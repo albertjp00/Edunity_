@@ -37,7 +37,8 @@ const InstructorSchema: Schema<IInstructor> = new Schema({
     type: String
   },
   profileImage: {
-    type: String
+    type: String,
+    default:'profilePic.png'
   },
   KYCApproved: {
     type: Boolean,

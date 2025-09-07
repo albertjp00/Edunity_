@@ -19,67 +19,38 @@ const CoursesAdmin: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
   const coursesPerPage = 5;
 
-  const loadCourses = async (): Promise<void> => {
+  const loadCourses = async (page: number): Promise<void> => {
     try {
-      const data = await getAdminCourses();
+      const { data } = await getAdminCourses(page, coursesPerPage); 
       if (!data) return;
-      setCourses(data?.data.courses);
+
+      setCourses(data.courses);
+      setTotalPages(data.totalPages);
+      setCurrentPage(data.currentPage);
     } catch (error) {
       console.error("Error fetching courses:", error);
     }
   };
 
-  const handleBlock = async (courseId: string): Promise<void> => {
-    // try {
-    //   const res = await blockCourse(courseId);
-    //   if (res.success) {
-    //     toast.success("Course Blocked", { autoClose: 1500 });
-    //     loadCourses();
-    //   }
-    // } catch (error) {
-    //   console.error("Error blocking course:", error);
-    //   toast.error("Failed to block course");
-    // }
-  };
-
-  const handleUnblock = async (courseId: string): Promise<void> => {
-    // try {
-    //   const res = await unblockCourse(courseId);
-    //   if (res.success) {
-    //     toast.success("Course Unblocked", { autoClose: 1500 });
-    //     loadCourses();
-    //   }
-    // } catch (error) {
-    //   console.error("Error unblocking course:", error);
-    //   toast.error("Failed to unblock course");
-    // }
-  };
-
   useEffect(() => {
-    loadCourses();
-  }, []);
+    loadCourses(currentPage);
+  }, [currentPage]);
 
-  // Filter courses by search
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page); // triggers loadCourses
+    }
+  };
+
+  // Apply search on current page only (or handle search on backend if needed)
   const filteredCourses = courses.filter(
     (course) =>
       course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.instructorName.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // Pagination logic
-  const indexOfLastCourse = currentPage * coursesPerPage;
-  const indexOfFirstCourse = indexOfLastCourse - coursesPerPage;
-  const currentCourses = filteredCourses.slice(indexOfFirstCourse, indexOfLastCourse);
-
-  const totalPages = Math.ceil(filteredCourses.length / coursesPerPage);
-
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
-  };
 
   return (
     <div className="course-list">
@@ -101,13 +72,14 @@ const CoursesAdmin: React.FC = () => {
           <tr>
             <th>Thumbnail</th>
             <th>Title</th>
+            <th>Category</th>
+            <th>Instructor</th>
             <th>Price</th>
-            {/* <th>Status</th> */}
           </tr>
         </thead>
         <tbody>
-          {currentCourses.length > 0 ? (
-            currentCourses.map((course) => (
+          {filteredCourses.length > 0 ? (
+            filteredCourses.map((course) => (
               <tr key={course._id}>
                 <td>
                   <img
@@ -120,31 +92,10 @@ const CoursesAdmin: React.FC = () => {
                     className="thumbnail"
                   />
                 </td>
-                <td>
-                  <Link to={`/admin/courseDetails/${course._id}`} className="course-link">
-                    {course.title}
-                  </Link>
-                </td>
-                {/* <td>{course.instructorName}</td> */}
-                {/* <td>{course.category}</td> */}
+                <td>{course.title}</td>
+                <td>{course.category}</td>
+                <td>{course.instructorName}</td>
                 <td>₹{course.price}</td>
-                {/* <td>
-                  {course.blocked ? (
-                    <button
-                      className="btn-unblock"
-                      onClick={() => handleUnblock(course._id)}
-                    >
-                      Unblock
-                    </button>
-                  ) : (
-                    <button
-                      className="btn-block"
-                      onClick={() => handleBlock(course._id)}
-                    >
-                      Block
-                    </button>
-                  )}
-                </td> */}
               </tr>
             ))
           ) : (
@@ -186,5 +137,6 @@ const CoursesAdmin: React.FC = () => {
     </div>
   );
 };
+
 
 export default CoursesAdmin;

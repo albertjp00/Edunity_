@@ -12,10 +12,10 @@ interface Course {
   totalEnrolled?: number;
   duration?: string;
   instructorName?: string
-  instructorImage:string,
+  instructorImage: string,
   category?: string;
   level?: string;
-  moduleCount:number
+  moduleCount: number
 }
 
 const AllCourses: React.FC = () => {
@@ -29,6 +29,7 @@ const AllCourses: React.FC = () => {
   const [selectedInstructors, setSelectedInstructors] = useState<string[]>([]);
   const [selectedPrice, setSelectedPrice] = useState<string>(""); // "free" | "paid"
   const [selectedLevel, setSelectedLevel] = useState<string>("");
+  const [sortBy, setSortBy] = useState('')
 
   const navigate = useNavigate()
 
@@ -51,6 +52,9 @@ const AllCourses: React.FC = () => {
       if (selectedLevel) {
         queryParams.append("level", selectedLevel);
       }
+      if (sortBy) {
+        queryParams.append("sortBy", sortBy);
+      }
 
       const response = await api.get(`/user/getAllCourses?${queryParams.toString()}`);
 
@@ -65,25 +69,24 @@ const AllCourses: React.FC = () => {
     navigate(`/user/courseDetails/${id}`);
   };
 
-  // fetch when page OR filters change
   useEffect(() => {
     fetchCourses(currentPage);
-  }, [currentPage, selectedCategories, selectedInstructors, selectedPrice, selectedLevel]);
+  }, [currentPage, selectedCategories, selectedInstructors, selectedPrice, selectedLevel, sortBy]);
 
-  // ✅ handlers for filters
+
   const handleCategoryChange = (category: string) => {
     setSelectedCategories((prev) =>
       prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]
     );
-    setCurrentPage(1); // reset to page 1 when filters change
-  };
-
-  const handleInstructorChange = (instructor: string) => {
-    setSelectedInstructors((prev) =>
-      prev.includes(instructor) ? prev.filter((i) => i !== instructor) : [...prev, instructor]
-    );
     setCurrentPage(1);
   };
+
+  // const handleInstructorChange = (instructor: string) => {
+  //   setSelectedInstructors((prev) =>
+  //     prev.includes(instructor) ? prev.filter((i) => i !== instructor) : [...prev, instructor]
+  //   );
+  //   setCurrentPage(1);
+  // };
 
   const handlePriceChange = (price: string) => {
     setSelectedPrice((prev) => (prev === price ? "" : price));
@@ -102,7 +105,7 @@ const AllCourses: React.FC = () => {
         <h2 className="course-header">All Courses</h2>
         <div className="course-grid">
           {courses.map((course) => (
-            <div className="course-card" key={course._id}>
+            <div className="courses-card" key={course._id}>
               {/* Thumbnail */}
               <div className="course-thumbnail-wrapper">
                 <img
@@ -121,7 +124,7 @@ const AllCourses: React.FC = () => {
                 <h3 className="course-title">{course.title}</h3>
                 <div className="course-meta">
                   <span>Modules {course.moduleCount}</span>
-                  <span>{course.duration || "19h 30m"}</span>
+                  <span>{course.duration || "2h 30m"}</span>
                   <span>Students {course.totalEnrolled || "20+"}</span>
                 </div>
 
@@ -135,7 +138,7 @@ const AllCourses: React.FC = () => {
                     />
                     <span>{course.instructorName || "Unknown"}</span>
                   </div>
-                  <button className="enroll-btn" onClick={()=>gotoCourse(course._id)}>Enroll →</button>
+                  <button className="enroll-btn" onClick={() => gotoCourse(course._id)}>Enroll →</button>
                 </div>
               </div>
             </div>
@@ -175,7 +178,7 @@ const AllCourses: React.FC = () => {
       <aside className="course-filters">
         <h3>Course Category</h3>
         <ul>
-          {["Commercial", "Office", "Shop", "Education", "Academy", "Studio", "University"].map(
+          {["Web Development", "Mobile Development", "Data Science", "Cyber Security", "Design", "Language"].map(
             (cat) => (
               <li key={cat}>
                 <label>
@@ -206,6 +209,49 @@ const AllCourses: React.FC = () => {
             </li>
           ))}
         </ul> */}
+
+
+
+        <h3>Sort By Price</h3>
+        <ul>
+          <li>
+            <label>
+              <input
+                type="radio"
+                name="sortPrice"
+                value=""
+                checked={sortBy === ""}
+                onChange={() => setSortBy("")}
+              />
+              None
+            </label>
+          </li>
+          <li>
+            <label>
+              <input
+                type="radio"
+                name="sortPrice"
+                value="priceLowToHigh"
+                checked={sortBy === "priceLowToHigh"}
+                onChange={(e) => setSortBy(e.target.value)}
+              />
+              Price: Low to High
+            </label>
+          </li>
+          <li>
+            <label>
+              <input
+                type="radio"
+                name="sortPrice"
+                value="priceHighToLow"
+                checked={sortBy === "priceHighToLow"}
+                onChange={(e) => setSortBy(e.target.value)}
+              />
+              Price: High to Low
+            </label>
+          </li>
+        </ul>
+
 
         <h3>Price</h3>
         <ul>

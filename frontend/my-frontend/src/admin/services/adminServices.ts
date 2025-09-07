@@ -46,12 +46,13 @@ export const getUserCourses = async (id: string) => {
 
 //courses 
 
-export const getAdminCourses = async () => {
-    try {
-        const res = await adminApi.get('/admin/courses')
-        return res
-    } catch (error) {
-        console.log(error);
-
-    }
-}
+// /src/services/adminServices.ts
+export const getAdminCourses = async (page: number, limit: number) => {
+  try {
+    const res = await adminApi.get(`/admin/courses?page=${page}&limit=${limit}`);
+    return res; 
+  } catch (error) {
+    console.error("Error fetching admin courses:", error);
+    throw error;
+  }
+};

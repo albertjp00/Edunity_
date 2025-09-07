@@ -31,6 +31,11 @@ router.post("/auth/googleLogin", authController.googleSignIn);
 router.post("/refresh-token", authController.refreshToken);
 router.post("/logout", authController.logoutUser);
 
+router.post('/forgotPassword',authController.forgotPassword)
+router.post('/otpVerify',authController.verifyOtpForgotPass)
+router.post('/resendOtpForgotPass',authController.resendOtpForgotPassword)
+router.put('/resetPassword',authController.resetPassword)
+
 router.post("/register", authController.register);
 router.post("/verifyOtp", authController.verifyOtp);
 router.post("/resendOtp", authController.resendOtp);

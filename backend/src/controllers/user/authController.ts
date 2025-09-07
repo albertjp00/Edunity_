@@ -168,12 +168,12 @@ export class AuthController {
     try {
       const { token } = req.body;
       // console.log(req.body);
-      
+
       if (!token) {
         res.status(400).json({ message: "Token is required" });
         return;
       }
-      const { accessToken, refreshToken , user } = await this.authService.googleLogin(token);
+      const { accessToken, refreshToken, user } = await this.authService.googleLogin(token);
       // console.log(accessToken);
       if (refreshToken) {
         res.cookie("refreshToken", refreshToken, {
@@ -183,12 +183,103 @@ export class AuthController {
           maxAge: 24 * 60 * 60 * 1000, // 1 day
         });
       }
-      
-      res.json({success:true , token: accessToken });
+
+      res.json({ success: true, token: accessToken });
     } catch (error: any) {
       console.error("Google Sign-In error:", error);
       res.status(500).json({ message: error.message || "Google Sign-In failed" });
     }
   };
+
+  forgotPassword = async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const { email } = req.body;
+
+      const result = await this.authService.forgotPassword(email);
+
+      if (!result.success) {
+        res.status(400).json({ message: result.message });
+        return;
+      }
+
+      res.status(200).json({ success: true, message: "OTP sent successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+
+  verifyOtpForgotPass = async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      console.log('verify password');
+
+      const { email, otp } = req.body;
+
+      const result = await this.authService.verifyForgotPasswordOtp(otp, email);
+      console.log('verification ', result.success);
+
+      if (!result.success) {
+        res.status(400).json({ success: false, message: result.message });
+
+      }
+
+      res.status(200).json({ success: true, message: "OTP verified successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+
+  resendOtpForgotPassword = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { email } = req.body;
+      console.log('resend' , email);
+      
+
+      if (!email) {
+        res.status(400).json({ success: false, message: "Email is required" });
+        return;
+      }
+
+      await this.authService.forgotPassword(email);
+
+      res.status(200).json({ success: true, message: "OTP resent successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: "Failed to resend OTP" });
+    }
+  };
+
+  resetPassword = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { email , newPassword } = req.body;
+    console.log('reset pass ' , email , newPassword);
+
+    
+
+    if (!req.user) {
+      res.status(401).json({ success: false, message: "Unauthorized" });
+      return;
+    }
+
+    const result = await this.authService.resetPassword(
+      email,
+      newPassword
+    );
+
+    if (!result.success) {
+      res.status(400).json({ success: false, message: result.message });
+      return;
+    }
+
+    res.json({ success: true, message: "Password changed successfully" });
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, message: "Internal server error" });
+  }
+};
+
+
+
 
 }

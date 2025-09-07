@@ -17,17 +17,17 @@ admin.post('/login',dashboardController.adminLogin)
 
 admin.get('/getUsers',adminAuthMiddleware,dashboardController.getUsers)
 
-admin.put('/blockUser/:id',dashboardController.blockUser)
+admin.put('/blockUser/:id',dashboardController.blockUnblock)
 
-admin.put('/unblock-users/:id',dashboardController.unblockUser)
+// admin.put('/unblockUsers/:id',dashboardController.unblockUser)
 
-admin.get('/get-instructors',dashboardController.getInstructors)
+admin.get('/getInstructors',dashboardController.getInstructors)
 
-admin.get('/get-kyc/:id' , dashboardController.getKyc)
+admin.get('/getKyc/:id' , dashboardController.getKyc)
 
-admin.put('/verify-kyc/:id' , dashboardController.verifyKyc)
+admin.put('/verifyKyc/:id' , dashboardController.verifyKyc)
 
-admin.put('/reject-kyc/:id' , dashboardController.rejectKyc)
+admin.put('/rejectKyc/:id' , dashboardController.rejectKyc)
 
 admin.get('/instructors/:id',instructorController.getInstructors)
 admin.get('/instructorsCourses/:id',instructorController.getInstructorsCourses)

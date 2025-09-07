@@ -16,6 +16,7 @@ export interface IUserRepository {
 
   changePassword(id: string, password: string): Promise<IUser | null>;
 
+
   getCourse(id: string): Promise<ICourse | null>
 
   getCourses(skip: number, limit: number): Promise<ICourse[] | null>
@@ -24,7 +25,7 @@ export interface IUserRepository {
 
   findSkills(): Promise<ISkills>;
 
-  getAllCourses(query: any, skip: number, limit: number): Promise<ICourse[] | null>
+  getAllCourses(query: any, skip: number, limit: number , sortOption:any): Promise<ICourse[] | null>
 
   getCourseDetails(id: string, courseId: string): Promise<IMyCourse | null>
 
@@ -67,13 +68,14 @@ export class UserRepository implements IUserRepository {
   }
 
   async changePassword(id: string, password: string): Promise<IUser | null> {
-    console.log('password changed',id, password);
     
     return await UserModel.findByIdAndUpdate(id, { password: password })
   }
 
+
+
   async getCourse(id: string): Promise<ICourse | null> {
-    return await CourseModel.findById(id)
+    return await CourseModel.findByIdAndUpdate(id,{$inc:{totalEnrolled:1}})
   }
 
   // userRepository.ts
@@ -81,7 +83,7 @@ export class UserRepository implements IUserRepository {
   async getCourses(skip: number, limit: number) {
     return CourseModel.aggregate([
       { $skip: skip },
-      { $limit: 3 },
+      { $limit: limit },
       {
         $addFields: {
           instructorIdObj: { $toObjectId: "$instructorId" }
@@ -131,47 +133,61 @@ export class UserRepository implements IUserRepository {
     return result[0]
   }
 
-  async getAllCourses(query: any, skip: number, limit: number): Promise<ICourse[]> {
-    return await CourseModel.aggregate([
-      { $skip: skip },
-      { $limit: limit },
-      {
-        $addFields: {
-          instructorIdObj: { $toObjectId: "$instructorId" },
-          moduleCount: { $size: { $ifNull: ["$modules", []] } }
-        }
-      }
-      ,
-      {
-        $lookup: {
-          from: "instructors",
-          localField: "instructorIdObj",
-          foreignField: "_id",
-          as: "instructor",
-        },
-      },
-      { $unwind: "$instructor" },
-      {
-        $project: {
-          title: 1,
-          description: 1,
-          thumbnail: 1,
-          price: 1,
-          skills: 1,
-          level: 1,
-          totalEnrolled: 1,
-          category: 1,
-          createdAt: 1,
-          instructorName: "$instructor.name",
-          instructorImage: "$instructor.profileImage",
-          moduleCount:1
-        },
-      },
-    ]);
+async getAllCourses(
+  query: any,
+  skip: number,
+  limit: number,
+  sortOption?: any
+): Promise<ICourse[]> {
+  const pipeline: any[] = [
+    { $match: query },
+  ];
 
-
-
+  // Add sort stage only if sortOption exists
+  if (sortOption && Object.keys(sortOption).length > 0) {
+    pipeline.push({ $sort: sortOption });
   }
+
+  pipeline.push(
+    { $skip: skip },
+    { $limit: limit },
+    {
+      $addFields: {
+        instructorIdObj: { $toObjectId: "$instructorId" },
+        moduleCount: { $size: { $ifNull: ["$modules", []] } }
+      }
+    },
+    {
+      $lookup: {
+        from: "instructors",
+        localField: "instructorIdObj",
+        foreignField: "_id",
+        as: "instructor",
+      },
+    },
+    { $unwind: "$instructor" },
+    {
+      $project: {
+        title: 1,
+        description: 1,
+        thumbnail: 1,
+        price: 1,
+        skills: 1,
+        level: 1,
+        totalEnrolled: 1,
+        category: 1,
+        createdAt: 1,
+        instructorName: "$instructor.name",
+        instructorImage: "$instructor.profileImage",
+        moduleCount: 1,
+      },
+    }
+  );
+
+  return await CourseModel.aggregate(pipeline);
+}
+
+
 
 
   async countAllCourses(query: any): Promise<number> {

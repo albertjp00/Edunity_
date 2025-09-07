@@ -48,28 +48,25 @@ export class UserCourseService {
     };
   }
 
-  // service
-  // services/courseService.ts
-  getAllCourses = async (query: any, page: number, limit: number) => {
-    try {
-      const skip = (page - 1) * limit;
 
-      const courses = await this.userRepository.getAllCourses(query, skip, limit);
-      const totalCount = await this.userRepository.countAllCourses(query);
-      console.log(courses);
+async getAllCourses(query: any, page: number, limit: number,sortOption:any) {
+  const skip = (page - 1) * limit;
+  console.log('all course ',query);
+  
+  const courses = await this.userRepository.getAllCourses(query, skip, limit,sortOption);
+  const totalCount = await this.userRepository.countCourses();
+  console.log(courses);
 
 
-      return {
-        courses,
-        totalPages: Math.ceil(totalCount / limit),
-        currentPage: page,
-        totalCount
-      };
-    } catch (error) {
-      console.log("Error in courseService.getAllCourses:", error);
-      throw error;
-    }
+
+  return {
+    courses,
+    totalCount,
+    totalPages: Math.ceil(totalCount / limit),
+    currentPage: page,
   };
+}
+
 
 
 

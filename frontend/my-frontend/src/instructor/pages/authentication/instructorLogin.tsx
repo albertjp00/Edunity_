@@ -1,6 +1,6 @@
 import axios from 'axios'
 import React, { useState, useEffect, type FormEvent } from 'react'
-import './login.css'
+import './instructorLogin.css'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import instructorApi from '../../../api/instructorApi'
@@ -36,14 +36,14 @@ const InstructorLogin = () => {
 
   }
 
-  // useEffect(()=>{
-  //     console.log('useEffect');
+  useEffect(()=>{
+      console.log('useEffect');
 
-  //     let token = localStorage.getItem('instructor')
-  //     if(token){
-  //       navigate('/instructor/home')
-  //     }
-  //   },[])
+      let token = localStorage.getItem('instructor')
+      if(token){
+        navigate('/instructor/home')
+      }
+    },[])
 
   return (
     <div className='login'>
@@ -84,7 +84,7 @@ const InstructorLogin = () => {
 
           <p>
             Don’t have an account?{' '}
-            <Link to="/user/register" className='link'>Register</Link>
+            <Link to="/instructor/register" className='link'>Register</Link>
           </p>
         </div>
       </div>

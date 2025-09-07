@@ -45,7 +45,7 @@ const AdminUserDetails: React.FC = () => {
 
   const toggleBlockUser = async () => {
     try {
-      await adminApi.patch(`/admin/users/${id}/block`, {
+      await adminApi.put(`/admin/blockUser/${id}`, {
         blocked: !user.blocked,
       });
       setUser({ ...user, blocked: !user.blocked });

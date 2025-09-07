@@ -28,6 +28,9 @@ const instructor = express.Router()
 
 
 instructor.post('/login',authController.login)
+instructor.post('/register',authController.register)
+instructor.post("/resendOtp", authController.resendOtp);
+instructor.post("/verifyOtp", authController.verifyOtp);
 instructor.get('/profile',instAuthMiddleware,profileController.getProfile)
 instructor.put('/profile',instAuthMiddleware,upload.single("profileImage"),profileController.editProfile)
 instructor.put('/passwordChange',instAuthMiddleware,profileController.changePassword)

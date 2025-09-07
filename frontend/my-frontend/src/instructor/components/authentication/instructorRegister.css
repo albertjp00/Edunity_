@@ -1,0 +1,90 @@
+.register-wrapper {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+.register-left {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #ffffff;
+}
+
+.register-form {
+  width: 100%;
+  max-width: 400px;
+  padding: 30px;
+  background: #fff;
+  border-radius: 12px;
+}
+
+.register-form h2 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #2a2a2a;
+}
+
+.input {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.register-button {
+  width: 100%;
+  padding: 14px;
+  background: #2a9d8f;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.register-button:hover {
+  background: #21867a;
+}
+
+.message {
+  margin-top: 10px;
+  color: red;
+  font-size: 0.9rem;
+}
+
+.login-link {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.login-link a {
+  color: #2a9d8f;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+.register-right {
+  flex: 1;
+  background: linear-gradient(135deg, #264653, #2a9d8f);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.side-image {
+  max-width: 85%;
+  max-height: 85%;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.25);
+}
