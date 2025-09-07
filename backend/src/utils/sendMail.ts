@@ -13,14 +13,19 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-export const sendOtp = async (to: string, otp: string): Promise<void> => {
-  await transporter.sendMail({
-    from: `"Edunity" <${process.env.EMAIL_USER}>`,
-    to,
-    subject: "Your OTP",
-    html: `<p>Your OTP is <b>${otp}</b>. It will expire in 5 minutes.</p>`
-  });
-};
+  export const sendOtp = async (to: string, otp: string): Promise<void> => {
+    try {
+      await transporter.sendMail({
+      from: `"Edunity" <${process.env.EMAIL_USER}>`,
+      to,
+      subject: "Your OTP",
+      html: `<p>Your OTP is <b>${otp}</b>. It will expire in 5 minutes.</p>`
+    });
+    } catch (error) {
+      console.log(error);
+      
+    }
+  };
 
 
 export const kycRejectMail = async (email: string, reason: string) => {

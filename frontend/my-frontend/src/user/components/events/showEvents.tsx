@@ -3,10 +3,12 @@ import { getEvents } from "../../services/eventServices";
 import type { UEvent } from "../../interfaces";
 import thumbnail from "../../../assets/webinar_thumnail.png";
 import "./showEvents.css";
+import { useNavigate } from "react-router-dom";
 
 const Events: React.FC = () => {
   const [events, setEvents] = useState<UEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate()
 
   const fetchEvents = async () => {
     try {
@@ -19,6 +21,10 @@ const Events: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const gotoDetails = (id:string  )=>{
+    navigate(`/user/eventDetails/${id}`)
+  }
 
   useEffect(() => {
     fetchEvents();
@@ -74,7 +80,7 @@ const Events: React.FC = () => {
                     </p>
                   </div>
 
-                  <button className="event-register-btn">Register</button>
+                  <button className="event-register-btn" onClick={()=>gotoDetails(event._id)}>Register</button>
                 </div>
               </article>
             );

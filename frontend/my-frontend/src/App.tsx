@@ -20,7 +20,11 @@ import AllCoursesPage from './user/pages/courses/allCourses'
 
 
 
-import InstructorLogin from './instructor/pages/login/instructorLogin'
+import InstructorLogin from './instructor/pages/authentication/instructorLogin'
+import InstructorRegister from './instructor/pages/authentication/register'
+import InstVerifyOtp from './instructor/pages/authentication/instVerifyOtp'
+
+
 import InstructorHome from './instructor/pages/home/home'
 import ProfilePage from './instructor/pages/profile/profilePage'
 import InstructoreditProfilePage from './instructor/pages/profile/editProfilePage'
@@ -37,6 +41,7 @@ import AddCoursesInstructor from './instructor/pages/course/addCourses'
 
 
 
+
 import InstructorDetails from './admin/pages/adminInstructors/instructorDetails'
 import UserDetails from './admin/pages/adminUsers/adminUserDetails'
 import AdminCourses from './admin/pages/courses/adminCourses'
@@ -46,6 +51,9 @@ import AdminCourseDetails from './admin/pages/courses/adminCourseDetails'
 import AdminHome from './admin/pages/home'
 import LoginAdmin from './admin/pages/login/adminLogin'
 import AdminProtectedRoute from './admin/components/adminProtectedRoute'
+import ForgotPassword from './user/components/login/forgotPassMail'
+import OtpVerification from './user/components/login/resetPassVerify'
+import UserResetPassword from './user/components/login/resetPasssword'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -64,15 +72,16 @@ function App() {
             <Route path='/user/register' element={<Register />} />
             <Route path='/user/verifyOtp' element={<VerifyOtp />} />
 
-            {/* <Route path='/user/forgotPassword' element={<ForgotPassword />} /> */}
+            <Route path='/user/forgotPassword' element={<ForgotPassword />} />
 
             <Route path='/user/profile' element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
             <Route path='/user/editProfile' element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
             <Route path='/user/changePassword' element={<ProtectedRoute><UserPasswordChange /></ProtectedRoute>} />
-            {/* <Route path='/user/verify-otp' element={<ForgotPassVerifyOtp />} />
-            <Route path='/user/purchaseHistory' element={<PurchaseHistory />} />
+            
+            <Route path='/user/otpVerification' element={<OtpVerification />} />
+            {/* <Route path='/user/purchaseHistory' element={<PurchaseHistory />} /> */}
 
-            <Route path='/user/resetPassword' element={<ResetPassword />} /> */}
+            <Route path='/user/resetPassword' element={<UserResetPassword />} />
 
             <Route path='/user/courseDetails/:id' element={<ProtectedRoute><UserCourseDetails /></ProtectedRoute>} />
             <Route path='/user/myCourses' element={<ProtectedRoute><ShowUserMyCourses /></ProtectedRoute>} />
@@ -80,6 +89,7 @@ function App() {
             <Route path='/user/allCourses' element={<ProtectedRoute><AllCoursesPage /></ProtectedRoute>} />
 
 
+              
             <Route path='/user/eventDetails/:id' element={<ProtectedRoute><UserEventDetails /></ProtectedRoute>} />
 
 
@@ -89,8 +99,8 @@ function App() {
 
             {/* Instructor */}
             <Route path='/instructor/login' element={<InstructorLogin />} />
-            {/* <Route path='/instructor/register' element={<InstructorRegister />} />
-            <Route path='/instructor/otpVerify' element={<OtpVerify />} /> */}
+            <Route path='/instructor/register' element={<InstructorRegister />} />
+            <Route path='/instructor/verifyOtp' element={<InstVerifyOtp />} />
 
             <Route path='/instructor/home' element={<InstProtectedRoute><InstructorHome /></InstProtectedRoute>} />
             <Route path='/instructor/profile' element={<InstProtectedRoute><ProfilePage /></InstProtectedRoute>} />

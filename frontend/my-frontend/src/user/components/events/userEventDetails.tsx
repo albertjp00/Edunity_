@@ -61,7 +61,7 @@ const EventDetails: React.FC = () => {
           </button>
         ) : (
           <button className="enroll-btn" disabled>
-            ✅ Already Enrolled
+            Enrolled
           </button>
         )}
       </div>

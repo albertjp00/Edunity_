@@ -32,17 +32,27 @@ interface RegisterResult {
 }
 
 interface OtpData {
-    name: string;
-    email: string;
-    password: string;
+    name?: string;
+    email?: string;
+    password?: string;
     otp: string;
     expiresAt: string;
+}
+
+interface ResetOtpData {
+    otp: string;
+    expiresAt: number;
 }
 
 interface RegisterRequestPayload {
     name: string;
     email: string;
     password: string;
+}
+
+
+interface Iforgot {
+    message: string
 }
 
 // Main Auth Service
@@ -65,7 +75,7 @@ export class AuthService {
 
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
-                return { success: false, message: "Invalid password" };  
+                return { success: false, message: "Invalid password" };
             }
 
             const accessToken = jwt.sign({ id: user._id }, secret, { expiresIn: "3h" });
@@ -126,7 +136,10 @@ export class AuthService {
             console.log('request resend otp', otp, email);
 
 
+            console.log(otpStore);
             const storedData = otpStore.get(email)
+            console.log(storedData);
+
             if (!storedData) {
                 return { success: false }
             }
@@ -158,7 +171,7 @@ export class AuthService {
     async verifyOtpRequest(otp: string, email: string): Promise<{ success: boolean; message: string }> {
         try {
             const storedData = otpStore.get(email);
-            console.log('verify otp', email);
+            console.log('verify otp user', email);
 
             if (!storedData) {
                 return { success: false, message: "OTP not found or expired" };
@@ -172,7 +185,7 @@ export class AuthService {
             if (storedData.otp !== otp) {
                 return { success: false, message: "Incorrect OTP" };
             }
-            
+
             const hashedPassword = await bcrypt.hash(storedData.password, 10);
 
             await this.userRepository.create({
@@ -212,11 +225,84 @@ export class AuthService {
             user = await this.userRepository.create(data);
         }
 
-        const accessToken = jwt.sign( { id: user._id, email: user.email },SECRET_KEY,{ expiresIn: "1h" });
-        const refreshToken = jwt.sign({ id: user._id },refresh, { expiresIn: "7d" });
+        const accessToken = jwt.sign({ id: user._id, email: user.email }, SECRET_KEY, { expiresIn: "1h" });
+        const refreshToken = jwt.sign({ id: user._id }, refresh, { expiresIn: "7d" });
 
-        return { accessToken, refreshToken, user }; 
+        return { accessToken, refreshToken, user };
     };
+
+    forgotPassword = async (email: string): Promise<{ success: boolean; message: string }> => {
+        try {
+            console.log("forgotPassword user service");
+
+            const user = await this.userRepository.findByEmail(email);
+            if (!user) {
+                return { success: false, message: "Email doesn't exist" };
+            }
+
+            const defaultEmail = 'albertjpaul@gmail.com'
+            const otp = await generateOtp();
+            await sendOtp(defaultEmail, otp);
+
+            otpStore.set(email, {
+                name: user.name,
+                email: email,
+                password: user.password,
+                otp,
+                expiresAt: Date.now() + 5 * 60 * 1000,
+            });
+
+
+            return { success: true, message: "OTP sent successfully" };
+        } catch (error) {
+            console.error(error);
+            return { success: false, message: "Something went wrong" };
+        }
+    };
+
+    verifyForgotPasswordOtp = async (otp: string, email: string): Promise<{ success: boolean; message: string }> => {
+        try {
+            const storedData = otpStore.get(email);
+
+            if (!storedData) {
+                return { success: false, message: "OTP not found or expired" };
+            }
+
+            if (Date.now() > storedData.expiresAt) {
+                otpStore.delete(email);
+                return { success: false, message: "OTP expired" };
+            }
+
+            if (storedData.otp !== otp) {
+                return { success: false, message: "Incorrect OTP" };
+            }
+
+            otpStore.delete(email);
+
+            return { success: true, message: "OTP verified successfully" };
+        } catch (error) {
+            console.error(error);
+            return { success: false, message: "OTP verification failed" };
+        }
+    };
+
+    async resetPassword(email: string, newPassword: string): Promise<{ success: boolean; message: string }> {
+        try {
+            const user = await this.userRepository.findByEmail(email);
+            if (!user) {
+                return { success: false, message: "User not found" };
+            }
+
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+            await this.userRepository.changePassword(user._id, hashedPassword);
+
+            return { success: true, message: "Password reset successfully" };
+        } catch (error) {
+            console.error(error);
+            return { success: false, message: "Password reset failed" };
+        }
+    }
 
 
 

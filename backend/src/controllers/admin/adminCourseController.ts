@@ -32,12 +32,12 @@ export class AdminCourseController {
 
     getCourses = async (req: Request, res: Response) => {
         try {
-            console.log("get Courses user");
-
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 6;
 
             const data = await this.courseService.getCoursesRequest(page, limit);
+            console.log(data);
+            
 
             res.json({
                 success: true,
@@ -51,14 +51,15 @@ export class AdminCourseController {
         }
     };
 
+
     getCourseDetails = async (req: Request, res: Response) => {
         try {
             const id = req.params.id!
             console.log('course details');
-            
+
             const data = await this.courseService.getCourseDetailsRequest(id);
             console.log(data);
-            
+
 
             res.json({
                 success: true,

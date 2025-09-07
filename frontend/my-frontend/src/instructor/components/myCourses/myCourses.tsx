@@ -10,6 +10,7 @@ interface Course {
   description?: string;
   thumbnail?: string;
   price?: number;
+  totalEnrolled?:number
 }
 
 const MyCourses = () => {
@@ -73,8 +74,8 @@ const MyCourses = () => {
                   {/* meta section */}
                   <div className="course-meta">
                     <span>Lessons: 10</span>
-                    <span>19h 30m</span>
-                    <span>20+ students</span>
+                    <span>2h 30m</span>
+                    <span>Enrolled : {course.totalEnrolled}</span>
                   </div>
 
                   {/* footer */}

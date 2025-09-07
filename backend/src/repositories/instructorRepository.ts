@@ -13,6 +13,8 @@ export interface ISkills {
 export interface IInsRepository {
     findByEmail(email: string): Promise<IInstructor | null>
 
+    create(instructor: { name: string; email: string; password: string }): Promise<IInstructor | null>
+
     findById(id: string): Promise<IInstructor | null>
 
     updateProfile(id: string, data: any): Promise<IInstructor | null>
@@ -33,13 +35,13 @@ export interface IInsRepository {
 
     findSkills(): Promise<ISkills>;
 
-    addEvent(id: string,name:string , data: Partial<IEvent>): Promise<IEvent>
+    addEvent(id: string, name: string, data: Partial<IEvent>): Promise<IEvent>
 
-    getMyEvents(id:string):Promise<IEvent[] | null>
+    getMyEvents(id: string): Promise<IEvent[] | null>
 
-    getEvent(id:string):Promise<IEvent | null>
+    getEvent(id: string): Promise<IEvent | null>
 
-    updateEvent(id:string , data:any):Promise<IEvent | null>
+    updateEvent(id: string, data: any): Promise<IEvent | null>
 
 
 }
@@ -51,6 +53,10 @@ export class InstructorRepository implements IInsRepository {
         return user
     }
 
+
+    async create(instructor: { name: string; email: string; password: string }): Promise<IInstructor> {
+        return await InstructorModel.create(instructor);
+    }
 
 
     async findById(id: string): Promise<IInstructor | null> {
@@ -78,7 +84,7 @@ export class InstructorRepository implements IInsRepository {
     async getCourses(id: string, skip: number, limit: number): Promise<ICourse[]> {
         const courses = await CourseModel.find({ instructorId: id }).skip(skip).limit(limit);
         console.log(courses);
-        
+
         return courses || [];
     }
 
@@ -107,21 +113,21 @@ export class InstructorRepository implements IInsRepository {
         return result[0]
     }
 
-    async addEvent(id: string,name:string, data: Partial<IEvent>):Promise<IEvent>{
-        return await EventModel.create({instructorId:id , instructorName:name  , ...data })
+    async addEvent(id: string, name: string, data: Partial<IEvent>): Promise<IEvent> {
+        return await EventModel.create({ instructorId: id, instructorName: name, ...data })
     }
 
-    async getMyEvents(id:string):Promise<IEvent[] | null>{
-        return await EventModel.find({instructorId : id})
+    async getMyEvents(id: string): Promise<IEvent[] | null> {
+        return await EventModel.find({ instructorId: id })
     }
 
-    async getEvent(id:string):Promise<IEvent | null>{
+    async getEvent(id: string): Promise<IEvent | null> {
         return EventModel.findById(id)
     }
 
 
-    async updateEvent(id:string , data:any):Promise<IEvent | null>{
-        return await EventModel.findByIdAndUpdate(id,{...data})
+    async updateEvent(id: string, data: any): Promise<IEvent | null> {
+        return await EventModel.findByIdAndUpdate(id, { ...data })
     }
 
 }
