@@ -1,4 +1,5 @@
 import { CourseModel, ICourse } from "../models/course.js";
+import { FavouritesModel, IFavourite } from "../models/favourites.js";
 import { IInstructor, InstructorModel } from "../models/instructor.js";
 import { KycModel } from "../models/kyc.js";
 import { IMyCourse, MyCourseModel } from "../models/myCourses.js";
@@ -36,6 +37,8 @@ export interface IAdminRepository {
         enrolledUsers: IUser[];
         totalEnrolled: number;
     } | null>;
+
+    
 }
 
 export class AdminRepository implements IAdminRepository {
@@ -116,5 +119,7 @@ export class AdminRepository implements IAdminRepository {
             totalEnrolled: enrolledUsers.length,
         };
     }
+
+    
 
 }

@@ -17,6 +17,9 @@ import UserViewMyCourse from './user/pages/myCourses/viewMyCourse'
 import UserEventDetails from './user/pages/event/eventDetails'
 import AllCoursesPage from './user/pages/courses/allCourses'
 
+import UserChat from './user/components/chat/userChat'
+
+
 
 
 
@@ -92,6 +95,7 @@ function App() {
               
             <Route path='/user/eventDetails/:id' element={<ProtectedRoute><UserEventDetails /></ProtectedRoute>} />
 
+            <Route path="/user/chat" element={<ProtectedRoute><UserChat /></ProtectedRoute>} />
 
 
 

@@ -5,6 +5,20 @@ import api from "../../../api/userApi";
 import { viewMyCourse } from "../../services/courseServices";
 const API_URL = import.meta.env.VITE_API_URL
 
+
+
+interface IInstructor {
+  _id: string;
+  name: string;
+  email: string;
+  expertise?: string;
+  bio?: string;
+  profileImage?: string;
+  work?: string;
+  education?: string;
+}
+
+
 // Interfaces
 interface IModule {
   title: string;
@@ -36,6 +50,7 @@ const ViewMyCourse: React.FC = () => {
   const [course, setCourse] = useState<ICourse | null>(null);
   const [expandedModule, setExpandedModule] = useState<number | null>(null);
   const [completedModules, setCompletedModules] = useState<string[]>([]);
+  const [instructor, setInstructor] = useState<IInstructor | null>(null);
 
 
   const fetchCourse = async (): Promise<void> => {
@@ -44,11 +59,13 @@ const ViewMyCourse: React.FC = () => {
         console.error("Course ID is missing");
         return;
       }
-      const res :any= await viewMyCourse(id)
+      const res: any = await viewMyCourse(id)
 
-      if(!res) return
-      const fetchedMyCourse: IMyCourse = res.data.course; 
-      setCourse(fetchedMyCourse.course);                 
+      if (!res) return
+      const fetchedMyCourse: IMyCourse = res.data.course;
+      const fetchedInstructor: IInstructor = res.data.instructor;
+      setCourse(fetchedMyCourse.course);
+      setInstructor(fetchedInstructor)
       setCompletedModules(fetchedMyCourse.progress?.completedModules || []);
     } catch (err) {
       console.error("Error fetching course:", err);
@@ -200,11 +217,49 @@ const ViewMyCourse: React.FC = () => {
                       </p>
                     )}
                   </div>
+
+
+
+
                 )}
               </div>
             );
           })}
         </div>
+
+        {instructor && (
+  <div className="instructor-card">
+    <h3>👨‍🏫 Instructor</h3>
+    <div className="instructor-info">
+      <img
+        src={
+          instructor.profileImage
+            ? `${API_URL}/assets/${instructor.profileImage}`
+            : "https://via.placeholder.com/100"
+        }
+        alt="Instructor"
+        className="instructor-img"
+      />
+      <div className="instructor-details">
+        <p><strong>{instructor.name}</strong></p>
+        <p>{instructor.expertise || "Expert in teaching"}</p>
+        <p>{instructor.bio || "No bio available"}</p>
+
+        <button
+          className="chat-btn"
+          onClick={() =>
+            window.location.href = `/user/chat/${instructor._id}`
+          }
+        >
+          💬 Chat with Instructor
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+        
       </div>
     </div>
   );

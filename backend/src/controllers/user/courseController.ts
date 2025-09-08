@@ -4,6 +4,7 @@ import { UserRepository } from "../../repositories/userRepository.js";
 import { UserCourseService } from "../../services/user/userCourseService.js";
 import { InstructorRepository } from "../../repositories/instructorRepository.js";
 import { AdminRepository } from "../../repositories/adminRepositories.js";
+import instructor from "../../routes/instructorRoutes.js";
 
 export class UserCourseController {
     private courseService: UserCourseService;
@@ -211,8 +212,10 @@ export class UserCourseController {
             console.log('viewMyCourse', myCourseId, id);
 
             const result = await this.courseService.viewMyCourseRequest(id, myCourseId)
+            console.log(result);
+            
 
-            res.json({ success: true, course: result })
+            res.json({ success: true, course: result  , instructor:result?.instructor})
         } catch (error) {
             console.log(error);
         }
@@ -223,8 +226,8 @@ export class UserCourseController {
         try {
             const userId = req.user?.id as string;
             const { courseId, moduleTitle } = req.body;
-            console.log('progress',courseId);
-            
+            console.log('progress', courseId);
+
 
             if (!userId || !courseId || !moduleTitle) {
                 res.status(400).json({ success: false, message: "Missing required fields" });
@@ -250,5 +253,26 @@ export class UserCourseController {
             res.status(500).json({ success: false, message: "Internal server error" });
         }
     };
+
+
+    addtoFavourites = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.user?.id as string;
+            const courseId = req.params.id!;
+
+            const result = await this.courseService.addtoFavourites(userId, courseId);
+            console.log(result);
+            
+            if (!result.success) {
+                res.json({success:false,message:"Course already exists in favourites"});
+            }
+
+            res.json(result);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ success: false, message: "Internal server error" });
+        }
+    };
+
 
 }

@@ -36,6 +36,9 @@ const handleLogout = async () => {
       
 
       <div className="profile-section">
+      <Link to="/user/favourites" >
+      <p className='fav-course'>Favourites</p>
+      </Link>
         <Link to="/user/myCourses">
           <p className="add-course">My Courses</p>
         </Link>

@@ -52,6 +52,7 @@ router.get('/courseDetails',authMiddleware,courseController.courseDetails)
 router.get('/myCourses',authMiddleware , courseController.myCourses)
 router.get('/myCourses',authMiddleware , courseController.myCourses)
 router.get('/getInstructors',authMiddleware , courseController.getInstructors)
+router.get('/addtoFavourites/:id',authMiddleware,courseController.addtoFavourites)
 
 router.get('/buyCourse/:id',authMiddleware , courseController.buyCourse)
 router.post('/payment/verify',authMiddleware , courseController.verifyPayment)

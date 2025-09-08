@@ -3,6 +3,7 @@ import './resetPassword.css';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../../api/userApi';
+import publicApi from '../../../api/publicApi';
 
 
 interface LocationState {
@@ -53,7 +54,7 @@ const UserResetPassword: React.FC = () => {
     }
 
     try {
-      const response = await api.put('/user/resetPassword',
+      const response = await publicApi.put('/user/resetPassword',
         { email, newPassword })
       console.log(response);
 

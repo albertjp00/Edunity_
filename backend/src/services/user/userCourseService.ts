@@ -16,6 +16,11 @@ export interface ICourseDetails extends ICourse {
 }
 
 
+export interface IviewCourse {
+  course: ICourse,
+  instructor: IInstructor
+}
+
 
 export class UserCourseService {
   private userRepository: UserRepository;
@@ -49,23 +54,23 @@ export class UserCourseService {
   }
 
 
-async getAllCourses(query: any, page: number, limit: number,sortOption:any) {
-  const skip = (page - 1) * limit;
-  console.log('all course ',query);
-  
-  const courses = await this.userRepository.getAllCourses(query, skip, limit,sortOption);
-  const totalCount = await this.userRepository.countCourses();
-  console.log(courses);
+  async getAllCourses(query: any, page: number, limit: number, sortOption: any) {
+    const skip = (page - 1) * limit;
+    console.log('all course ', query);
+
+    const courses = await this.userRepository.getAllCourses(query, skip, limit, sortOption);
+    const totalCount = await this.userRepository.countCourses();
+    console.log(courses);
 
 
 
-  return {
-    courses,
-    totalCount,
-    totalPages: Math.ceil(totalCount / limit),
-    currentPage: page,
-  };
-}
+    return {
+      courses,
+      totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: page,
+    };
+  }
 
 
 
@@ -135,7 +140,7 @@ async getAllCourses(query: any, page: number, limit: number,sortOption:any) {
         .digest("hex");
 
       if (razorpay_signature === expectedSign) {
-        const course = await this.userRepository.getCourse(courseId)
+        const course = await this.userRepository.buyCourse(courseId)
         await this.userRepository.addMyCourse(userId, course);
 
         return { success: true, message: "Payment verified and course added" };
@@ -170,20 +175,27 @@ async getAllCourses(query: any, page: number, limit: number,sortOption:any) {
     }
   }
 
-  viewMyCourseRequest = async (id: string, myCourseId: string): Promise<IMyCourse | null> => {
+  viewMyCourseRequest = async (
+    id: string,
+    myCourseId: string
+  ): Promise<IviewCourse | null> => {
     try {
+      const myCourse = await this.userRepository.viewMyCourse(id, myCourseId);
+      if (!myCourse) return null;
 
+      const course = await this.userRepository.getCourse(myCourse.course.id);
+      if (!course) return null;
 
-      const myCourse = await this.userRepository.viewMyCourse(id, myCourseId)
-      // const progress = await this.userRepository.getProgress(id)
+      const instructor = await this.instructorRepository.findById(course.instructorId as string);
+      if (!instructor) return null;
 
-      return myCourse
-
+      return { course, instructor };  
     } catch (error) {
       console.log(error);
-      return null
+      return null;
     }
-  }
+  };
+
 
   async updateProgress(userId: string, courseId: string, moduleTitle: string) {
 
@@ -207,6 +219,25 @@ async getAllCourses(query: any, page: number, limit: number,sortOption:any) {
     } catch (error) {
       console.log(error);
       return null
+    }
+  }
+
+
+
+  async addtoFavourites(userId: string, courseId: string): Promise<{ success: boolean; message: string }> {
+    try {
+      console.log('add to fav');
+
+      const result = await this.userRepository.addtoFavourites(userId, courseId);
+
+      if (!result) {
+        return { success: false, message: "Course already in favourites" };
+      }
+
+      return { success: true, message: "Added to favourites" };
+    } catch (error) {
+      console.log(error);
+      return { success: false, message: "Something went wrong" };
     }
   }
 
