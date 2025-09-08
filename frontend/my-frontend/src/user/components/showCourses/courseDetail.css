@@ -33,6 +33,17 @@
   cursor: pointer;
 }
 
+.fav-button {
+  margin-left: 20px;
+  background-color: #1c89f0;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
 
 /* instructorrr */
 .instructor-info {
