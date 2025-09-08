@@ -124,6 +124,22 @@ const CourseDetailsUser: React.FC = () => {
         }
     };
 
+    const addtoFavourites = async (id:string) =>{
+        try {
+            const response = await api.get(`/user/addtoFavourites/${id}`)
+            console.log(response.data);
+            
+            if(response.data.success){
+                toast.success("Added to Favourites")
+            }else{
+                toast.error(response.data.message)
+            }
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
+
 
 
     useEffect(() => {
@@ -202,6 +218,9 @@ const CourseDetailsUser: React.FC = () => {
                         </p>
                         <button onClick={() => buyCourse(course._id)} className="buy-button">
                             Buy Course
+                        </button>
+                        <button onClick={() => addtoFavourites(course._id)} className="fav-button">
+                            Add to Favourites
                         </button>
                     </div>
                 )}
