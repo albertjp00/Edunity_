@@ -57,6 +57,7 @@ import AdminProtectedRoute from './admin/components/adminProtectedRoute'
 import ForgotPassword from './user/components/login/forgotPassMail'
 import OtpVerification from './user/components/login/resetPassVerify'
 import UserResetPassword from './user/components/login/resetPasssword'
+import InstructorChat from './instructor/components/chat/instructorChat'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -95,7 +96,7 @@ function App() {
               
             <Route path='/user/eventDetails/:id' element={<ProtectedRoute><UserEventDetails /></ProtectedRoute>} />
 
-            <Route path="/user/chat" element={<ProtectedRoute><UserChat /></ProtectedRoute>} />
+            <Route path="/user/chat/:instructorId" element={<ProtectedRoute><UserChat /></ProtectedRoute>} />
 
 
 
@@ -120,7 +121,7 @@ function App() {
             <Route path='/instructor/editEvent/:id' element={<InstProtectedRoute><InstructorEditEvents /></InstProtectedRoute>}></Route>
             
 
-
+            <Route path='/instructor/messages' element={<InstProtectedRoute><InstructorChat /></InstProtectedRoute>}></Route>
 
               // {/* admin  */}
             <Route path='/admin/login' element={<LoginAdmin />} />

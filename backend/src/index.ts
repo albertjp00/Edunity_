@@ -2,6 +2,7 @@ import express from 'express';
 import userRoutes from './routes/userRoutes.js';
 import instructorRoutes from './routes/instructorRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
+import messageRoutes from './routes/messageRoutes.js'
 import { connectDB } from './utils/db.js';
 import cors from 'cors'
 import dotenv from 'dotenv'
@@ -53,6 +54,7 @@ app.use(express.json());
 app.use('/user', userRoutes);
 app.use('/instructor',instructorRoutes)
 app.use('/admin',adminRoutes)
+app.use('/messages', messageRoutes);
 
 
 io.on("connection", (socket) => {
@@ -76,7 +78,8 @@ io.on("connection", (socket) => {
 
 
 connectDB().then(() => {
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {   
     console.log(`🚀 Server running on http://localhost:${PORT}`);
   });
 });
+

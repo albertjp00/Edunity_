@@ -12,17 +12,21 @@ const InstructorNavbar = () => {
   const navigate = useNavigate()
 
   const handleLogout = async () => {
-      localStorage.removeItem('instructor')
-      navigate('/instructor/login')
-    
+    localStorage.removeItem('instructor')
+    navigate('/instructor/login')
+
   }
 
   const addCourse = () => {
     navigate('/instructor/addCourse')
   }
 
-  const addEvent = ()=>{
+  const addEvent = () => {
     navigate('/instructor/createEvent')
+  }
+
+   const goToMessages = () => {
+    navigate('/instructor/messages') // adjust route as per your app
   }
 
 
@@ -45,6 +49,9 @@ const InstructorNavbar = () => {
           <p className='add-course' onClick={addEvent}>Create Event</p>
 
 
+          <div className="messages-icon" onClick={goToMessages} title="Messages">
+            <p>Messages</p>
+          </div>
 
           <p className='logout' onClick={handleLogout}>Logout</p>
           <Link to='/instructor/profile'>

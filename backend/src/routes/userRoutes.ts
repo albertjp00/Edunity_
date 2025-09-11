@@ -6,6 +6,7 @@ import { ProfileController } from "../controllers/user/profileController.js";
 import path from "path";
 import { UserCourseController } from "../controllers/user/courseController.js";
 import { UserEventController } from "../controllers/user/eventController.js";
+import { MessageController } from "../controllers/messaage/messageController.js";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -24,6 +25,7 @@ const authController = new AuthController();
 const profileController = new ProfileController();
 const courseController = new UserCourseController()
 const eventController = new UserEventController()
+const messageController = new MessageController()
 
 // Auth Routes
 router.post("/login", authController.login);
@@ -65,5 +67,10 @@ router.post("/updateProgress", authMiddleware, courseController.updateProgress);
 router.get('/events',authMiddleware , eventController.getEvents)
 router.get('/event/:id',authMiddleware , eventController.getEventDetails)
 router.get('/eventEnroll/:id',authMiddleware , eventController.enrollEvent)
+
+
+router.post("/chat",authMiddleware ,messageController.sendMessage);
+router.get("/messages/:userId/:receiverId",authMiddleware , messageController.getChatHistory);
+router.get("/messagedInstructors",authMiddleware,messageController.getMessagedInstructors)
 
 export default router;

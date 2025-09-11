@@ -5,6 +5,7 @@ import { instAuthMiddleware } from "../middleware/authMiddleware.js"
 import { InstProfileController } from "../controllers/instructor/profileController.js"
 import multer from "multer"
 import { EventController } from "../controllers/instructor/eventController.js"
+import { MessageController } from "../controllers/messaage/messageController.js"
 
 
 const storage = multer.diskStorage({
@@ -23,6 +24,7 @@ const authController =new InsAuthController
 const courseController = new InstCourseController
 const profileController = new InstProfileController
 const eventController = new EventController
+const messageController = new MessageController
 
 const instructor = express.Router()
 
@@ -51,6 +53,8 @@ instructor.post('/event',instAuthMiddleware ,eventController.createEvents)
 instructor.get('/event',instAuthMiddleware ,eventController.getMyEvents)
 instructor.get('/getEvent/:id',instAuthMiddleware ,eventController.getEvent)
 instructor.patch('/event/:id',instAuthMiddleware ,eventController.editEvent)
+
+instructor.get('/getMessagedStudents',instAuthMiddleware , messageController.getMessagedStudents)
 
 
 

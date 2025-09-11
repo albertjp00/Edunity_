@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
-import axios from "axios";
 import "./chatWindow.css";
 import api from "../../../api/userApi";
-import { useParams } from "react-router-dom";
 
 const socket = io("http://localhost:5000");
 
@@ -15,7 +13,7 @@ interface Message {
 }
 
 interface ChatWindowProps {
-  userId: string;
+  instructorId: string;
   receiverId?: string;
   receiverName: string;
   receiverAvatar?: string;
@@ -23,8 +21,8 @@ interface ChatWindowProps {
 
 
 
-const ChatWindow: React.FC<ChatWindowProps> = ({
-  userId,
+const InstructorChatWindow: React.FC<ChatWindowProps> = ({
+  instructorId,
   receiverId,
   receiverName,
   receiverAvatar,
@@ -39,7 +37,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await api.get(`/user/messages/${userId}/${receiverId}`
+        const res = await api.get(`/instructor/messages/${instructorId}/${receiverId}`
         );
         if (res.data.success) {
           setMessages(res.data.messages);
@@ -50,10 +48,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     };
 
     fetchMessages();
-  }, [userId, receiverId]);
+  }, [instructorId, receiverId]);
 
   useEffect(() => {
-    socket.emit("joinRoom", { userId, receiverId });
+    socket.emit("joinRoom", { instructorId, receiverId });
 
     socket.on("receiveMessage", (message: Message) => {
       setMessages((prev) => [...prev, message]);
@@ -62,7 +60,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     return () => {
       socket.off("receiveMessage");
     };
-  }, [userId, receiverId]);
+  }, [instructorId, receiverId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -71,7 +69,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const sendMessage = async () => {
     if (newMsg.trim()) {
       const message: Message = {
-        senderId: userId,
+        senderId: instructorId,
         receiverId,
         text: newMsg,
         timestamp: new Date(),
@@ -80,7 +78,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       socket.emit("sendMessage", message);
 
       try {
-        await api.post("/user/chat", message);
+        await api.post("/instructor/sendMessage", message);
       } catch (err) {
         console.error("Failed to save message", err);
       }
@@ -117,7 +115,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         {messages.map((msg, idx) => (
           <div
             key={idx}
-            className={`message ${msg.senderId === userId ? "sent" : "received"}`}
+            className={`message ${msg.senderId === instructorId ? "sent" : "received"}`}
           >
             <div className="message-text">{msg.text}</div>
             <div className="message-time">
@@ -145,4 +143,4 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   );
 };
 
-export default ChatWindow;
+export default InstructorChatWindow;
