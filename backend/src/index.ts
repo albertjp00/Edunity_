@@ -60,10 +60,10 @@ app.use('/messages', messageRoutes);
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);
 
+  // 📩 Chat Rooms
   socket.on("joinRoom", ({ userId, receiverId }) => {
     const room = [userId, receiverId].sort().join("_");
     socket.join(room);
-    console.log(`User ${userId} joined room ${room}`);
   });
 
   socket.on("sendMessage", (message) => {
@@ -71,10 +71,35 @@ io.on("connection", (socket) => {
     io.to(room).emit("receiveMessage", message);
   });
 
+  // 🎥 Live Session (Events)
+  socket.on("joinEvent", ({ eventId, userId }) => {
+    socket.join(eventId);
+    console.log(`${userId} joined event ${eventId}`);
+    socket.to(eventId).emit("user-joined", { userId });
+  });
+
+  // Instructor sends an offer
+  socket.on("offer", ({ eventId, offer, from }) => {
+    socket.to(eventId).emit("offer", { offer, from });
+  });
+
+  // Student replies with an answer
+  socket.on("answer", ({ eventId, answer, from }) => {
+    socket.to(eventId).emit("answer", { answer, from });
+  });
+
+  // Exchange ICE candidates
+  socket.on("ice-candidate", ({ eventId, candidate, from }) => {
+    socket.to(eventId).emit("ice-candidate", { candidate, from });
+  });
+
   socket.on("disconnect", () => {
     console.log("Client disconnected:", socket.id);
   });
 });
+
+
+
 
 
 connectDB().then(() => {

@@ -56,8 +56,11 @@ export class UserCourseController {
                 priceMax,
                 sortBy,
                 page = 1,
-                limit = 10
+                limit = 10,
+                search
             } = req.query;
+            console.log("search ", search);
+
 
             const query: any = {};
 
@@ -82,12 +85,20 @@ export class UserCourseController {
 
             if (level) query.level = level;
 
+            if (search) {
+                query.$or = [
+                    { title: { $regex: search as string, $options: "i" } },
+                    { description: { $regex: search as string, $options: "i" } }
+                ];
+            }
+
             const { courses, totalCount } = await this.courseService.getAllCourses(
                 query,
                 Number(page),
                 Number(limit),
                 sortOption
             );
+
 
             res.json({
                 courses,
@@ -108,7 +119,7 @@ export class UserCourseController {
             const id = req.user?.id!
             const courseId = req.query.id as string
             const result = await this.courseService.fetchCourseDetails(id, courseId)
-            // console.log("course", result);
+            console.log("course", result);
 
             res.json({ success: true, course: result })
         } catch (error) {
@@ -195,8 +206,7 @@ export class UserCourseController {
             console.log(id);
 
             const result = await this.courseService.myCoursesRequest(id)
-            console.log('my courses result ');
-
+            console.log('my courses result ', result);
             res.status(200).json({ success: true, course: result })
 
         } catch (error) {
@@ -212,22 +222,24 @@ export class UserCourseController {
             console.log('viewMyCourse', myCourseId, id);
 
             const result = await this.courseService.viewMyCourseRequest(id, myCourseId)
-            console.log(result);
-            
+            console.log('mycourses view', result);
 
-            res.json({ success: true, course: result  , instructor:result?.instructor})
+
+            res.json({ success: true, course: result, instructor: result?.instructor, quiz: result?.quizExists })
         } catch (error) {
             console.log(error);
         }
     }
 
     // controllers/courseController.ts
+
+
+
     updateProgress = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
             const userId = req.user?.id as string;
             const { courseId, moduleTitle } = req.body;
-            console.log('progress', courseId);
-
+            console.log('progress', courseId, moduleTitle);
 
             if (!userId || !courseId || !moduleTitle) {
                 res.status(400).json({ success: false, message: "Missing required fields" });
@@ -242,6 +254,7 @@ export class UserCourseController {
             res.status(500).json({ success: false, message: "Internal server error" });
         }
     };
+
 
     getInstructors = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
@@ -262,9 +275,9 @@ export class UserCourseController {
 
             const result = await this.courseService.addtoFavourites(userId, courseId);
             console.log(result);
-            
+
             if (!result.success) {
-                res.json({success:false,message:"Course already exists in favourites"});
+                res.json({ success: false, message: "Course already exists in favourites" });
             }
 
             res.json(result);
@@ -273,6 +286,72 @@ export class UserCourseController {
             res.status(500).json({ success: false, message: "Internal server error" });
         }
     };
+
+    getFavourites = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.user?.id!
+            const data = await this.courseService.getFavourites(userId)
+            console.log(data);
+
+            res.json({ success: true, favourites: data })
+
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+    favCourseDetails = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const id = req.user?.id!
+            const courseId = req.query.id as string
+            const result = await this.courseService.favCourseDetails(id, courseId)
+            console.log("course", result);
+
+            res.json({ success: true, course: result })
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
+    getQuiz = async (req: AuthRequest, res: Response) => {
+        try {
+            const { courseId } = req.params
+            const userId = req.user?.id
+            console.log("quiz", courseId);
+
+
+
+            const quiz = await this.courseService.getQuiz(courseId as string)
+            res.json({ success: true, quiz })
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+
+    submitQuiz = async (req: AuthRequest, res: Response) => {
+        try {
+            const userId = req.user?.id!
+
+            const { courseId, quizId } = req.params
+            const answers = req.body
+
+
+            // console.log("submit quiz ",userId , courseId , quizId);
+            // console.log(answers);
+
+            const data = await this.courseService.submitQuiz(userId, courseId as string, quizId as string, answers)
+            console.log('submitted ',data);
+            
+            res.json({success:true , data})
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
 
 
 }

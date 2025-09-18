@@ -13,15 +13,17 @@ interface IInstructor {
 }
 
 const UserChat = () => {
-  const userId = "user123";
+  // const userId = "user123";
   const { instructorId } = useParams();
 
   const [instructors, setInstructors] = useState<IInstructor[]>([]);
   const [selected, setSelected] = useState<IInstructor | null>(null);
+  const [userId , setUserId] = useState<string | null>(null)
 
   const getInstructors = async () => {
     try {
       const response = await api.get("/user/messagedInstructors");
+      setUserId(response.data.userId)
       const normalized = response.data.instructors.map((inst: any) => ({
         id: inst._id,
         name: inst.name,
@@ -75,7 +77,7 @@ const UserChat = () => {
 
       {/* Right chat window */}
       <div className="chat-main">
-        {selected ? (
+        {selected && userId ? (
           <ChatWindow
             userId={userId}
             receiverId={selected.id}

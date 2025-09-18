@@ -1,3 +1,4 @@
+import mongoose, { Types } from 'mongoose';
 import { CourseModel, ICourse } from '../models/course.js';
 import { EventModel, IEvent } from '../models/events.js';
 import { FavouritesModel, IFavourite } from '../models/favourites.js';
@@ -5,6 +6,7 @@ import { IMyCourse, MyCourseModel } from '../models/myCourses.js';
 import { IMyEvent, MyEventModel } from '../models/myEvents.js';
 import { IUser, UserModel } from '../models/user.js';
 import { ISkills } from './instructorRepository.js';
+import { IQuiz, QuizModel } from '../models/quiz.js';
 
 export interface IUserRepository {
   findByEmail(email: string): Promise<IUser | null>;
@@ -45,6 +47,10 @@ export interface IUserRepository {
 
   addtoFavourites(id: string, courseId: string): Promise<IFavourite | null>
 
+  getFavourites(userId: string): Promise<IFavourite[] | null>
+
+  addParticipant(eventId: string,userId: string): Promise<IEvent | null>
+
 
 }
 
@@ -83,6 +89,8 @@ export class UserRepository implements IUserRepository {
   async buyCourse(id: string): Promise<ICourse | null> {
     return await CourseModel.findByIdAndUpdate(id, { $inc: { totalEnrolled: 1 } })
   }
+
+
 
   // userRepository.ts
 
@@ -128,6 +136,8 @@ export class UserRepository implements IUserRepository {
   async countCourses(): Promise<number> {
     return await CourseModel.countDocuments();
   }
+
+
 
   async findSkills(): Promise<ISkills> {
     const result = await CourseModel.aggregate([
@@ -202,9 +212,17 @@ export class UserRepository implements IUserRepository {
 
 
   async getCourseDetails(id: string, courseId: string): Promise<IMyCourse | null> {
-    const course = await MyCourseModel.findOne({ userId: id, 'course.id': courseId })
-    return course
+    const course = await MyCourseModel.findOne({
+      userId: String(id),
+      courseId: courseId,
+    })
+
+    console.log("Found course:", course);
+    return course;
   }
+
+
+
 
 
 
@@ -213,7 +231,7 @@ export class UserRepository implements IUserRepository {
 
       const existingCourse = await MyCourseModel.findOne({
         userId,
-        "course.id": courseData._id,
+        courseId: courseData._id,
       });
 
       if (existingCourse) {
@@ -223,14 +241,7 @@ export class UserRepository implements IUserRepository {
 
       const newCourse = new MyCourseModel({
         userId,
-        course: {
-          id: courseData._id.toString(),
-          title: courseData.title,
-          description: courseData.description,
-          price: courseData.price,
-          thumbnail: courseData.thumbnail,
-          modules: courseData.modules,
-        },
+        courseId: courseData._id,
         progress: { completedModules: [] },
       });
 
@@ -246,19 +257,37 @@ export class UserRepository implements IUserRepository {
     return await MyCourseModel.find({ userId: id })
   }
 
-  async viewMyCourse(id: string, myCourseId: string): Promise<IMyCourse | null> {
-    const data = MyCourseModel.findById(myCourseId)
-    return data
 
+
+
+
+  async viewMyCourse(id: string, myCourseId: string): Promise<IMyCourse | null> {
+    const data = await MyCourseModel.findOne({
+      _id: myCourseId,
+      userId: id,
+    });
+
+    return data;
   }
 
-  async updateProgress(userId: string, courseId: string, moduleTitle: string): Promise<IMyCourse | null> {
-    return MyCourseModel.findOneAndUpdate(
-      { userId, "course.id": courseId },
+
+  async updateProgress(userId: string, myCourseId: string, moduleTitle: string): Promise<IMyCourse | null> {
+    console.log(userId, myCourseId);
+
+    const myCourse = await MyCourseModel.findById(myCourseId)
+    console.log(myCourse);
+
+    const course = await MyCourseModel.findByIdAndUpdate(
+      myCourseId,
       { $addToSet: { "progress.completedModules": moduleTitle } },
       { new: true }
     );
+    console.log(course);
+
+
+    return course;
   }
+
 
 
   async getEvents(): Promise<IEvent[] | null> {
@@ -281,6 +310,46 @@ export class UserRepository implements IUserRepository {
     }
     return await FavouritesModel.create({ userId, courseId });
   }
+
+
+  async getFavourites(userId: string): Promise<IFavourite[] | null> {
+    return await FavouritesModel.find({ userId: userId })
+  }
+
+  async getFavCourseDetails(userId: string, courseId: string): Promise<IFavourite | null> {
+    return await FavouritesModel.findOne({ userId: userId, courseId: courseId })
+  }
+
+
+  async getQuiz(courseId: string): Promise<IQuiz | null> {
+    return await QuizModel.findOne({ courseId: courseId })
+  }
+
+
+  async submitQuiz(userId: string, courseId: string, score: number) {
+    return await MyCourseModel.findOneAndUpdate(
+      { userId, courseId },
+      { $set: { quizScore: score } },
+      { upsert: true, new: true }
+    );
+  }
+  
+
+  addParticipant = async (
+  eventId: string,
+  userId: string
+): Promise<IEvent | null> => {
+  if (!Types.ObjectId.isValid(eventId)) return null;
+
+  return EventModel.findByIdAndUpdate(
+    eventId,
+    {
+      $addToSet: { participantsList: userId }, // avoid duplicates
+      $inc: { participants: 1 },
+    },
+    { new: true }
+  ).exec();
+};
 
 
 }

@@ -2,7 +2,7 @@ import { ICourse } from "../../models/course.js";
 import { IInsRepository, InstructorRepository, ISkills } from "../../repositories/instructorRepository.js";
 
 // Define what a single course looks like
-interface Course {
+interface ICourseDetails {
   _id: string;
   instructorId: string;
   title: string;
@@ -18,6 +18,7 @@ interface Course {
   }[];
   createdAt: Date;
   totalEnrolled: number;
+  quiz: boolean
 }
 
 // Define the structure for paginated results
@@ -27,7 +28,7 @@ interface CourseResult {
   totalPages: number;
   currentPage: number;
   totalItems: number;
-  instructor:any
+  instructor: any
 }
 
 interface CourseDetails {
@@ -65,15 +66,21 @@ export class CourseService {
 
 
 
-  fetchCourseDetails = async (courseId: string): Promise<ICourse | null> => {
+  fetchCourseDetails = async (courseId: string) => {
     try {
       console.log('service get course details', courseId);
 
       const course = await this.instructorRepository.getCourseDetails(courseId)
       // console.log(course);
 
+      const quiz = await this.instructorRepository.getQuizByCourseId(courseId)
+      let quizExists = false
+      if (quiz) {
+        quizExists = true
+      }
 
-      return course
+
+      return { course, quizExists }
 
     } catch (error) {
       console.log(error);
@@ -81,11 +88,11 @@ export class CourseService {
     }
   }
 
-  addCourseRequest = async (id:string , data : any):Promise<boolean> =>{
+  addCourseRequest = async (id: string, data: any): Promise<boolean> => {
     try {
       // data.category = data.trim().toLowerCase();
 
-      const create = await this.instructorRepository.addCourse(id , data)
+      const create = await this.instructorRepository.addCourse(id, data)
       return true
     } catch (error) {
       console.log(error);
@@ -104,5 +111,38 @@ export class CourseService {
 
     }
   };
+
+
+  async addQuiz(courseId: string, title: string, questions: any[]) {
+    try {
+      const quiz = await this.instructorRepository.addQuiz(courseId, title, questions);
+      return quiz;
+    } catch (error) {
+      throw new Error("Error while adding quiz: " + (error as Error).message);
+    }
+  }
+
+  async getQuiz(courseId: string) {
+    try {
+      const quiz = await this.instructorRepository.getQuizByCourseId(courseId)
+      console.log(quiz);
+
+      return quiz
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
+
+  async updateQuiz (id: string, data: any){
+    try {
+      const update = await this.instructorRepository.editQuiz(id , data)
+      return update
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
+
 
 }

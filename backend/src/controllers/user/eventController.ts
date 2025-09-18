@@ -1,8 +1,9 @@
 import { AuthRequest } from "../../middleware/authMiddleware.js";
 import { UserRepository } from "../../repositories/userRepository.js";
 import { Response } from "express"
-import { UserEventService } from "../../services/user/eventService.js";
+import { EventFullError, NotFoundError, NotLiveError, UserEventService } from "../../services/user/eventService.js";
 import { InstructorRepository } from "../../repositories/instructorRepository.js";
+import { Server } from "http";
 
 
 
@@ -35,8 +36,8 @@ export class UserEventController {
             const enrolled = await this.userEventService.getIfEnrolled(id)
             const result = await this.userEventService.getEventDetailsRequest(id)
             // console.log(enrolled ,result);
-            
-            res.json({ success: true, event: result , enrolled:enrolled})
+
+            res.json({ success: true, event: result, enrolled: enrolled })
         } catch (error) {
             console.log(error);
 
@@ -58,6 +59,35 @@ export class UserEventController {
             console.log(error);
         }
     }
+
+
+    joinSession = async (req: AuthRequest, res: Response) => {
+        try {
+            const { id } = req.params; // eventId
+            const  userId = req.user?.id! 
+            const io = req.app.get("io") as Server | undefined;
+
+            const event = await this.userEventService.joinEvent(id as string, userId, io);
+
+            return res.json({ success: true, event });
+        } catch (err: any) {
+            if (err instanceof NotFoundError) {
+                return res.status(404).json({ success: false, message: err.message });
+            }
+            if (err instanceof NotLiveError) {
+                return res.status(400).json({ success: false, message: err.message });
+            }
+            if (err instanceof EventFullError) {
+                return res.status(400).json({ success: false, message: err.message });
+            }
+            console.error("joinSession error:", err);
+            return res.status(500).json({
+                success: false,
+                message: "Failed to join session",
+                error: err?.message || err,
+            });
+        }
+    };
 
 
 

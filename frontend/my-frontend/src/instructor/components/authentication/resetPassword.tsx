@@ -1,5 +1,5 @@
 import React, { useState, type FormEvent, type ChangeEvent } from 'react';
-import './resetPassword.css';
+// import './resetPassword.css';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../../api/userApi';
@@ -11,7 +11,7 @@ interface LocationState {
 }
 
 
-const UserResetPassword: React.FC = () => {
+const InstructorResetPassword: React.FC = () => {
   const [newPassword, setNewPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
 
@@ -54,7 +54,7 @@ const UserResetPassword: React.FC = () => {
     }
 
     try {
-      const response = await publicApi.put('/user/resetPassword',
+      const response = await publicApi.put('/instructor/resetPassword',
         { email, newPassword })
       console.log(response);
 
@@ -65,7 +65,7 @@ const UserResetPassword: React.FC = () => {
         setNewPassword('');
         setConfirmPassword('');
 
-        navigate('/user/login');
+        navigate('/instructor/login');
       } else {
         toast.error(response?.data.message);
       }
@@ -100,4 +100,4 @@ const UserResetPassword: React.FC = () => {
   );
 };
 
-export default UserResetPassword;
+export default InstructorResetPassword;

@@ -9,6 +9,10 @@ export class MessageService {
         this.messageRepository = messageRepository
     }
 
+    async getInstructor(instructorId:string):Promise<IInstructor | null> {
+        return await this.messageRepository.getInstructor(instructorId)
+    }
+
     async getInstructors(userId: string): Promise<IInstructor[]> {
         return await this.messageRepository.getInstructors(userId)
     }
@@ -24,8 +28,19 @@ export class MessageService {
     }
 
 
-    async getStudents(instructorId: string) {
+    async getStudents(instructorId: string ) {
 
         return await this.messageRepository.getUsers(instructorId)
+    }
+
+
+    // Instructor side 
+
+    async getMessages(instructorId : string , receiverId : string):Promise<IMessage[]>{
+        return await this.messageRepository.getUserMessages(instructorId , receiverId)
+    }
+
+    async sendInstructorMessage(instructorId:string , receiverId:string , text:string){
+        return await this.messageRepository.sendInstructorsMessage(instructorId, receiverId , text)
     }
 }

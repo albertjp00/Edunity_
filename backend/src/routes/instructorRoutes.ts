@@ -44,6 +44,11 @@ instructor.post('/kycSubmit' ,instAuthMiddleware ,
   profileController.kycSubmit
 );
 
+instructor.post('/forgotPassword',authController.forgotPassword)
+instructor.post('/otpVerify',authController.verifyOtpForgotPass)
+instructor.post('/resendOtpForgotPass',authController.resendOtpForgotPassword)
+instructor.put('/resetPassword',authController.resetPassword)
+
 instructor.get('/getCourse',instAuthMiddleware,courseController.myCourses)
 instructor.get('/course/:id', instAuthMiddleware, courseController.courseDetails);
 instructor.put('/course/:id', instAuthMiddleware,upload.single("thumbnail"), courseController.editCourse);
@@ -54,7 +59,20 @@ instructor.get('/event',instAuthMiddleware ,eventController.getMyEvents)
 instructor.get('/getEvent/:id',instAuthMiddleware ,eventController.getEvent)
 instructor.patch('/event/:id',instAuthMiddleware ,eventController.editEvent)
 
+
+instructor.patch('/startEvent/:id',instAuthMiddleware , eventController.startSession)
+instructor.patch("/endEvent/:id",instAuthMiddleware , eventController.endSession)
+
+
 instructor.get('/getMessagedStudents',instAuthMiddleware , messageController.getMessagedStudents)
+instructor.get('/messages/:receiverId',instAuthMiddleware , messageController.getMessages)
+instructor.post('/sendMessage/:receiverId',instAuthMiddleware , messageController.sendInstructorMessage)
+
+
+instructor.post('/addQuiz/:id',instAuthMiddleware , courseController.addQuiz)
+instructor.get('/quiz/:courseId',instAuthMiddleware , courseController.getQuiz)
+instructor.put('/quiz/:quizId',instAuthMiddleware , courseController.editQuiz)
+
 
 
 
