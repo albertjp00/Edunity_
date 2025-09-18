@@ -23,12 +23,15 @@ interface ICourse {
 interface IMyCourse {
   _id: string;
   userId: string;
+  courseId: string;
   course: ICourse;
   progress: {
     completedModules: string[];
   };
   createdAt: string;
 }
+
+
 
 const UserMyCourses: React.FC = () => {
   const [courses, setCourses] = useState<IMyCourse[]>([]);
@@ -65,6 +68,7 @@ const UserMyCourses: React.FC = () => {
           {courses.map((myCourse) => {
             const totalModules = myCourse.course.modules?.length || 0;
             const completedModules = myCourse.progress.completedModules.length;
+
             const progressPercent = totalModules
               ? Math.round((completedModules / totalModules) * 100)
               : 0;
@@ -85,23 +89,20 @@ const UserMyCourses: React.FC = () => {
 
                 <div className="course-details">
                   <h3 className="course-title">{myCourse.course.title}</h3>
-                  <p className="course-description">
-                    {myCourse.course.description}
-                  </p>
-                  {/* <p className="course-price">₹{myCourse.course.price}</p> */}
+                  <p className="course-description">{myCourse.course.description}</p>
                   <p className="course-modules">
                     Modules: {completedModules}/{totalModules}
                   </p>
-                  <p className="course-progress">
-                    Progress: {progressPercent}%
-                  </p>
+                  <p className="course-progress">Progress: {progressPercent}%</p>
                   <p className="course-enrolled">
                     Enrolled: {new Date(myCourse.createdAt).toLocaleDateString()}
                   </p>
                 </div>
+
               </div>
             );
           })}
+
         </div>
       )}
     </div>

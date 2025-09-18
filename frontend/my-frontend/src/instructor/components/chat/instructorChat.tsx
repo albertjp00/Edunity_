@@ -15,13 +15,15 @@ const InstructorChat = () => {
   const { id: userId } = useParams(); // optional userId from route (like /instructor/chat/:id)
   const [students, setStudents] = useState<IStudent[]>([]);
   const [selected, setSelected] = useState<IStudent | null>(null);
+  const [instructorId, setInstructorId] = useState<string | null>(null);
 
-  const instructorId = "instructor456"; // Replace with logged-in instructor ID
-
-  const getStudents = async () => {
+  const getMessagedStudents = async () => {
     try {
       const response = await instructorApi.get(`/instructor/getMessagedStudents`);
       if (response.data.success) {
+        // ✅ backend should send instructorId after decoding the token
+        setInstructorId(response.data.instructorId);
+
         const normalized = response.data.students.map((stu: any) => ({
           id: stu._id,
           name: stu.name,
@@ -41,7 +43,7 @@ const InstructorChat = () => {
   };
 
   useEffect(() => {
-    getStudents();
+    getMessagedStudents();
   }, []);
 
   return (
@@ -69,7 +71,7 @@ const InstructorChat = () => {
 
       {/* Chat Area */}
       <div className="chat-area">
-        {selected ? (
+        {selected && instructorId ? (
           <>
             <h1 className="chat-title">Chat with {selected.name}</h1>
             <div className="chat-box">

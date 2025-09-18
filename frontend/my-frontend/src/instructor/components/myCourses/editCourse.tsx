@@ -296,6 +296,7 @@ const EditCourse: React.FC = () => {
                     <br /><br />
                     <button className="add-course-btn" type="submit">Save</button>
                 </form>
+                
             </div>
         </>
     );

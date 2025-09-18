@@ -6,11 +6,11 @@ export interface IModule {
   content: string;
 }
 
-export interface ICourse {
-  id: string;
+interface ICourse {
+  _id: string;
   title: string;
   description: string;
-  price: string;
+  price: number;
   thumbnail: string;
   modules: IModule[];
 }
@@ -21,29 +21,20 @@ export interface IProgress {
 
 export interface IMyCourse extends Document {
   userId: string;
-  course: ICourse;
+  courseId: ICourse | mongoose.Types.ObjectId;
   progress: IProgress;
   createdAt: Date;
+  quizScore : number
 }
 
-const myCourseSchema: Schema<IMyCourse> = new Schema({
+const myCourseSchema: Schema<IMyCourse> = new Schema({  
   userId: {
     type: String,
     required: true,
   },
-  course: {
-    id: { type: String },
-    title: { type: String },
-    description: { type: String },
-    price: { type: String },
-    thumbnail: { type: String },
-    modules: [
-      {
-        title: { type: String },
-        videoUrl: { type: String },
-        content: { type: String },
-      },
-    ],
+  courseId: {
+    type: String,
+    required: true,
   },
   progress: {
     completedModules: [{ type: String }],
@@ -52,6 +43,10 @@ const myCourseSchema: Schema<IMyCourse> = new Schema({
     type: Date,
     default: Date.now,
   },
+  quizScore:{
+    type:Number
+  }
+
 });
 
 export const MyCourseModel = mongoose.model<IMyCourse>("MyCourse",myCourseSchema);

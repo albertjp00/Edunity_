@@ -52,24 +52,35 @@ router.get('/getCourses',authMiddleware, courseController.showCourses)
 router.get('/getAllCourses',authMiddleware, courseController.getAllCourses)
 router.get('/courseDetails',authMiddleware,courseController.courseDetails)
 router.get('/myCourses',authMiddleware , courseController.myCourses)
-router.get('/myCourses',authMiddleware , courseController.myCourses)
 router.get('/getInstructors',authMiddleware , courseController.getInstructors)
+router.get('/getFavourites',authMiddleware ,courseController.getFavourites)
 router.get('/addtoFavourites/:id',authMiddleware,courseController.addtoFavourites)
+router.get('/FavouritesCourseDetails/:id',authMiddleware,courseController.favCourseDetails)
+
+
 
 router.get('/buyCourse/:id',authMiddleware , courseController.buyCourse)
 router.post('/payment/verify',authMiddleware , courseController.verifyPayment)
 
 
 router.get('/viewMyCourse/:id',authMiddleware , courseController.viewMyCourse)
-router.post("/updateProgress", authMiddleware, courseController.updateProgress);``
+router.post("/updateProgress", authMiddleware, courseController.updateProgress);
+
+router.get("/quiz/:courseId",authMiddleware,courseController.getQuiz)
+router.post("/quiz/:courseId/:quizId",authMiddleware ,courseController.submitQuiz)
+
+
 
 
 router.get('/events',authMiddleware , eventController.getEvents)
 router.get('/event/:id',authMiddleware , eventController.getEventDetails)
 router.get('/eventEnroll/:id',authMiddleware , eventController.enrollEvent)
 
+router.get("/joinEvent",authMiddleware ,eventController.joinSession);
+
 
 router.post("/chat",authMiddleware ,messageController.sendMessage);
+router.get("/getInstructor/:instructorId",authMiddleware , messageController.getInstructor)
 router.get("/messages/:userId/:receiverId",authMiddleware , messageController.getChatHistory);
 router.get("/messagedInstructors",authMiddleware,messageController.getMessagedInstructors)
 

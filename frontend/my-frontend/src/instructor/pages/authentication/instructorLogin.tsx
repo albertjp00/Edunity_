@@ -81,6 +81,11 @@ const InstructorLogin = () => {
         </form>
 
         <div className="login-links">
+          <p>
+                      <Link to="/instructor/forgotPassword" className="link">
+                        Forgot Password?
+                      </Link>
+                    </p>
 
           <p>
             Don’t have an account?{' '}

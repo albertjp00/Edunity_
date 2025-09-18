@@ -11,27 +11,28 @@ interface Course {
   price?: number;
   totalEnrolled?: number;
   duration?: string;
-  instructorName?: string
-  instructorImage: string,
+  instructorName?: string;
+  instructorImage: string;
   category?: string;
   level?: string;
-  moduleCount: number
+  moduleCount: number;
 }
 
 const AllCourses: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const coursesPerPage = 4; // match backend limit
+  const coursesPerPage = 4; // backend limit
 
   // ✅ filter states
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedInstructors, setSelectedInstructors] = useState<string[]>([]);
-  const [selectedPrice, setSelectedPrice] = useState<string>(""); // "free" | "paid"
+  const [selectedPrice, setSelectedPrice] = useState<string>("");
   const [selectedLevel, setSelectedLevel] = useState<string>("");
-  const [sortBy, setSortBy] = useState('')
+  const [sortBy, setSortBy] = useState("");
+  const [searchQuery, setSearchQuery] = useState<string>(""); // ✅ added search state
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const fetchCourses = async (page: number = 1) => {
     try {
@@ -55,8 +56,13 @@ const AllCourses: React.FC = () => {
       if (sortBy) {
         queryParams.append("sortBy", sortBy);
       }
+      if (searchQuery.trim() !== "") {        
+        queryParams.append("search", searchQuery.trim());
+      }
 
-      const response = await api.get(`/user/getAllCourses?${queryParams.toString()}`);
+      const response = await api.get(
+        `/user/getAllCourses?${queryParams.toString()}`
+      );
 
       setCourses(response.data.courses);
       setTotalPages(response.data.totalPages);
@@ -69,24 +75,27 @@ const AllCourses: React.FC = () => {
     navigate(`/user/courseDetails/${id}`);
   };
 
+  // 🔎 Trigger fetch on search + filters
   useEffect(() => {
     fetchCourses(currentPage);
-  }, [currentPage, selectedCategories, selectedInstructors, selectedPrice, selectedLevel, sortBy]);
-
+  }, [
+    currentPage,
+    selectedCategories,
+    selectedInstructors,
+    selectedPrice,
+    selectedLevel,
+    sortBy,
+    searchQuery,
+  ]);
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategories((prev) =>
-      prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]
+      prev.includes(category)
+        ? prev.filter((c) => c !== category)
+        : [...prev, category]
     );
     setCurrentPage(1);
   };
-
-  // const handleInstructorChange = (instructor: string) => {
-  //   setSelectedInstructors((prev) =>
-  //     prev.includes(instructor) ? prev.filter((i) => i !== instructor) : [...prev, instructor]
-  //   );
-  //   setCurrentPage(1);
-  // };
 
   const handlePriceChange = (price: string) => {
     setSelectedPrice((prev) => (prev === price ? "" : price));
@@ -102,24 +111,48 @@ const AllCourses: React.FC = () => {
     <div className="course-page">
       {/* Left Side - Courses */}
       <div className="course-list">
+        {/* ✅ Search Input */}
+        <form
+          className="search-form"
+          onSubmit={(e) => {
+            e.preventDefault();   // prevent page reload
+            fetchCourses(1);      // run search
+            setCurrentPage(1);
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Search courses..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <button type="submit" className="search-bttn">
+            🔍 Search
+          </button>
+        </form>
+
+
+
         <h2 className="course-header">All Courses</h2>
         <div className="course-grid">
           {courses.map((course) => (
             <div className="courses-card" key={course._id}>
-              {/* Thumbnail */}
               <div className="course-thumbnail-wrapper">
                 <img
                   src={`http://localhost:5000/assets/${course.thumbnail}`}
                   alt={course.title}
                   className="course-thumbnail"
                 />
-                <span className="course-category">{course.category || "General"}</span>
+                <span className="course-category">
+                  {course.category || "General"}
+                </span>
                 <span className="course-price">
-                  {course.price && course.price > 0 ? `$${course.price}` : "Free"}
+                  {course.price && course.price > 0
+                    ? `$${course.price}`
+                    : "Free"}
                 </span>
               </div>
 
-              {/* Body */}
               <div className="course-body">
                 <h3 className="course-title">{course.title}</h3>
                 <div className="course-meta">
@@ -128,7 +161,6 @@ const AllCourses: React.FC = () => {
                   <span>Students {course.totalEnrolled || "20+"}</span>
                 </div>
 
-                {/* Footer */}
                 <div className="course-footer">
                   <div className="instructor">
                     <img
@@ -138,13 +170,17 @@ const AllCourses: React.FC = () => {
                     />
                     <span>{course.instructorName || "Unknown"}</span>
                   </div>
-                  <button className="enroll-btn" onClick={() => gotoCourse(course._id)}>Enroll →</button>
+                  <button
+                    className="enroll-btn"
+                    onClick={() => gotoCourse(course._id)}
+                  >
+                    Enroll →
+                  </button>
                 </div>
               </div>
             </div>
           ))}
         </div>
-
 
         {/* Pagination */}
         <div className="pagination">
@@ -166,7 +202,9 @@ const AllCourses: React.FC = () => {
           ))}
           <button
             className="page-btn"
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
             disabled={currentPage === totalPages}
           >
             &gt;
@@ -178,39 +216,26 @@ const AllCourses: React.FC = () => {
       <aside className="course-filters">
         <h3>Course Category</h3>
         <ul>
-          {["Web Development", "Mobile Development", "Data Science", "Cyber Security", "Design", "Language"].map(
-            (cat) => (
-              <li key={cat}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={selectedCategories.includes(cat)}
-                    onChange={() => handleCategoryChange(cat)}
-                  />
-                  {cat}
-                </label>
-              </li>
-            )
-          )}
-        </ul>
-
-        {/* <h3>Instructors</h3>
-        <ul>
-          {["Kenny White", "John Doe"].map((inst) => (
-            <li key={inst}>
+          {[
+            "Web Development",
+            "Mobile Development",
+            "Data Science",
+            "Cyber Security",
+            "Design",
+            "Language",
+          ].map((cat) => (
+            <li key={cat}>
               <label>
                 <input
                   type="checkbox"
-                  checked={selectedInstructors.includes(inst)}
-                  onChange={() => handleInstructorChange(inst)}
+                  checked={selectedCategories.includes(cat)}
+                  onChange={() => handleCategoryChange(cat)}
                 />
-                {inst}
+                {cat}
               </label>
             </li>
           ))}
-        </ul> */}
-
-
+        </ul>
 
         <h3>Sort By Price</h3>
         <ul>
@@ -251,7 +276,6 @@ const AllCourses: React.FC = () => {
             </label>
           </li>
         </ul>
-
 
         <h3>Price</h3>
         <ul>

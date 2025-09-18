@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
-import axios from "axios";
 import "./chatWindow.css";
 import api from "../../../api/userApi";
 import { useParams } from "react-router-dom";
@@ -127,6 +126,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
               })}
             </div>
           </div>
+
         ))}
       </div>
 
