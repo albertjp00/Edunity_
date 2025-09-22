@@ -5,6 +5,7 @@ import { UserCourseService } from "../../services/user/userCourseService.js";
 import { InstructorRepository } from "../../repositories/instructorRepository.js";
 import { AdminRepository } from "../../repositories/adminRepositories.js";
 import instructor from "../../routes/instructorRoutes.js";
+import { debounceCall } from "../../utils/debounce.js";
 
 export class UserCourseController {
     private courseService: UserCourseService;
@@ -143,28 +144,35 @@ export class UserCourseController {
     //     }
     // }
     // controller
-    buyCourse = async (req: AuthRequest, res: Response): Promise<void> => {
-        try {
-            const id = req.user?.id!;
-            const courseId = req.params.id!;
-            console.log(id, courseId);
+buyCourse = async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+        const userId = req.user?.id!;
+        const courseId = req.params.id!;
+        console.log('Buy course',userId, courseId);
 
-            const order = await this.courseService.buyCourseRequest(id, courseId);
+        // Key for debouncing (user + course)
+        const key = `buyCourse_${userId}_${courseId}`;
 
-            res.json({
-                success: true,
-                orderId: order.id,
-                amount: order.amount,
-                currency: order.currency,
-                key: process.env.RAZORPAY_KEY_ID,
-                courseId,
-            });
+        const order = await debounceCall(key, 2000, async () => {
+            // This function runs only if user hasn't triggered in last 2s
+            return await this.courseService.buyCourseRequest(userId, courseId);
+        });
 
-        } catch (error) {
-            console.error("Error in buyCourse:", error);
-            res.status(500).json({ success: false, message: "Payment initiation failed" });
-        }
-    };
+        res.json({
+            success: true,
+            orderId: order.id,
+            amount: order.amount,
+            currency: order.currency,
+            key: process.env.RAZORPAY_KEY_ID,
+            courseId,
+        });
+
+    } catch (error) {
+        console.error("Error in buyCourse:", error);
+        res.status(500).json({ success: false, message: "Payment initiation failed" });
+    }
+};
+
 
     verifyPayment = async (req: AuthRequest, res: Response) => {
         try {
@@ -172,26 +180,30 @@ export class UserCourseController {
             const userId = req.user?.id!;
             console.log('verify pay', userId);
 
+            const key = `verifyPayment_${userId}_${courseId}`;
 
-            const result = await this.courseService.verifyPaymentRequest(
-                razorpay_order_id,
-                razorpay_payment_id,
-                razorpay_signature,
-                courseId,
-                userId
-            );
-
+            const result = await debounceCall(key, 2000, async () => {
+                return await this.courseService.verifyPaymentRequest(
+                    razorpay_order_id,
+                    razorpay_payment_id,
+                    razorpay_signature,
+                    courseId,
+                    userId
+                );
+            });
 
             if (result.success) {
                 return res.json(result);
             } else {
                 return res.status(400).json(result);
             }
+
         } catch (error) {
             console.error("Payment verification failed:", error);
             res.status(500).json({ success: false, message: "Payment verification failed" });
         }
     };
+
 
 
 
@@ -206,7 +218,7 @@ export class UserCourseController {
             console.log(id);
 
             const result = await this.courseService.myCoursesRequest(id)
-            console.log('my courses result ', result);
+            // console.log('my courses result ', result);
             res.status(200).json({ success: true, course: result })
 
         } catch (error) {
@@ -344,9 +356,9 @@ export class UserCourseController {
             // console.log(answers);
 
             const data = await this.courseService.submitQuiz(userId, courseId as string, quizId as string, answers)
-            console.log('submitted ',data);
-            
-            res.json({success:true , data})
+            console.log('submitted ', data);
+
+            res.json({ success: true, data })
         } catch (error) {
             console.log(error);
         }

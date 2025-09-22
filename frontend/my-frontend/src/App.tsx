@@ -68,6 +68,7 @@ import InstructorResetPassword from './instructor/components/authentication/rese
 import InstructorForgotPassword from './instructor/components/authentication/forgotPassMail'
 import OtpVerificationInstructor from './instructor/components/authentication/resetPasswordVerify'
 import InstructorVerifyOtp from './instructor/components/authentication/InstVerifyOtp'
+import PurchasesAdmin from './admin/pages/purchases/purchasesAdmin'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -155,6 +156,8 @@ function App() {
             <Route path='/admin/user/:id' element={<AdminProtectedRoute><UserDetails /></AdminProtectedRoute>} />
             <Route path='/admin/courses' element={<AdminProtectedRoute><AdminCourses /></AdminProtectedRoute>} />
             <Route path='/admin/courseDetails/:id' element={<AdminProtectedRoute><AdminCourseDetails /></AdminProtectedRoute>} />
+
+            {/* <Route path='/admin/purchases' element={<AdminProtectedRoute><PurchasesAdmin /></AdminProtectedRoute>} /> */}
 
 
 

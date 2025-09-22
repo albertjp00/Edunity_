@@ -13,6 +13,10 @@ export class MessageService {
         return await this.messageRepository.getInstructor(instructorId)
     }
 
+    async getInstructorToMessage(instructorId : string):Promise<IInstructor | null>{
+        return await this.messageRepository.getInstructor(instructorId)
+    }
+
     async getInstructors(userId: string): Promise<IInstructor[]> {
         return await this.messageRepository.getInstructors(userId)
     }

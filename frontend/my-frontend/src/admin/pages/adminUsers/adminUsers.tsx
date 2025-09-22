@@ -20,6 +20,7 @@ const UsersAdmin: React.FC = () => {
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
   const usersPerPage = 4;
 
   // Modal states
@@ -27,20 +28,40 @@ const UsersAdmin: React.FC = () => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [isBlocking, setIsBlocking] = useState<boolean>(true);
 
-  const loadUsers = async (): Promise<void> => {
+  const loadUsers = async (page: number = 1, search: string = ""): Promise<void> => {
     try {
-      const data = await getUsers();
-      setUsers(data.users);
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: usersPerPage.toString(),
+        search,
+      });
+
+      const res = await getUsers(queryParams);
+
+      setUsers(res.users);
+      setTotalPages(res.totalPages)
+
+      // setTotalPages(Math.ceil(res.total / usersPerPage)); // ✅ backend must return total count
+      setCurrentPage(res.currentPage);
+
     } catch (error) {
       console.error("Error fetching users:", error);
     }
   };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    loadUsers(1, searchTerm);
+  };
+
 
   const handleBlock = (userId: string): void => {
     setSelectedUserId(userId);
     setIsBlocking(true);
     setShowModal(true);
   };
+
 
   const handleUnblock = (userId: string): void => {
     setSelectedUserId(userId);
@@ -51,19 +72,16 @@ const UsersAdmin: React.FC = () => {
   const confirmAction = async () => {
     if (!selectedUserId) return;
 
+
     try {
       if (isBlocking) {
         const res = await blockUser(selectedUserId);
-        if (res.success) {
-          toast.success("User Blocked", { autoClose: 1500 });
-        }
+        if (res.success) toast.success("User Blocked", { autoClose: 1500 });
       } else {
         const res = await unblockUser(selectedUserId);
-        if (res.success) {
-          toast.success("User Unblocked", { autoClose: 1500 });
-        }
+        if (res.success) toast.success("User Unblocked", { autoClose: 1500 });
       }
-      loadUsers();
+      loadUsers(currentPage, searchTerm);
     } catch (error) {
       console.error("Error updating user status:", error);
     } finally {
@@ -72,27 +90,14 @@ const UsersAdmin: React.FC = () => {
     }
   };
 
+  
   useEffect(() => {
-    loadUsers();
-  }, []);
-
-  // Filter users by search
-  const filteredUsers = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Pagination logic
-  const indexOfLastUser = currentPage * usersPerPage;
-  const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
-
-  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+    loadUsers(currentPage, searchTerm);
+  }, [currentPage]);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
+      loadUsers(page, searchTerm);
     }
   };
 
@@ -100,16 +105,17 @@ const UsersAdmin: React.FC = () => {
     <div className="user-list">
       <h2>👥 Users Management</h2>
 
-      <input
-        type="text"
-        name="search"
-        placeholder="🔍 Search by name or email"
-        value={searchTerm}
-        onChange={(e: ChangeEvent<HTMLInputElement>) =>
-          setSearchTerm(e.target.value)
-        }
-        className="search-box"
-      />
+      <form onSubmit={handleSearch}>
+        <input
+          type="text"
+          name="search"
+          placeholder="🔍 Search by name or email"
+          value={searchTerm}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+          className="search-box"
+        />
+        <button type="submit">Search</button>
+      </form>
 
       <table className="styled-table">
         <thead>
@@ -121,7 +127,7 @@ const UsersAdmin: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {currentUsers.map((user) => (
+          {users.map((user) => (
             <tr key={user._id}>
               <td>
                 <Link to={`/admin/user/${user._id}`} className="user-link">
@@ -142,17 +148,11 @@ const UsersAdmin: React.FC = () => {
               </td>
               <td>
                 {user.blocked ? (
-                  <button
-                    className="btn-unblock"
-                    onClick={() => handleUnblock(user._id)}
-                  >
+                  <button className="btn-unblock" onClick={() => handleUnblock(user._id)}>
                     Unblock
                   </button>
                 ) : (
-                  <button
-                    className="btn-block"
-                    onClick={() => handleBlock(user._id)}
-                  >
+                  <button className="btn-block" onClick={() => handleBlock(user._id)}>
                     Block
                   </button>
                 )}
@@ -164,22 +164,23 @@ const UsersAdmin: React.FC = () => {
 
       {/* Pagination Controls */}
       <div className="pagination">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
+        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
           ⬅ Prev
         </button>
 
-        {[...Array(totalPages)].map((_, index) => (
-          <button
-            key={index}
-            onClick={() => handlePageChange(index + 1)}
-            className={currentPage === index + 1 ? "active" : ""}
-          >
-            {index + 1}
-          </button>
-        ))}
+{totalPages > 0 &&
+  [...Array(totalPages)].map((_, index) => (
+    <button
+      key={index}
+      onClick={() => handlePageChange(index + 1)}
+      className={currentPage === index + 1 ? "active" : ""}
+    >
+      {index + 1}
+    </button>
+  ))
+}
+
+
 
         <button
           onClick={() => handlePageChange(currentPage + 1)}
@@ -189,7 +190,6 @@ const UsersAdmin: React.FC = () => {
         </button>
       </div>
 
-      {/* ✅ Use ConfirmModal here */}
       <ConfirmModal
         isOpen={showModal}
         title={isBlocking ? "Block User" : "Unblock User"}

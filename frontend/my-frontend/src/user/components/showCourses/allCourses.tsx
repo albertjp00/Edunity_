@@ -30,7 +30,7 @@ const AllCourses: React.FC = () => {
   const [selectedPrice, setSelectedPrice] = useState<string>("");
   const [selectedLevel, setSelectedLevel] = useState<string>("");
   const [sortBy, setSortBy] = useState("");
-  const [searchQuery, setSearchQuery] = useState<string>(""); // ✅ added search state
+  const [searchQuery, setSearchQuery] = useState<string>(""); 
 
   const navigate = useNavigate();
 
@@ -71,6 +71,12 @@ const AllCourses: React.FC = () => {
     }
   };
 
+  const handleSearch = (e: React.FormEvent) => {
+  e.preventDefault();
+  setCurrentPage(1);
+  fetchCourses(1);
+};
+
   const gotoCourse = (id: string): void => {
     navigate(`/user/courseDetails/${id}`);
   };
@@ -85,8 +91,10 @@ const AllCourses: React.FC = () => {
     selectedPrice,
     selectedLevel,
     sortBy,
-    searchQuery,
+    // searchQuery,
   ]);
+
+
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategories((prev) =>
@@ -114,11 +122,7 @@ const AllCourses: React.FC = () => {
         {/* ✅ Search Input */}
         <form
           className="search-form"
-          onSubmit={(e) => {
-            e.preventDefault();   // prevent page reload
-            fetchCourses(1);      // run search
-            setCurrentPage(1);
-          }}
+          onSubmit={handleSearch}
         >
           <input
             type="text"

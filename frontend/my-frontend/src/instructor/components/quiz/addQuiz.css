@@ -29,6 +29,17 @@
   color: #444;
 }
 
+.textarea{
+  background-color: white;
+  color:black;
+    width: 90%;
+  padding: 10px 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
 .add-quiz-form input,
 .add-quiz-form textarea,
 .add-quiz-form select {

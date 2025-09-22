@@ -1,34 +1,27 @@
 import { Response, Request } from "express";
-import { AdminRepository } from "../../repositories/adminRepositories.js";
+import { AdminRepository, IAdminRepository } from "../../repositories/adminRepositories.js";
 import { IKyc } from "../../models/kyc.js";
 import { AdminInstructorService } from "../../services/admin/instructorServices.js";
-import { InstructorRepository } from "../../repositories/instructorRepository.js";
+import { IInsRepository, InstructorRepository } from "../../repositories/instructorRepository.js";
 import { AdminCourseService } from "../../services/admin/courseServices.js";
 import { ICourse } from "../../models/course.js";
-import { UserRepository } from "../../repositories/userRepository.js";
+import { IUserRepository, UserRepository } from "../../repositories/userRepository.js";
+import { AdminAuthRequest } from "../../middleware/authMiddleware.js";
 
 export class AdminCourseController {
     private courseService: AdminCourseService
 
-    constructor() {
-        const repo = new AdminRepository();
-        const Irepo = new InstructorRepository()
-        const Urepo = new UserRepository()
+    //pass the dependencies from outside the class(DI)
+    constructor(
+        repo: IAdminRepository,
+        Irepo: IInsRepository,
+        Urepo: IUserRepository
+    ){
         this.courseService = new AdminCourseService(repo, Irepo, Urepo)
     }
 
-    // getInstructors = async(req:Request , res:Response):Promise<void>=>{
-    //     try {
-    //         const id = req.params.id!
-    //         console.log('get instructorssssss ',id);
 
-    //         const result = await this.courseService.getInstructorsRequest(id)
-    //         res.json({success:true , instructor:result})
-    //     } catch (error) {
-    //         console.log(error);
 
-    //     }
-    // }
 
     getCourses = async (req: Request, res: Response) => {
         try {
@@ -37,7 +30,7 @@ export class AdminCourseController {
 
             const data = await this.courseService.getCoursesRequest(page, limit);
             console.log(data);
-            
+
 
             res.json({
                 success: true,
@@ -74,5 +67,38 @@ export class AdminCourseController {
     };
 
 
+
+    getAllPurchases = async (req: AdminAuthRequest, res: Response) => {
+        try {
+
+
+            const {search,page}  = req.query
+            console.log("search", search);
+
+            const data = await this.courseService.getPurchaseDetails(search as string, Number(page))
+            // console.log(data);
+
+
+            res.json({ success: true, purchases: data });
+        } catch (err) {
+            // res.status(500).json({ success: false, message: err.message });
+            console.log(err);
+
+        }
+    };
+
+    
+    // getInstructors = async(req:Request , res:Response):Promise<void>=>{
+    //     try {
+    //         const id = req.params.id!
+    //         console.log('get instructorssssss ',id);
+
+    //         const result = await this.courseService.getInstructorsRequest(id)
+    //         res.json({success:true , instructor:result})
+    //     } catch (error) {
+    //         console.log(error);
+
+    //     }
+    // }
 
 }
