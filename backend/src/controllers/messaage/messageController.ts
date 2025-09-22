@@ -14,16 +14,41 @@ export class MessageController {
   getInstructor = async (req:AuthRequest , res:Response) =>{
     try {
       const {instructorId} = req.params 
-
+      console.log("get instructor to message");
+      
       const instructor = await this.messageService.getInstructor(instructorId as string)
       console.log('get instructor to message ',instructor);
       res.json({success:true , instructor : instructor})
       
     } catch (error) {
       console.log(error);
-      
     }
   }
+
+
+  // controller
+getInstructortoMessage = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const instructor = await this.messageService.getInstructorToMessage(id as string);
+    if (!instructor) {
+      return res.status(404).json({ success: false, message: "Instructor not found" });
+    }
+    res.json({
+      success: true,
+      instructor: {
+        id: instructor._id,
+        name: instructor.name,
+        avatar: instructor.profileImage
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Failed to fetch instructor" });
+  }
+};
+
+
 
   getMessagedInstructors = async (req: AuthRequest, res: Response) => {
     try {
@@ -78,7 +103,7 @@ export class MessageController {
 
 
 
-  // Instructor side 
+  // Instructor side -------------------------------
   getMessagedStudents = async (req: InstAuthRequest, res: Response) => {
     try {
       const instructorId = req.instructor?.id

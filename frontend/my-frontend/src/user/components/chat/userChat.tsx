@@ -20,26 +20,43 @@ const UserChat = () => {
   const [selected, setSelected] = useState<IInstructor | null>(null);
   const [userId , setUserId] = useState<string | null>(null)
 
-  const getInstructors = async () => {
-    try {
-      const response = await api.get("/user/messagedInstructors");
-      setUserId(response.data.userId)
-      const normalized = response.data.instructors.map((inst: any) => ({
-        id: inst._id,
-        name: inst.name,
-        avatar: inst.avatar || profileImage,
-      }));
-      setInstructors(normalized);
+const getInstructors = async () => {
+  try {
+    const response = await api.get("/user/messagedInstructors");
+    setUserId(response.data.userId);
 
-      // auto-select if URL param has instructorId
-      if (instructorId) {
-        const found = normalized.find((i: IInstructor) => i.id === instructorId);
-        if (found) setSelected(found);
+    const normalized = response.data.instructors.map((inst: any) => ({
+      id: inst._id,
+      name: inst.name,
+      avatar: inst.avatar || profileImage,
+    }));
+
+    // first-time chat
+    if (instructorId) {
+      const exists = normalized.find((i:any) => i.id === instructorId);
+      if (!exists) {
+        // fetch instructor details
+        const instRes = await api.get(`/user/instructor/${instructorId}`);
+        if (instRes.data.success) {
+          normalized.unshift(instRes.data.instructor); // add at top
+        }
       }
-    } catch (error) {
-      console.log(error);
     }
-  };
+
+    setInstructors(normalized);
+
+    // auto-select instructor
+    if (instructorId) {
+      const found = normalized.find((i:any) => i.id === instructorId);
+      if (found) setSelected(found);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+ 
+
 
   useEffect(() => {
     getInstructors();

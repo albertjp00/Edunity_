@@ -25,9 +25,12 @@ export interface IMyCourse extends Document {
   progress: IProgress;
   createdAt: Date;
   quizScore : number
+  amountPaid:number
+  paymentStatus:string
 }
 
-const myCourseSchema: Schema<IMyCourse> = new Schema({  
+
+const myCourseSchema: Schema<IMyCourse> = new Schema({
   userId: {
     type: String,
     required: true,
@@ -43,10 +46,19 @@ const myCourseSchema: Schema<IMyCourse> = new Schema({
     type: Date,
     default: Date.now,
   },
-  quizScore:{
-    type:Number
+  quizScore: {
+    type: Number,
+  },
+  amountPaid: {
+    type: Number, // store price at purchase time
+  },
+  paymentStatus: {
+    type: String,
+    enum: ["pending", "completed", "failed"],
+    default: "completed",
   }
-
 });
+
+
 
 export const MyCourseModel = mongoose.model<IMyCourse>("MyCourse",myCourseSchema);

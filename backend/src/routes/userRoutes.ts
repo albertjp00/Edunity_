@@ -84,4 +84,7 @@ router.get("/getInstructor/:instructorId",authMiddleware , messageController.get
 router.get("/messages/:userId/:receiverId",authMiddleware , messageController.getChatHistory);
 router.get("/messagedInstructors",authMiddleware,messageController.getMessagedInstructors)
 
+router.get("/instructor/:id", authMiddleware, messageController.getInstructortoMessage);
+
+
 export default router;

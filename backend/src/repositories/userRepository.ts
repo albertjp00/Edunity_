@@ -7,6 +7,7 @@ import { IMyEvent, MyEventModel } from '../models/myEvents.js';
 import { IUser, UserModel } from '../models/user.js';
 import { ISkills } from './instructorRepository.js';
 import { IQuiz, QuizModel } from '../models/quiz.js';
+import { IInstructor, InstructorModel } from '../models/instructor.js';
 
 export interface IUserRepository {
   findByEmail(email: string): Promise<IUser | null>;
@@ -32,6 +33,8 @@ export interface IUserRepository {
   getAllCourses(query: any, skip: number, limit: number, sortOption: any): Promise<ICourse[] | null>
 
   getCourseDetails(id: string, courseId: string): Promise<IMyCourse | null>
+
+  findInstructors():Promise<IInstructor[] | null>
 
   addMyCourse(id: string, data: any): Promise<IMyCourse | null>
 
@@ -92,7 +95,7 @@ export class UserRepository implements IUserRepository {
 
 
 
-  // userRepository.ts
+  
 
   async getCourses(skip: number, limit: number) {
     return CourseModel.aggregate([
@@ -222,6 +225,9 @@ export class UserRepository implements IUserRepository {
   }
 
 
+  async findInstructors():Promise<IInstructor[] | null>{
+    return await InstructorModel.find()
+  }
 
 
 

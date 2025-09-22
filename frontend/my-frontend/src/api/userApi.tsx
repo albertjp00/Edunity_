@@ -1,6 +1,7 @@
 import axios, { type AxiosInstance } from "axios";
 import { toast } from "react-toastify";
 
+
 const api: AxiosInstance = axios.create({
   baseURL: "http://localhost:5000",
   headers: {
@@ -8,6 +9,16 @@ const api: AxiosInstance = axios.create({
   },
   withCredentials: true,
 });
+
+// const api: AxiosInstance = axios.create({
+//   baseURL: "https://abcd-1234.ngrok-free.app",
+//   headers: {
+//     "Content-Type": "application/json",
+//   },
+//   withCredentials: true,
+// });
+
+
 
 // Attach access token before each request
 api.interceptors.request.use((config) => {

@@ -152,7 +152,7 @@ const AddQuiz: React.FC<AddQuizProps> = ({
                 </button>
               </div>
 
-              <label className="label">
+              <label className="label" >
                 Question
                 <textarea
                   value={q.question}

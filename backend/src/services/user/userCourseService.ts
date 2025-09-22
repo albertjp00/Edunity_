@@ -243,7 +243,7 @@ export class UserCourseService {
   async getInstructorsRequest(): Promise<IInstructor[] | null> {
 
     try {
-      const update = await this.adminRepository.findInstructors()
+      const update = await this.userRepository.findInstructors()
 
       return update
     } catch (error) {
