@@ -1,9 +1,9 @@
 import { RequestHandler, Response } from "express";
-import { AuthRequest } from "../../middleware/authMiddleware.js";
-import { UserRepository } from "../../repositories/userRepository.js";
-import { UserCourseService } from "../../services/user/userCourseService.js";
-import { InstructorRepository } from "../../repositories/instructorRepository.js";
-import { AdminRepository } from "../../repositories/adminRepositories.js";
+import { AuthRequest } from "../../middleware/authMiddleware";
+import { UserRepository } from "../../repositories/userRepository";
+import { UserCourseService } from "../../services/user/userCourseService";
+import { InstructorRepository } from "../../repositories/instructorRepository";
+import { AdminRepository } from "../../repositories/adminRepositories";
 import instructor from "../../routes/instructorRoutes.js";
 
 export class UserCourseController {
@@ -136,17 +136,37 @@ export class UserCourseController {
         try {
             const id = req.user?.id!;
             const courseId = req.params.id!;
-            console.log(id, courseId);
 
             const order = await this.courseService.buyCourseRequest(id, courseId);
 
+            if ((order as any).existingPurchase) {
+                res.json({ success: false, message: "You already purchased this course" });
+                return;
+            }
+
+            if ((order as any).existingOrder) {
+                res.json({
+                    success: true,
+                    orderId: order.orderId,
+                    amount: order.amount,
+                    currency: order.currency,
+                    key: process.env.RAZORPAY_KEY_ID,
+                    courseId,
+                    status: order.status,
+                    message: "Existing order found",
+                });
+                return;
+            }
+
+            // New order case
             res.json({
                 success: true,
-                orderId: order.id,
+                orderId: order.orderId,
                 amount: order.amount,
                 currency: order.currency,
                 key: process.env.RAZORPAY_KEY_ID,
                 courseId,
+                status: order.status,
             });
 
         } catch (error) {
@@ -213,9 +233,9 @@ export class UserCourseController {
 
             const result = await this.courseService.viewMyCourseRequest(id, myCourseId)
             console.log(result);
-            
 
-            res.json({ success: true, course: result  , instructor:result?.instructor})
+
+            res.json({ success: true, course: result, instructor: result?.instructor })
         } catch (error) {
             console.log(error);
         }
@@ -262,9 +282,9 @@ export class UserCourseController {
 
             const result = await this.courseService.addtoFavourites(userId, courseId);
             console.log(result);
-            
+
             if (!result.success) {
-                res.json({success:false,message:"Course already exists in favourites"});
+                res.json({ success: false, message: "Course already exists in favourites" });
             }
 
             res.json(result);

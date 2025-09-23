@@ -3,6 +3,7 @@ import { EventModel, IEvent } from '../models/events.js';
 import { FavouritesModel, IFavourite } from '../models/favourites.js';
 import { IMyCourse, MyCourseModel } from '../models/myCourses.js';
 import { IMyEvent, MyEventModel } from '../models/myEvents.js';
+import { IOrder, OrderModel } from '../models/orderModel.js';
 import { IUser, UserModel } from '../models/user.js';
 import { ISkills } from './instructorRepository.js';
 
@@ -34,6 +35,23 @@ export interface IUserRepository {
   addMyCourse(id: string, data: any): Promise<IMyCourse | null>
 
   findMyCourses(id: string): Promise<IMyCourse[] | null>
+
+  findMyCourseExist(userId : string , courseId : string):Promise<IMyCourse | null>
+
+  createOrder(
+  userId: string,
+  courseId: string,
+  razorpayOrder: any,
+  amount: number,
+  currency: string,
+  status: string
+) :Promise<IOrder | null>
+
+  findExistingOrder(userId: string, courseId: string):Promise<IOrder | null>
+
+  addMyCourse(id: string, data: any): Promise<IMyCourse | null>
+
+  
 
   viewMyCourse(id: string, courseId: string): Promise<IMyCourse | null>
 
@@ -196,6 +214,7 @@ export class UserRepository implements IUserRepository {
 
 
 
+
   async countAllCourses(query: any): Promise<number> {
     return CourseModel.countDocuments(query);
   }
@@ -244,6 +263,33 @@ export class UserRepository implements IUserRepository {
 
   async findMyCourses(id: string): Promise<IMyCourse[] | null> {
     return await MyCourseModel.find({ userId: id })
+  }
+
+  async findMyCourseExist(userId : string , courseId : string ):Promise<IMyCourse | null>{
+    return await MyCourseModel.findOne({userId : userId , courseId : courseId , status: { $in: ["pending", "paid"] }})
+  }
+
+async createOrder(
+  userId: string,
+  courseId: string,
+  razorpayOrder: any,
+  amount: number,
+  currency: string,
+  status: string
+) {
+  return await OrderModel.create({
+    userId,
+    courseId,
+    orderId: razorpayOrder.id,
+    amount,
+    currency,
+    status,
+  });
+}
+
+
+  async findExistingOrder(userId: string, courseId: string) {
+    return await OrderModel.findOne({ userId, courseId, status: { $in: ["pending", "paid"] } });
   }
 
   async viewMyCourse(id: string, myCourseId: string): Promise<IMyCourse | null> {
