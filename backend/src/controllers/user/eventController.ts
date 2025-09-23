@@ -1,8 +1,9 @@
 import { AuthRequest } from "../../middleware/authMiddleware";
 import { UserRepository } from "../../repositories/userRepository";
-import { Response } from "express"
-import { UserEventService } from "../../services/user/eventService.js";
+import { NextFunction, Response } from "express"
+import { EventFullError, NotFoundError, NotLiveError, UserEventService } from "../../services/user/eventService.js";
 import { InstructorRepository } from "../../repositories/instructorRepository.js";
+import { Server } from "http";
 
 
 
@@ -18,18 +19,18 @@ export class UserEventController {
 
     }
 
-    getEvents = async (req: AuthRequest, res: Response): Promise<void | null> => {
+    getEvents = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void | null> => {
         try {
             const result = await this.userEventService.getEventsRequest()
 
             res.json({ success: true, events: result })
         } catch (error) {
             console.log(error);
-
+            next(error)
         }
     }
 
-    getEventDetails = async (req: AuthRequest, res: Response): Promise<void | null> => {
+    getEventDetails = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void | null> => {
         try {
             const id = req.params.id!
             const enrolled = await this.userEventService.getIfEnrolled(id)
@@ -38,12 +39,13 @@ export class UserEventController {
 
             res.json({ success: true, event: result, enrolled: enrolled })
         } catch (error) {
-            console.log(error);
+            // console.log(error);
+            next(error)
 
         }
     }
 
-    enrollEvent = async (req: AuthRequest, res: Response): Promise<void | null> => {
+    enrollEvent = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void | null> => {
         try {
             const id = req.user?.id!
             const eventId = req.params.id
@@ -55,12 +57,13 @@ export class UserEventController {
 
             res.json({ success: true })
         } catch (error) {
-            console.log(error);
+            // console.log(error);
+            next(error)
         }
     }
 
 
-    joinSession = async (req: AuthRequest, res: Response) => {
+    joinSession = async (req: AuthRequest, res: Response , next : NextFunction) => {
         try {
             const { id } = req.params; // eventId
             const  userId = req.user?.id! 
@@ -79,7 +82,8 @@ export class UserEventController {
             if (err instanceof EventFullError) {
                 return res.status(400).json({ success: false, message: err.message });
             }
-            console.error("joinSession error:", err);
+            // console.error("joinSession error:", err);
+            next(err)
             return res.status(500).json({
                 success: false,
                 message: "Failed to join session",

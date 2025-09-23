@@ -1,4 +1,3 @@
-import { IUserRepository } from "../../repositories/userRepository.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -7,7 +6,7 @@ import { generateOtp } from "../../utils/otp.js";
 import { sendOtp } from "../../utils/sendMail.js";
 import { OAuth2Client } from "google-auth-library";
 import { IUser } from "../../models/user.js";
-import { googleLoginResult } from "../../interfaces/userInterfaces.js";
+import { googleLoginResult, IUserRepository } from "../../interfaces/userInterfaces.js";
 
 dotenv.config();
 

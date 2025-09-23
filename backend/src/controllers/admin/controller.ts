@@ -2,8 +2,9 @@ import { Response, Request } from "express";
 import { AdminRepository, IAdminRepository } from "../../repositories/adminRepositories.js";
 import { AdminService } from "../../services/admin/adminServices.js";
 import { IKyc } from "../../models/kyc.js";
-import { IUserRepository, UserRepository } from "../../repositories/userRepository.js";
+import {  UserRepository } from "../../repositories/userRepository.js";
 import { AdminAuthRequest } from "../../middleware/authMiddleware.js";
+import { IUserRepository } from "../../interfaces/userInterfaces.js";
 
 export class AdminController {
     private adminService: AdminService
