@@ -176,4 +176,82 @@ export class InstAuthService {
 
 
 
+
+
+    forgotPassword = async (email: string): Promise<{ success: boolean; message: string }> => {
+        try {
+            console.log("forgotPassword user service");
+
+            const instructor = await this.instructorRepository.findByEmail(email);
+            if (!instructor) {
+                return { success: false, message: "Email doesn't exist" };
+            }
+
+            const defaultEmail = 'albertjpaul@gmail.com'
+            const otp = await generateOtp();
+            await sendOtp(defaultEmail, otp);
+
+            otpStore.set(email, {
+                name: instructor.name,
+                email: email,
+                password: instructor.password,
+                otp,
+                expiresAt: Date.now() + 5 * 60 * 1000,
+            });
+
+
+            return { success: true, message: "OTP sent successfully" };
+        } catch (error) {
+            console.error(error);
+            return { success: false, message: "Something went wrong" };
+        }
+    };
+
+        verifyForgotPasswordOtp = async (otp: string, email: string): Promise<{ success: boolean; message: string }> => {
+        try {
+            const storedData = otpStore.get(email);
+
+            if (!storedData) {
+                return { success: false, message: "OTP not found or expired" };
+            }
+
+            if (Date.now() > storedData.expiresAt) {
+                otpStore.delete(email);
+                return { success: false, message: "OTP expired" };
+            }
+
+            if (storedData.otp !== otp) {
+                return { success: false, message: "Incorrect OTP" };
+            }
+
+            otpStore.delete(email);
+
+            return { success: true, message: "OTP verified successfully" };
+        } catch (error) {
+            console.error(error);
+            return { success: false, message: "OTP verification failed" };
+        }
+    };
+
+
+    async resetPassword(email: string, newPassword: string): Promise<{ success: boolean; message: string }> {
+        try {
+            const instructor = await this.instructorRepository.findByEmail(email);
+            if (!instructor) {
+                return { success: false, message: "User not found" };
+            }
+
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+            await this.instructorRepository.changePassword(instructor._id as string, hashedPassword);
+
+            return { success: true, message: "Password reset successfully" };
+        } catch (error) {
+            console.error(error);
+            return { success: false, message: "Password reset failed" };
+        }
+    }
+
+
+
 }

@@ -1,15 +1,15 @@
 import { ICourse } from "../../models/course.js";
 import { IInstructor } from "../../models/instructor.js";
 import { IAdminRepository } from "../../repositories/adminRepositories.js";
-import { InstructorRepository } from "../../repositories/instructorRepository.js";
-import { UserRepository } from "../../repositories/userRepository.js";
+import { IInsRepository, InstructorRepository } from "../../repositories/instructorRepository.js";
+import { IUserRepository, UserRepository } from "../../repositories/userRepository.js";
 
 
 
 export class AdminCourseService {
     constructor(private adminRepository: IAdminRepository,
-        private instructorRepository: InstructorRepository,
-        private userRepository: UserRepository
+        private instructorRepository: IInsRepository,
+        private userRepository: IUserRepository
     ) { }
 
     getInstructorsRequest = async (id: string): Promise<IInstructor | null> => {
@@ -51,6 +51,16 @@ export class AdminCourseService {
             throw err;
         }
     };
+
+    getPurchaseDetails = async (search:string , page:number)=>{
+        try {
+            const data = await this.adminRepository.getPurchases(search , page)
+            return data
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
 
 
 

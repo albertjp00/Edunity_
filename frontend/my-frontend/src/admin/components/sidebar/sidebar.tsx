@@ -27,6 +27,11 @@ const Sidebar = () => {
             <p>Courses</p>
           </NavLink>
         </li>
+        <li>
+          <NavLink to="/admin/purchases" className="sidebar-option">
+            <p>Purchases</p>
+          </NavLink>
+        </li>
       </ul>
     </div>
   )

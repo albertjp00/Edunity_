@@ -2,13 +2,13 @@ import { ICourse } from "../../models/course.js";
 import { IMyCourse } from "../../models/myCourses.js";
 import { IUser } from "../../models/user.js";
 import { IAdminRepository } from "../../repositories/adminRepositories.js";
-import { UserRepository } from "../../repositories/userRepository.js";
+import { IUserRepository, UserRepository } from "../../repositories/userRepository.js";
 
 
 
 export class AdminUserService{
     constructor(private adminRepository : IAdminRepository,
-        private userRepository: UserRepository
+        private userRepository: IUserRepository
     ){}
 
     getUserRequest = async(id:string):Promise<IUser | null>=>{
