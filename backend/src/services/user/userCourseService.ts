@@ -85,11 +85,11 @@ export class UserCourseService {
       console.log("service get course details");
       let hasAccess = false
       const myCourse = await this.userRepository.getCourseDetails(userId, courseId);
-      console.log(myCourse);
+      // console.log(myCourse);
 
 
       const course: any = await this.userRepository.getCourse(courseId);
-      console.log('myCoursessss', course);
+      // console.log('myCoursessss', course);
 
 
       if (myCourse) {
@@ -117,59 +117,29 @@ export class UserCourseService {
 // import OrderModel from "../models/orderModel"; // adjust path
 
 buyCourseRequest = async (userId: string, courseId: string) => {
-  try {
-    console.log("buy course service");
+    try {
+      console.log('buy course service');
+      const course = await this.userRepository.getCourse(courseId);
+      if (!course) {
+        throw new Error("Course not found");
+      }
 
-    // 1. Check if user already purchased
-    const existingPurchase = await this.userRepository.findMyCourseExist(userId, courseId);
-    if (existingPurchase) {
-      return { existingPurchase: true, message: "You already purchased this course" };
-    }
-
-    // 2. Check if existing order (pending/paid)
-    const existingOrder = await this.userRepository.findExistingOrder(userId, courseId);
-    if (existingOrder) {
-      return {
-        existingOrder: true,
-        orderId: existingOrder.orderId,
-        amount: existingOrder.amount,
-        currency: existingOrder.currency,
-        status: existingOrder.status,
+      const options = {
+        amount: course.price! * 100,
+        currency: "INR",
+        receipt: `receipt_${Date.now()}`,
+        notes: { userId, courseId },
       };
+
+      const order = await razorpay.orders.create(options);
+
+      return order;
+
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
-
-    // 3. Get course
-    const course = await this.userRepository.getCourse(courseId);
-    if (!course) {
-      throw new Error("Course not found");
-    }
-
-    // 4. Create Razorpay order
-    const options = {
-      amount: course.price! * 100,
-      currency: "INR",
-      receipt: `receipt_${Date.now()}`,
-      notes: { userId, courseId },
-    };
-    const razorpayOrder = await razorpay.orders.create(options);
-
-    // 5. Save order in DB
-    const newOrder = await this.userRepository.createOrder(
-      userId,
-      courseId,
-      razorpayOrder,            
-      Number(razorpayOrder.amount),
-      razorpayOrder.currency,
-      "pending"
-    );
-
-    return newOrder;
-
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-};
+  };
 
 
 
