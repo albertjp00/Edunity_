@@ -8,54 +8,9 @@ import { IUser, UserModel } from '../models/user.js';
 import { ISkills } from './instructorRepository.js';
 import { IQuiz, QuizModel } from '../models/quiz.js';
 import { IInstructor, InstructorModel } from '../models/instructor.js';
-
-export interface IUserRepository {
-  findByEmail(email: string): Promise<IUser | null>;
-
-  create(user: Partial<IUser>): Promise<IUser>;
-
-  findById(id: string): Promise<IUser | null>;
-
-  updateProfile(id: string, data: Partial<IUser>): Promise<IUser | null>;
-
-  changePassword(id: string, password: string): Promise<IUser | null>;
-
-  getCourse(id: string): Promise<ICourse | null>
-
-  buyCourse(id: string): Promise<ICourse | null>
-
-  getCourses(skip: number, limit: number): Promise<ICourse[] | null>
-
-  countCourses(): Promise<number>;
-
-  findSkills(): Promise<ISkills>;
-
-  getAllCourses(query: any, skip: number, limit: number, sortOption: any): Promise<ICourse[] | null>
-
-  getCourseDetails(id: string, courseId: string): Promise<IMyCourse | null>
-
-  findInstructors():Promise<IInstructor[] | null>
-
-  addMyCourse(id: string, data: any): Promise<IMyCourse | null>
-
-  findMyCourses(id: string): Promise<IMyCourse[] | null>
-
-  viewMyCourse(id: string, courseId: string): Promise<IMyCourse | null>
-
-  updateProgress(userId: string, courseId: string, moduleTitle: string): Promise<IMyCourse | null>
-
-  getMyEvent(id: string): Promise<IMyEvent | null>
-
-  getEvents(): Promise<IEvent[] | null>
-
-  addtoFavourites(id: string, courseId: string): Promise<IFavourite | null>
-
-  getFavourites(userId: string): Promise<IFavourite[] | null>
-
-  addParticipant(eventId: string,userId: string): Promise<IEvent | null>
+import { IUserRepository } from '../interfaces/userInterfaces.js';
 
 
-}
 
 export class UserRepository implements IUserRepository {
   async create(user: Partial<IUser>): Promise<IUser> {
@@ -220,7 +175,7 @@ export class UserRepository implements IUserRepository {
       courseId: courseId,
     })
 
-    console.log("Found course:", course);
+    // console.log("Found course:", course);
     return course;
   }
 

@@ -2,11 +2,13 @@ import { Response, Request } from "express";
 import { AdminRepository, IAdminRepository } from "../../repositories/adminRepositories.js";
 import { IKyc } from "../../models/kyc.js";
 import { AdminInstructorService } from "../../services/admin/instructorServices.js";
-import { IInsRepository, InstructorRepository } from "../../repositories/instructorRepository.js";
+import { InstructorRepository } from "../../repositories/instructorRepository.js";
 import { AdminCourseService } from "../../services/admin/courseServices.js";
 import { ICourse } from "../../models/course.js";
-import { IUserRepository, UserRepository } from "../../repositories/userRepository.js";
+import { UserRepository } from "../../repositories/userRepository.js";
 import { AdminAuthRequest } from "../../middleware/authMiddleware.js";
+import { IUserRepository } from "../../interfaces/userInterfaces.js";
+import { IInsRepository } from "../../interfaces/instructorInterfaces.js";
 
 export class AdminCourseController {
     private courseService: AdminCourseService
@@ -16,7 +18,7 @@ export class AdminCourseController {
         repo: IAdminRepository,
         Irepo: IInsRepository,
         Urepo: IUserRepository
-    ){
+    ) {
         this.courseService = new AdminCourseService(repo, Irepo, Urepo)
     }
 
@@ -29,7 +31,10 @@ export class AdminCourseController {
             const limit = parseInt(req.query.limit as string) || 6;
 
             const data = await this.courseService.getCoursesRequest(page, limit);
-            console.log(data);
+            console.log(data)
+            const message = "Hello World"
+            console.log(message)
+
 
 
             res.json({
@@ -72,7 +77,7 @@ export class AdminCourseController {
         try {
 
 
-            const {search,page}  = req.query
+            const { search, page } = req.query
             console.log("search", search);
 
             const data = await this.courseService.getPurchaseDetails(search as string, Number(page))
@@ -87,7 +92,7 @@ export class AdminCourseController {
         }
     };
 
-    
+
     // getInstructors = async(req:Request , res:Response):Promise<void>=>{
     //     try {
     //         const id = req.params.id!

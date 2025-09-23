@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./courseDetail.css";
-import Navbar from "../navbar/navbar";
 import api from "../../../api/userApi";
 import { toast } from "react-toastify";
 
@@ -29,14 +28,43 @@ interface Instructor {
   expertise?: string;
 }
 
-interface ApiResponse {
-  success: boolean;
-  course: Course & {
-    _id?: string;
-    instructor: Instructor;
-    hasAccess: boolean;
-    completedModules?: string[];
+
+// interface ApiResponse {
+//   success: boolean;
+//   course: Course & {
+//     _id?: string;
+//     instructor: Instructor;
+//     hasAccess: boolean;
+//     completedModules?: string[];
+//   };
+// }
+
+
+interface RazorpayInstance {
+  open: () => void;
+}
+
+interface RazorpayOptions {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  handler: (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => void;
+  modal?: {
+    ondismiss?: () => void;
   };
+  theme?: {
+    color?: string;
+  };
+}
+
+
+declare global {
+  interface Window {
+    Razorpay: new (options: RazorpayOptions) => RazorpayInstance;
+  }
 }
 
 const CourseDetailsUser: React.FC = () => {
@@ -44,7 +72,7 @@ const CourseDetailsUser: React.FC = () => {
   const [course, setCourse] = useState<Course | null>(null);
   const [hasAccess, setHasAccess] = useState<boolean>(false);
   const [instructor, setInstructor] = useState<Instructor | null>(null);
-  const [completedModules, setCompletedModules] = useState<string[]>([]);
+  // const [completedModules, setCompletedModules] = useState<string[]>([]);
   const [activePayment, setActivePayment] = useState<string | null>(null); // 👈 track active payment
 
   const navigate = useNavigate();
@@ -60,7 +88,7 @@ const CourseDetailsUser: React.FC = () => {
       setCourse(res.data.course);
       setInstructor(res.data.course.instructor);
       setHasAccess(res.data.course.hasAccess);
-      setCompletedModules(res.data.course.completedModules || []);
+      // setCompletedModules(res.data.course.completedModules || []);
     } catch (err) {
       console.error("Error fetching course:", err);
     }
@@ -99,7 +127,7 @@ const CourseDetailsUser: React.FC = () => {
         name: "Your App",
         description: "Course Purchase",
         order_id: data.orderId,
-        handler: async function (response: any) {
+        handler: async function (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) {
           try {
             await api.post("/user/payment/verify", {
               razorpay_payment_id: response.razorpay_payment_id,
@@ -123,7 +151,7 @@ const CourseDetailsUser: React.FC = () => {
         },
       };
 
-      const rzp = new (window as any).Razorpay(options);
+      const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (error) {
       console.error("Payment error:", error);

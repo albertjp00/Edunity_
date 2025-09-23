@@ -1,7 +1,8 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { UserRepository } from '../../repositories/userRepository';
 import { ProfileService } from '../../services/user/profileService';
 import { AuthRequest } from '../../middleware/authMiddleware';
+import { HttpStatus } from '../../enums/httpStatus.enums';
 
 export class ProfileController {
     private profileService: ProfileService;
@@ -13,7 +14,7 @@ export class ProfileController {
 
 
 
-    getProfile = async (req: AuthRequest, res: Response): Promise<void> => {
+    getProfile = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id
 
@@ -32,14 +33,15 @@ export class ProfileController {
                 res.status(404).json({ error: 'Profile not found' });
             }
         } catch (error) {
-            console.error('Get profile error:', error);
-            res.status(500).json({ error: 'Internal server error' });
+            // console.error('Get profile error:', error);
+            next(error)
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' });
         }
     };
 
 
 
-    editProfile = async (req: AuthRequest, res: Response): Promise<void> => {
+    editProfile = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void> => {
         try {
             console.log('user profiel ', req.user?.id, req.file)
             const userId = req.user?.id; // Assuming `req.user` is set by auth middleware
@@ -68,13 +70,14 @@ export class ProfileController {
                 res.status(404).json({ error: 'Profile not found' });
             }
         } catch (error) {
-            console.error('Update profile error:', error);
-            res.status(500).json({ error: 'Internal server error' });
+            // console.error('Update profile error:', error);
+            next(error)
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' });
         }
     };
 
 
-    changePassword = async (req: AuthRequest, res: Response): Promise<void> => {
+    changePassword = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void> => {
         try {
             const id = req.user?.id;
             const { newPassword, oldPassword } = req.body;
@@ -96,8 +99,9 @@ export class ProfileController {
                 res.status(400).json({ success: false, message: "Old password is incorrect" })
             }
         } catch (error) {
-            console.error(error);
-            res.status(500).json({ success: false, message: "Server error" });
+            // console.error(error);
+            next(error)
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
         }
     };
 }

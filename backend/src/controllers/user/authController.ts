@@ -1,9 +1,10 @@
-import { Request, Response } from "express";
-import { AuthService } from "../../services/user/authService";
-import { UserRepository } from "../../repositories/userRepository";
+import { NextFunction, Request, Response } from "express";
+import { AuthService } from "../../services/user/authService.js";
+import { UserRepository } from "../../repositories/userRepository.js";
 import jwt from "jsonwebtoken";
-import { AuthRequest } from "../../middleware/authMiddleware";
+import { AuthRequest } from "../../middleware/authMiddleware.js";
 import { OAuth2Client } from "google-auth-library";
+import { HttpStatus } from "../../enums/httpStatus.enums.js";
 
 
 
@@ -15,16 +16,17 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || "");
 export class AuthController {
   private authService: AuthService;
 
-  constructor(repo = IUserRepository){
+  constructor() {
+    const repo = new UserRepository();
     this.authService = new AuthService(repo);
   }
 
-  login = async (req: Request, res: Response): Promise<void> => {
+  login = async (req: Request, res: Response , next:NextFunction): Promise<void> => {
     try {
       const { email, password } = req.body;
 
       if (!email || !password) {
-        res.status(400).json({ message: "Email and password are required" });
+        res.status(HttpStatus.BAD_REQUEST).json({ message: "Email and password are required" });
         return;
       }
 
@@ -38,7 +40,7 @@ export class AuthController {
           maxAge: 24 * 60 * 60 * 1000, // 1 day
         });
 
-        res.status(200).json({
+        res.status(HttpStatus.OK).json({
           message: result.message,
           user: result.user,
           accessToken: result.accessToken,
@@ -48,30 +50,31 @@ export class AuthController {
         if (result.message === "Your account is blocked") status = 403;
         if (result.message === "User not found") status = 404;
 
-        res.status(status).json({ message: result.message });
+        res.status(HttpStatus.UNAUTHORIZED).json({ message: result.message });
       }
     } catch (error) {
-      console.error("Login error:", error);
-      res.status(401).json({ message: "Invalid credentials" });
+      // console.error("Login error:", error);
+      next(error)
+      res.status(HttpStatus.UNAUTHORIZED).json({ message: "Invalid credentials" });
 
     }
   };
 
 
-  refreshToken = (req: Request, res: Response): void => {
+  refreshToken = (req: Request, res: Response ,next:NextFunction) : void => {
     try {
       console.log('refresh token ', req.cookies);
       const token = req.cookies.refreshToken;
       console.log('refresh token ', token);
 
       if (!token) {
-        res.status(401).json({ message: "Refresh token required" });
+        res.status(HttpStatus.UNAUTHORIZED).json({ message: "Refresh token required" });
         return;
       }
 
       jwt.verify(token, REFRESH_SECRET, (err: any, user: any) => {
         if (err) {
-          res.status(403).json({ message: "Invalid refresh token" });
+          res.status(HttpStatus.FORBIDDEN).json({ message: "Invalid refresh token" });
           return;
         }
 
@@ -83,12 +86,12 @@ export class AuthController {
         res.json({ accessToken: newAccessToken });
       });
     } catch (error) {
-      console.log(error);
-
+      // console.log(error);
+      next(error)
     }
   };
 
-  logoutUser = async (req: Request, res: Response) => {
+  logoutUser = async (req: Request, res: Response ,next:NextFunction) => {
     try {
       res.clearCookie("refreshToken", {
         httpOnly: true,
@@ -97,79 +100,84 @@ export class AuthController {
         path: "/", // must match the cookie path you set when issuing it
       });
 
-      return res.status(200).json({ success: true, message: "Logged out successfully" });
+      return res.status(HttpStatus.OK).json({ success: true, message: "Logged out successfully" });
     } catch (err) {
-      return res.status(500).json({ success: false, message: "Logout failed" });
+      next(err)
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Logout failed" });
+
     }
   };
 
 
 
-  register = async (req: Request, res: Response): Promise<void> => {
+  register = async (req: Request, res: Response,next:NextFunction): Promise<void> => {
     try {
       const { name, email, password } = req.body;
       const result = await this.authService.registerRequest(name, email, password);
 
       if (result.success) {
-        res.status(200).json(result); // OK
+        res.status(HttpStatus.OK).json(result); // OK
       } else {
         console.log('result', result);
 
-        res.status(400).json(result); // Failure
+        res.status(HttpStatus.BAD_REQUEST).json(result); // Failure
       }
     } catch (error: any) {
-      console.error("Register error:", error);
+      // console.error("Register error:", error);
+      next(error)
       res
-        .status(400)
+        .status(HttpStatus.BAD_REQUEST)
         .json({ success: false, message: error.message || "Registration failed" });
     }
   };
 
 
-  resendOtp = async (req: Request, res: Response): Promise<void> => {
+  resendOtp = async (req: Request, res: Response,next:NextFunction): Promise<void> => {
     try {
       const { email } = req.body;
 
       if (!email) {
-        res.status(400).json({ success: false, message: "Email is required" });
+        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: "Email is required" });
         return;
       }
 
       await this.authService.resendOtpRequest(email);
 
-      res.status(200).json({ success: true, message: "OTP resent successfully" });
+      res.status(HttpStatus.OK).json({ success: true, message: "OTP resent successfully" });
     } catch (error) {
-      console.error(error);
+      // console.error(error);
+      next(error)
       res.status(500).json({ success: false, message: "Failed to resend OTP" });
     }
   };
 
-  verifyOtp = async (req: Request, res: Response): Promise<void> => {
+  verifyOtp = async (req: Request, res: Response,next:NextFunction): Promise<void> => {
     try {
       const { otp, email } = req.body;
       const result = await this.authService.verifyOtpRequest(otp, email);
       console.log(result);
 
       if (result.success) {
-        res.status(200).json({ success: true });
+        res.status(HttpStatus.OK).json({ success: true });
       } else {
-        res.status(400).json({ success: false, message: result.message });
+        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: result.message });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
+      next(error)
     }
   };
 
 
 
 
-  googleSignIn = async (req: Request, res: Response): Promise<void> => {
+  googleSignIn = async (req: Request, res: Response,next:NextFunction): Promise<void> => {
     try {
       const { token } = req.body;
       // console.log(req.body);
 
       if (!token) {
-        res.status(400).json({ message: "Token is required" });
+        res.status(HttpStatus.BAD_REQUEST).json({ message: "Token is required" });
         return;
       }
       const { accessToken, refreshToken, user } = await this.authService.googleLogin(token);
@@ -179,38 +187,38 @@ export class AuthController {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
           sameSite: "strict",
-          maxAge: 24 * 60 * 60 * 1000, // 1 day
+          maxAge:2 * 24 * 60 * 60 * 1000, // 1 day
         });
       }
 
       res.json({ success: true, token: accessToken });
     } catch (error: any) {
-      console.error("Google Sign-In error:", error);
+      // console.error("Google Sign-In error:", error);
+      next(error)
       res.status(500).json({ message: error.message || "Google Sign-In failed" });
     }
   };
 
-  
-
-  forgotPassword = async (req: AuthRequest, res: Response): Promise<void> => {
+  forgotPassword = async (req: AuthRequest, res: Response,next:NextFunction): Promise<void> => {
     try {
       const { email } = req.body;
 
       const result = await this.authService.forgotPassword(email);
 
       if (!result.success) {
-        res.status(400).json({ message: result.message });
+        res.status(HttpStatus.BAD_REQUEST).json({ message: result.message });
         return;
       }
 
-      res.status(200).json({ success: true, message: "OTP sent successfully" });
+      res.status(HttpStatus.OK).json({ success: true, message: "OTP sent successfully" });
     } catch (error) {
-      console.error(error);
+      // console.error(error);
+      next(error)
       res.status(500).json({ message: "Internal server error" });
     }
   };
 
-  verifyOtpForgotPass = async (req: AuthRequest, res: Response): Promise<void> => {
+  verifyOtpForgotPass = async (req: AuthRequest, res: Response,next:NextFunction): Promise<void> => {
     try {
       console.log('verify password');
 
@@ -220,38 +228,40 @@ export class AuthController {
       console.log('verification ', result.success);
 
       if (!result.success) {
-        res.status(400).json({ success: false, message: result.message });
+        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: result.message });
 
       }
 
-      res.status(200).json({ success: true, message: "OTP verified successfully" });
+      res.status(HttpStatus.OK).json({ success: true, message: "OTP verified successfully" });
     } catch (error) {
-      console.error(error);
+      // console.error(error);
+      next(error)
       res.status(500).json({ message: "Internal server error" });
     }
   };
 
-  resendOtpForgotPassword = async (req: Request, res: Response): Promise<void> => {
+  resendOtpForgotPassword = async (req: Request, res: Response,next:NextFunction): Promise<void> => {
     try {
       const { email } = req.body;
       console.log('resend' , email);
       
 
       if (!email) {
-        res.status(400).json({ success: false, message: "Email is required" });
+        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: "Email is required" });
         return;
       }
 
       await this.authService.forgotPassword(email);
 
-      res.status(200).json({ success: true, message: "OTP resent successfully" });
+      res.status(HttpStatus.OK).json({ success: true, message: "OTP resent successfully" });
     } catch (error) {
-      console.error(error);
+      // console.error(error);
+      next(error)
       res.status(500).json({ success: false, message: "Failed to resend OTP" });
     }
   };
 
-  resetPassword = async (req: Request, res: Response): Promise<void> => {
+  resetPassword = async (req: Request, res: Response,next:NextFunction): Promise<void> => {
   try {
     const { email , newPassword } = req.body;
     console.log('reset pass ' , email , newPassword);
@@ -269,13 +279,14 @@ export class AuthController {
     );
 
     if (!result.success) {
-      res.status(400).json({ success: false, message: result.message });
+      res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: result.message });
       return;
     }
 
     res.json({ success: true, message: "Password changed successfully" });
   } catch (error) {
-    console.error(error);
+    // console.error(error);
+    next(error)
     res.json({ success: false, message: "Internal server error" });
   }
 };
