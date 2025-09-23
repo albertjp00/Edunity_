@@ -7,6 +7,7 @@ import UsersAdmin from "./adminUsers/adminUsers";
 import InstructorsAdmin from "./adminInstructors/adminInstructors";
 import Sidebar from "../components/sidebar/sidebar";
 import AdminNavbar from "../components/navbar/navbar";
+import PurchasesAdmin from "./purchases/purchasesAdmin";
 
 const AdminHome: React.FC = () => {
   // Explicit union type for selected tab
@@ -31,6 +32,7 @@ const AdminHome: React.FC = () => {
             <Route path="users" element={<UsersAdmin />} />
             <Route path="instructors" element={<InstructorsAdmin />} />
             {/* <Route path='courses' element={<CourseAdmin />}/> */}
+            <Route path="purchases" element={<PurchasesAdmin />} />
           </Routes>
         </div>
 

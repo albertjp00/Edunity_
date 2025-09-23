@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, type ChangeEvent } from 'react';
 import './adminInstructors.css';
 import { Link } from 'react-router-dom';
 import adminApi from '../../../api/adminApi';
@@ -11,23 +11,45 @@ interface Instructor {
   KYCstatus: 'notApplied' | 'verified' | 'pending' | 'rejected';
 }
 
+interface InstructorsResponse {
+data:{
+    instructors: Instructor[];
+  totalPages: number;
+  currentPage: number;
+  totalInstructors: number;
+}
+}
+
+
 const InstructorsAdmin: React.FC = () => {
   const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
+  const [searchTerm , setSearchTerm] = useState<string>('')
 
-  const getInstructors = async (currentPage: number): Promise<void> => {
+  const getInstructors = async (currentPage: number , search : string=''): Promise<void> => {
     try {
-      const response = await adminApi.get(`/admin/getInstructors?page=${currentPage}&limit=5`);
-      setInstructors(response.data.data);
-      setPages(response.data.pages);
+      const response = await adminApi.get<InstructorsResponse>(`/admin/getInstructors?page=${currentPage}&search=${search}`);
+      console.log(response);
+      const resData = response.data
+      setInstructors(resData.data.instructors);
+      setPages(resData.data.totalPages);
+      setPage(resData.data.currentPage)
     } catch (error) {
       console.error("Error fetching instructors:", error);
     }
   };
 
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPage(1);
+    getInstructors(1, searchTerm);
+  };
+
+
   useEffect(() => {
-    getInstructors(page);
+    getInstructors(page , searchTerm);
   }, [page]);
 
   const handlePrev = () => {
@@ -41,6 +63,18 @@ const InstructorsAdmin: React.FC = () => {
   return (
     <div className="instructor-list">
       <h2>Instructors List</h2>
+
+            <form onSubmit={handleSearch}>
+              <input
+                type="text"
+                name="search"
+                placeholder="🔍 Search by name or email"
+                value={searchTerm}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                className="search-box"
+              />
+              <button type="submit">Search</button>
+            </form>
 
       <table>
         <thead>

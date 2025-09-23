@@ -1,0 +1,50 @@
+import { IInstructor } from "../../models/instructor.js";
+import { IMessage } from "../../models/message.js";
+import { MessageRepository } from "../../repositories/messageRepositories.js";
+
+export class MessageService {
+    private messageRepository: MessageRepository;
+
+    constructor(messageRepository: MessageRepository) {
+        this.messageRepository = messageRepository
+    }
+
+    async getInstructor(instructorId:string):Promise<IInstructor | null> {
+        return await this.messageRepository.getInstructor(instructorId)
+    }
+
+    async getInstructorToMessage(instructorId : string):Promise<IInstructor | null>{
+        return await this.messageRepository.getInstructor(instructorId)
+    }
+
+    async getInstructors(userId: string): Promise<IInstructor[]> {
+        return await this.messageRepository.getInstructors(userId)
+    }
+
+    async sendMessage(senderId: string, receiverId: string, text: string): Promise<IMessage> {
+        return await this.messageRepository.createMessage(senderId, receiverId, text);
+    }
+
+
+
+    async getChatHistory(userId: string, receiverId: string): Promise<IMessage[]> {
+        return await this.messageRepository.getMessages(userId, receiverId);
+    }
+
+
+    async getStudents(instructorId: string ) {
+
+        return await this.messageRepository.getUsers(instructorId)
+    }
+
+
+    // Instructor side 
+
+    async getMessages(instructorId : string , receiverId : string):Promise<IMessage[]>{
+        return await this.messageRepository.getUserMessages(instructorId , receiverId)
+    }
+
+    async sendInstructorMessage(instructorId:string , receiverId:string , text:string){
+        return await this.messageRepository.sendInstructorsMessage(instructorId, receiverId , text)
+    }
+}

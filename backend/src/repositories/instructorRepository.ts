@@ -1,8 +1,10 @@
+import { Types } from "mongoose";
 import { CourseModel, ICourse } from "../models/course.js";
 import { EventModel, IEvent } from "../models/events.js";
 import { IInstructor, InstructorModel } from "../models/instructor.js";
 import { IKyc, KycModel } from "../models/kyc.js";
 import { IMyCourse, MyCourseModel } from "../models/myCourses.js";
+import { IQuiz, QuizModel } from "../models/quiz.js";
 
 
 export interface ISkills {
@@ -23,6 +25,8 @@ export interface IInsRepository {
 
     kycSubmit(id: string, idProof: string, addressProof: string): Promise<IKyc | null>
 
+    changePassword(id: string, password: string): Promise<IInstructor | null>
+
     addCourse(id: string, data: any): Promise<ICourse | null>
 
     getCourses(id: string, skip: number, limit: number): Promise<ICourse[] | null>
@@ -42,6 +46,18 @@ export interface IInsRepository {
     getEvent(id: string): Promise<IEvent | null>
 
     updateEvent(id: string, data: any): Promise<IEvent | null>
+
+    addQuiz(courseId: string, title: string, questions: any[]): Promise<IQuiz>
+
+    getQuiz(courseId: string): Promise<IQuiz | null>
+
+    getQuizByCourseId(courseId: string): Promise<IQuiz | null>
+
+    editQuiz(id: string, data: any): Promise<IQuiz>
+
+    startEventById(id: string): Promise<IEvent | null>
+
+    endEventById(id: string): Promise<IEvent | null>
 
 
 }
@@ -76,6 +92,11 @@ export class InstructorRepository implements IInsRepository {
         return await KycModel.create({ instructorId: id, idProof: idProof, addressProof: addressProof })
     }
 
+      async changePassword(id: string, password: string): Promise<IInstructor | null> {
+    
+        return await InstructorModel.findByIdAndUpdate(id, { password: password })
+      }
+
     async addCourse(id: string, data: any): Promise<ICourse | null> {
         return await CourseModel.create({ instructorId: id, ...data, });
     }
@@ -83,7 +104,7 @@ export class InstructorRepository implements IInsRepository {
 
     async getCourses(id: string, skip: number, limit: number): Promise<ICourse[]> {
         const courses = await CourseModel.find({ instructorId: id }).skip(skip).limit(limit);
-        console.log(courses);
+        // console.log(courses);
 
         return courses || [];
     }
@@ -129,6 +150,71 @@ export class InstructorRepository implements IInsRepository {
     async updateEvent(id: string, data: any): Promise<IEvent | null> {
         return await EventModel.findByIdAndUpdate(id, { ...data })
     }
+
+
+    async addQuiz(courseId: string, title: string, questions: any[]): Promise<IQuiz> {
+        return await QuizModel.create({ courseId, title, questions })
+    }
+
+    async getQuiz(courseId: string): Promise<IQuiz | null> {
+
+
+        const quiz = await QuizModel.findById({ courseId: courseId })
+        console.log(quiz);
+        return quiz
+
+    }
+
+    async getQuizByCourseId(courseId: string): Promise<IQuiz | null> {
+        return await QuizModel.findOne({ courseId })
+    }
+
+
+    async editQuiz(id: string, data: any): Promise<IQuiz> {
+        console.log(data);
+
+        const updatedQuiz = await QuizModel.findByIdAndUpdate(
+
+            id,
+            { ...data },
+            { new: true }
+        );
+        console.log('updated ', updatedQuiz);
+
+
+        if (!updatedQuiz) {
+            throw new Error("Quiz not found");
+        }
+
+        return updatedQuiz;
+    }
+
+
+
+    startEventById = async (id: string): Promise<IEvent | null> => {
+        if (!Types.ObjectId.isValid(id)) return null;
+
+        return EventModel.findByIdAndUpdate(
+            id,
+            { isLive: true },
+            { new: true }
+        ).exec();
+    };
+
+    endEventById = async (id: string): Promise<IEvent | null> => {
+        if (!Types.ObjectId.isValid(id)) return null;
+
+        return EventModel.findByIdAndUpdate(
+            id,
+            {
+                isLive: false,
+                participantsList: [],
+                participants: 0,
+            },
+            { new: true }
+        ).exec();
+    };
+
 
 }
 

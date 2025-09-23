@@ -190,6 +190,8 @@ export class AuthController {
     }
   };
 
+  
+
   forgotPassword = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { email } = req.body;
@@ -249,17 +251,17 @@ export class AuthController {
     }
   };
 
-  resetPassword = async (req: AuthRequest, res: Response): Promise<void> => {
+  resetPassword = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email , newPassword } = req.body;
     console.log('reset pass ' , email , newPassword);
 
     
 
-    if (!req.user) {
-      res.status(401).json({ success: false, message: "Unauthorized" });
-      return;
-    }
+    // if (!req.user) {
+    //   res.status(401).json({ success: false, message: "Unauthorized" });
+    //   return;
+    // }
 
     const result = await this.authService.resetPassword(
       email,

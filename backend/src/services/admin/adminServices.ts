@@ -5,6 +5,7 @@ import { IUserRepository } from "../../repositories/userRepository.js";
 import { kycRejectMail } from "../../utils/sendMail.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { PaginatedInstructors, PaginatedUsers } from "../../interfaces/adminInterfaces.js";
 
 interface adminLoginResult {
     success: boolean;
@@ -40,9 +41,9 @@ export class AdminService {
         }
     }
 
-    getUsers = async (): Promise<IUser[] | null> => {
+    getUsers = async (search:string , page : number): Promise<PaginatedUsers | null> => {
         try {
-            const result = await this.adminRepository.findUsers()
+            const result = await this.adminRepository.findUsers(search , page)
             return result
         } catch (error) {
             console.log(error);
@@ -76,9 +77,9 @@ export class AdminService {
         }
     }
 
-    getInstructors = async (): Promise<IInstructor[] | null> => {
+    getInstructors = async (page:string , search : string): Promise<PaginatedInstructors | null> => {
         try {
-            const result = await this.adminRepository.findInstructors()
+            const result = await this.adminRepository.findInstructors(page , search)
             return result
         } catch (error) {
             console.log(error);

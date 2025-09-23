@@ -1,6 +1,7 @@
 import { ICourse } from '../../models/course.js';
+import { IFavourite } from '../../models/favourites.js';
 import { IInstructor } from '../../models/instructor.js';
-import { IMyCourse } from '../../models/myCourses.js';
+import { IMyCourse, IProgress } from '../../models/myCourses.js';
 import { IUser } from '../../models/user.js';
 import { AdminRepository } from '../../repositories/adminRepositories.js';
 import { InstructorRepository } from '../../repositories/instructorRepository.js';
@@ -19,6 +20,8 @@ export interface ICourseDetails extends ICourse {
 export interface IviewCourse {
   course: ICourse,
   instructor: IInstructor
+  progress: IProgress
+  quizExists: boolean
 }
 
 
@@ -56,11 +59,13 @@ export class UserCourseService {
 
   async getAllCourses(query: any, page: number, limit: number, sortOption: any) {
     const skip = (page - 1) * limit;
-    console.log('all course ', query);
+    // console.log('all course ', query);
 
     const courses = await this.userRepository.getAllCourses(query, skip, limit, sortOption);
+    // const totalCount = await this.userRepository.countCourses(query);
     const totalCount = await this.userRepository.countCourses();
-    console.log(courses);
+
+    // console.log(courses);
 
 
 
@@ -79,9 +84,13 @@ export class UserCourseService {
     try {
       console.log("service get course details");
       let hasAccess = false
-      const course: any = await this.userRepository.getCourse(courseId);
       const myCourse = await this.userRepository.getCourseDetails(userId, courseId);
-      // console.log('myCoursessss', myCourse);
+      console.log(myCourse);
+
+
+      const course: any = await this.userRepository.getCourse(courseId);
+      console.log('myCoursessss', course);
+
 
       if (myCourse) {
         hasAccess = true
@@ -198,10 +207,22 @@ buyCourseRequest = async (userId: string, courseId: string) => {
   myCoursesRequest = async (id: string): Promise<IMyCourse[] | null> => {
     try {
 
-
       const myCourses = await this.userRepository.findMyCourses(id)
+      console.log("courseIdd ", myCourses);
 
-      return myCourses
+      if (!myCourses || myCourses.length === 0) return [];
+      const populatedCourses = await Promise.all(
+        myCourses.map(async (mc) => {
+          const course = await this.userRepository.getCourse(mc.courseId.toString());
+          return {
+            ...mc.toObject?.() || mc,
+            course,
+          };
+        })
+      );
+      console.log("my Courses ", populatedCourses);
+
+      return populatedCourses;
 
     } catch (error) {
       console.log(error);
@@ -216,14 +237,23 @@ buyCourseRequest = async (userId: string, courseId: string) => {
     try {
       const myCourse = await this.userRepository.viewMyCourse(id, myCourseId);
       if (!myCourse) return null;
+      const progress = myCourse.progress
 
-      const course = await this.userRepository.getCourse(myCourse.course.id);
+      const course = await this.userRepository.getCourse(myCourse.courseId.toString());
       if (!course) return null;
 
       const instructor = await this.instructorRepository.findById(course.instructorId as string);
       if (!instructor) return null;
 
-      return { course, instructor };  
+      const quiz = await this.userRepository.getQuiz(course.id)
+      console.log(quiz);
+      let quizExists = false
+      if (quiz) {
+        quizExists = true
+      }
+
+
+      return { course, instructor, progress, quizExists };
     } catch (error) {
       console.log(error);
       return null;
@@ -231,10 +261,10 @@ buyCourseRequest = async (userId: string, courseId: string) => {
   };
 
 
-  async updateProgress(userId: string, courseId: string, moduleTitle: string) {
+  async updateProgress(userId: string, myCourseId: string, moduleTitle: string) {
 
     try {
-      const update = await this.userRepository.updateProgress(userId, courseId, moduleTitle)
+      const update = await this.userRepository.updateProgress(userId, myCourseId, moduleTitle)
 
       return update
     } catch (error) {
@@ -247,7 +277,7 @@ buyCourseRequest = async (userId: string, courseId: string) => {
   async getInstructorsRequest(): Promise<IInstructor[] | null> {
 
     try {
-      const update = await this.adminRepository.findInstructors()
+      const update = await this.userRepository.findInstructors()
 
       return update
     } catch (error) {
@@ -274,6 +304,130 @@ buyCourseRequest = async (userId: string, courseId: string) => {
       return { success: false, message: "Something went wrong" };
     }
   }
+
+  async getFavourites(userId: string): Promise<IFavourite[] | null> {
+    try {
+      console.log('get fav');
+
+      const result = await this.userRepository.getFavourites(userId);
+
+      if (!result || result.length === 0) return [];
+      const populatedCourses = await Promise.all(
+        result.map(async (mc) => {
+          const course = await this.userRepository.getCourse(mc.courseId.toString());
+          return {
+            ...mc.toObject?.() || mc,
+            course,
+          };
+        })
+      );
+
+
+
+      return populatedCourses
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+  }
+
+  favCourseDetails = async (userId: string, courseId: string): Promise<ICourseDetails | null> => {
+    try {
+      console.log("service get course details");
+      let hasAccess = false
+      const myCourse = await this.userRepository.getCourseDetails(userId, courseId);
+      console.log(myCourse);
+      const favCourse = await this.userRepository.getFavCourseDetails(userId, courseId);
+      console.log(myCourse);
+
+
+      const course: any = await this.userRepository.getCourse(courseId);
+      console.log('myCoursessss', course);
+
+
+      if (myCourse) {
+        hasAccess = true
+      }
+
+      const instructor = await this.instructorRepository.findById(course.instructorId);
+
+      return {
+        ...(course.toObject?.() || course),
+        instructor,
+        hasAccess,
+        completedModules: []
+      };
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  };
+
+
+  getQuiz = async (courseId: string) => {
+    try {
+      console.log('quiz service');
+
+      // const course = await this.userRepository.getCourse(myCourseId)
+      // console.log(course);
+
+      // if(!course) return null
+      const quiz = await this.userRepository.getQuiz(courseId)
+      console.log(quiz);
+
+      return quiz
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
+
+  submitQuiz = async (
+    userId: string,
+    courseId: string,
+    quizId: string,
+    answers: any
+  ) => {
+    try {
+      console.log("quiz service", answers);
+
+      const quiz = await this.userRepository.getQuiz(courseId);
+      console.log(quiz?.questions);
+
+      if (!quiz) {
+        throw new Error("Quiz not found");
+      }
+
+      let score = 0;
+      let totalPoints = 0;
+
+      // unwrap nested answers if necessary
+      const flatAnswers = answers.answers ? answers.answers : answers;
+
+      quiz.questions.forEach((q) => {
+        totalPoints += q.points;
+        const userAnswer = flatAnswers[q._id.toString()];
+        console.log("QID:", q._id.toString(), "Correct:", q.correctAnswer, "User:", userAnswer);
+
+        if (
+          userAnswer &&
+          userAnswer.toString().trim().toLowerCase() === q.correctAnswer.toString().trim().toLowerCase()
+        ) {
+          score += q.points;
+        }
+      });
+
+
+
+      await this.userRepository.submitQuiz(userId, courseId, score);
+
+      return { score, totalPoints };
+    } catch (error) {
+      console.error("Error in submitQuiz service:", error);
+      throw error;
+    }
+  };
+
 
 
 
