@@ -105,30 +105,64 @@ export class UserCourseService {
 
 
 
-  buyCourseRequest = async (userId: string, courseId: string) => {
-    try {
-      console.log('buy course service');
-      const course = await this.userRepository.getCourse(courseId);
-      if (!course) {
-        throw new Error("Course not found");
-      }
+// import OrderModel from "../models/orderModel"; // adjust path
 
-      const options = {
-        amount: course.price! * 100,
-        currency: "INR",
-        receipt: `receipt_${Date.now()}`,
-        notes: { userId, courseId },
-      };
+buyCourseRequest = async (userId: string, courseId: string) => {
+  try {
+    console.log("buy course service");
 
-      const order = await razorpay.orders.create(options);
-
-      return order;
-
-    } catch (error) {
-      console.error(error);
-      throw error;
+    // 1. Check if user already purchased
+    const existingPurchase = await this.userRepository.findMyCourseExist(userId, courseId);
+    if (existingPurchase) {
+      return { existingPurchase: true, message: "You already purchased this course" };
     }
-  };
+
+    // 2. Check if existing order (pending/paid)
+    const existingOrder = await this.userRepository.findExistingOrder(userId, courseId);
+    if (existingOrder) {
+      return {
+        existingOrder: true,
+        orderId: existingOrder.orderId,
+        amount: existingOrder.amount,
+        currency: existingOrder.currency,
+        status: existingOrder.status,
+      };
+    }
+
+    // 3. Get course
+    const course = await this.userRepository.getCourse(courseId);
+    if (!course) {
+      throw new Error("Course not found");
+    }
+
+    // 4. Create Razorpay order
+    const options = {
+      amount: course.price! * 100,
+      currency: "INR",
+      receipt: `receipt_${Date.now()}`,
+      notes: { userId, courseId },
+    };
+    const razorpayOrder = await razorpay.orders.create(options);
+
+    // 5. Save order in DB
+    const newOrder = await this.userRepository.createOrder(
+      userId,
+      courseId,
+      razorpayOrder,            
+      Number(razorpayOrder.amount),
+      razorpayOrder.currency,
+      "pending"
+    );
+
+    return newOrder;
+
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+
 
   verifyPaymentRequest = async (razorpay_order_id: string, razorpay_payment_id: string,
     razorpay_signature: string, courseId: string, userId: string): Promise<{ success: boolean; message: string }> => {

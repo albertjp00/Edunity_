@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { UserRepository } from '../../repositories/userRepository.js';
-import { ProfileService } from '../../services/user/profileService.js';
-import { AuthRequest } from '../../middleware/authMiddleware.js';
+import { UserRepository } from '../../repositories/userRepository';
+import { ProfileService } from '../../services/user/profileService';
+import { AuthRequest } from '../../middleware/authMiddleware';
 
 export class ProfileController {
     private profileService: ProfileService;

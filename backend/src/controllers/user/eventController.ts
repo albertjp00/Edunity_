@@ -1,8 +1,8 @@
-import { AuthRequest } from "../../middleware/authMiddleware.js";
-import { UserRepository } from "../../repositories/userRepository.js";
+import { AuthRequest } from "../../middleware/authMiddleware";
+import { UserRepository } from "../../repositories/userRepository";
 import { Response } from "express"
-import { UserEventService } from "../../services/user/eventService.js";
-import { InstructorRepository } from "../../repositories/instructorRepository.js";
+import { UserEventService } from "../../services/user/eventService";
+import { InstructorRepository } from "../../repositories/instructorRepository";
 
 
 

@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { AuthService } from "../../services/user/authService.js";
-import { UserRepository } from "../../repositories/userRepository.js";
+import { AuthService } from "../../services/user/authService";
+import { UserRepository } from "../../repositories/userRepository";
 import jwt from "jsonwebtoken";
-import { AuthRequest } from "../../middleware/authMiddleware.js";
+import { AuthRequest } from "../../middleware/authMiddleware";
 import { OAuth2Client } from "google-auth-library";
 
 
@@ -15,8 +15,7 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || "");
 export class AuthController {
   private authService: AuthService;
 
-  constructor() {
-    const repo = new UserRepository();
+  constructor(repo = IUserRepository){
     this.authService = new AuthService(repo);
   }
 
