@@ -20,22 +20,25 @@ interface Course {
   thumbnail?: string;
   skills?: string[];
   modules: Module[];
+
 }
 
 const InstructorCourseDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [course, setCourse] = useState<Course | null>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [quizExists , setQuizExists] = useState<boolean>(false)
 
   const navigate = useNavigate();
 
   const fetchCourse = async (): Promise<void> => {
     try {
       const res = await instructorApi.get(`/instructor/course/${id}`);
-      console.log(res.data);
-      if(res.data.success){
-      setCourse(res.data.course as Course);
-    }
+      console.log(res.data.course);
+      if (res.data.success) {
+        setCourse(res.data.course.course as Course);
+        setQuizExists(res.data.course.quizExists);
+      }
     } catch (err) {
       console.error('Error fetching course:', err);
     }
@@ -46,6 +49,14 @@ const InstructorCourseDetails: React.FC = () => {
   const handleEdit = (id: string): void => {
     navigate(`/instructor/editCourse/${id}`);
   };
+
+  const addQuiz = (id: string): void => {
+    navigate(`/instructor/addQuiz/${id}`);
+  };
+
+  const editQuiz = (id: string): void => {
+  navigate(`/instructor/editQuiz/${id}`);
+};
 
   const convertToEmbedUrl = (url: string): string => {
     if (url.includes('watch?v=')) {
@@ -73,10 +84,27 @@ const InstructorCourseDetails: React.FC = () => {
       <div className="course-detail-page">
         <div className="course-title">
           <h2>{course.title}</h2>
+
+          {!quizExists ? (
+            <button onClick={() => addQuiz(course._id)} className="edit-button">
+              📑 Add Quiz
+            </button>
+          ) : (
+            <>
+              <button onClick={() => navigate(`/instructor/quiz/${course._id}`)} className="edit-button">
+                📘 View Quiz
+              </button>
+              {/* <button onClick={() => editQuiz(course._id)} className="edit-button">
+                ✏️ Edit Quiz
+              </button> */}
+            </>
+          )}
+
           <button onClick={() => handleEdit(course._id)} className="edit-button">
             ✏️ Edit Course
           </button>
         </div>
+
 
         {course.thumbnail && (
           <img

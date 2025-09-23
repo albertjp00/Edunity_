@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "./viewMyCourse.css";
 import api from "../../../api/userApi";
 import { viewMyCourse } from "../../services/courseServices";
@@ -27,7 +27,7 @@ interface IModule {
 }
 
 interface ICourse {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   price: string;
@@ -51,8 +51,12 @@ const ViewMyCourse: React.FC = () => {
   const [expandedModule, setExpandedModule] = useState<number | null>(null);
   const [completedModules, setCompletedModules] = useState<string[]>([]);
   const [instructor, setInstructor] = useState<IInstructor | null>(null);
+  const [quiz , setQuiz] = useState<boolean>()
+
+  const navigate = useNavigate()
 
 
+  const courseId = id
   const fetchCourse = async (): Promise<void> => {
     try {
       if (!id) {
@@ -62,11 +66,18 @@ const ViewMyCourse: React.FC = () => {
       const res: any = await viewMyCourse(id)
 
       if (!res) return
+      console.log(res);
+
       const fetchedMyCourse: IMyCourse = res.data.course;
       const fetchedInstructor: IInstructor = res.data.instructor;
       setCourse(fetchedMyCourse.course);
       setInstructor(fetchedInstructor)
       setCompletedModules(fetchedMyCourse.progress?.completedModules || []);
+      console.log(res.data.quiz);
+      
+      setQuiz(res.data.quiz)
+      console.log(res);
+
     } catch (err) {
       console.error("Error fetching course:", err);
     }
@@ -100,6 +111,10 @@ const ViewMyCourse: React.FC = () => {
       console.error("Error updating progress:", err);
     }
   };
+
+  const gotoQuiz = (myCourseId:string)=>{
+    navigate(`/user/quiz/${myCourseId}`)
+  }
 
   if (!course) return <p>Loading...</p>;
 
@@ -227,39 +242,58 @@ const ViewMyCourse: React.FC = () => {
           })}
         </div>
 
+        {completedModules.length === course.modules.length && quiz && (
+          <div style={{ marginTop: "20px", textAlign: "center" }}>
+            <button
+              onClick={() => gotoQuiz(course._id)}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#4caf50",
+                color: "#fff",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+                fontWeight: "bold",
+              }}
+            >
+              🎯 Go to Quiz
+            </button>
+          </div>
+        )}
+
         {instructor && (
-  <div className="instructor-card">
-    <h3>👨‍🏫 Instructor</h3>
-    <div className="instructor-info">
-      <img
-        src={
-          instructor.profileImage
-            ? `${API_URL}/assets/${instructor.profileImage}`
-            : "https://via.placeholder.com/100"
-        }
-        alt="Instructor"
-        className="instructor-img"
-      />
-      <div className="instructor-details">
-        <p><strong>{instructor.name}</strong></p>
-        <p>{instructor.expertise || "Expert in teaching"}</p>
-        <p>{instructor.bio || "No bio available"}</p>
+          <div className="instructor-card">
+            <h3>👨‍🏫 Instructor</h3>
+            <div className="instructor-info">
+              <img
+                src={
+                  instructor.profileImage
+                    ? `${API_URL}/assets/${instructor.profileImage}`
+                    : "https://via.placeholder.com/100"
+                }
+                alt="Instructor"
+                className="instructor-img"
+              />
+              <div className="instructor-details">
+                <p><strong>{instructor.name}</strong></p>
+                <p>{instructor.expertise || "Expert in teaching"}</p>
+                <p>{instructor.bio || "No bio available"}</p>
 
-        <button
-          className="chat-btn"
-          onClick={() =>
-            window.location.href = `/user/chat/${instructor._id}`
-          }
-        >
-          💬 Chat with Instructor
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+                <button
+                  className="chat-btn"
+                  onClick={() =>
+                    window.location.href = `/user/chat/${instructor._id}`
+                  }
+                >
+                  💬 Chat with Instructor
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
 
-        
+
       </div>
     </div>
   );

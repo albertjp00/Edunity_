@@ -1,17 +1,19 @@
 import { Response , Request } from "express";
-import { AdminRepository } from "../../repositories/adminRepositories.js";
+import { AdminRepository, IAdminRepository } from "../../repositories/adminRepositories.js";
 import { IKyc } from "../../models/kyc.js";
 import { AdminInstructorService } from "../../services/admin/instructorServices.js";
-import { InstructorRepository } from "../../repositories/instructorRepository.js";
+import { IInsRepository, InstructorRepository } from "../../repositories/instructorRepository.js";
 
 export class AdminInstructorController {
     private instructorService: AdminInstructorService
 
-    constructor() {
-        const repo = new AdminRepository();
-        const Irepo = new InstructorRepository()
-        this.instructorService = new AdminInstructorService(repo,Irepo)
+    constructor(
+        repo : IAdminRepository,
+        Irepo : IInsRepository
+    ){
+                this.instructorService = new AdminInstructorService(repo,Irepo)
     }
+    
 
     getInstructors = async(req:Request , res:Response):Promise<void>=>{
         try {

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import './App.css'
-import { Route,BrowserRouter as Router, Routes } from 'react-router-dom'
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import Home from './user/pages/home/homePage'
 import { ToastContainer } from 'react-toastify'
 import Login from './user/pages/authentication/Userlogin'
@@ -18,6 +18,9 @@ import UserEventDetails from './user/pages/event/eventDetails'
 import AllCoursesPage from './user/pages/courses/allCourses'
 
 import UserChat from './user/components/chat/userChat'
+
+import Favourites from './user/components/favourites/favourites'
+
 
 
 
@@ -57,6 +60,15 @@ import AdminProtectedRoute from './admin/components/adminProtectedRoute'
 import ForgotPassword from './user/components/login/forgotPassMail'
 import OtpVerification from './user/components/login/resetPassVerify'
 import UserResetPassword from './user/components/login/resetPasssword'
+import InstructorChat from './instructor/components/chat/instructorChat'
+import AddQuiz from './instructor/components/quiz/addQuiz'
+import DoQuiz from './user/components/myCourses/doQuiz'
+import Quiz from './instructor/components/quiz/quiz'
+import InstructorResetPassword from './instructor/components/authentication/resetPassword'
+import InstructorForgotPassword from './instructor/components/authentication/forgotPassMail'
+import OtpVerificationInstructor from './instructor/components/authentication/resetPasswordVerify'
+import InstructorVerifyOtp from './instructor/components/authentication/InstVerifyOtp'
+import PurchasesAdmin from './admin/pages/purchases/purchasesAdmin'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -76,12 +88,13 @@ function App() {
             <Route path='/user/verifyOtp' element={<VerifyOtp />} />
 
             <Route path='/user/forgotPassword' element={<ForgotPassword />} />
+            <Route path='/user/otpVerification' element={<OtpVerification />} />
 
             <Route path='/user/profile' element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
             <Route path='/user/editProfile' element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
             <Route path='/user/changePassword' element={<ProtectedRoute><UserPasswordChange /></ProtectedRoute>} />
-            
-            <Route path='/user/otpVerification' element={<OtpVerification />} />
+
+
             {/* <Route path='/user/purchaseHistory' element={<PurchaseHistory />} /> */}
 
             <Route path='/user/resetPassword' element={<UserResetPassword />} />
@@ -92,10 +105,15 @@ function App() {
             <Route path='/user/allCourses' element={<ProtectedRoute><AllCoursesPage /></ProtectedRoute>} />
 
 
-              
+
             <Route path='/user/eventDetails/:id' element={<ProtectedRoute><UserEventDetails /></ProtectedRoute>} />
 
-            <Route path="/user/chat" element={<ProtectedRoute><UserChat /></ProtectedRoute>} />
+            <Route path="/user/chat/:instructorId" element={<ProtectedRoute><UserChat /></ProtectedRoute>} />
+
+            <Route path='/user/favourites' element={<ProtectedRoute><Favourites /></ProtectedRoute>} />
+
+            <Route path='/user/quiz/:courseId' element={<ProtectedRoute><DoQuiz /></ProtectedRoute>} />
+
 
 
 
@@ -105,6 +123,11 @@ function App() {
             <Route path='/instructor/login' element={<InstructorLogin />} />
             <Route path='/instructor/register' element={<InstructorRegister />} />
             <Route path='/instructor/verifyOtp' element={<InstVerifyOtp />} />
+
+            <Route path='/instructor/forgotPassword' element={<InstructorForgotPassword />} />
+            <Route path='/instructor/otpVerification' element={<OtpVerificationInstructor />} />
+            <Route path='/instructor/otpVerify' element={<InstructorVerifyOtp /> } />
+            <Route path='/instructor/resetPassword' element={<InstructorResetPassword /> } />
 
             <Route path='/instructor/home' element={<InstProtectedRoute><InstructorHome /></InstProtectedRoute>} />
             <Route path='/instructor/profile' element={<InstProtectedRoute><ProfilePage /></InstProtectedRoute>} />
@@ -118,9 +141,12 @@ function App() {
 
             <Route path='/instructor/createEvent' element={<InstProtectedRoute><CreateEvents /></InstProtectedRoute>}></Route>
             <Route path='/instructor/editEvent/:id' element={<InstProtectedRoute><InstructorEditEvents /></InstProtectedRoute>}></Route>
-            
+
+            <Route path='/instructor/addQuiz/:id' element={<InstProtectedRoute><AddQuiz /></InstProtectedRoute>}></Route>
+            <Route path='/instructor/quiz/:courseId' element={<InstProtectedRoute><Quiz /></InstProtectedRoute>}></Route>
 
 
+            <Route path='/instructor/messages' element={<InstProtectedRoute><InstructorChat /></InstProtectedRoute>}></Route>
 
               // {/* admin  */}
             <Route path='/admin/login' element={<LoginAdmin />} />
@@ -131,9 +157,11 @@ function App() {
             <Route path='/admin/courses' element={<AdminProtectedRoute><AdminCourses /></AdminProtectedRoute>} />
             <Route path='/admin/courseDetails/:id' element={<AdminProtectedRoute><AdminCourseDetails /></AdminProtectedRoute>} />
 
+            {/* <Route path='/admin/purchases' element={<AdminProtectedRoute><PurchasesAdmin /></AdminProtectedRoute>} /> */}
 
 
-            
+
+
 
 
             {/* <Route path="*" element={<NotFound />} /> */}

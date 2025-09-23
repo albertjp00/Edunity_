@@ -1,26 +1,55 @@
-// src/components/ChatWindow.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
+import "./chatWindow.css";
+import api from "../../../api/userApi";
+import { useParams } from "react-router-dom";
 
-const socket = io("http://localhost:5000"); // your backend socket server
+const socket = io("http://localhost:5000");
 
-// Define message type
 interface Message {
   senderId: string;
-  receiverId: string;
+  receiverId?: string;
   text: string;
   timestamp: Date | string;
 }
 
-// Define props type
 interface ChatWindowProps {
   userId: string;
-  receiverId: string;
+  receiverId?: string;
+  receiverName: string;
+  receiverAvatar?: string;
 }
 
-const ChatWindow: React.FC<ChatWindowProps> = ({ userId, receiverId }) => {
+
+
+const ChatWindow: React.FC<ChatWindowProps> = ({
+  userId,
+  receiverId,
+  receiverName,
+  receiverAvatar,
+}) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMsg, setNewMsg] = useState<string>("");
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  // const {instructorId} = useParams()
+
+  // const receiverId = instructorId
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const res = await api.get(`/user/messages/${userId}/${receiverId}`
+        );
+        if (res.data.success) {
+          setMessages(res.data.messages);
+        }
+      } catch (err) {
+        console.error("Failed to load chat history", err);
+      }
+    };
+
+    fetchMessages();
+  }, [userId, receiverId]);
 
   useEffect(() => {
     socket.emit("joinRoom", { userId, receiverId });
@@ -34,7 +63,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ userId, receiverId }) => {
     };
   }, [userId, receiverId]);
 
-  const sendMessage = () => {
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const sendMessage = async () => {
     if (newMsg.trim()) {
       const message: Message = {
         senderId: userId,
@@ -44,45 +77,69 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ userId, receiverId }) => {
       };
 
       socket.emit("sendMessage", message);
-      setMessages((prev) => [...prev, message]); // show instantly
+
+      try {
+        await api.post("/user/chat", message);
+      } catch (err) {
+        console.error("Failed to save message", err);
+      }
+
+      // setMessages((prev) => [...prev, message]);
       setNewMsg("");
     }
   };
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white shadow rounded-lg p-4">
-      <div className="h-80 overflow-y-auto border p-2 mb-2 rounded">
+    <div className="chat-window">
+      {/* Header */}
+      <div className="chat-header">
+        <div className="user-info">
+          <img
+            src={receiverAvatar || "/default-avatar.png"}
+            alt={receiverName}
+            className="avatar"
+          />
+          <div>
+            <h4>{receiverName}</h4>
+            {/* <small>Online - Last seen just now</small> */}
+          </div>
+        </div>
+        {/* <div className="chat-actions">
+          <button>📞</button>
+          <button>🎥</button>
+          <button>⋮</button>
+        </div> */}
+      </div>
+
+      {/* Messages */}
+      <div className="chat-messages">
         {messages.map((msg, idx) => (
           <div
             key={idx}
-            className={`my-1 p-2 rounded ${
-              msg.senderId === userId
-                ? "bg-blue-500 text-white text-right"
-                : "bg-gray-200 text-left"
-            }`}
+            className={`message ${msg.senderId === userId ? "sent" : "received"}`}
           >
-            {msg.text}
-            <div className="text-xs text-gray-600">
-              {new Date(msg.timestamp).toLocaleTimeString()}
+            <div className="message-text">{msg.text}</div>
+            <div className="message-time">
+              {new Date(msg.timestamp).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
             </div>
           </div>
+
         ))}
       </div>
 
-      <div className="flex">
+
+      {/* Input */}
+      <div className="chat-input">
         <input
           type="text"
           value={newMsg}
           onChange={(e) => setNewMsg(e.target.value)}
           placeholder="Type a message..."
-          className="flex-grow border rounded-l px-2 py-1"
         />
-        <button
-          onClick={sendMessage}
-          className="bg-blue-500 text-white px-4 rounded-r"
-        >
-          Send
-        </button>
+        <button onClick={sendMessage}>Send</button>
       </div>
     </div>
   );

@@ -89,7 +89,7 @@ export const instAuthMiddleware = (
   try {
     const decoded = jwt.verify(token, secret); 
     req.instructor = decoded as JwtPayload | undefined;
-    next();
+      next();
   } catch (error) {
     res.status(401).json({ message: "Unauthorized: Invalid token" });
   }

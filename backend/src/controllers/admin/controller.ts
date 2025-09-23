@@ -1,17 +1,18 @@
 import { Response, Request } from "express";
-import { AdminRepository } from "../../repositories/adminRepositories.js";
+import { AdminRepository, IAdminRepository } from "../../repositories/adminRepositories.js";
 import { AdminService } from "../../services/admin/adminServices.js";
 import { IKyc } from "../../models/kyc.js";
-import { UserRepository } from "../../repositories/userRepository.js";
+import { IUserRepository, UserRepository } from "../../repositories/userRepository.js";
 import { AdminAuthRequest } from "../../middleware/authMiddleware.js";
 
 export class AdminController {
     private adminService: AdminService
 
-    constructor() {
-        const repo = new AdminRepository();
-        const uRepo = new UserRepository()
-        this.adminService = new AdminService(repo, uRepo)
+    constructor( 
+        repo :IAdminRepository,
+        uRepo:IUserRepository
+    ){
+        this.adminService =new AdminService(repo, uRepo)
 
     }
 
@@ -33,17 +34,22 @@ export class AdminController {
         }
     }
 
-    getUsers = async (req: AdminAuthRequest, res: Response): Promise<void> => {
-        try {
-            console.log('admin userrsss');
+getUsers = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { search, page } = req.query;
+    let limit = 4
 
-            const users = await this.adminService.getUsers()
-            res.json({ success: true, users: users })
-        } catch (error) {
-            console.log(error);
+    const data = await this.adminService.getUsers(
+      String(search),
+      Number(page),
+    );
 
-        }
-    }
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching users", error });
+  }
+};
+
 
     blockUnblock = async (req: Request, res: Response): Promise<void | null> => {
         try {
@@ -75,13 +81,15 @@ export class AdminController {
 
     getInstructors = async (req: Request, res: Response): Promise<void> => {
         try {
-            console.log('admin instrusss');
+            console.log('admin instrusss', req.query);
+            const {page , search } = req.query
 
-            const instructors = await this.adminService.getInstructors()
-            res.json({ success: true, data: instructors })
+            const data = await this.adminService.getInstructors(page as string , search as string)
+            // console.log(data);
+            
+            res.json({ success: true, data})
         } catch (error) {
             console.log(error);
-
         }
     }
 
