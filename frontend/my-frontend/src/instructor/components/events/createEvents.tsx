@@ -10,6 +10,7 @@ const EventForm: React.FC = () => {
     topic: "",
     description: "",
     date: "",
+    time:''
   });
 
   const [errors, setErrors] = useState<Partial<Ievent>>({});
@@ -35,7 +36,11 @@ const EventForm: React.FC = () => {
     }
     if (!formData.date) {
       newErrors.date = "Please select a date.";
-    } else if (new Date(formData.date) < new Date()) {
+
+    }if(formData.time){
+      newErrors.time = "Please select a time.";
+    } 
+    else if (new Date(formData.date) < new Date()) {
       newErrors.date = "Date must be in the future.";
     }
 
@@ -52,7 +57,7 @@ const EventForm: React.FC = () => {
     if(!res) return 
     if(res.data.success){
       toast.success("Event Created")
-    setFormData({ title: "", topic: "", description: "", date: "" });
+    setFormData({ title: "", topic: "", description: "", date: "" ,time:''});
     setErrors({});
     }
   };
@@ -62,6 +67,7 @@ const EventForm: React.FC = () => {
       <h2 className="form-title">📅 Create New Event</h2>
       <form onSubmit={handleSubmit} className="event-form">
         <div className="form-group">
+          <label>Title</label>
           <input
             type="text"
             name="title"
@@ -73,6 +79,7 @@ const EventForm: React.FC = () => {
         </div>
 
         <div className="form-group">
+          <label>Topic</label>
           <input
             type="text"
             name="topic"
@@ -84,6 +91,7 @@ const EventForm: React.FC = () => {
         </div>
 
         <div className="form-group">
+          <label>Description</label>
           <textarea
             name="description"
             placeholder="Event Description"
@@ -96,6 +104,7 @@ const EventForm: React.FC = () => {
         </div>
 
         <div className="form-group">
+          <label>Date</label>
           <input
             type="date"
             name="date"
@@ -103,6 +112,16 @@ const EventForm: React.FC = () => {
             onChange={handleChange}
           />
           {errors.date && <span className="error">{errors.date}</span>}
+        </div>
+        <div className="form-group">
+          <label>Time</label>
+          <input
+            type="time"
+            name="time"
+            value={formData.time}
+            onChange={handleChange}
+          />
+          {errors.time && <span className="error">{errors.time}</span>}
         </div>
 
         <button type="submit">➕ Add Event</button>

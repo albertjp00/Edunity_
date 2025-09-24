@@ -1,40 +1,90 @@
 .event-details {
-  max-width: 800px;
-  margin: auto;
+  max-width: 900px;
+  margin: 2rem auto;
   padding: 2rem;
+  background: #f9f9f9;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.event-header {
+  text-align: center;
 }
 
 .event-thumbnail {
   width: 100%;
-  max-height: 300px;
+  max-height: 350px;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 15px;
   margin-bottom: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.event-thumbnail:hover {
+  transform: scale(1.02);
+}
+
+.event-header h2 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #222;
+}
+
+.event-header p {
+  font-size: 1rem;
+  color: #555;
+  margin: 0.3rem 0;
 }
 
 .enroll-btn {
-  margin-top: 1rem;
-  padding: 0.7rem 1.5rem;
-  background: #007bff;
-  color: black;
+  margin-top: 1.5rem;
+  padding: 0.8rem 2rem;
+  background: linear-gradient(90deg, #007bff, #00c6ff);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .enroll-btn:hover {
-  background: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.4);
+}
+
+.enroll-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  color: #666;
+  box-shadow: none;
 }
 
 .instructor-section {
-  margin-top: 2rem;
-  padding: 1rem;
-  border-top: 1px solid #ddd;
+  margin-top: 3rem;
+  padding: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .instructor-img {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   object-fit: cover;
+  border: 3px solid #007bff;
+}
+
+.instructor-section p {
+  margin: 0.2rem 0;
+  color: #444;
+}
+
+.instructor-section strong {
+  font-size: 1.2rem;
+  color: #222;
 }

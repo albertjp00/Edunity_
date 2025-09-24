@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import profilePic from "../../../assets/profilePic.png";
-import api from "../../../api/userApi";
-import type { UEvent, UInstructor } from "../../interfaces";
-import thumbnail from '../../../assets/webinar_thumnail.png'
-import './userEventDetails.css'
+import React, { useEffect, useMemo, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+// import profilePic from "../../../assets/profilePic.png";
+import thumbnail from '../../../assets/webinar_thumnail.png';
+import './userEventDetails.css';
 import { eventEnroll, getDetailsEvent } from "../../services/eventServices";
 import { toast } from "react-toastify";
-
+import type { Ievent } from "../../../instructor/interterfaces/events";
 
 const EventDetails: React.FC = () => {
   const { id } = useParams();
-  const [event, setEvent] = useState<UEvent | null>(null);
-  const [instructor, setInstructor] = useState<UInstructor | null>(null);
+  const navigate = useNavigate();
+  const [event, setEvent] = useState<Ievent | null>(null);
+  // const [instructor, setInstructor] = useState<string>();
   const [isEnrolled, setIsEnrolled] = useState(false);
 
   useEffect(() => {
@@ -22,25 +21,41 @@ const EventDetails: React.FC = () => {
       if (!res) return;
 
       if (res.data.success) {
-        console.log(res.data);
-        
         setEvent(res.data.event);
-        setInstructor(res.data.instructor);
-        setIsEnrolled(res.data.enrolled); 
+        // setInstructor(res.data.instructor);
+        setIsEnrolled(res.data.enrolled);
       }
     };
     fetchEvent();
   }, [id]);
+
+  // ✅ Check if user can join based on current time
+  const canJoin = useMemo(() => {
+    if (!event) return false;
+
+    const now = new Date();
+    const eventDateTime = new Date(event.date);
+    const [hours, minutes] = event.time.split(":").map(Number);
+    eventDateTime.setHours(hours, minutes, 0, 0);
+
+    return now >= eventDateTime;
+  }, [event]);
 
   const handleEnroll = async () => {
     try {
       if (!id) return;
       const res = await eventEnroll(id);
       toast.success(res?.data.message || "Enrolled!");
-      setIsEnrolled(true); // update state
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Already enrolled");
+      setIsEnrolled(true);
+    } catch (error) {
+      console.error("Error enrolling in event:", error);
+      toast.error("Failed to enroll. Try again.");
     }
+  };
+
+  const handleJoinEvent = () => {
+    if (!event) return;
+    navigate(`/user/joinEvent/${event._id}`);
   };
 
   if (!event) return <p>Loading...</p>;
@@ -52,21 +67,26 @@ const EventDetails: React.FC = () => {
         <h2>{event.title}</h2>
         <p>{event.description}</p>
         <p>
-          📅 {new Date(event.date).toLocaleDateString()} | ⏱ {event.duration} mins
+          📅 {new Date(event.date).toLocaleDateString()} | ⏱ {event.time} mins
         </p>
         <p>🌐 Online Event</p>
+
         {!isEnrolled ? (
           <button onClick={handleEnroll} className="enroll-btn">
             Enroll Now
           </button>
-        ) : (
-          <button className="enroll-btn" disabled>
-            Enrolled
+        ) : canJoin ? (
+          <button onClick={handleJoinEvent} className="join-btn">
+            Join Event
           </button>
+        ) : (
+          <p className="text-yellow">
+            Event can be joined at {event.time} on {new Date(event.date).toLocaleDateString()}
+          </p>
         )}
       </div>
 
-      <div className="instructor-section">
+      {/* <div className="instructor-section">
         <h3>Instructor</h3>
         <img
           src={instructor?.profileImage || profilePic}
@@ -77,7 +97,7 @@ const EventDetails: React.FC = () => {
           <strong>{instructor?.name}</strong>
         </p>
         <p>{instructor?.bio || "No bio available"}</p>
-      </div>
+      </div> */}
     </div>
   );
 };

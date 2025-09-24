@@ -8,5 +8,6 @@ export interface Ievent {
   instructorName?:string;
   description: string;
   date: string;        
+  time:string
 }
 

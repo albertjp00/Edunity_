@@ -12,7 +12,8 @@ const EventList: React.FC = () => {
 
   const fetchEvents = async () => {
       try {
-        const result:any = await getMyEvents();
+        const result = await getMyEvents();
+        if(!result) return;
         console.log(result.data);
         setEvents(result.data.events);
       } catch (error) {
@@ -22,6 +23,10 @@ const EventList: React.FC = () => {
 
     const gotoEdit = (id:string)=>{
       navigate(`/instructor/editEvent/${id}`)
+    }
+
+    const EventDetails = (id:string )=>{
+      navigate(`/instructor/eventDetails/${id}`)
     }
 
 
@@ -38,7 +43,7 @@ return (
     ) : (
       <div className="event-list">
         {events.map((event) => (
-          <div key={event._id} className="event-card">
+          <div key={event._id} className="event-card" onClick={()=>EventDetails(event._id!)}>
             {event && (
               <div className="event-image-container">
                 <img
