@@ -60,8 +60,8 @@ instructor.get('/getEvent/:id',instAuthMiddleware ,eventController.getEvent)
 instructor.patch('/event/:id',instAuthMiddleware ,eventController.editEvent)
 
 
-instructor.patch('/startEvent/:id',instAuthMiddleware , eventController.startSession)
-instructor.patch("/endEvent/:id",instAuthMiddleware , eventController.endSession)
+instructor.patch('/joinEvent/:eventId',instAuthMiddleware , eventController.joinEvent)
+// instructor.patch("/endEvent/:id",instAuthMiddleware , eventController.endSession)
 
 
 instructor.get('/getMessagedStudents',instAuthMiddleware , messageController.getMessagedStudents)

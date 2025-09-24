@@ -4,6 +4,7 @@ import { NextFunction, Response } from "express"
 import { EventFullError, NotFoundError, NotLiveError, UserEventService } from "../../services/user/eventService.js";
 import { InstructorRepository } from "../../repositories/instructorRepository.js";
 import { Server } from "http";
+import { log } from "console";
 
 
 
@@ -19,7 +20,7 @@ export class UserEventController {
 
     }
 
-    getEvents = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void | null> => {
+    getEvents = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void | null> => {
         try {
             const result = await this.userEventService.getEventsRequest()
 
@@ -30,7 +31,7 @@ export class UserEventController {
         }
     }
 
-    getEventDetails = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void | null> => {
+    getEventDetails = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void | null> => {
         try {
             const id = req.params.id!
             const enrolled = await this.userEventService.getIfEnrolled(id)
@@ -45,7 +46,7 @@ export class UserEventController {
         }
     }
 
-    enrollEvent = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void | null> => {
+    enrollEvent = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void | null> => {
         try {
             const id = req.user?.id!
             const eventId = req.params.id
@@ -63,34 +64,40 @@ export class UserEventController {
     }
 
 
-    joinSession = async (req: AuthRequest, res: Response , next : NextFunction) => {
+    joinUserEvent = async (req: AuthRequest, res: Response) => {
         try {
-            const { id } = req.params; // eventId
-            const  userId = req.user?.id! 
-            const io = req.app.get("io") as Server | undefined;
+            const userId = req.user?.id;
+            const eventId = req.params.eventId!;
+            console.log('join event', eventId, userId);
 
-            const event = await this.userEventService.joinEvent(id as string, userId, io);
+            if (!userId) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
 
-            return res.json({ success: true, event });
-        } catch (err: any) {
-            if (err instanceof NotFoundError) {
-                return res.status(404).json({ success: false, message: err.message });
+            const result = await this.userEventService.joinUserEventRequest(eventId, userId);
+
+            if (!result || !result.success) {
+                return res.status(400).json({ message: result?.message || "Failed to start event" });
             }
-            if (err instanceof NotLiveError) {
-                return res.status(400).json({ success: false, message: err.message });
+
+            console.log('result', result);
+
+            // ✅ Only include meetingLink if it exists
+            const response: { success: boolean; message: string; meetingLink?: string } = {
+                success: true,
+                message: result.message,
+            };
+            if (result.meetingLink) {
+                response.meetingLink = result.meetingLink;
             }
-            if (err instanceof EventFullError) {
-                return res.status(400).json({ success: false, message: err.message });
-            }
-            // console.error("joinSession error:", err);
-            next(err)
-            return res.status(500).json({
-                success: false,
-                message: "Failed to join session",
-                error: err?.message || err,
-            });
+
+            res.json(response);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: "Server error" });
         }
     };
+
 
 
 

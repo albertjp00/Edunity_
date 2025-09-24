@@ -1,4 +1,4 @@
-import { useState } from 'react'
+
 
 import './App.css'
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
@@ -68,10 +68,12 @@ import InstructorResetPassword from './instructor/components/authentication/rese
 import InstructorForgotPassword from './instructor/components/authentication/forgotPassMail'
 import OtpVerificationInstructor from './instructor/components/authentication/resetPasswordVerify'
 import InstructorVerifyOtp from './instructor/components/authentication/InstVerifyOtp'
-import PurchasesAdmin from './admin/pages/purchases/purchasesAdmin'
+import InstructorEvent from './instructor/pages/events/joinEvent'
+import UserEvent from './user/pages/event/joinEvent'
+import EventDetails from './instructor/pages/events/eventDetails'
+// import PurchasesAdmin from './admin/pages/purchases/purchasesAdmin'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
@@ -114,8 +116,8 @@ function App() {
 
             <Route path='/user/quiz/:courseId' element={<ProtectedRoute><DoQuiz /></ProtectedRoute>} />
 
-
-
+          <Route path='/user/joinEvent/:eventId' element={<ProtectedRoute><UserEvent /></ProtectedRoute>} />
+          
 
 
 
@@ -159,7 +161,9 @@ function App() {
 
             {/* <Route path='/admin/purchases' element={<AdminProtectedRoute><PurchasesAdmin /></AdminProtectedRoute>} /> */}
 
+          <Route path='/instructor/eventDetails/:eventId' element={<ProtectedRoute><EventDetails /></ProtectedRoute>} />
 
+          <Route path='/instructor/joinEvent/:eventId' element={<InstProtectedRoute><InstructorEvent /></InstProtectedRoute>} />
 
 
 

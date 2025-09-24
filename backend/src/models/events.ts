@@ -8,6 +8,7 @@ export interface IEvent extends Document {
   description: string;
   topic: string;
   date: Date;
+  time: string
   duration: number;
   participants: number;
   participantsList: string[]; // store userIds of joined participants
@@ -27,6 +28,7 @@ const EventSchema = new Schema<IEvent>(
     description: { type: String },
     topic: { type: String },
     date: { type: Date, required: true },
+    time:{type : String },
     duration: { type: Number },
     participants: { type: Number, default: 0 },
     participantsList: [{ type: String }], // array of userIds
