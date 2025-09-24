@@ -76,7 +76,7 @@ router.get('/events',authMiddleware , eventController.getEvents)
 router.get('/event/:id',authMiddleware , eventController.getEventDetails)
 router.get('/eventEnroll/:id',authMiddleware , eventController.enrollEvent)
 
-router.get("/joinEvent",authMiddleware ,eventController.joinSession);
+router.get("/joinEvent/:eventId",authMiddleware ,eventController.joinUserEvent);
 
 
 router.post("/chat",authMiddleware ,messageController.sendMessage);

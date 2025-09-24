@@ -1,0 +1,48 @@
+.meeting-room {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  background: #1a1a1a;
+  color: white;
+  padding: 20px;
+}
+
+.video-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 900px;
+}
+
+video {
+  width: 45%;
+  border-radius: 10px;
+  background: black;
+}
+
+.controls {
+  margin-top: 20px;
+  display: flex;
+  gap: 15px;
+}
+
+.controls button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.controls button:hover {
+  opacity: 0.9;
+}
+
+.end-event-btn {
+  background: #e63946;
+  color: white;
+  font-weight: bold;
+}

@@ -6,24 +6,24 @@ import { UserRepository } from "../../repositories/userRepository.js";
 
 
 export class NotFoundError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "NotFoundError";
-  }
+    constructor(message: string) {
+        super(message);
+        this.name = "NotFoundError";
+    }
 }
 
 export class NotLiveError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "NotLiveError";
-  }
+    constructor(message: string) {
+        super(message);
+        this.name = "NotLiveError";
+    }
 }
 
 export class EventFullError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "EventFullError";
-  }
+    constructor(message: string) {
+        super(message);
+        this.name = "EventFullError";
+    }
 }
 
 
@@ -87,30 +87,44 @@ export class UserEventService {
         }
     }
 
-    joinEvent = async (eventId: string,userId: string,io?: Server): Promise<IEvent> => {
-        const existing = await this.userRepository.findById(eventId);
-        if (!existing) throw new NotFoundError("Event not found");
+    joinUserEventRequest = async (eventId: string, userId: string): Promise<{ success: boolean; message: string; meetingLink?: string } | null> => {
+        try {
+            const myEvent = await this.userRepository.getMyEvent(eventId);
 
-        if (!existing.isLive) {
-            throw new NotLiveError("Event is not live");
+            if (!myEvent) return { success: false, message: "Event not found" };
+            if (myEvent.userId.toString() !== userId)
+                return { success: false, message: "Not authorized" };
+
+            const event = await this.instructorRepository.getEvent(eventId);
+            if (!event) return { success: false, message: "Event not found" };
+
+            if (!event.isLive)
+                return { success: false, message: "Event has not started yet" };
+
+
+            // if (!event.participantsList.includes(userId)) {
+            //   event.participantsList.push(userId);
+            //   event.participants += 1;
+            //   await event.save();
+            // }
+
+            const meetingLink = event.meetingLink;
+            const result: { success: boolean; message: string; meetingLink?: string } = {
+                success: true,
+                message: "Joined event",
+            };
+
+            if (event.meetingLink) {
+                result.meetingLink = event.meetingLink;
+            }
+
+            return result;
+
+        } catch (error) {
+            console.error(error);
+            return null;
         }
-
-        if (
-            existing.maxParticipants &&
-            existing.participants >= existing.maxParticipants
-        ) {
-            throw new EventFullError("Event is full");
-        }
-
-        const updated = await this.userRepository.addParticipant(eventId, userId);
-        if (!updated) throw new Error("Failed to update participants");
-
-        // Notify instructor & others
-        if (io) {
-            io.to(eventId).emit("user-joined", { eventId, userId });
-        }
-
-        return updated;
     };
+
 
 }

@@ -46,9 +46,11 @@ export class EventController {
     getEvent = async (req: InstAuthRequest, res: Response): Promise<void> => {
         try {
             const id = req.params.id!
+            console.log("getEvent");
+            
             console.log(id);
             const result = await this.eventService.getEventRequest(id)
-            console.log(result);
+            // console.log(result);
 
             res.json({ success: true, event: result })
         } catch (error) {
@@ -92,74 +94,65 @@ export class EventController {
         }
     }
 
-    // joinEvent = async (req: InstAuthRequest, res: Response) => {
-    //     try {
-    //         const { id } = req.params;
-    //         const event = await Event.findByIdAndUpdate(
-    //             id,
-    //             { isLive: true },
-    //             { new: true }
-    //         );
-    //         if (!event) return res.status(404).json({ message: "Event not found" });
-
-    //         res.json({ success: true, event });
-    //     } catch (error) {
-    //         res.status(500).json({ message: "Failed to start session", error });
-    //     }
-    // };
 
 
-
-    startSession = async (req: InstAuthRequest, res: Response) => {
+    joinEvent = async (req: InstAuthRequest, res: Response) => {
         try {
-            const { id } = req.params;
-            const io = req.app.get("io") as Server | undefined;
+            const instructorId = req.instructor?.id;
+            const eventId = req.params.eventId!
+            console.log('join event' , eventId , instructorId);
+            
 
-            const event = await this.eventService.startEvent(id as string, io);
-
-            return res.json({ success: true, event });
-        } catch (err: any) {
-            // if (err instanceof this.eventService.NotFoundError) {
-            //     return res.status(404).json({ success: false, message: err.message });
-            // }
-            if (err) {
-                return res.json({ success: false, message: err.message });
+            if (!instructorId) {
+                return res.status(401).json({ message: "Unauthorized" });
             }
-            console.error("startSession error:", err);
-            return res.status(500).json({
-                success: false,
-                message: "Failed to start session",
-                error: err?.message || err,
+
+            const result = await this.eventService.joinEventRequest(eventId, instructorId);
+
+            if (!result || !result.success) {
+                return res.status(400).json({ message: result?.message || "Failed to start event" });
+            }
+
+            res.json({
+                success: true,
+                message: result.message,
+                meetingLink: result.meetingLink,
             });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: "Server error" });
         }
-    }
+    };
 
 
-
-    endSession = async (req: InstAuthRequest, res: Response) => {
+    endEvent = async (req: InstAuthRequest, res: Response) => {
         try {
-            const { id } = req.params;
-            const io = req.app.get("io") as Server | undefined;
+            const instructorId = req.instructor?.id;
+            const eventId = req.params.eventId!
 
-            const event = await this.eventService.endEvent(id as string, io);
-
-            return res.json({ success: true, event });
-        } catch (err: any) {
-            // if (err instanceof this.eventService.NotFoundError) {
-            //     return res.status(404).json({ success: false, message: err.message });
-            // }
-            if (err) {
-                return res.json({ success: false, message: err.message });
+            if (!instructorId) {
+                return res.status(401).json({ message: "Unauthorized" });
             }
-            console.error("endSession error:", err);
-            return res.status(500).json({
-                success: false,
-                message: "Failed to end session",
-                error: err?.message || err,
+
+            const result = await this.eventService.endEventRequest(eventId, instructorId);
+
+            if (!result || !result.success) {
+                return res.status(400).json({ message: result?.message || "Failed to end event" });
+            }
+
+            res.json({
+                success: true,
+                message: result.message,
             });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: "Server error" });
         }
     };
 
 
 
-} 
+}
+
+
+

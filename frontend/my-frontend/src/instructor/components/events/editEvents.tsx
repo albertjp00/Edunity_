@@ -11,22 +11,25 @@ const EditEvents: React.FC = () => {
 
   const [event, setEvent] = useState<Ievent | null>(null);
   const [title, setTitle] = useState("");
-  const [topic, setTopic] = useState(""); // ✅ New field
+  const [topic, setTopic] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
 
   const [initialValues, setInitialValues] = useState({
     title: "",
-    topic: "", // ✅ New field
+    topic: "",
     description: "",
     date: "",
+    time: "",
   });
 
   const [errors, setErrors] = useState<{
     title?: string;
-    topic?: string; // ✅ New field
+    topic?: string;
     description?: string;
     date?: string;
+    time?: string;
   }>({});
 
   useEffect(() => {
@@ -39,15 +42,17 @@ const EditEvents: React.FC = () => {
 
         setEvent(eventData);
         setTitle(eventData.title || "");
-        setTopic(eventData.topic || ""); // ✅ New field
+        setTopic(eventData.topic || "");
         setDescription(eventData.description || "");
         setDate(eventData.date ? eventData.date.split("T")[0] : "");
+        setTime(eventData.time || "");
 
         setInitialValues({
           title: eventData.title || "",
-          topic: eventData.topic || "", // ✅ New field
+          topic: eventData.topic || "",
           description: eventData.description || "",
           date: eventData.date ? eventData.date.split("T")[0] : "",
+          time: eventData.time || "",
         });
       } catch (error) {
         console.error("Error fetching event:", error);
@@ -57,10 +62,16 @@ const EditEvents: React.FC = () => {
   }, [id]);
 
   const validateForm = () => {
-    const newErrors: { title?: string; topic?: string; description?: string; date?: string } = {};
+    const newErrors: {
+      title?: string;
+      topic?: string;
+      description?: string;
+      date?: string;
+      time?: string;
+    } = {};
 
     if (!title.trim()) newErrors.title = "Title is required";
-    if (!topic.trim()) newErrors.topic = "Topic is required"; // ✅ Validation
+    if (!topic.trim()) newErrors.topic = "Topic is required";
     if (!description.trim()) newErrors.description = "Description is required";
 
     if (!date) {
@@ -75,6 +86,10 @@ const EditEvents: React.FC = () => {
       }
     }
 
+    if (!time) {
+      newErrors.time = "Time is required";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -84,7 +99,7 @@ const EditEvents: React.FC = () => {
 
     if (!validateForm()) return;
 
-    const formData = { title, topic, description, date }; // ✅ Added topic
+    const formData = { title, topic, description, date, time };
 
     try {
       await updateEvent(id!, formData);
@@ -97,9 +112,10 @@ const EditEvents: React.FC = () => {
 
   const isChanged =
     title !== initialValues.title ||
-    topic !== initialValues.topic || // ✅ Check topic change
+    topic !== initialValues.topic ||
     description !== initialValues.description ||
-    date !== initialValues.date;
+    date !== initialValues.date ||
+    time !== initialValues.time; 
 
   if (!event) return <p className="loading">Loading event...</p>;
 
@@ -150,6 +166,16 @@ const EditEvents: React.FC = () => {
               onChange={(e) => setDate(e.target.value)}
             />
             {errors.date && <span className="error">{errors.date}</span>}
+          </div>
+
+          <div className="form-group">
+            <label>Time</label> 
+            <input
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)} 
+            />
+            {errors.time && <span className="error">{errors.time}</span>}
           </div>
 
           <div className="form-actions">

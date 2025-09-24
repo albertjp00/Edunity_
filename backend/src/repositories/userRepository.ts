@@ -12,6 +12,8 @@ import { IUserRepository } from '../interfaces/userInterfaces.js';
 
 
 
+
+
 export class UserRepository implements IUserRepository {
   async create(user: Partial<IUser>): Promise<IUser> {
     const newUser = new UserModel(user);
@@ -261,6 +263,7 @@ export class UserRepository implements IUserRepository {
 
   async enrollEvent(id: string, eventId: string): Promise<IMyEvent | null> {
     await EventModel.findByIdAndUpdate(eventId, { $inc: { participants: 1 } }, { new: true })
+    
     return await MyEventModel.create({ userId: id, eventId })
   }
 

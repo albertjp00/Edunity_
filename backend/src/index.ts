@@ -37,14 +37,7 @@ const io = new Server(server, {
   },
 });
 
-// const io = new Server(server, {
-//   cors: {
-//     origin: process.env.FRONTEND_URL || process.env.TUNNEL_URL,
-//     credentials: true,
-//     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-//     allowedHeaders: ["Content-Type", "Authorization"],
-//   },
-// });
+
 
 
 app.use(cors({
@@ -54,12 +47,7 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
-// app.use(cors({
-//   origin: process.env.FRONTEND_URL || process.env.TUNNEL_URL,
-//   credentials: true,
-//   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-//   allowedHeaders: ["Content-Type", "Authorization"],
-// }));
+
 
 
 
@@ -89,31 +77,56 @@ io.on("connection", (socket) => {
   });
 
   // 🎥 Live Session (Events)
-  socket.on("joinEvent", ({ eventId, userId }) => {
+  socket.on("joinEvent", ({ eventId, userId, role }) => {
     socket.join(eventId);
-    console.log(`${userId} joined event ${eventId}`);
-    socket.to(eventId).emit("user-joined", { userId });
+
+    if (role === "instructor") {
+      console.log(`🎤 Instructor ${userId} started event ${eventId}`);
+      // notify all users that the event has gone live
+      socket.to(eventId).emit("event-started", { eventId, instructorId: userId });
+    } else {
+      console.log(`👤 User ${userId} joined event ${eventId}`);
+      socket.to(eventId).emit("user-joined", { userId, socketId: socket.id });
+    }
   });
 
-  // Instructor sends an offer
-  socket.on("offer", ({ eventId, offer, from }) => {
-    socket.to(eventId).emit("offer", { offer, from });
+  // Instructor sends an offer to students
+  socket.on("offer", ({ eventId, offer, from, to }) => {
+    if (to) {
+      io.to(to).emit("offer", { offer, from });
+    } else {
+      socket.to(eventId).emit("offer", { offer, from });
+    }
   });
 
-  // Student replies with an answer
-  socket.on("answer", ({ eventId, answer, from }) => {
-    socket.to(eventId).emit("answer", { answer, from });
+  // Student sends answer back to instructor
+  socket.on("answer", ({ eventId, answer, from, to }) => {
+    if (to) {
+      io.to(to).emit("answer", { answer, from });
+    } else {
+      socket.to(eventId).emit("answer", { answer, from });
+    }
   });
 
-  // Exchange ICE candidates
-  socket.on("ice-candidate", ({ eventId, candidate, from }) => {
-    socket.to(eventId).emit("ice-candidate", { candidate, from });
+  // ICE candidates exchange
+  socket.on("ice-candidate", ({ eventId, candidate, from, to }) => {
+    if (to) {
+      io.to(to).emit("ice-candidate", { candidate, from });
+    } else {
+      socket.to(eventId).emit("ice-candidate", { candidate, from });
+    }
+  });
+
+  socket.on("leaveEvent", ({ eventId, userId }) => {
+    socket.leave(eventId);
+    socket.to(eventId).emit("user-left", { userId });
   });
 
   socket.on("disconnect", () => {
     console.log("Client disconnected:", socket.id);
   });
 });
+
 
 
 

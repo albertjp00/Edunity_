@@ -1,6 +1,7 @@
 import { Server } from "http";
 import { IMyEventInterface } from "../../interfaces/instructorInterfaces.js";
 import { IEvent } from "../../models/events.js";
+import { NextFunction } from "express";
 import { IInsRepository } from "../../repositories/instructorRepository.js";
 
 
@@ -55,52 +56,65 @@ export class EventService {
         }
     }
 
-    startEvent = async (
+
+    joinEventRequest = async (
         eventId: string,
-        io?: Server
-    ): Promise<IEvent> => {
-        const existing = await this.InstructorRepository.findById(eventId);
-        if (!existing) throw new Error("Event not found");
-
-        if (existing.isLive) {
-            throw new Error("Event already live");
-        }
-
-        const updated = await this.InstructorRepository.startEventById(eventId);
-        if (!updated) throw new Error("Failed to update event");
-
-        // Notify all potential listeners that event went live
-        if (io) {
-            io.emit("event-started", { eventId: updated._id, title: updated.title });
-        }
-
-        return updated;
-    };
-
-    endEvent = async (
-        eventId: string,
-        io?: Server
-    ): Promise<IEvent | null> => {
+        instructorId: string
+    ): Promise<{ success: boolean; message: string, meetingLink?: string } | null> => {
         try {
-            const existing = await this.InstructorRepository.findById(eventId);
-        if (!existing) throw new Error("Event not found");
+            const event = await this.InstructorRepository.getEvent(eventId);
 
-        if (!existing.isLive) {
-            throw new Error("Event is not live");
-        }
+            if (!event) {
+                return { success: false, message: "Event not found" };
+            }
 
-        const updated = await this.InstructorRepository.endEventById(eventId);
-        if (!updated) throw new Error("Failed to update event");
+            if (event.instructorId !== instructorId) {
+                return { success: false, message: "Not authorized" };
+            }
 
-        // Notify all participants in this room
-        if (io) {
-            io.to(eventId).emit("session-ended", { eventId });
-        }
+            // ✅ update in repo
+            const meetingLink =
+                event.meetingLink || `${process.env.FRONTEND_URL}/joinEvent/${event._id}`;
 
-        return updated;
+            await this.InstructorRepository.updateEvent(eventId, {
+                isLive: true,
+                meetingLink,
+            });
+
+            return { success: true, message: "Event started", meetingLink };
         } catch (error) {
-            console.log(error);
-            return null
+            console.error(error);
+            return null;
         }
     };
+
+
+    endEventRequest = async (
+        eventId: string,
+        instructorId: string
+    ): Promise<{ success: boolean; message: string } | null> => {
+        try {
+            const event = await this.InstructorRepository.getEvent(eventId);
+
+            if (!event) {
+                return { success: false, message: "Event not found" };
+            }
+
+            if (event.instructorId !== instructorId) {
+                return { success: false, message: "Not authorized" };
+            }
+
+            await this.InstructorRepository.updateEvent(eventId, {
+                isLive: false,
+                meetingLink: undefined,
+            });
+
+            return { success: true, message: "Event ended successfully" };
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    };
+
+
 }
