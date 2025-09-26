@@ -9,12 +9,13 @@ interface MeetingRoomProps {
   eventId: string;
   userId: string;
   role: "instructor" | "user";
+  name: string;
 }
 
-const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role }) => {
+const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }) => {
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
-  const pc = new RTCPeerConnection();
+  const pcRef = useRef<RTCPeerConnection | null>(null);
   const navigate = useNavigate();
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
@@ -22,6 +23,9 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role }) => {
   const [camOn, setCamOn] = useState(true);
 
   useEffect(() => {
+    const pc = new RTCPeerConnection();
+    pcRef.current = pc;
+
     // ✅ Get local stream
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       .then((stream) => {
@@ -104,46 +108,76 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role }) => {
   };
 
   // ✅ Toggle Camera
-  const toggleCam = () => {
-    if (localStream) {
-      localStream.getVideoTracks().forEach(track => (track.enabled = !camOn));
-      setCamOn(!camOn);
-    }
-  };
+// ✅ Toggle Camera with track replacement
+const toggleCam = async () => {
+  if (!localStream || !pcRef.current) return;
 
-  // ✅ End Event / Leave Room
-const handleEndEvent = () => {
-  if (localStream) {
-    localStream.getTracks().forEach(track => {
-      track.stop(); // stops camera/mic
+  if (camOn) {
+    // Turn OFF: remove video track
+    localStream.getVideoTracks().forEach(track => {
+      track.stop();
+      localStream.removeTrack(track);
+
+      // Remove from PeerConnection
+      const sender = pcRef.current?.getSenders().find(s => s.track === track);
+      if (sender) pcRef.current.removeTrack(sender);
     });
+
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = null;
+    }
+
+  } else {
+    // Turn ON: get new video track
+    const newStream = await navigator.mediaDevices.getUserMedia({ video: true });
+    const videoTrack = newStream.getVideoTracks()[0];
+
+    if (videoTrack) {
+      localStream.addTrack(videoTrack);
+      pcRef.current.addTrack(videoTrack, localStream);
+
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = localStream;
+      }
+    }
   }
 
-  // Clear video element
-  if (localVideoRef.current) {
-    localVideoRef.current.srcObject = null;
-  }
-  if (remoteVideoRef.current) {
-    remoteVideoRef.current.srcObject = null;
-  }
-
-  socket.emit("leave-room", { eventId, userId });
-  pc.close();
-
-  // Delay navigation slightly to ensure cleanup finishes
-  setTimeout(() => {
-    navigate(-1);
-  }, 300);
+  setCamOn(!camOn);
 };
 
+
+  // ✅ End Event / Leave Room
+  const handleEndEvent = () => {
+    if (localStream) {
+      localStream.getTracks().forEach(track => {
+        track.stop();
+      });
+    }
+
+    if (localVideoRef.current) localVideoRef.current.srcObject = null;
+    if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
+
+    socket.emit("leave-room", { eventId, userId });
+    pcRef.current?.close();
+
+    setTimeout(() => {
+      navigate(-1);
+    }, 300);
+  };
 
   return (
     <div className="meeting-room">
       <h2>{role === "instructor" ? "Instructor View" : "User View"}</h2>
 
       <div className="video-container">
-        <video ref={localVideoRef} autoPlay playsInline muted />
-        <video ref={remoteVideoRef} autoPlay playsInline />
+        <div className="video-tile">
+          <video ref={localVideoRef} autoPlay playsInline muted />
+          <p className="video-name">{name} (You)</p>
+        </div>
+        <div className="video-tile">
+          <video ref={remoteVideoRef} autoPlay playsInline />
+          <p className="video-name">Remote User</p>
+        </div>
       </div>
 
       {/* ✅ Controls */}

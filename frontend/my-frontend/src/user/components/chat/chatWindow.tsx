@@ -2,15 +2,17 @@ import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import "./chatWindow.css";
 import api from "../../../api/userApi";
-import { useParams } from "react-router-dom";
+// import 
 
-const socket = io("http://localhost:5000");
+const socket = io(import.meta.env.VITE_API_URL);
 
 interface Message {
   senderId: string;
   receiverId?: string;
   text: string;
+  attachment?: string;
   timestamp: Date | string;
+  read?: boolean
 }
 
 interface ChatWindowProps {
@@ -42,6 +44,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         );
         if (res.data.success) {
           setMessages(res.data.messages);
+
+          socket.emit("markAsRead", { userId, receiverId })
         }
       } catch (err) {
         console.error("Failed to load chat history", err);
@@ -50,6 +54,22 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
     fetchMessages();
   }, [userId, receiverId]);
+
+
+  useEffect(() => {
+    socket.on("messagesRead", ({ userId: readerId }) => {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.receiverId === readerId ? { ...msg, read: true } : msg
+        )
+      );
+    });
+
+    return () => {
+      socket.off("messagesRead");
+    };
+  }, []);
+
 
   useEffect(() => {
     socket.emit("joinRoom", { userId, receiverId });
@@ -74,6 +94,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         receiverId,
         text: newMsg,
         timestamp: new Date(),
+
       };
 
       socket.emit("sendMessage", message);
@@ -89,8 +110,17 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     }
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+     if(!file) return 
+
+     const formData = new FormData()
+     formData.append('attachemnt',file)
+ };
+
+
   return (
-    <div className="chat-window">
+    <div className="chat-window-user">
       {/* Header */}
       <div className="chat-header">
         <div className="user-info">
@@ -112,35 +142,80 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       </div>
 
       {/* Messages */}
-      <div className="chat-messages">
-        {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            className={`message ${msg.senderId === userId ? "sent" : "received"}`}
-          >
-            <div className="message-text">{msg.text}</div>
-            <div className="message-time">
-              {new Date(msg.timestamp).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </div>
-          </div>
 
-        ))}
+      <div className="chat-messages">
+        {messages.map((msg, idx) => {
+          const msgDate = new Date(msg.timestamp);
+          const formattedDate = msgDate.toLocaleDateString([], {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          });
+
+          const prevMsg = messages[idx - 1];
+          const prevDate =
+            prevMsg && new Date(prevMsg.timestamp).toLocaleDateString([], {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            });
+
+          const showDate = formattedDate !== prevDate;
+
+          return (
+            <React.Fragment key={idx}>
+              {showDate && (
+                <div className="date-divider">
+                  <span>{formattedDate}</span>
+                </div>
+              )}
+
+              <div
+                className={`message ${msg.senderId === userId ? "sent" : "received"}`}
+              >
+                <div className="message-text">{msg.text}</div>
+                <div className="message-time">
+                  {msgDate.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </div>
+                <div className="message-read">
+                  {msg.senderId === userId && (msg.read ? "✓✓" : "✓")}
+                </div>
+              </div>
+            </React.Fragment>
+          );
+        })}
+        <div ref={messagesEndRef} />
       </div>
+
 
 
       {/* Input */}
       <div className="chat-input">
+        <input
+          type="file"
+          id="fileInput"
+          style={{ display: "none" }}
+          onChange={(e) => handleFileUpload(e)}
+        />
         <input
           type="text"
           value={newMsg}
           onChange={(e) => setNewMsg(e.target.value)}
           placeholder="Type a message..."
         />
+
+        {/* hidden file input */}
+        
+
         <button onClick={sendMessage}>Send</button>
+        <button onClick={() => document.getElementById("fileInput")?.click()}>
+          📎
+        </button>
       </div>
+
     </div>
   );
 };

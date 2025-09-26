@@ -10,6 +10,7 @@ interface Message {
   receiverId?: string;
   text: string;
   timestamp: Date | string;
+  read : boolean
 }
 
 interface ChatWindowProps {
@@ -45,6 +46,7 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
           console.log(res.data);
           
           setMessages(res.data.messages);
+          socket.emit("markAsRead", { instructorId, receiverId })
         }
       } catch (err) {
         console.error("Failed to load chat history", err);
@@ -83,6 +85,7 @@ const sendMessage = async () => {
       receiverId,
       text: newMsg,
       timestamp: new Date(),
+      read : false
     };
 
     // Send through socket (this will trigger receiveMessage on both sides)
@@ -135,6 +138,9 @@ const sendMessage = async () => {
                 hour: "2-digit",
                 minute: "2-digit",
               })}
+            </div>
+            <div className="message-read">
+              {msg.senderId === instructorId && (msg.read ? "✓✓" : "✓")}
             </div>
           </div>
 

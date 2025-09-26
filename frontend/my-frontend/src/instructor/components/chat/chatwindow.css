@@ -2,13 +2,14 @@
 .chat-window {
   display: flex;
   flex-direction: column;
-  height: 91vh; /* full height */
-  max-height: 100vh;
+  height: 83vh; /* full height */
+  max-height: 85vh;
   width: 100%;
   border: 1px solid #ddd;
   border-radius: 10px;
   overflow: hidden;
   background-color: #fff;
+  
 }
 
 /* Header */
@@ -49,6 +50,10 @@
   padding: 12px;
   overflow-y: auto;
   background-color: #fafafa;
+}
+
+.chat-messages::-webkit-scrollbar {
+  display: none;              /* Chrome, Safari, Opera */
 }
 
 /* Common message bubble */

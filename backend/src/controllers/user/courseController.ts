@@ -48,7 +48,7 @@ export class UserCourseController {
 
     getAllCourses = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void> => {
         try {
-            console.log("get all courses");
+            console.log("get all courses",req.query);
 
             const {
                 categories,
@@ -100,8 +100,10 @@ export class UserCourseController {
                 Number(limit),
                 sortOption
             );
+            console.log(totalCount);
+            
 
-
+            
             res.json({
                 courses,
                 totalPages: Math.ceil(totalCount / Number(limit)),

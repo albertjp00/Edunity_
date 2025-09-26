@@ -15,8 +15,8 @@ export class MessageController {
     try {
       const {instructorId} = req.params 
       console.log("get instructor to message");
-      
-      const instructor = await this.messageService.getInstructor(instructorId as string)
+      const userId = req.user?.id
+      const instructor = await this.messageService.getInstructor(instructorId as string , userId as string)
       console.log('get instructor to message ',instructor);
       res.json({success:true , instructor : instructor})
       
@@ -55,7 +55,7 @@ getInstructortoMessage = async (req: AuthRequest, res: Response) => {
       const userId = req.user?.id!
       const result = await this.messageService.getInstructors(userId) 
       console.log('get instructors ', result);
-      res.json({ instructors: result , userId })
+      res.json({ data: result , userId })
 
     } catch (error) {
       console.log(error);
@@ -68,6 +68,8 @@ getInstructortoMessage = async (req: AuthRequest, res: Response) => {
       const { receiverId, text } = req.body;
       console.log('message send ', receiverId);
       const userId = req.user?.id as string
+
+      
 
       const message = await this.messageService.sendMessage(userId, receiverId, text);
 
@@ -84,6 +86,7 @@ getInstructortoMessage = async (req: AuthRequest, res: Response) => {
       console.log("get message receiver id", receiverId);
 
       const userId = req.user?.id
+
       console.log(userId);
 
 
@@ -91,6 +94,8 @@ getInstructortoMessage = async (req: AuthRequest, res: Response) => {
         userId as string,
         receiverId as string
       );
+
+      // const updateAsRead = await this.messageService.markMessagesAsRead(userId as string, receiverId as string)
 
 
 
@@ -103,6 +108,19 @@ getInstructortoMessage = async (req: AuthRequest, res: Response) => {
 
 
 
+  //common to update messages as readd
+
+  // markAsRead = async (senderId:string , receiverId:string) : Promise<void>=>{
+  //   try {
+  //     console.log('message read ', senderId , receiverId);
+      
+  //     await this.messageService.markMessagesAsRead(senderId , receiverId)
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+
+
   // Instructor side -------------------------------
   getMessagedStudents = async (req: InstAuthRequest, res: Response) => {
     try {
@@ -110,8 +128,9 @@ getInstructortoMessage = async (req: AuthRequest, res: Response) => {
    
       console.log('get messaged users ', instructorId);
 
+
       const result = await this.messageService.getStudents(instructorId )
-      console.log(result);
+      // console.log(result);
 
       res.json({ success: true, students: result  , instructorId})
 
