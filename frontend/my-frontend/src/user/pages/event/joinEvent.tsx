@@ -2,14 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import MeetingRoom from "../../../eventMeeting/meetingRoom";
 import api from "../../../api/userApi";
+import { toast } from "react-toastify";
 
 const UserEvent: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
   const [loading, setLoading] = useState(true);
   const [meetingLink, setMeetingLink] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string>(""); 
+  const [userName , setUsername] = useState<string>("")
 
   // Replace with your auth/store logic
-  const userId = "instructor_1";
+  // const userId = "instructor_1";
 
   useEffect(() => {
     const joinEvent = async () => {
@@ -17,22 +20,40 @@ const UserEvent: React.FC = () => {
       try {
         const res = await api.get(`/user/joinEvent/${eventId}`);
         console.log(res);
+        setUserId(res.data.userId)
         
-        if (res.data.success) {
-          setMeetingLink(res.data.meetingLink || eventId); 
+        if (res.data.result.success) {
+          setMeetingLink(res.data.result.meetingLink || eventId); 
         } else {
-          alert(res.data.message || "Failed to join event");
+          toast.error(res.data.message || "Failed to join event");
         }
       } catch (err) {
         console.error(err);
-        alert("Server error joining event");
+        toast.error("Server error joining event");
       } finally {
         setLoading(false);
       }
     };
 
     joinEvent();
+
+    const userInfo = async ()=>{
+      try {
+        const userDetails  = await api.get('/user/profile')
+        console.log(userDetails);
+        setUsername( userDetails.data.user.name)
+        
+      } catch (error) {
+        console.log(error);
+        
+      }
+    }
+    userInfo()
   }, [eventId]);
+
+
+
+
 
   if (loading) return <p>Starting event...</p>;
   if (!meetingLink) return <p>Unable to join event.</p>;
@@ -41,6 +62,7 @@ const UserEvent: React.FC = () => {
     <MeetingRoom
       eventId={meetingLink}
       userId={userId}
+      name={userName}
       role="user"
     />
   );

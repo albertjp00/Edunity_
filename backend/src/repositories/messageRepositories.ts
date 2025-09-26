@@ -1,4 +1,5 @@
 
+import { IMessagedInstructor } from "../interfaces/instructorInterfaces.js";
 import { IInstructor, InstructorModel } from "../models/instructor.js";
 import { IMessage, MessageModel } from "../models/message.js";
 import { IUser, UserModel } from "../models/user.js";
@@ -7,13 +8,17 @@ import { IUser, UserModel } from "../models/user.js";
 
 export interface IMessageRepository {
 
-  getInstructor(instructorId: string): Promise<IInstructor | null>
+  getInstructor(instructorId: string , userId : string): Promise<IMessagedInstructor | null>
 
-  getInstructors(userId: string): Promise<IInstructor[]>
+  getInstructorOnly(instructorId : string):Promise<IInstructor | null>
+
+  getInstructors(userId: string): Promise<IMessagedInstructor[]>
 
   createMessage(senderId: string, receiverId: string, text: string): Promise<IMessage>
 
   getMessages(userId: string, receiverId: string): Promise<IMessage[]>
+
+  markAsRead(userId : string , senderId :string):Promise<boolean>
 
   getUsers(instructorId: string): Promise<IUser[]>
 
@@ -22,23 +27,63 @@ export interface IMessageRepository {
 export class MessageRepository implements IMessageRepository {
 
 
-  async getInstructor(instructorId: string): Promise<IInstructor | null> {
+  async getInstructor(instructorId: string , userId : string): Promise<IMessagedInstructor | null> {
 
+    const instructor =  await InstructorModel.findById(
+      instructorId,
+      { name: 1 }
+    );
+
+    const lastMessage = await MessageModel.findOne({
+      $or:[
+        { senderId : userId, receiverId : instructorId },
+        { senderId : instructorId, receiverId : userId },
+      ]
+    }).sort({ timestamp: -1 }).limit(1)
+    console.log(lastMessage);
+    
+    
+    return {instructor : instructor as IInstructor,lastMessage : lastMessage  as IMessage} 
+  }
+
+
+  async getInstructorOnly(instructorId : string):Promise<IInstructor | null>{
     return await InstructorModel.findById(
       instructorId,
       { name: 1 }
     );
   }
 
-  async getInstructors(userId: string) {
-    const instructorIds = await MessageModel.distinct("receiverId", { senderId: userId });
+async getInstructors(userId: string): Promise<IMessagedInstructor[]> {
+  const instructorIds = await MessageModel.distinct("receiverId", { senderId: userId });
 
-    return InstructorModel.find(
-      { _id: { $in: instructorIds } },
-      { name: 1, avatar: 1 }
-    ).lean();
+  const instructors = await InstructorModel.find(
+    { _id: { $in: instructorIds } },
+    { name: 1, avatar: 1 }
+  ).lean();
 
-  }
+  // For each instructor, fetch the last message
+  const result: IMessagedInstructor[] = await Promise.all(
+    instructors.map(async (inst) => {
+      const lastMessage = await MessageModel.findOne({
+        $or: [
+          { senderId: userId, receiverId: inst._id },
+          { senderId: inst._id, receiverId: userId },
+        ],
+      })
+        .sort({ timestamp: -1 })
+        .lean();
+
+      return {
+        instructor: inst as IInstructor,
+        lastMessage: lastMessage as IMessage,
+      };
+    })
+  );
+
+  return result;
+}
+
 
 
   async createMessage(userId: string, instructorId: string, text: string) {
@@ -56,6 +101,13 @@ async getMessages(userId: string, instructorId: string): Promise<IMessage[]> {
   }).sort({ timestamp: 1 });
 }
 
+async markAsRead(senderId : string , receiverId :string):Promise<boolean>{
+  const read =  await MessageModel.updateMany(
+    {senderId : senderId , receiverId : senderId , read : false},
+    {$set :{read : true}}
+  )
+  return true
+}
 
 
 async getUsers(instructorId: string): Promise<IUser[]> {

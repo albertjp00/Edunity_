@@ -6,56 +6,76 @@ import "./userChat.css";
 import api from "../../../api/userApi";
 import Navbar from "../navbar/navbar";
 
-interface IInstructor {
+interface IInstructorChat {
   id: string;
+  _id?: string
   name: string;
   avatar?: string;
+  lastMessage?: string
+  time?: Date | string
 }
+
 
 const UserChat = () => {
   // const userId = "user123";
   const { instructorId } = useParams();
 
-  const [instructors, setInstructors] = useState<IInstructor[]>([]);
-  const [selected, setSelected] = useState<IInstructor | null>(null);
-  const [userId , setUserId] = useState<string | null>(null)
+  const [instructors, setInstructors] = useState<IInstructorChat[]>([]);
+  const [selected, setSelected] = useState<IInstructorChat | null>(null);
+  const [userId, setUserId] = useState<string | null>(null)
 
-const getInstructors = async () => {
-  try {
-    const response = await api.get("/user/messagedInstructors");
-    setUserId(response.data.userId);
+  const getInstructors = async () => {
+    try {
+      const response = await api.get("/user/messagedInstructors");
+      setUserId(response.data.userId);
 
-    const normalized = response.data.instructors.map((inst: any) => ({
-      id: inst._id,
-      name: inst.name,
-      avatar: inst.avatar || profileImage,
-    }));
+      console.log(response.data);
 
-    // first-time chat
-    if (instructorId) {
-      const exists = normalized.find((i:any) => i.id === instructorId);
-      if (!exists) {
-        // fetch instructor details
-        const instRes = await api.get(`/user/instructor/${instructorId}`);
-        if (instRes.data.success) {
-          normalized.unshift(instRes.data.instructor); // add at top
+
+
+      const normalized = response.data.data.map(
+        (item: { instructor: IInstructorChat; lastMessage: { text: string, timeStamp: Date ,createdAt: string } }) => ({
+          id: item.instructor._id,
+          name: item.instructor.name,
+          avatar: item.instructor.avatar || profileImage,
+          lastMessage: item.lastMessage?.text || "",   // include last message
+          time: item.lastMessage?.timeStamp || item.lastMessage?.createdAt || null
+
+        })
+      );
+
+
+      // first-time chat
+      if (instructorId) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const exists = normalized.find((i: any) => i.id === instructorId);
+        if (!exists) {
+          // fetch instructor details
+          const instRes = await api.get(`/user/instructor/${instructorId}`);
+          if (instRes.data.success) {
+            normalized.unshift(instRes.data.instructor); // add at top
+          }
         }
       }
+
+
+
+      setInstructors(normalized);
+
+      // auto-select instructor
+      if (instructorId) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const found = normalized.find((i: any) => i.id === instructorId);
+        if (found) setSelected(found);
+      }
+    } catch (error) {
+      console.log(error);
     }
+  };
 
-    setInstructors(normalized);
 
-    // auto-select instructor
-    if (instructorId) {
-      const found = normalized.find((i:any) => i.id === instructorId);
-      if (found) setSelected(found);
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
 
- 
+
 
 
   useEffect(() => {
@@ -66,46 +86,60 @@ const getInstructors = async () => {
 
   return (
     <>
-    <Navbar />
-    <div className="user-chat-container">
-      {/* Left sidebar */}
-      <div className="chat-sidebar">
-        <h2 className="sidebar-title">Instructors</h2>
-        {instructors.map((inst) => (
-          <div
-            key={inst.id}
-            className={`sidebar-instructor ${
-              selected?.id === inst.id ? "active" : ""
-            }`}
-            onClick={() => setSelected(inst)}
-          >
-            <img
-              src={inst.avatar || profileImage}
-              alt={inst.name}
-              className="sidebar-avatar"
-            />
-            <div>
-              <p className="instructor-name">{inst.name}</p>
-              {/* <p className="instructor-status">Online</p> */}
-            </div>
-          </div>
-        ))}
-      </div>
+      <Navbar />
+      <div className="user-chat-container">
+        {/* Left sidebar */}
+        <div className="chat-sidebar">
+          <h2 className="sidebar-title">Instructors</h2>
+          {instructors.map((inst) => (
+            <div
+              key={inst.id}
+              className={`sidebar-instructor ${selected?.id === inst.id ? "active" : ""
+                }`}
+              onClick={() => setSelected(inst)}
+            >
+              <img
+                src={inst.avatar || profileImage}
+                alt={inst.name}
+                className="sidebar-avatar"
+              />
+              <div>
+                <p className="instructor-name">{inst.name}</p>
+                <div className="message-and-time">
+                  <p className="last-message">
+                  {inst.lastMessage || "No messages yet"}
 
-      {/* Right chat window */}
-      <div className="chat-main">
-        {selected && userId ? (
-          <ChatWindow
-            userId={userId}
-            receiverId={selected.id}
-            receiverName={selected.name}
-            receiverAvatar={selected.avatar || profileImage}
-          />
-        ) : (
-          <p>Select an instructor to start chatting</p>
-        )}
+                </p>
+                <p className="message-time">
+                  {inst.time
+                    ? new Date(inst.time).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                    : ""}
+                </p>
+                </div>
+
+                {/* <p className="instructor-status">Online</p> */}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Right chat window */}
+        <div className="chat-main">
+          {selected && userId ? (
+            <ChatWindow
+              userId={userId}
+              receiverId={selected.id}
+              receiverName={selected.name}
+              receiverAvatar={selected.avatar || profileImage}
+            />
+          ) : (
+            <p>Select an instructor to start chatting</p>
+          )}
+        </div>
       </div>
-    </div>
     </>
   );
 };

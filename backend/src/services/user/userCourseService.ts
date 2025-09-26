@@ -64,6 +64,7 @@ export class UserCourseService {
     const courses = await this.userRepository.getAllCourses(query, skip, limit, sortOption);
     // const totalCount = await this.userRepository.countCourses(query);
     const totalCount = await this.userRepository.countCourses();
+    // const totalCount = courses.length
 
     // console.log(courses);
 

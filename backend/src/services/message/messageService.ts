@@ -1,3 +1,4 @@
+import { IMessagedInstructor } from "../../interfaces/instructorInterfaces.js";
 import { IInstructor } from "../../models/instructor.js";
 import { IMessage } from "../../models/message.js";
 import { MessageRepository } from "../../repositories/messageRepositories.js";
@@ -9,15 +10,18 @@ export class MessageService {
         this.messageRepository = messageRepository
     }
 
-    async getInstructor(instructorId:string):Promise<IInstructor | null> {
-        return await this.messageRepository.getInstructor(instructorId)
+    async getInstructor(instructorId:string , userId : string):Promise<IMessagedInstructor | null> {
+        // const instructors = (inst) =>{
+
+        // }
+        return await this.messageRepository.getInstructor(instructorId , userId )
     }
 
     async getInstructorToMessage(instructorId : string):Promise<IInstructor | null>{
-        return await this.messageRepository.getInstructor(instructorId)
+        return await this.messageRepository.getInstructorOnly(instructorId )
     }
 
-    async getInstructors(userId: string): Promise<IInstructor[]> {
+    async getInstructors(userId: string): Promise<IMessagedInstructor[] > {
         return await this.messageRepository.getInstructors(userId)
     }
 
@@ -29,6 +33,10 @@ export class MessageService {
 
     async getChatHistory(userId: string, receiverId: string): Promise<IMessage[]> {
         return await this.messageRepository.getMessages(userId, receiverId);
+    }
+
+    async markMessagesAsRead(senderId: string, receiverId: string): Promise<boolean> {
+        return await this.messageRepository.markAsRead(senderId, receiverId);
     }
 
 

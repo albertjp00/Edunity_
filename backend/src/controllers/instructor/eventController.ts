@@ -113,10 +113,13 @@ export class EventController {
                 return res.status(400).json({ message: result?.message || "Failed to start event" });
             }
 
+
+            
             res.json({
                 success: true,
                 message: result.message,
                 meetingLink: result.meetingLink,
+                instructorId: instructorId
             });
         } catch (error) {
             console.error(error);

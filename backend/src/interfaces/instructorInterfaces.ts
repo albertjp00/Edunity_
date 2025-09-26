@@ -2,6 +2,7 @@ import { ICourse } from "../models/course.js";
 import { IEvent } from "../models/events.js";
 import { IInstructor } from "../models/instructor.js";
 import { IKyc } from "../models/kyc.js";
+import { IMessage } from "../models/message.js";
 import { IQuiz } from "../models/quiz.js";
 import { ISkills } from "../repositories/instructorRepository.js";
 
@@ -64,4 +65,16 @@ export interface IInsRepository {
 export interface IMyEventInterface{
     events:IEvent[] | null,
     instructor: IInstructor | null
+}
+
+
+export interface IChatInstructor {
+    _id: string;
+    name: string;
+}
+
+
+export interface IMessagedInstructor {
+    instructor : IInstructor;
+    lastMessage : IMessage
 }

@@ -26,7 +26,7 @@ const AllCourses: React.FC = () => {
 
   // ✅ filter states
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedInstructors, setSelectedInstructors] = useState<string[]>([]);
+  const [selectedInstructors] = useState<string[]>([]);
   const [selectedPrice, setSelectedPrice] = useState<string>("");
   const [selectedLevel, setSelectedLevel] = useState<string>("");
   const [sortBy, setSortBy] = useState("");

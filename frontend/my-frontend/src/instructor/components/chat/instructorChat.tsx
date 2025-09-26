@@ -4,6 +4,7 @@ import instructorApi from "../../../api/instructorApi";
 import profileImage from "../../../assets/profilePic.png";
 import "./instructorChat.css";
 import InstructorChatWindow from "./instChatWindow";
+import InstructorNavbar from "../navbar/navbar";
 
 interface IStudent {
   id: string;
@@ -24,7 +25,12 @@ const InstructorChat = () => {
         // ✅ backend should send instructorId after decoding the token
         setInstructorId(response.data.instructorId);
 
-        const normalized = response.data.students.map((stu: any) => ({
+        interface ApiStudent {
+          _id: string;
+          name: string;
+          avatar?: string;
+        }
+        const normalized = response.data.students.map((stu: ApiStudent) => ({
           id: stu._id,
           name: stu.name,
           avatar: stu.avatar || profileImage,
@@ -47,6 +53,8 @@ const InstructorChat = () => {
   }, []);
 
   return (
+    <>
+    <InstructorNavbar />
     <div className="instructor-chat-container">
       {/* Sidebar */}
       <div className="chat-sidebar">
@@ -88,6 +96,7 @@ const InstructorChat = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

@@ -1,8 +1,8 @@
 /* Container for chat window */
-.chat-window {
+.chat-window-user {
   display: flex;
   flex-direction: column;
-  height: 93vh;
+  height: 100vh;
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
@@ -118,4 +118,21 @@
 
 .chat-input button:hover {
   background: #3730a3;
+}
+
+
+.date-divider {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+  position: relative;
+  color: #666;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.date-divider span {
+  background: #f1f1f1;
+  padding: 4px 12px;
+  border-radius: 12px;
 }

@@ -1,10 +1,16 @@
 /* --------- Layout --------- */
 .instructor-chat-container {
-  display: flex;
-  height: 100vh;
+  position: fixed;          /* lock it to the screen */
+  top: 10;
+  left: 0;
+  width: 100%;
+  height: 100vh;            /* full height */
   background: #f9fafb;
   font-family: "Inter", sans-serif;
+  display: flex;
+  overflow: hidden;         /* prevent scrolling */
 }
+
 
 /* --------- Sidebar --------- */
 .sidebar {

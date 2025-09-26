@@ -5,6 +5,7 @@ export interface IMessage extends Document {
   receiverId: string;
   text: string;
   timestamp: Date;
+  read : boolean;
 }
 
 const messageSchema: Schema<IMessage> = new Schema(
@@ -13,6 +14,7 @@ const messageSchema: Schema<IMessage> = new Schema(
     receiverId: { type: String, required: true },
     text: { type: String, required: true },
     timestamp: { type: Date, default: Date.now },
+    read : {type: Boolean, default : false}
   },
   { timestamps: true }
 );
