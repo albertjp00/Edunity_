@@ -1,8 +1,9 @@
+import { IUserRepository } from "../../interfaces/userInterfaces.js";
 import { ICourse } from "../../models/course.js";
 import { IInstructor } from "../../models/instructor.js";
 import { IAdminRepository } from "../../repositories/adminRepositories.js";
 import { IInsRepository, InstructorRepository } from "../../repositories/instructorRepository.js";
-import { IUserRepository, UserRepository } from "../../repositories/userRepository.js";
+import {  UserRepository } from "../../repositories/userRepository.js";
 
 
 

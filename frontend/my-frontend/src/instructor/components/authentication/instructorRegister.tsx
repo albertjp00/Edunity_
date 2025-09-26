@@ -37,10 +37,18 @@ const RegisterInstructor = () => {
       return false;
     }
 
-    if (!password.trim() || password.length < 6) {
-      setMessage("Password must be at least 6 characters");
+    if (!password.trim()) {
+      setMessage("Password is required");
       return false;
     }
+
+    const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+
+    if (!passwordRegex.test(password)) {
+      setMessage("Password must be at least 6 characters, include 1 number and 1 special character");
+      return false;
+    }
+
 
     if (!confirmPassword.trim() || password !== confirmPassword) {
       setMessage("Passwords do not match");
@@ -69,6 +77,7 @@ const RegisterInstructor = () => {
       } else {
         toast.error(res?.data.message);
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);
 
@@ -80,14 +89,14 @@ const RegisterInstructor = () => {
     }
   };
 
-  useEffect(()=>{
-        console.log('useEffect');
-  
-        let token = localStorage.getItem('instructor')
-        if(token){
-          navigate('/instructor/home')
-        }
-      },[])
+  useEffect(() => {
+    console.log('useEffect');
+
+    const token = localStorage.getItem('instructor')
+    if (token) {
+      navigate('/instructor/home')
+    }
+  }, [])
 
   return (
     <div className="register-wrapper">

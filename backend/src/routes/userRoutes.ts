@@ -79,7 +79,7 @@ router.get('/eventEnroll/:id',authMiddleware , eventController.enrollEvent)
 router.get("/joinEvent/:eventId",authMiddleware ,eventController.joinUserEvent);
 
 
-router.post("/chat",authMiddleware ,messageController.sendMessage);
+router.post("/chat",authMiddleware ,upload.single("attachment"),messageController.sendMessage);
 router.get("/getInstructor/:instructorId",authMiddleware , messageController.getInstructor)
 router.get("/messages/:userId/:receiverId",authMiddleware , messageController.getChatHistory);
 router.get("/messagedInstructors",authMiddleware,messageController.getMessagedInstructors)

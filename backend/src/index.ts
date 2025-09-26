@@ -10,6 +10,7 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 import { Server } from 'socket.io';
 import http from 'http'
+import { MessageController } from './controllers/messaage/messageController.js';
 
 
 dotenv.config()
@@ -62,6 +63,9 @@ app.use('/admin',adminRoutes)
 app.use('/messages', messageRoutes);
 
 
+const messageController = new MessageController()
+
+
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);
 
@@ -75,6 +79,8 @@ io.on("connection", (socket) => {
     const room = [message.senderId, message.receiverId].sort().join("_");
     io.to(room).emit("receiveMessage", message);
   });
+
+  
 
   // 🎥 Live Session (Events)
   socket.on("joinEvent", ({ eventId, userId, role }) => {
@@ -90,6 +96,7 @@ io.on("connection", (socket) => {
     }
   });
 
+
   // Instructor sends an offer to students
   socket.on("offer", ({ eventId, offer, from, to }) => {
     if (to) {
@@ -98,6 +105,27 @@ io.on("connection", (socket) => {
       socket.to(eventId).emit("offer", { offer, from });
     }
   });
+
+
+
+  // socket.on("markAsRead", async ({ senderId, receiverId }) => {
+  //   try {
+  //     // Mark messages as read in DB
+  //     // await Message.updateMany(
+  //     //   { senderId: receiverId, receiverId: userId, read: false },
+  //     //   { $set: { read: true } }
+  //     // );
+  //     await messageController.markAsRead(senderId, receiverId)
+      
+  //     // Notify sender that their messages were read
+  //     io.emit("messagesRead", { senderId });
+  //   } catch (err) {
+  //     console.error("Error marking messages as read:", err);
+  //   }
+  // });
+
+
+
 
   // Student sends answer back to instructor
   socket.on("answer", ({ eventId, answer, from, to }) => {
@@ -108,6 +136,8 @@ io.on("connection", (socket) => {
     }
   });
 
+  
+
   // ICE candidates exchange
   socket.on("ice-candidate", ({ eventId, candidate, from, to }) => {
     if (to) {
@@ -116,6 +146,7 @@ io.on("connection", (socket) => {
       socket.to(eventId).emit("ice-candidate", { candidate, from });
     }
   });
+
 
   socket.on("leaveEvent", ({ eventId, userId }) => {
     socket.leave(eventId);

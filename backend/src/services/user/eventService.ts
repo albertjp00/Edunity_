@@ -90,17 +90,20 @@ export class UserEventService {
     joinUserEventRequest = async (eventId: string, userId: string): Promise<{ success: boolean; message: string; meetingLink?: string } | null> => {
         try {
             const myEvent = await this.userRepository.getMyEvent(eventId);
+            // console.log(myEvent);
+            
 
             if (!myEvent) return { success: false, message: "Event not found" };
-            if (myEvent.userId.toString() !== userId)
-                return { success: false, message: "Not authorized" };
+            // if (myEvent.userId !== userId)
+            //     return { success: false, message: "Not authorized" };
 
             const event = await this.instructorRepository.getEvent(eventId);
             if (!event) return { success: false, message: "Event not found" };
 
             if (!event.isLive)
                 return { success: false, message: "Event has not started yet" };
-
+            console.log(event);
+            
 
             // if (!event.participantsList.includes(userId)) {
             //   event.participantsList.push(userId);
@@ -108,16 +111,18 @@ export class UserEventService {
             //   await event.save();
             // }
 
-            const meetingLink = event.meetingLink;
-            const result: { success: boolean; message: string; meetingLink?: string } = {
-                success: true,
-                message: "Joined event",
-            };
+           
+                let meetingLink = event.meetingLink;
+            
 
-            if (event.meetingLink) {
-                result.meetingLink = event.meetingLink;
-            }
+            // const meetingLink = event.meetingLink;
+            const result: { success: boolean; message: string; meetingLink?: string } = meetingLink !== undefined
+                ? { success: true, message: "Joined event", meetingLink }
+                : { success: true, message: "Joined event" };
 
+            
+            // console.log(result);
+            
             return result;
 
         } catch (error) {

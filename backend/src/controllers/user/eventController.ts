@@ -66,13 +66,13 @@ export class UserEventController {
 
     joinUserEvent = async (req: AuthRequest, res: Response) => {
         try {
-            const userId = req.user?.id;
+            const userId = req.user?.id!
             const eventId = req.params.eventId!;
             console.log('join event', eventId, userId);
 
-            if (!userId) {
-                return res.status(401).json({ message: "Unauthorized" });
-            }
+            // if (!userId) {
+            //     return res.status(401).json({ message: "Unauthorized" });
+            // }
 
             const result = await this.userEventService.joinUserEventRequest(eventId, userId);
 
@@ -83,15 +83,15 @@ export class UserEventController {
             console.log('result', result);
 
             // ✅ Only include meetingLink if it exists
-            const response: { success: boolean; message: string; meetingLink?: string } = {
-                success: true,
-                message: result.message,
-            };
-            if (result.meetingLink) {
-                response.meetingLink = result.meetingLink;
-            }
+            // const response: { success: boolean; message: string; meetingLink?: string } = {
+            //     success: true,
+            //     message: result.message,
+            // };
+            // if (result.meetingLink) {
+            //     response.meetingLink = result.meetingLink;
+            // }
 
-            res.json(response);
+            res.json({result , userId}); 
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: "Server error" });
