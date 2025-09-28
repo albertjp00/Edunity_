@@ -1,3 +1,4 @@
+import { IPurchaseDetails } from "../../interfaces/instructorInterfaces.js";
 import { ICourse } from "../../models/course.js";
 import { IInsRepository, InstructorRepository, ISkills } from "../../repositories/instructorRepository.js";
 
@@ -82,6 +83,19 @@ export class CourseService {
 
       return { course, quizExists }
 
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+  }
+
+
+  getPurchaseDetails = async (id:string):Promise<IPurchaseDetails | null>=>{
+    try {
+      const details = await this.instructorRepository.purchaseDetails(id)
+      
+      
+      return details
     } catch (error) {
       console.log(error);
       return null

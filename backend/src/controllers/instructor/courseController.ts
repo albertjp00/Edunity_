@@ -52,6 +52,22 @@ export class InstCourseController {
     }
   }
 
+  purchaseDetails = async (req:InstAuthRequest , res : Response)=>{
+    try {
+      const courseId = req.params.id!
+      console.log('purchase details',courseId );
+      
+      const data = await this.courseService.getPurchaseDetails(courseId)
+      console.log(data)
+
+      res.json({success:true , details : data})
+
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+
   editCourse = async (req: Request, res: Response): Promise<void> => {
     try {
       const courseId = req.params.id!;
@@ -100,6 +116,8 @@ export class InstCourseController {
       res.status(500).json({ success: false, message: "Error adding course" });
     }
   };
+
+
 
 addQuiz = async (req: AuthRequest, res: Response) => {
   try {
