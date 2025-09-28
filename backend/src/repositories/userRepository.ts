@@ -25,6 +25,16 @@ export class UserRepository implements IUserRepository {
     return await newUser.save();
   }
 
+  async isBlocked(id: string):Promise<boolean>{
+    const blocked = await UserModel.findById(id)
+    if(blocked?.blocked){
+      return true
+    }
+    console.log(blocked);
+    
+    return false
+  }
+
   async findByEmail(email: string): Promise<IUser | null> {
     return await UserModel.findOne({ email });
   }

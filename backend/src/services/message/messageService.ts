@@ -25,8 +25,8 @@ export class MessageService {
         return await this.messageRepository.getInstructors(userId)
     }
 
-    async sendMessage(senderId: string, receiverId: string, text: string): Promise<IMessage> {
-        return await this.messageRepository.createMessage(senderId, receiverId, text);
+    async sendMessage(senderId: string, receiverId: string, text: string , file: string | null): Promise<IMessage> {
+        return await this.messageRepository.createMessage(senderId, receiverId, text , file);
     }
 
 
@@ -38,7 +38,6 @@ export class MessageService {
     async markMessagesAsRead(senderId: string, receiverId: string): Promise<boolean> {
         return await this.messageRepository.markAsRead(senderId, receiverId);
     }
-
 
     async getStudents(instructorId: string ) {
 

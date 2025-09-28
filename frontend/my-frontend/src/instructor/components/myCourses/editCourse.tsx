@@ -22,10 +22,10 @@ interface CourseForm {
     category: string
 }
 
-interface ApiResponse<T> {
-    success: boolean;
-    course: T;
-}
+// interface ApiResponse<T> {
+//     success: boolean;
+//     course: T;
+// }
 
 // Component
 const EditCourse: React.FC = () => {
@@ -91,6 +91,10 @@ const EditCourse: React.FC = () => {
 
             return false;
         } catch (error) {
+            if(error){
+                console.log(error);
+                
+            }
             return false;
         }
     };
@@ -102,7 +106,7 @@ const EditCourse: React.FC = () => {
 
         
 
-        for (let mod of form.modules) {
+        for (const mod of form.modules) {
             if (mod.videoUrl.trim()) {
                 const exists = await checkUrlExists(mod.videoUrl);
                 if (!exists) {
@@ -149,17 +153,37 @@ const EditCourse: React.FC = () => {
     };
 
     const fetchData = async () => {
-        try {
-            const res = await instructorApi.get(`/instructor/course/${id}`);
-            if (res.data.success) {
+  try {
+    const res = await instructorApi.get(`/instructor/course/${id}`);
+    console.log(res);
+    
+    
+    if (res.data.success) {
+      const course = res.data.course.course;
 
-                console.log(res.data.course);
-                setForm(res.data.course);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
+      setForm({
+  title: course.title || '',
+  description: course.description || '',
+  skills: Array.isArray(course.skills) ? course.skills : [],
+  price: course.price ? String(course.price) : '',
+  thumbnail: course.thumbnail || '',
+  level: course.level || '',
+  modules: Array.isArray(course.modules)
+    ? course.modules.map((m:{ title?: string; videoUrl?: string; content?: string }) => ({
+        title: m.title || '',
+        videoUrl: m.videoUrl || '',
+        content: m.content || '',
+      }))
+    : [],
+  category: course.category || '',
+});
+
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 
     useEffect(() => {
         fetchData();

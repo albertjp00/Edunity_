@@ -5,6 +5,8 @@ import { IInstructor, InstructorModel } from "../models/instructor.js";
 import { IKyc, KycModel } from "../models/kyc.js";
 import { IMyCourse, MyCourseModel } from "../models/myCourses.js";
 import { IQuiz, QuizModel } from "../models/quiz.js";
+import { IUser, UserModel } from "../models/user.js";
+import { IPurchaseDetails } from "../interfaces/instructorInterfaces.js";
 // import { IInsRepository } from "../interfaces/instructorInterfaces.js";
 
 
@@ -27,11 +29,15 @@ export interface IInsRepository {
 
     changePassword(id: string, password: string): Promise<IInstructor | null>
 
+
+
     addCourse(id: string, data: any): Promise<ICourse | null>
 
     getCourses(id: string, skip: number, limit: number): Promise<ICourse[] | null>
 
     getCourseDetails(courseId: string): Promise<ICourse | null>
+
+    purchaseDetails(id: string): Promise<IPurchaseDetails | null>
 
     editCourse(id: string, data: any): Promise<ICourse | null>
 
@@ -93,10 +99,10 @@ export class InstructorRepository implements IInsRepository {
         return await KycModel.create({ instructorId: id, idProof: idProof, addressProof: addressProof })
     }
 
-      async changePassword(id: string, password: string): Promise<IInstructor | null> {
-    
+    async changePassword(id: string, password: string): Promise<IInstructor | null> {
+
         return await InstructorModel.findByIdAndUpdate(id, { password: password })
-      }
+    }
 
     async addCourse(id: string, data: any): Promise<ICourse | null> {
         return await CourseModel.create({ instructorId: id, ...data, });
@@ -115,9 +121,46 @@ export class InstructorRepository implements IInsRepository {
         return course
     }
 
+
+
+    async purchaseDetails(id: string): Promise<IPurchaseDetails | null> {
+        // console.log('here', id);
+
+        const course = await CourseModel.findById(id);
+        if (!course) return null;
+
+        const purchase = await MyCourseModel.findOne({courseId : course.id});
+        if (!purchase) return null;
+
+
+
+        const user = await UserModel.findById(purchase.userId).lean();
+        if (!user) return null;
+
+
+
+        console.log("purchase", purchase ,course)
+
+
+        return {
+            name: user.name,
+            title: course.title,
+            ...(course.thumbnail && { thumbnail: course.thumbnail }),
+            ...(course.price !== undefined && { price: course.price }),
+            category: course.category,
+            amountPaid: course.price,
+            paymentStatus: purchase.paymentStatus,
+            createdAt: purchase.createdAt,
+        };
+    }
+
+
+
+
     async editCourse(id: string, data: Partial<ICourse>): Promise<ICourse | null> {
         return await CourseModel.findByIdAndUpdate(id, data, { new: true });
     }
+
 
 
     async countCourses(): Promise<number> {

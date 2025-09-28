@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import "./chatWindow.css";
 import api from "../../../api/userApi";
-// import 
+
+import attachmentImage from '../../../assets/documentImage.jpg'
 
 const socket = io(import.meta.env.VITE_API_URL);
 
@@ -35,7 +36,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   // const {instructorId} = useParams()
 
-  // const receiverId = instructorId
+  // const receiverId = instructorId 
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -45,7 +46,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         if (res.data.success) {
           setMessages(res.data.messages);
 
-          socket.emit("markAsRead", { userId, receiverId })
+          // socket.emit("markAsRead", { userId, receiverId })
         }
       } catch (err) {
         console.error("Failed to load chat history", err);
@@ -87,36 +88,60 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const sendMessage = async () => {
-    if (newMsg.trim()) {
-      const message: Message = {
-        senderId: userId,
-        receiverId,
-        text: newMsg,
-        timestamp: new Date(),
 
-      };
 
-      socket.emit("sendMessage", message);
 
-      try {
-        await api.post("/user/chat", message);
-      } catch (err) {
-        console.error("Failed to save message", err);
+
+  const sendMessage = async (file?: File) => {
+    if (!receiverId) return;
+
+    const formData = new FormData();
+    formData.append("receiverId", receiverId);
+    formData.append("senderId", userId);
+
+    // always append text
+    formData.append("text", newMsg.trim() || "");
+
+    if (file) {
+      formData.append("attachment", file);
+    }
+
+    try {
+      const res = await api.post("/user/chat", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      if (res.data.success) {
+        const newMessage = res.data.message;
+
+        // setMessages((prev) => [...prev, newMessage]);
+        socket.emit("sendMessage", newMessage);
       }
 
-      // setMessages((prev) => [...prev, message]);
-      setNewMsg("");
+      setNewMsg("")
+    } catch (error) {
+      console.error("Failed to send message", error);
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-     if(!file) return 
 
-     const formData = new FormData()
-     formData.append('attachemnt',file)
- };
+
+
+
+  const handleSendMessage = () => {
+    sendMessage()
+  }
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) sendMessage(file);
+  };
+
+
+  const viewFile =  (fileName: string) => {
+  const fileUrl = `${import.meta.env.VITE_API_URL}/assets/${fileName}`;
+  window.open(fileUrl, "_blank"); // opens in new tab
+};
 
 
   return (
@@ -173,9 +198,37 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
               <div
                 className={`message ${msg.senderId === userId ? "sent" : "received"}`}
               >
-                <div className="message-text">{msg.text}</div>
+                {msg.text && <div className="message-text">{msg.text}</div>}
+
+                {msg.attachment && (
+
+
+
+                  <div className="message-attachment">
+  {msg.attachment &&
+    (/\.(jpg|jpeg|png|gif|webp)$/i.test(msg.attachment) ? (
+      // Render image inline
+      <img onClick={()=>viewFile(msg.attachment!)}
+        src={`${import.meta.env.VITE_API_URL}/assets/${msg.attachment}`}
+        alt="attachment"
+        className="message-image"
+      />
+    ) : (
+      // Render file link
+      <img
+        onClick={()=>viewFile(msg.attachment!)}
+        src={attachmentImage}
+        alt="_blank"
+        className="message-image"
+      />
+
+    ))}
+</div>
+
+                )}
+
                 <div className="message-time">
-                  {msgDate.toLocaleTimeString([], {
+                  {new Date(msg.timestamp).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
@@ -184,6 +237,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                   {msg.senderId === userId && (msg.read ? "✓✓" : "✓")}
                 </div>
               </div>
+
             </React.Fragment>
           );
         })}
@@ -208,9 +262,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         />
 
         {/* hidden file input */}
-        
 
-        <button onClick={sendMessage}>Send</button>
+
+        <button onClick={handleSendMessage}>Send</button>
         <button onClick={() => document.getElementById("fileInput")?.click()}>
           📎
         </button>

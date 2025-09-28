@@ -61,7 +61,7 @@ export class UserCourseController {
                 limit = 10,
                 search
             } = req.query;
-            console.log("search ", search);
+            // console.log("search ", search);
 
 
             const query: any = {};
@@ -126,7 +126,7 @@ export class UserCourseController {
             const id = req.user?.id!
             const courseId = req.query.id as string
             const result = await this.courseService.fetchCourseDetails(id, courseId)
-            console.log("course", result);
+            // console.log("course", result);
 
 
             res.json({ success: true, course: result })

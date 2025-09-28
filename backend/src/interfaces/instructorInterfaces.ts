@@ -78,3 +78,18 @@ export interface IMessagedInstructor {
     instructor : IInstructor;
     lastMessage : IMessage
 }
+
+
+
+
+export interface IPurchaseDetails {
+  name: string;          // from user
+  title: string;         // from course
+  thumbnail?: string;    // from course
+  price?: number;        // from course
+  category: string;      // from course
+  amountPaid: number;    // from purchase
+  paymentStatus: string; // from purchase
+  createdAt: Date;       // from purchase
+}
+

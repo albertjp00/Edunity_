@@ -54,6 +54,8 @@ instructor.get('/course/:id', instAuthMiddleware, courseController.courseDetails
 instructor.put('/course/:id', instAuthMiddleware,upload.single("thumbnail"), courseController.editCourse);
 instructor.post('/course',instAuthMiddleware,upload.single('thumbnail'),courseController.addCourse) 
 
+instructor.get('/purchaseDetails/:id',instAuthMiddleware , courseController.purchaseDetails)
+
 instructor.post('/event',instAuthMiddleware ,eventController.createEvents)
 instructor.get('/event',instAuthMiddleware ,eventController.getMyEvents)
 instructor.get('/getEvent/:id',instAuthMiddleware ,eventController.getEvent)
