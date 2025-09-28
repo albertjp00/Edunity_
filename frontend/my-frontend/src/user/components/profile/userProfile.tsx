@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import profilePic from "../../../assets/profilePic.png";
 import { Link, useNavigate } from "react-router-dom";
 import "./userProfile.css";
-import api from "../../../api/userApi";
 import { getUserMyCourses, getUserProfile } from "../../services/profileServices";
 
 interface User {
@@ -58,6 +57,10 @@ const Profile: React.FC = () => {
 
     }
   };
+
+
+
+  
 
   const fetchCourses = async () => {
     try {

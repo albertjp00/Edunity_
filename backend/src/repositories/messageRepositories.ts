@@ -14,7 +14,7 @@ export interface IMessageRepository {
 
   getInstructors(userId: string): Promise<IMessagedInstructor[]>
 
-  createMessage(senderId: string, receiverId: string, text: string): Promise<IMessage>
+  createMessage(senderId: string, receiverId: string, text: string , file:string): Promise<IMessage>
 
   getMessages(userId: string, receiverId: string): Promise<IMessage[]>
 
@@ -86,8 +86,8 @@ async getInstructors(userId: string): Promise<IMessagedInstructor[]> {
 
 
 
-  async createMessage(userId: string, instructorId: string, text: string) {
-    const message = new MessageModel({ senderId: userId, receiverId: instructorId, text });
+  async createMessage(userId: string, instructorId: string, text?: string , file? : string | null):Promise<IMessage> {
+    const message = new MessageModel({ senderId: userId, receiverId: instructorId, text , attachment : file });
     return message.save();
   }
 

@@ -54,9 +54,11 @@ const InstructorCourseDetails: React.FC = () => {
     navigate(`/instructor/addQuiz/${id}`);
   };
 
-  const editQuiz = (id: string): void => {
-  navigate(`/instructor/editQuiz/${id}`);
-};
+//   const editQuiz = (id: string): void => {
+//   navigate(`/instructor/editQuiz/${id}`);
+// };
+
+
 
   const convertToEmbedUrl = (url: string): string => {
     if (url.includes('watch?v=')) {
@@ -71,6 +73,11 @@ const InstructorCourseDetails: React.FC = () => {
   useEffect(() => {
     fetchCourse();
   }, []);
+
+
+  const purchaseDetails = (id:string)=>{
+    navigate(`/instructor/purchaseDetails/${id}`)
+  }
 
   const toggleModule = (index: number): void => {
     setExpandedIndex(expandedIndex === index ? null : index);
@@ -99,6 +106,9 @@ const InstructorCourseDetails: React.FC = () => {
               </button> */}
             </>
           )}
+
+          <button onClick={()=>purchaseDetails(course._id)} className='edit-button'>
+            📚Purchase Details</button>
 
           <button onClick={() => handleEdit(course._id)} className="edit-button">
             ✏️ Edit Course

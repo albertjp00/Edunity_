@@ -46,31 +46,31 @@ admin.post('/login',dashboardController.adminLogin)
 admin.get('/getUsers',adminAuthMiddleware,dashboardController.getUsers)
 
 
-admin.put('/blockUser/:id',dashboardController.blockUnblock)
+admin.put('/blockUser/:id',adminAuthMiddleware ,dashboardController.blockUnblock)
 
 // admin.put('/unblockUsers/:id',dashboardController.unblockUser)
 
 
-admin.get('/getInstructors',dashboardController.getInstructors)
+admin.get('/getInstructors', adminAuthMiddleware ,dashboardController.getInstructors)
 
-admin.get('/getKyc/:id' , dashboardController.getKyc)
+admin.get('/getKyc/:id' , adminAuthMiddleware ,dashboardController.getKyc)
 
-admin.put('/verifyKyc/:id' , dashboardController.verifyKyc)
+admin.put('/verifyKyc/:id' , adminAuthMiddleware, dashboardController.verifyKyc)
 
-admin.put('/rejectKyc/:id' , dashboardController.rejectKyc)
+admin.put('/rejectKyc/:id' , adminAuthMiddleware, dashboardController.rejectKyc)
 
-admin.get('/instructors/:id',instructorController.getInstructors)
-admin.get('/instructorsCourses/:id',instructorController.getInstructorsCourses)
+admin.get('/instructors/:id', adminAuthMiddleware,instructorController.getInstructors)
+admin.get('/instructorsCourses/:id', adminAuthMiddleware,instructorController.getInstructorsCourses)
 
 admin.get('/user/:id',userController.getUser)
-admin.get('/userCourses/:id',userController.getUserCourses)
+admin.get('/userCourses/:id', adminAuthMiddleware,userController.getUserCourses)
 
 
-admin.get('/courses',courseController.getCourses)
+admin.get('/courses', adminAuthMiddleware,courseController.getCourses)
 
-admin.get('/courseDetails/:id',courseController.getCourseDetails)
+admin.get('/courseDetails/:id', adminAuthMiddleware,courseController.getCourseDetails)
 
-admin.get("/purchases", courseController.getAllPurchases);
+admin.get("/purchases", adminAuthMiddleware, courseController.getAllPurchases);
 
 
 export default admin

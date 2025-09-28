@@ -108,6 +108,18 @@ export class AuthController {
     }
   };
 
+  checkBlocked = async (req:AuthRequest , res:Response) =>{
+    try {
+      const id = req.user?.id!
+      console.log('blocked or not ',id);
+      
+      const isBlocked = await this.authService.isBlocked(id)
+      res.json({blocked:isBlocked})
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
 
 
   register = async (req: Request, res: Response,next:NextFunction): Promise<void> => {

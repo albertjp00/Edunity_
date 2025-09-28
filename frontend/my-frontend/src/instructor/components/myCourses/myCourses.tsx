@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import './myCourses.css'
 import { useNavigate } from 'react-router-dom';
 import instructorApi from '../../../api/instructorApi';
-import type { IInstructor } from '../../../user/interfaces';
 
 interface Course {
   _id: string;
@@ -15,7 +14,7 @@ interface Course {
 
 const MyCourses = () => {
   const [courses, setCourses] = useState<Course[]>([]);
-  const [instructor ,setInstructor] = useState<IInstructor>()
+  // const [instructor ,setInstructor] = useState<IInstructor>()
 
   const navigate = useNavigate()
 
@@ -29,7 +28,7 @@ const MyCourses = () => {
         console.log(res.data.instructor);
         
         setCourses(res.data.course);
-        setInstructor(res.data.instrcutor)
+        // setInstructor(res.data.instrcutor)
         // console.log(res.data.course);
 
       }

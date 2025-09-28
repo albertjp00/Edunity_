@@ -71,6 +71,7 @@ import InstructorVerifyOtp from './instructor/components/authentication/InstVeri
 import InstructorEvent from './instructor/pages/events/joinEvent'
 import UserEvent from './user/pages/event/joinEvent'
 import EventDetails from './instructor/pages/events/eventDetails'
+import CoursePurchaseDetails from './instructor/pages/course/purchaseDetails'
 // import PurchasesAdmin from './admin/pages/purchases/purchasesAdmin'
 
 function App() {
@@ -140,6 +141,8 @@ function App() {
             <Route path='/instructor/addCourse' element={<InstProtectedRoute><AddCoursesInstructor /></InstProtectedRoute>} />
             <Route path='/instructor/courseDetails/:id' element={<InstProtectedRoute><InstructorCourseDetails /></InstProtectedRoute>} />
             <Route path='/instructor/editCourse/:id' element={<InstProtectedRoute><InstructorEditCourse /></InstProtectedRoute>} />
+
+            <Route path='instructor/purchaseDetails/:id' element={<InstProtectedRoute><CoursePurchaseDetails /></InstProtectedRoute>}></Route>
 
             <Route path='/instructor/createEvent' element={<InstProtectedRoute><CreateEvents /></InstProtectedRoute>}></Route>
             <Route path='/instructor/editEvent/:id' element={<InstProtectedRoute><InstructorEditEvents /></InstProtectedRoute>}></Route>

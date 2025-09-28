@@ -6,6 +6,7 @@ import { IMyCourse } from "../models/myCourses.js";
 import { IMyEvent } from "../models/myEvents.js";
 import { IUser } from "../models/user.js";
 import { ISkills } from "../repositories/instructorRepository.js";
+import { UserRepository } from "../repositories/userRepository.js";
 
 export interface IUserRepository {
   findByEmail(email: string): Promise<IUser | null>;
@@ -13,6 +14,8 @@ export interface IUserRepository {
   create(user: Partial<IUser>): Promise<IUser>;
 
   findById(id: string): Promise<IUser | null>;
+
+  isBlocked(id: string):Promise<boolean>
 
   updateProfile(id: string, data: Partial<IUser>): Promise<IUser | null>;
 

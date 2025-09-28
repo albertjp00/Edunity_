@@ -62,23 +62,31 @@ getInstructortoMessage = async (req: AuthRequest, res: Response) => {
 
     }
   }
+// messageController.ts
+sendMessage = async (req: AuthRequest, res: Response) => {
+  try {
+    const { receiverId, text='' } = req.body;
+    const userId = req.user?.id as string;
 
-  sendMessage = async (req: AuthRequest, res: Response) => {
-    try {
-      const { receiverId, text } = req.body;
-      console.log('message send ', receiverId);
-      const userId = req.user?.id as string
+    const file = req.file ? req.file.filename : null;
+    console.log("file",file);
+    
 
-      
+    const message = await this.messageService.sendMessage(
+      userId,
+      receiverId,
+      text,
+      file
+    );
 
-      const message = await this.messageService.sendMessage(userId, receiverId, text);
+    res.status(201).json({ success: true, message });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: "Failed to send message" });
+  }
+};
 
-      res.status(201).json({ success: true, message });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, error: "Failed to send message" });
-    }
-  };
+
 
   getChatHistory = async (req: AuthRequest, res: Response) => {
     try {

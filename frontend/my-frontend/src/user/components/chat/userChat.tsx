@@ -34,15 +34,32 @@ const UserChat = () => {
 
 
       const normalized = response.data.data.map(
-        (item: { instructor: IInstructorChat; lastMessage: { text: string, timeStamp: Date ,createdAt: string } }) => ({
-          id: item.instructor._id,
-          name: item.instructor.name,
-          avatar: item.instructor.avatar || profileImage,
-          lastMessage: item.lastMessage?.text || "",   // include last message
-          time: item.lastMessage?.timeStamp || item.lastMessage?.createdAt || null
+  (item: {
+    instructor: IInstructorChat;
+    lastMessage: { text?: string; attachment?: string; timeStamp: Date; createdAt: string };
+  }) => {
+    let displayMessage = "";
 
-        })
-      );
+    if (item.lastMessage?.text) {
+      displayMessage = item.lastMessage.text;
+    } else if (item.lastMessage?.attachment) {
+      if (/\.(jpg|jpeg|png|gif|webp)$/i.test(item.lastMessage.attachment)) {
+        displayMessage = "📷 Image";
+      } else {
+        displayMessage = "📄 Document";
+      }
+    }
+
+    return {
+      id: item.instructor._id,
+      name: item.instructor.name,
+      avatar: item.instructor.avatar || profileImage,
+      lastMessage: displayMessage || "No messages yet",
+      time: item.lastMessage?.timeStamp || item.lastMessage?.createdAt || null,
+    };
+  }
+);
+
 
 
       // first-time chat

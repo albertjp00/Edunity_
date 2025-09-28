@@ -93,6 +93,19 @@ export class AuthService {
         }
     };
 
+    isBlocked = async (id : string):Promise< boolean | null> =>{
+        try {
+            const blocked = await this.userRepository.isBlocked(id)
+            if(blocked ){
+                return true
+            }
+            return false
+        } catch (error) {
+            console.log(error);
+            return null
+        }
+    }
+
 
 
     registerRequest = async (
