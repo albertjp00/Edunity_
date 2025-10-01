@@ -6,6 +6,7 @@ import './userEventDetails.css';
 import { eventEnroll, getDetailsEvent } from "../../services/eventServices";
 import { toast } from "react-toastify";
 import type { Ievent } from "../../../instructor/interterfaces/events";
+import api from "../../../api/userApi";
 
 const EventDetails: React.FC = () => {
   const { id } = useParams();
@@ -13,6 +14,7 @@ const EventDetails: React.FC = () => {
   const [event, setEvent] = useState<Ievent | null>(null);
   // const [instructor, setInstructor] = useState<string>();
   const [isEnrolled, setIsEnrolled] = useState(false);
+  const [user , setUser] = useState <string>()
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -24,10 +26,22 @@ const EventDetails: React.FC = () => {
         setEvent(res.data.event);
         // setInstructor(res.data.instructor);
         setIsEnrolled(res.data.enrolled);
+        console.log(res);
+        
       }
     };
     fetchEvent();
   }, [id]);
+
+  useEffect(()=>{
+    const getUser = async ()=>{
+      const res = await api.get('/user/profile')
+      setUser(res.data.data.name)
+      
+      
+    }
+    getUser()
+  },[])
 
   // ✅ Check if user can join based on current time
   const canJoin = useMemo(() => {
@@ -55,7 +69,8 @@ const EventDetails: React.FC = () => {
 
   const handleJoinEvent = () => {
     if (!event) return;
-    navigate(`/user/joinEvent/${event._id}`);
+    navigate(`/user/joinEvent/${event._id}`,{
+      state:{name : user}    });
   };
 
   if (!event) return <p>Loading...</p>;

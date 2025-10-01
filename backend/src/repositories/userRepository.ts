@@ -9,24 +9,32 @@ import { ISkills } from './instructorRepository.js';
 import { IQuiz, QuizModel } from '../models/quiz.js';
 import { IInstructor, InstructorModel } from '../models/instructor.js';
 import { IUserRepository } from '../interfaces/userInterfaces.js';
+import { BaseRepository } from './baseRepository.js';
 
 
 
 
 
-export class UserRepository implements IUserRepository {
+export class UserRepository  
+extends BaseRepository<IUser>
+implements IUserRepository {
+
+  constructor(){
+    super(UserModel)
+  }
+
   async create(user: Partial<IUser>): Promise<IUser> {
-    const newUser = new UserModel(user);
+    const newUser = new this.model(user);
     return await newUser.save();
   }
 
   async googleLogIn(user: Partial<IUser>): Promise<IUser> {
-    const newUser = new UserModel(user);
+    const newUser = new this.model(user);
     return await newUser.save();
   }
 
   async isBlocked(id: string):Promise<boolean>{
-    const blocked = await UserModel.findById(id)
+    const blocked = await this.model.findById(id)
     if(blocked?.blocked){
       return true
     }
@@ -36,20 +44,22 @@ export class UserRepository implements IUserRepository {
   }
 
   async findByEmail(email: string): Promise<IUser | null> {
-    return await UserModel.findOne({ email });
+    
+    return await this.model.findOne({ email });
   }
 
-  async findById(id: string): Promise<IUser | null> {
-    return await UserModel.findById(id);
+  async findById(id: string): Promise<IUser | null> {  
+    
+    return await this.model.findById(id);
   }
 
   async updateProfile(id: string, data: Partial<IUser>): Promise<IUser | null> {
-    return await UserModel.findByIdAndUpdate(id, data, { new: true });
+    return await this.model.findByIdAndUpdate(id, data, { new: true });
   }
 
   async changePassword(id: string, password: string): Promise<IUser | null> {
 
-    return await UserModel.findByIdAndUpdate(id, { password: password })
+    return await this.model.findByIdAndUpdate(id, { password: password })
   }
 
   async getCourse(id: string): Promise<ICourse | null> {

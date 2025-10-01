@@ -11,7 +11,7 @@ import { IUserRepository } from "../../interfaces/userInterfaces.js";
 import { IInsRepository } from "../../interfaces/instructorInterfaces.js";
 
 export class AdminCourseController {
-    private courseService: AdminCourseService
+    private _courseService: AdminCourseService
 
     //pass the dependencies from outside the class(DI)
     constructor(
@@ -19,7 +19,7 @@ export class AdminCourseController {
         Irepo: IInsRepository,
         Urepo: IUserRepository
     ) {
-        this.courseService = new AdminCourseService(repo, Irepo, Urepo)
+        this._courseService = new AdminCourseService(repo, Irepo, Urepo)
     }
 
 
@@ -30,7 +30,7 @@ export class AdminCourseController {
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 6;
 
-            const data = await this.courseService.getCoursesRequest(page, limit);
+            const data = await this._courseService.getCoursesRequest(page, limit);
             console.log(data)
             const message = "Hello World"
             console.log(message)
@@ -55,7 +55,7 @@ export class AdminCourseController {
             const id = req.params.id!
             console.log('course details');
 
-            const data = await this.courseService.getCourseDetailsRequest(id);
+            const data = await this._courseService.getCourseDetailsRequest(id);
             console.log(data);
 
 
@@ -80,7 +80,7 @@ export class AdminCourseController {
             const { search, page } = req.query
             console.log("search", search);
 
-            const data = await this.courseService.getPurchaseDetails(search as string, Number(page))
+            const data = await this._courseService.getPurchaseDetails(search as string, Number(page))
             // console.log(data);
 
 

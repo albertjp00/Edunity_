@@ -7,13 +7,13 @@ import { AdminAuthRequest } from "../../middleware/authMiddleware.js";
 import { IUserRepository } from "../../interfaces/userInterfaces.js";
 
 export class AdminController {
-    private adminService: AdminService
+    private _adminService: AdminService
 
     constructor( 
         repo :IAdminRepository,
         uRepo:IUserRepository
     ){
-        this.adminService =new AdminService(repo, uRepo)
+        this._adminService =new AdminService(repo, uRepo)
 
     }
 
@@ -23,7 +23,7 @@ export class AdminController {
             const { email, password } = req.body
             console.log(email);
 
-            const result = await this.adminService.loginRequest(email, password)
+            const result = await this._adminService.loginRequest(email, password)
             if (result?.success) {
                 res.json({ success: true, message: result.message, token: result.token })
             } else {
@@ -40,7 +40,7 @@ getUsers = async (req: Request, res: Response): Promise<void> => {
     const { search, page } = req.query;
     let limit = 4
 
-    const data = await this.adminService.getUsers(
+    const data = await this._adminService.getUsers(
       String(search),
       Number(page),
     );
@@ -59,7 +59,7 @@ getUsers = async (req: Request, res: Response): Promise<void> => {
             console.log('block / unblock');
             
 
-            const result = await this.adminService.blockUnblockUser(id)
+            const result = await this._adminService.blockUnblockUser(id)
             res.json({ success: true })
         } catch (error) {
             console.log(error);
@@ -72,7 +72,7 @@ getUsers = async (req: Request, res: Response): Promise<void> => {
             console.log('unblock user');
 
             const id = req.params.id!
-            const result = await this.adminService.unblockUser(id)
+            const result = await this._adminService.unblockUser(id)
             res.json({ success: true })
         } catch (error) {
             console.log(error);
@@ -85,7 +85,7 @@ getUsers = async (req: Request, res: Response): Promise<void> => {
             console.log('admin instrusss', req.query);
             const {page , search } = req.query
 
-            const data = await this.adminService.getInstructors(page as string , search as string)
+            const data = await this._adminService.getInstructors(page as string , search as string)
             // console.log(data);
             
             res.json({ success: true, data})
@@ -99,7 +99,7 @@ getUsers = async (req: Request, res: Response): Promise<void> => {
             const id = req.params.id!
             console.log('kyc detauls ', id);
 
-            const data = await this.adminService.getKycDetails(id)
+            const data = await this._adminService.getKycDetails(id)
 
             res.json({ success: true, data: data })
         } catch (error) {
@@ -112,7 +112,7 @@ getUsers = async (req: Request, res: Response): Promise<void> => {
             const id = req.params.id!
             console.log('kyc verify ', id);
 
-            const data = await this.adminService.verifyKyc(id)
+            const data = await this._adminService.verifyKyc(id)
 
             res.json({ success: true })
         } catch (error) {
@@ -126,7 +126,7 @@ getUsers = async (req: Request, res: Response): Promise<void> => {
             const reason = req.body.reason
             console.log('kyc verify ', id, req.body);
 
-            const data = await this.adminService.rejectKyc(id, reason)
+            const data = await this._adminService.rejectKyc(id, reason)
 
             res.json({ success: true })
         } catch (error) {

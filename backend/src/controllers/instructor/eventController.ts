@@ -8,11 +8,11 @@ import { Server } from "http"
 
 
 export class EventController {
-    private eventService: EventService
+    private _eventService: EventService
 
     constructor() {
         const repo = new InstructorRepository()
-        this.eventService = new EventService(repo)
+        this._eventService = new EventService(repo)
     }
 
     createEvents = async (req: InstAuthRequest, res: Response): Promise<void> => {
@@ -22,7 +22,7 @@ export class EventController {
             console.log("event creation", data);
 
 
-            const result = await this.eventService.createEventRequest(id, data)
+            const result = await this._eventService.createEventRequest(id, data)
             res.json({ success: true })
         } catch (error) {
             console.log(error);
@@ -33,7 +33,7 @@ export class EventController {
     getMyEvents = async (req: InstAuthRequest, res: Response): Promise<void> => {
         try {
             const id = req.instructor?.id
-            const result = await this.eventService.getMyEventsRequest(id)
+            const result = await this._eventService.getMyEventsRequest(id)
             console.log(result)
 
             res.json({ success: true, events: result })
@@ -49,7 +49,7 @@ export class EventController {
             console.log("getEvent");
             
             console.log(id);
-            const result = await this.eventService.getEventRequest(id)
+            const result = await this._eventService.getEventRequest(id)
             // console.log(result);
 
             res.json({ success: true, event: result })
@@ -84,7 +84,7 @@ export class EventController {
                 return;
             }
             console.log(data, id);
-            const result = await this.eventService.updateEventRequest(id, data)
+            const result = await this._eventService.updateEventRequest(id, data)
 
             res.json({ success: true })
 
@@ -107,7 +107,7 @@ export class EventController {
                 return res.status(401).json({ message: "Unauthorized" });
             }
 
-            const result = await this.eventService.joinEventRequest(eventId, instructorId);
+            const result = await this._eventService.joinEventRequest(eventId, instructorId);
 
             if (!result || !result.success) {
                 return res.status(400).json({ message: result?.message || "Failed to start event" });
@@ -137,7 +137,7 @@ export class EventController {
                 return res.status(401).json({ message: "Unauthorized" });
             }
 
-            const result = await this.eventService.endEventRequest(eventId, instructorId);
+            const result = await this._eventService.endEventRequest(eventId, instructorId);
 
             if (!result || !result.success) {
                 return res.status(400).json({ message: result?.message || "Failed to end event" });

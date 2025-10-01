@@ -5,11 +5,11 @@ import { InstructorProfileService } from '../../services/instructor/profileServi
 import { loadavg } from 'os';
 
 export class InstProfileController {
-    private profileService: InstructorProfileService;
+    private _profileService: InstructorProfileService;
 
     constructor() {
         const repo = new InstructorRepository();
-        this.profileService = new InstructorProfileService(repo);
+        this._profileService = new InstructorProfileService(repo);
     }
 
 
@@ -25,7 +25,7 @@ export class InstProfileController {
                 return;
             }
 
-            const profile = await this.profileService.getProfile(userId);
+            const profile = await this._profileService.getProfile(userId);
             // console.log(profile);
 
 
@@ -59,7 +59,7 @@ export class InstProfileController {
                 return;
             }
 
-            const updatedProfile = await this.profileService.editProfileRequest(userId, data);
+            const updatedProfile = await this._profileService.editProfileRequest(userId, data);
 
             if (updatedProfile) {
                 res.status(200).json({
@@ -86,7 +86,7 @@ export class InstProfileController {
                 return;
             }
 
-            const result = await this.profileService.passwordChange(id, newPassword, oldPassword);
+            const result = await this._profileService.passwordChange(id, newPassword, oldPassword);
 
             if (result) {
                 res.json({ success: true, message: "Password updated successfully" });
@@ -112,7 +112,7 @@ export class InstProfileController {
                 return
             }
 
-            const result = await this.profileService.kycSubmit(id,idProofFile.filename,addressProofFile.filename)
+            const result = await this._profileService.kycSubmit(id,idProofFile.filename,addressProofFile.filename)
 
             res.json({ success: true, data: result })
         } catch (error) {

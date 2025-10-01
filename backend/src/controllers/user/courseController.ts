@@ -8,7 +8,7 @@ import instructor from "../../routes/instructorRoutes.js";
 import { debounceCall } from "../../utils/debounce.js";
 
 export class UserCourseController {
-    private courseService: UserCourseService;
+    private _courseService: UserCourseService;
 
     constructor() {
         // const repo = new UserRepository();
@@ -18,7 +18,7 @@ export class UserCourseController {
         const instructorRepo = new InstructorRepository();
         const adminRepo = new AdminRepository()
 
-        this.courseService = new UserCourseService(userRepo, instructorRepo, adminRepo);
+        this._courseService = new UserCourseService(userRepo, instructorRepo, adminRepo);
     }
 
     // Explicitly type as Express RequestHandler
@@ -29,7 +29,7 @@ export class UserCourseController {
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 6;
 
-            const data = await this.courseService.getCourses(page, limit);
+            const data = await this._courseService.getCourses(page, limit);
 
             res.json({
                 success: true,
@@ -94,7 +94,7 @@ export class UserCourseController {
                 ];
             }
 
-            const { courses, totalCount } = await this.courseService.getAllCourses(
+            const { courses, totalCount } = await this._courseService.getAllCourses(
                 query,
                 Number(page),
                 Number(limit),
@@ -125,7 +125,7 @@ export class UserCourseController {
             
             const id = req.user?.id!
             const courseId = req.query.id as string
-            const result = await this.courseService.fetchCourseDetails(id, courseId)
+            const result = await this._courseService.fetchCourseDetails(id, courseId)
             // console.log("course", result);
 
 
@@ -145,7 +145,7 @@ export class UserCourseController {
     //         console.log('buying course', courseId);
 
 
-    //         const response = await this.courseService.buyCourseService(id, courseId)
+    //         const response = await this._courseService.buy_courseService(id, courseId)
     //         res.json({ success: true })
     //     } catch (error) {
     //         console.log(error);
@@ -163,7 +163,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
 
         const order = await debounceCall(key, 2000, async () => {
             // This function runs only if user hasn't triggered in last 2s
-            return await this.courseService.buyCourseRequest(userId, courseId);
+            return await this._courseService.buyCourseRequest(userId, courseId);
         });
 
         res.json({
@@ -192,7 +192,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
             const key = `verifyPayment_${userId}_${courseId}`;
 
             const result = await debounceCall(key, 2000, async () => {
-                return await this.courseService.verifyPaymentRequest(
+                return await this._courseService.verifyPaymentRequest(
                     razorpay_order_id,
                     razorpay_payment_id,
                     razorpay_signature,
@@ -227,7 +227,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
             const id = req.user?.id!
             console.log(id);
 
-            const result = await this.courseService.myCoursesRequest(id)
+            const result = await this._courseService.myCoursesRequest(id)
             // console.log('my courses result ', result);
             res.status(200).json({ success: true, course: result })
 
@@ -244,7 +244,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
             const myCourseId = req.params.id!
             console.log('viewMyCourse', myCourseId, id);
 
-            const result = await this.courseService.viewMyCourseRequest(id, myCourseId)
+            const result = await this._courseService.viewMyCourseRequest(id, myCourseId)
             console.log('mycourses view', result);
 
 
@@ -270,7 +270,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
                 return;
             }
 
-            const result = await this.courseService.updateProgress(userId, courseId, moduleTitle);
+            const result = await this._courseService.updateProgress(userId, courseId, moduleTitle);
 
             res.json({ success: true, progress: result });
         } catch (error) {
@@ -283,7 +283,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
 
     getInstructors = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void> => {
         try {
-            const instructor = await this.courseService.getInstructorsRequest()
+            const instructor = await this._courseService.getInstructorsRequest()
 
             res.json({ success: true, instructors: instructor });
         } catch (error) {
@@ -299,7 +299,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
             const userId = req.user?.id as string;
             const courseId = req.params.id!;
 
-            const result = await this.courseService.addtoFavourites(userId, courseId);
+            const result = await this._courseService.addtoFavourites(userId, courseId);
             console.log(result);
 
             if (!result.success) {
@@ -317,7 +317,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
     getFavourites = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id!
-            const data = await this.courseService.getFavourites(userId)
+            const data = await this._courseService.getFavourites(userId)
             console.log(data);
 
             res.json({ success: true, favourites: data })
@@ -333,7 +333,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
         try {
             const id = req.user?.id!
             const courseId = req.query.id as string
-            const result = await this.courseService.favCourseDetails(id, courseId)
+            const result = await this._courseService.favCourseDetails(id, courseId)
             console.log("course", result);
 
             res.json({ success: true, course: result })
@@ -352,7 +352,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
 
 
 
-            const quiz = await this.courseService.getQuiz(courseId as string)
+            const quiz = await this._courseService.getQuiz(courseId as string)
             res.json({ success: true, quiz })
         } catch (error) {
             // console.log(error);
@@ -373,7 +373,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
             // console.log("submit quiz ",userId , courseId , quizId);
             // console.log(answers);
 
-            const data = await this.courseService.submitQuiz(userId, courseId as string, quizId as string, answers)
+            const data = await this._courseService.submitQuiz(userId, courseId as string, quizId as string, answers)
             console.log('submitted ', data);
 
             res.json({ success: true, data })

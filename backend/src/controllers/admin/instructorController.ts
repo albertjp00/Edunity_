@@ -5,13 +5,13 @@ import { AdminInstructorService } from "../../services/admin/instructorServices.
 import { IInsRepository, InstructorRepository } from "../../repositories/instructorRepository.js";
 
 export class AdminInstructorController {
-    private instructorService: AdminInstructorService
+    private _instructorService: AdminInstructorService
 
     constructor(
         repo : IAdminRepository,
         Irepo : IInsRepository
     ){
-                this.instructorService = new AdminInstructorService(repo,Irepo)
+                this._instructorService = new AdminInstructorService(repo,Irepo)
     }
     
 
@@ -20,7 +20,7 @@ export class AdminInstructorController {
             const id = req.params.id!
             console.log('get instructorssssss ',id);
             
-            const result = await this.instructorService.getInstructorsRequest(id)
+            const result = await this._instructorService.getInstructorsRequest(id)
             res.json({success:true , instructor:result})
         } catch (error) {
             console.log(error);
@@ -33,7 +33,7 @@ export class AdminInstructorController {
             const id = req.params.id!
             console.log('get instructor courses ',id);
             
-            const result = await this.instructorService.getInstructorsCoursesRequest(id)
+            const result = await this._instructorService.getInstructorsCoursesRequest(id)
             console.log(result);
             
             res.json({success:true , courses:result})
