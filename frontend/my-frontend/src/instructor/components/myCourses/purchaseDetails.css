@@ -1,0 +1,75 @@
+.purchase-container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.purchase-heading {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.no-purchases {
+  text-align: center;
+  font-size: 16px;
+  color: #888;
+}
+
+.purchase-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.purchase-card {
+  border: 1px solid #eee;
+  padding: 16px;
+  border-radius: 10px;
+  background: #f9fafb;
+  transition: transform 0.2s;
+}
+
+.purchase-card:hover {
+  transform: translateY(-2px);
+}
+
+.purchase-info {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.purchase-thumbnail {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.purchase-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #111;
+}
+
+.purchase-meta {
+  font-size: 14px;
+  color: #666;
+}
+
+.purchase-details {
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+  font-size: 14px;
+  color: #444;
+}
+
+.purchase-details strong {
+  color: #000;
+}

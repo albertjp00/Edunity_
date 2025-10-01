@@ -5,11 +5,11 @@ import { AuthRequest } from '../../middleware/authMiddleware';
 import { HttpStatus } from '../../enums/httpStatus.enums';
 
 export class ProfileController {
-    private profileService: ProfileService;
+    private _profileService: ProfileService;
 
     constructor() {
         const repo = new UserRepository();
-        this.profileService = new ProfileService(repo);
+        this._profileService = new ProfileService(repo);
     }
 
 
@@ -23,7 +23,7 @@ export class ProfileController {
                 return;
             }
 
-            const profile = await this.profileService.getProfile(userId);
+            const profile = await this._profileService.getProfile(userId);
             // console.log(profile);
 
 
@@ -58,7 +58,7 @@ export class ProfileController {
                 return;
             }
 
-            const updatedProfile = await this.profileService.editProfileRequest(userId, data);
+            const updatedProfile = await this._profileService.editProfileRequest(userId, data);
 
             if (updatedProfile) {
                 res.status(200).json({
@@ -90,7 +90,7 @@ export class ProfileController {
                 return;
             }
 
-            const result = await this.profileService.passwordChange(id, newPassword, oldPassword)
+            const result = await this._profileService.passwordChange(id, newPassword, oldPassword)
             console.log(result);
             
             if (result) {

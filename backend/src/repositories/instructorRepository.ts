@@ -37,7 +37,7 @@ export interface IInsRepository {
 
     getCourseDetails(courseId: string): Promise<ICourse | null>
 
-    purchaseDetails(id: string): Promise<IPurchaseDetails | null>
+    purchaseDetails(id: string): Promise<IPurchaseDetails[] | null>
 
     editCourse(id: string, data: any): Promise<ICourse | null>
 
@@ -123,36 +123,41 @@ export class InstructorRepository implements IInsRepository {
 
 
 
-    async purchaseDetails(id: string): Promise<IPurchaseDetails | null> {
-        // console.log('here', id);
-
-        const course = await CourseModel.findById(id);
+    async purchaseDetails(courseId: string): Promise<IPurchaseDetails[] | null> {
+        const course = await CourseModel.findById(courseId).lean();
         if (!course) return null;
 
-        const purchase = await MyCourseModel.findOne({courseId : course.id});
-        if (!purchase) return null;
+        // get all purchases for this course
+        const purchases = await MyCourseModel.find({ courseId }).lean();
+        if (!purchases || purchases.length === 0) return null;
 
+        // fetch all userIds in one go
+        const userIds = purchases.map(p => p.userId);
+        const users = await UserModel.find({ _id: { $in: userIds } }).lean();
 
+        // build a map for quick lookup
+        const userMap = new Map(users.map(u => [String(u._id), u]));
 
-        const user = await UserModel.findById(purchase.userId).lean();
-        if (!user) return null;
+        // map purchases to details
+        const result: IPurchaseDetails[] = purchases.map(purchase => {
+            const user = userMap.get(String(purchase.userId));
+            if (!user) return 
 
+            return {
+                name: user.name,
+                title: course.title,
+                ...(course.thumbnail && { thumbnail: course.thumbnail }),
+                ...(course.price !== undefined && { price: course.price }),
+                category: course.category,
+                amountPaid: course.price ?? 0,
+                paymentStatus: purchase.paymentStatus,
+                createdAt: purchase.createdAt,
+            };
+        }).filter(Boolean) as IPurchaseDetails[];
 
-
-        console.log("purchase", purchase ,course)
-
-
-        return {
-            name: user.name,
-            title: course.title,
-            ...(course.thumbnail && { thumbnail: course.thumbnail }),
-            ...(course.price !== undefined && { price: course.price }),
-            category: course.category,
-            amountPaid: course.price,
-            paymentStatus: purchase.paymentStatus,
-            createdAt: purchase.createdAt,
-        };
+        return result;
     }
+
 
 
 

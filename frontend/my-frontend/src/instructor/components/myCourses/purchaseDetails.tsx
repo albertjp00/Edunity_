@@ -1,67 +1,89 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../../api/userApi";
+import "./purchaseDetails.css";
 
 export interface IPurchaseDetails {
   name: string;
-  email: string;
   title: string;
   thumbnail?: string;
   price?: number;
   category: string;
   amountPaid: number;
-  paymentStatus: string;
-  createdAt: string; // Date will come as string from API
+  paymentStatus?: string;
+  createdAt: string; 
 }
 
-
 const PurchaseDetails: React.FC = () => {
-  const { id } = useParams<{ id: string }>(); // purchaseId from route
-  const [details, setDetails] = useState<IPurchaseDetails | null>(null);
+  const { id } = useParams<{ id: string }>();
+  const [details, setDetails] = useState<IPurchaseDetails[]>([]);
 
   useEffect(() => {
     if (!id) return;
-    const getPurchaseDetails = async ()=>{
-        try {
-            const res = await api.get(`/instructor/purchaseDetails/${id}`)
-            if(res.data.success){
-                setDetails(res.data.details)
-            }
-        } catch (error) {
-            console.log(error);
-            
+    const getPurchaseDetails = async () => {
+      try {
+        const res = await api.get(`/instructor/purchaseDetails/${id}`);
+        if (res.data.success) {
+          setDetails(res.data.details); 
+          console.log(res.data);
+          
         }
-    }
-    getPurchaseDetails()
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getPurchaseDetails();
   }, [id]);
 
-  if (!details) return <p>Loading...</p>;
-
+  if (details.length === 0) return <p className="no-purchases">No purchases yet.</p>;
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-xl font-bold mb-4">Purchase Details</h2>
+    <div className="purchase-container">
+      <h1>Total Purchased Users - {details.length}</h1>
+      <br />
+      <br />
+      <h2 className="purchase-heading">Purchase Details</h2>
 
-      <div className="flex gap-4 mb-4">
-        {details.thumbnail && (
-          <img
-            src={details.thumbnail}
-            alt={details.title}
-            className="w-32 h-32 object-cover rounded"
-          />
-        )}
-        <div>
-          <h3 className="text-lg font-semibold">{details.title}</h3>
-          <p className="text-gray-600">Category: {details.category}</p>
-          <p className="text-gray-600">Price: ₹{details.price ?? "N/A"}</p>
-        </div>
-      </div>
+      
 
-      <div className="border-t pt-4">
-        <p><strong>Purchased by:</strong> {details.name} ({details.email})</p>
-        <p><strong>Amount Paid:</strong> ₹{details.amountPaid}</p>
-        <p><strong>Payment Status:</strong> {details.paymentStatus}</p>
-        <p><strong>Purchased At:</strong> {new Date(details.createdAt).toLocaleString()}</p>
+      <div className="purchase-list">
+        {details.map((purchase, index) => (
+          <div key={index} className="purchase-card">
+            <div className="purchase-info">
+              {purchase.thumbnail && (
+                <img
+                  src={`${import.meta.env.VITE_API_URL}/assets/${purchase.thumbnail}`}
+                  alt={purchase.title}
+                  className="purchase-thumbnail"
+                />
+              )}
+              <div>
+                <h3 className="purchase-title">{purchase.title}</h3>
+                <p className="purchase-meta">Category: {purchase.category}</p>
+                <p className="purchase-meta">
+                  Price: ₹{purchase.price ?? "N/A"}
+                </p>
+              </div>
+            </div>
+
+            <div className="purchase-details">
+              <p>
+                <strong>Purchased by:</strong> {purchase.name}
+              </p>
+              <p>
+                <strong>Amount Paid:</strong> ₹{purchase.amountPaid}
+              </p>
+              <p>
+                <strong>Payment Status:</strong>{" "}
+                {purchase.paymentStatus ?? "N/A"}
+              </p>
+              <p>
+                <strong>Purchased At:</strong>{" "}
+                {new Date(purchase.createdAt).toLocaleString()}
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

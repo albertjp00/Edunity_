@@ -5,11 +5,11 @@ import { AuthRequest, InstAuthRequest } from "../../middleware/authMiddleware.js
 import instructor from "../../routes/instructorRoutes.js";
 
 export class InstCourseController {
-  private courseService: CourseService;
+  private _courseService: CourseService;
 
   constructor() {
     const repo = new InstructorRepository();
-    this.courseService = new CourseService(repo);
+    this._courseService = new CourseService(repo);
   }
 
   myCourses = async (req: InstAuthRequest, res: Response): Promise<void> => {
@@ -21,7 +21,7 @@ export class InstCourseController {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 6;
 
-      const data = await this.courseService.fetchCourses(id, page, limit);
+      const data = await this._courseService.fetchCourses(id, page, limit);
 
       res.json({
         success: true,
@@ -41,7 +41,7 @@ export class InstCourseController {
     try {
       const id = req.instructor?.id
       const courseId = req.params.id!
-      const result = await this.courseService.fetchCourseDetails(courseId)
+      const result = await this._courseService.fetchCourseDetails(courseId)
       console.log("course" ,result);
 
 
@@ -52,21 +52,24 @@ export class InstCourseController {
     }
   }
 
-  purchaseDetails = async (req:InstAuthRequest , res : Response)=>{
-    try {
-      const courseId = req.params.id!
-      console.log('purchase details',courseId );
-      
-      const data = await this.courseService.getPurchaseDetails(courseId)
-      console.log(data)
+purchaseDetails = async (req: InstAuthRequest, res: Response) => {
+  try {
+    const courseId = req.params.id!;
+    const data = await this._courseService.getPurchaseDetails(courseId);
 
-      res.json({success:true , details : data})
-
-    } catch (error) {
-      console.log(error);
-      
+    console.log(data);
+    
+    if (!data) {
+      return res.status(404).json({ success: false, message: "No purchases found" });
     }
+
+    res.json({ success: true, details: data });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
+};
+
 
   editCourse = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -82,7 +85,7 @@ export class InstCourseController {
       console.log(courseId, data);
 
 
-      const result = await this.courseService.editCourseRequest(courseId, data);
+      const result = await this._courseService.editCourseRequest(courseId, data);
 
       if (!result) {
         res.status(404).json({ success: false, message: "Course not found" });
@@ -108,7 +111,7 @@ export class InstCourseController {
         thumbnail: req.file ? req.file.filename : undefined,
       };
 
-      const result = await this.courseService.addCourseRequest(id, data);
+      const result = await this._courseService.addCourseRequest(id, data);
 
       res.json({ success: !!result, course: result });
     } catch (error) {
@@ -131,7 +134,7 @@ addQuiz = async (req: AuthRequest, res: Response) => {
       return;
     }
 
-    const quiz = await this.courseService.addQuiz(id, title, questions);
+    const quiz = await this._courseService.addQuiz(id, title, questions);
     console.log(quiz);
     
 
@@ -151,7 +154,7 @@ addQuiz = async (req: AuthRequest, res: Response) => {
       console.log(courseId);
       
       
-      const quiz = await this.courseService.getQuiz(courseId as string)
+      const quiz = await this._courseService.getQuiz(courseId as string)
 
       if (!quiz) {
         res.json({ success: false, message: "Quiz not found" });
@@ -171,7 +174,7 @@ addQuiz = async (req: AuthRequest, res: Response) => {
       const data = req.body
       console.log("quizId",quizId,req.body);
       
-      const quiz = await this.courseService.updateQuiz(quizId as string  , data)
+      const quiz = await this._courseService.updateQuiz(quizId as string  , data)
     
       res.json({ success: true });
     } catch (error: any) {

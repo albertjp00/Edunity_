@@ -1,9 +1,11 @@
+// MeetingRoom.tsx
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 import "./meetingRoom.css";
 
-const socket = io("http://localhost:5000");
+const SOCKET_URL = "http://localhost:5000";
+const socket = io(SOCKET_URL, { autoConnect: true });
 
 interface MeetingRoomProps {
   eventId: string;
@@ -12,157 +14,269 @@ interface MeetingRoomProps {
   name: string;
 }
 
+interface RemoteUser {
+  socketId: string;
+  stream: MediaStream;
+  micOn: boolean;
+  camOn: boolean;
+  userId?: string;
+  name?: string;
+}
+
+
+interface Participant {
+  socketId: string;
+  userId: string;
+  name: string;
+  role?: "instructor" | "user"; // optional if you send role too
+}
+
+
 const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }) => {
-  const localVideoRef = useRef<HTMLVideoElement>(null);
-  const remoteVideoRef = useRef<HTMLVideoElement>(null);
-  const pcRef = useRef<RTCPeerConnection | null>(null);
   const navigate = useNavigate();
 
-  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  console.log('propssss', eventId, userId, role, name);
+
+
+  const localVideoRef = useRef<HTMLVideoElement | null>(null);
+  const localStreamRef = useRef<MediaStream | null>(null);
+  const pcMap = useRef<Record<string, RTCPeerConnection>>({});
+  const [remoteUsers, setRemoteUsers] = useState<RemoteUser[]>([]);
   const [micOn, setMicOn] = useState(true);
   const [camOn, setCamOn] = useState(true);
 
+  // Helper: set or replace a remote user entry
+  const upsertRemoteUser = (update: Partial<RemoteUser> & { socketId: string }) => {
+    setRemoteUsers((prev) => {
+      const idx = prev.findIndex((p) => p.socketId === update.socketId);
+      if (idx === -1) {
+        return [
+          ...prev,
+          {
+            socketId: update.socketId,
+            stream: (update.stream as MediaStream) || new MediaStream(),
+            micOn: update.micOn ?? true,
+            camOn: update.camOn ?? true,
+            userId: update.userId,
+            name: update.name,
+          },
+        ];
+      } else {
+        const copy = [...prev];
+        copy[idx] = { ...copy[idx], ...update };
+        return copy;
+      }
+    });
+  };
+
   useEffect(() => {
-    const pc = new RTCPeerConnection();
-    pcRef.current = pc;
-
-    // ✅ Get local stream
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-      .then((stream) => {
-        setLocalStream(stream);
-        if (localVideoRef.current) {
-          localVideoRef.current.srcObject = stream;
+    // 1) get local media first, then join room
+    let cancelled = false;
+    (async () => {
+      try {
+        const media = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        if (cancelled) {
+          media.getTracks().forEach((t) => t.stop());
+          return;
         }
-        stream.getTracks().forEach(track => pc.addTrack(track, stream));
-      });
+        localStreamRef.current = media;
+        if (localVideoRef.current) localVideoRef.current.srcObject = media;
 
-    // ✅ Remote stream
-    pc.ontrack = (event) => {
-      if (remoteVideoRef.current) {
-        remoteVideoRef.current.srcObject = event.streams[0];
+        // After we have media, join event
+        socket.emit("joinEvent", { eventId, userId, role , name });
+
+        // Also send initial status
+        socket.emit("update-status", { eventId, micOn: true, camOn: true });
+      } catch (err) {
+        console.error("Failed to getUserMedia", err);
       }
-    };
+    })();
 
-    // ✅ ICE candidates
-    pc.onicecandidate = (event) => {
-      if (event.candidate) {
-        socket.emit("ice-candidate", {
-          eventId,
-          candidate: event.candidate,
-        });
-      }
-    };
+    // 2) setup socket listeners ONCE
+    // remove handlers first just in case (safe)
+    socket.off("user-joined");
+    socket.off("offer");
+    socket.off("answer");
+    socket.off("ice-candidate");
+    socket.off("user-left");
+    socket.off("status-updated");
 
-    // ✅ Join room
-    socket.emit("join-room", { eventId, userId });
 
-    socket.on("user-joined", async ({ socketId }) => {
-      if (role === "instructor") {
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
 
-        socket.emit("offer", {
-          eventId,
-          offer,
-          to: socketId,
-        });
+
+
+    // When receiving participants list
+    socket.on("participants", (list: Participant[]) => {
+  list.forEach((participant) => {
+    const { socketId, userId, name } = participant;
+    if (socketId === socket.id) return;
+
+    const pc = createPeerConnection(socketId);
+    pcMap.current[socketId] = pc;
+
+    const localStream = localStreamRef.current;
+    if (localStream) localStream.getTracks().forEach((t) => pc.addTrack(t, localStream));
+
+    upsertRemoteUser({ socketId, userId, name, micOn: true, camOn: true });
+  });
+});
+
+
+    socket.on("user-joined", (participant: Participant) => {
+      const { socketId, userId, name } = participant;
+      console.log('participant',participant)
+      const pc = createPeerConnection(socketId);
+      pcMap.current[socketId] = pc;
+
+      const localStream = localStreamRef.current;
+      if (localStream) localStream.getTracks().forEach((t) => pc.addTrack(t, localStream));
+
+      upsertRemoteUser({ socketId, userId, name, micOn: true, camOn: true }); // name here
+    });
+
+
+    // When someone leaves
+    socket.on("user-left", (participant: Participant) => {
+      if (!participant) return;
+      console.log(`${participant.name} left the meeting`);
+      const pc = pcMap.current[participant.socketId];
+      if (pc) pc.close();
+      delete pcMap.current[participant.socketId];
+
+      setRemoteUsers(prev => prev.filter(u => u.socketId !== participant.socketId));
+    });
+
+
+
+
+    socket.on("offer", async ({ from, offer }) => {
+      // got offer from instructor (or user)
+      console.log("offer from", from);
+      const pc = createPeerConnection(from);
+      pcMap.current[from] = pc;
+
+      // attach local tracks
+      const localStream = localStreamRef.current;
+      if (localStream) localStream.getTracks().forEach((t) => pc.addTrack(t, localStream));
+
+      try {
+        await pc.setRemoteDescription(new RTCSessionDescription(offer));
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        socket.emit("answer", { eventId, answer, from: userId, to: from });
+      } catch (err) {
+        console.error("Error handling offer:", err);
       }
     });
 
-    socket.on("offer", async ({ offer, from }) => {
-      await pc.setRemoteDescription(new RTCSessionDescription(offer));
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-
-      socket.emit("answer", {
-        eventId,
-        answer,
-        to: from,
-      });
+    socket.on("answer", async ({ from, answer }) => {
+      const pc = pcMap.current[from];
+      if (!pc) return;
+      try {
+        await pc.setRemoteDescription(new RTCSessionDescription(answer));
+      } catch (err) {
+        console.error("Error setting remote description (answer):", err);
+      }
     });
 
-    socket.on("answer", async ({ answer }) => {
-      await pc.setRemoteDescription(new RTCSessionDescription(answer));
-    });
-
-    socket.on("ice-candidate", async ({ candidate }) => {
+    socket.on("ice-candidate", async ({ from, candidate }) => {
+      const pc = pcMap.current[from];
+      if (!pc || !candidate) return;
       try {
         await pc.addIceCandidate(new RTCIceCandidate(candidate));
       } catch (err) {
-        console.error("Error adding ICE candidate", err);
+        console.warn("Failed to add ICE candidate:", err);
       }
+    });
+
+
+
+    socket.on("status-updated", ({ socketId, micOn: rMicOn, camOn: rCamOn }) => {
+      upsertRemoteUser({ socketId, micOn: rMicOn, camOn: rCamOn });
     });
 
     return () => {
-      socket.emit("leave-room", { eventId, userId });
-      pc.close();
-    };
-  }, []);
+      cancelled = true;
+      socket.emit("leaveEvent", { eventId, userId });
+      // cleanup pcs
+      Object.values(pcMap.current).forEach((pc) => {
+        try {
+          pc.close();
+        } catch (error) {
+          console.log(error);
 
-  // ✅ Toggle Mic
-  const toggleMic = () => {
-    if (localStream) {
-      localStream.getAudioTracks().forEach(track => (track.enabled = !micOn));
-      setMicOn(!micOn);
-    }
+        }
+      });
+      pcMap.current = {};
+      // stop local tracks
+      if (localStreamRef.current) {
+        localStreamRef.current.getTracks().forEach((t) => t.stop());
+        localStreamRef.current = null;
+      }
+      // remove listeners
+      socket.off("user-joined");
+      socket.off("offer");
+      socket.off("answer");
+      socket.off("ice-candidate");
+      socket.off("user-left");
+      socket.off("status-updated");
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // run once on mount
+
+  // createPeerConnection helper
+  const createPeerConnection = (socketId: string) => {
+    // If already exists, return it
+    if (pcMap.current[socketId]) return pcMap.current[socketId];
+
+    const pc = new RTCPeerConnection();
+
+    pc.onicecandidate = (ev) => {
+      if (ev.candidate) {
+        socket.emit("ice-candidate", { eventId, candidate: ev.candidate, from: userId, to: socketId });
+      }
+    };
+
+    pc.ontrack = (ev) => {
+      const incomingStream = ev.streams && ev.streams[0];
+      if (!incomingStream) return;
+
+      // ensure we only upsert once per socketId (avoid duplicates when audio+video tracks fire separately)
+      upsertRemoteUser({ socketId, stream: incomingStream, micOn: true, camOn: true });
+    };
+
+    return pc;
   };
 
-  // ✅ Toggle Camera
-// ✅ Toggle Camera with track replacement
-const toggleCam = async () => {
-  if (!localStream || !pcRef.current) return;
+  // Controls
+  const toggleMic = () => {
+    const s = localStreamRef.current;
+    if (!s) return;
+    const enabled = !micOn;
+    s.getAudioTracks().forEach((t) => (t.enabled = enabled));
+    setMicOn(enabled);
+    socket.emit("update-status", { eventId, micOn: enabled, camOn });
+  };
 
-  if (camOn) {
-    // Turn OFF: remove video track
-    localStream.getVideoTracks().forEach(track => {
-      track.stop();
-      localStream.removeTrack(track);
+  const toggleCam = () => {
+    const s = localStreamRef.current;
+    if (!s) return;
+    const enabled = !camOn;
+    s.getVideoTracks().forEach((t) => (t.enabled = enabled));
+    setCamOn(enabled);
+    socket.emit("update-status", { eventId, micOn, camOn: enabled });
+  };
 
-      // Remove from PeerConnection
-      const sender = pcRef.current?.getSenders().find(s => s.track === track);
-      if (sender) pcRef.current.removeTrack(sender);
-    });
-
-    if (localVideoRef.current) {
-      localVideoRef.current.srcObject = null;
+  const leaveMeeting = () => {
+    // close all peer connections
+    Object.values(pcMap.current).forEach((pc) => pc.close());
+    pcMap.current = {};
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach((t) => t.stop());
+      localStreamRef.current = null;
     }
-
-  } else {
-    // Turn ON: get new video track
-    const newStream = await navigator.mediaDevices.getUserMedia({ video: true });
-    const videoTrack = newStream.getVideoTracks()[0];
-
-    if (videoTrack) {
-      localStream.addTrack(videoTrack);
-      pcRef.current.addTrack(videoTrack, localStream);
-
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = localStream;
-      }
-    }
-  }
-
-  setCamOn(!camOn);
-};
-
-
-  // ✅ End Event / Leave Room
-  const handleEndEvent = () => {
-    if (localStream) {
-      localStream.getTracks().forEach(track => {
-        track.stop();
-      });
-    }
-
-    if (localVideoRef.current) localVideoRef.current.srcObject = null;
-    if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
-
-    socket.emit("leave-room", { eventId, userId });
-    pcRef.current?.close();
-
-    setTimeout(() => {
-      navigate(-1);
-    }, 300);
+    socket.emit("leaveEvent", { eventId, userId });
+    navigate(-1);
   };
 
   return (
@@ -170,26 +284,40 @@ const toggleCam = async () => {
       <h2>{role === "instructor" ? "Instructor View" : "User View"}</h2>
 
       <div className="video-container">
+        {/* Local Video */}
         <div className="video-tile">
           <video ref={localVideoRef} autoPlay playsInline muted />
+          {!micOn && <span className="mic-muted">🔇</span>}
+          {!camOn && <span className="cam-off">📷❌</span>}
           <p className="video-name">{name} (You)</p>
         </div>
-        <div className="video-tile">
-          <video ref={remoteVideoRef} autoPlay playsInline />
-          <p className="video-name">Remote User</p>
-        </div>
+
+
+
+
+        {/* Remote Videos */}
+        {remoteUsers.map((user) => (
+          <div key={user.socketId} className="video-tile">
+            <video
+              autoPlay
+              playsInline
+              ref={(el) => {
+                if (!el) return;
+                if (el.srcObject !== user.stream) el.srcObject = user.stream;
+              }}
+            />
+            {!user.micOn && <span className="mic-muted">🔇</span>}
+            {!user.camOn && <span className="cam-off">📷❌</span>}
+            <p className="video-name">{user.name ?? user.socketId}</p>
+          </div>
+        ))}
       </div>
 
-      {/* ✅ Controls */}
       <div className="controls">
-        <button onClick={toggleMic}>
-          {micOn ? "Mute Mic" : "Unmute Mic"}
-        </button>
-        <button onClick={toggleCam}>
-          {camOn ? "Turn Off Camera" : "Turn On Camera"}
-        </button>
-        <button className="end-event-btn" onClick={handleEndEvent}>
-          Leave Event
+        <button onClick={toggleMic}>{micOn ? "Mute Mic" : "Unmute Mic"}</button>
+        <button onClick={toggleCam}>{camOn ? "Turn Off Cam" : "Turn On Cam"}</button>
+        <button className="end-event-btn" onClick={leaveMeeting}>
+          Leave Meeting
         </button>
       </div>
     </div>

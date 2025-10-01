@@ -7,13 +7,13 @@ import { AdminUserService } from "../../services/admin/userServices.js";
 import { IUserRepository } from "../../interfaces/userInterfaces.js";
 
 export class AdminUserController {
-    private userService: AdminUserService
+    private _userService: AdminUserService
 
     constructor(
         repo:IAdminRepository,
         Urepo:IUserRepository
     ){
-        this.userService = new AdminUserService(repo,Urepo)
+        this._userService = new AdminUserService(repo,Urepo)
     }
 
     getUser = async(req:Request , res:Response):Promise<void>=>{
@@ -21,7 +21,7 @@ export class AdminUserController {
             const id = req.params.id!
             console.log('get user ',id);
             
-            const result = await this.userService.getUserRequest(id)
+            const result = await this._userService.getUserRequest(id)
             res.json({success:true , user:result})
         } catch (error) {
             console.log(error);
@@ -33,7 +33,7 @@ export class AdminUserController {
             const id = req.params.id!
             console.log('get instructor courses ',id);
             
-            const result = await this.userService.getUsersCoursesRequest(id)
+            const result = await this._userService.getUsersCoursesRequest(id)
             console.log(result);
             
             res.json({success:true , courses:result})

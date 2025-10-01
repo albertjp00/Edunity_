@@ -14,11 +14,11 @@ const REFRESH_SECRET = process.env.REFRESH_KEY || "refresh_secret";
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || "");
 
 export class AuthController {
-  private authService: AuthService;
+  private _authService: AuthService;
 
   constructor() {
     const repo = new UserRepository();
-    this.authService = new AuthService(repo);
+    this._authService = new AuthService(repo);
   }
 
   login = async (req: Request, res: Response , next:NextFunction): Promise<void> => {
@@ -30,7 +30,7 @@ export class AuthController {
         return;
       }
 
-      const result = await this.authService.loginRequest(email, password);
+      const result = await this._authService.loginRequest(email, password);
 
       if (result.success) {
         res.cookie("refreshToken", result.refreshToken, {
@@ -113,7 +113,7 @@ export class AuthController {
       const id = req.user?.id!
       console.log('blocked or not ',id);
       
-      const isBlocked = await this.authService.isBlocked(id)
+      const isBlocked = await this._authService.isBlocked(id)
       res.json({blocked:isBlocked})
     } catch (error) {
       console.log(error);
@@ -125,7 +125,7 @@ export class AuthController {
   register = async (req: Request, res: Response,next:NextFunction): Promise<void> => {
     try {
       const { name, email, password } = req.body;
-      const result = await this.authService.registerRequest(name, email, password);
+      const result = await this._authService.registerRequest(name, email, password);
 
       if (result.success) {
         res.status(HttpStatus.OK).json(result); // OK
@@ -153,7 +153,7 @@ export class AuthController {
         return;
       }
 
-      await this.authService.resendOtpRequest(email);
+      await this._authService.resendOtpRequest(email);
 
       res.status(HttpStatus.OK).json({ success: true, message: "OTP resent successfully" });
     } catch (error) {
@@ -166,7 +166,7 @@ export class AuthController {
   verifyOtp = async (req: Request, res: Response,next:NextFunction): Promise<void> => {
     try {
       const { otp, email } = req.body;
-      const result = await this.authService.verifyOtpRequest(otp, email);
+      const result = await this._authService.verifyOtpRequest(otp, email);
       console.log(result);
 
       if (result.success) {
@@ -192,7 +192,7 @@ export class AuthController {
         res.status(HttpStatus.BAD_REQUEST).json({ message: "Token is required" });
         return;
       }
-      const { accessToken, refreshToken, user } = await this.authService.googleLogin(token);
+      const { accessToken, refreshToken, user } = await this._authService.googleLogin(token);
       // console.log(accessToken);
       if (refreshToken) {
         res.cookie("refreshToken", refreshToken, {
@@ -215,7 +215,7 @@ export class AuthController {
     try {
       const { email } = req.body;
 
-      const result = await this.authService.forgotPassword(email);
+      const result = await this._authService.forgotPassword(email);
 
       if (!result.success) {
         res.status(HttpStatus.BAD_REQUEST).json({ message: result.message });
@@ -236,7 +236,7 @@ export class AuthController {
 
       const { email, otp } = req.body;
 
-      const result = await this.authService.verifyForgotPasswordOtp(otp, email);
+      const result = await this._authService.verifyForgotPasswordOtp(otp, email);
       console.log('verification ', result.success);
 
       if (!result.success) {
@@ -263,7 +263,7 @@ export class AuthController {
         return;
       }
 
-      await this.authService.forgotPassword(email);
+      await this._authService.forgotPassword(email);
 
       res.status(HttpStatus.OK).json({ success: true, message: "OTP resent successfully" });
     } catch (error) {
@@ -285,7 +285,7 @@ export class AuthController {
     //   return;
     // }
 
-    const result = await this.authService.resetPassword(
+    const result = await this._authService.resetPassword(
       email,
       newPassword
     );
