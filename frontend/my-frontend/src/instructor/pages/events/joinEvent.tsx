@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import MeetingRoom from "../../../eventMeeting/meetingRoom";
 import instructorApi from "../../../api/instructorApi";
 
@@ -8,9 +8,11 @@ const InstructorEvent: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [meetingLink, setMeetingLink] = useState<string | null>(null);
   const [instructorId, setInstructor] = useState<string>("");
-  const [name , setName] = useState<string>("")
+  // const [name , setName] = useState<string>("")
 
 
+   const location = useLocation();
+  const { instructorName } = location.state || {};
 
   useEffect(() => {
     const joinEvent = async () => {
@@ -18,7 +20,9 @@ const InstructorEvent: React.FC = () => {
       try {
         const { data } = await instructorApi.patch(`/instructor/joinEvent/${eventId}`);
         if (data.success) {
-          setMeetingLink(data.meetingLink || eventId); // fallback to eventId
+          setMeetingLink(data.meetingLink || eventId); 
+          console.log('dadaaadadad',data);
+          
         } else {
           alert(data.message || "Failed to join event");
         }
@@ -35,10 +39,12 @@ const InstructorEvent: React.FC = () => {
 
     const userInfo = async ()=>{
       try {
-        const userDetails  = await instructorApi.get('/instructor/profile')
-        console.log(userDetails);
-        setName( userDetails.data.user.name)
+   
         
+        const userDetails  = await instructorApi.get('/instructor/profile')
+        // setName( userDetails.data.user.name)
+                console.log('details',userDetails);
+
       } catch (error) {
         console.log(error);
         
@@ -55,7 +61,7 @@ const InstructorEvent: React.FC = () => {
       eventId={meetingLink}
       userId={instructorId}
       role="instructor"
-      name = {name}
+      name = {instructorName}
       
     />
   );

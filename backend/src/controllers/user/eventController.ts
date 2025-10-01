@@ -11,18 +11,18 @@ import { log } from "console";
 
 
 export class UserEventController {
-    private userEventService: UserEventService;
+    private _userEventService: UserEventService;
 
     constructor() {
         const repo = new UserRepository()
         const Irepo = new InstructorRepository()
-        this.userEventService = new UserEventService(repo, Irepo)
+        this._userEventService = new UserEventService(repo, Irepo)
 
     }
 
     getEvents = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void | null> => {
         try {
-            const result = await this.userEventService.getEventsRequest()
+            const result = await this._userEventService.getEventsRequest()
 
             res.json({ success: true, events: result })
         } catch (error) {
@@ -34,17 +34,18 @@ export class UserEventController {
     getEventDetails = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void | null> => {
         try {
             const id = req.params.id!
-            const enrolled = await this.userEventService.getIfEnrolled(id)
-            const result = await this.userEventService.getEventDetailsRequest(id)
-            // console.log(enrolled ,result);
+            const enrolled = await this._userEventService.getIfEnrolled(id)
+            const result = await this._userEventService.getEventDetailsRequest(id)
+            // console.log(enrolled ,result); 
 
             res.json({ success: true, event: result, enrolled: enrolled })
         } catch (error) {
             // console.log(error);
             next(error)
-
         }
     }
+
+
 
     enrollEvent = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void | null> => {
         try {
@@ -54,7 +55,7 @@ export class UserEventController {
                 res.status(400).json({ success: false, message: "event Id missing" });
                 return;
             }
-            const result = await this.userEventService.eventEnrollRequest(id, eventId)
+            const result = await this._userEventService.eventEnrollRequest(id, eventId)
 
             res.json({ success: true })
         } catch (error) {
@@ -74,7 +75,7 @@ export class UserEventController {
             //     return res.status(401).json({ message: "Unauthorized" });
             // }
 
-            const result = await this.userEventService.joinUserEventRequest(eventId, userId);
+            const result = await this._userEventService.joinUserEventRequest(eventId, userId);
 
             if (!result || !result.success) {
                 return res.status(400).json({ message: result?.message || "Failed to start event" });

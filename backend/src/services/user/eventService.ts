@@ -54,6 +54,7 @@ export class UserEventService {
         try {
 
             const result = await this.userRepository.getMyEvent(id)
+            
 
             if (result) {
                 return true
@@ -69,7 +70,14 @@ export class UserEventService {
     getEventDetailsRequest = async (id: string): Promise<IEvent | null> => {
         try {
             const result = await this.instructorRepository.getEvent(id)
+            console.log(result);
+            
 
+            if(!result){
+                return null
+            }
+
+            // const user = await this.userRepository.getMyEvent(result._id : )
             return result
         } catch (error) {
             console.log(error);

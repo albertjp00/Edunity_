@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import MeetingRoom from "../../../eventMeeting/meetingRoom";
 import api from "../../../api/userApi";
 import { toast } from "react-toastify";
@@ -9,7 +9,12 @@ const UserEvent: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [meetingLink, setMeetingLink] = useState<string | null>(null);
   const [userId, setUserId] = useState<string>(""); 
-  const [userName , setUsername] = useState<string>("")
+  // const [userName , setUsername] = useState<string>("")
+
+  const location = useLocation()
+    const { name } = location.state || {};
+    console.log('name',name);
+    
 
   // Replace with your auth/store logic
   // const userId = "instructor_1";
@@ -41,7 +46,7 @@ const UserEvent: React.FC = () => {
       try {
         const userDetails  = await api.get('/user/profile')
         console.log(userDetails);
-        setUsername( userDetails.data.user.name)
+        // setUsername( userDetails.data.user.name)
         
       } catch (error) {
         console.log(error);
@@ -62,8 +67,9 @@ const UserEvent: React.FC = () => {
     <MeetingRoom
       eventId={meetingLink}
       userId={userId}
-      name={userName}
       role="user"
+      name={name}
+   
     />
   );
 };

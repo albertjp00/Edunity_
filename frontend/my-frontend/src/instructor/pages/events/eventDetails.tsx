@@ -30,6 +30,7 @@ const EventDetails: React.FC = () => {
   const [event, setEvent] = useState<IEvent | null>(null);
   const [loading, setLoading] = useState(true);
   const [instructor, setInstructor] = useState<string | null>(null);
+  const [instructorName, setInstructorName] = useState<string |  null>(null)
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -37,6 +38,7 @@ const EventDetails: React.FC = () => {
         const result = await instructorApi.get(`/instructor/getEvent/${eventId}`);
         setEvent(result.data.event);
         setInstructor(result.data.event.instructorId);
+        setInstructorName(result.data.event.instructorName)
       } catch (error) {
         console.error("Error fetching event:", error);
       } finally {
@@ -61,7 +63,9 @@ const EventDetails: React.FC = () => {
     if (!event || !instructor) return;
     try {
       await instructorApi.patch(`/instructor/joinEvent/${event._id}`, { userId: instructor });
-      navigate(`/instructor/joinEvent/${event._id}`);
+      navigate(`/instructor/joinEvent/${event._id}`,{
+        state:{instructorName}
+      });
     } catch (error) {
       console.error(error);
       alert("Unable to join event. Please try again.");

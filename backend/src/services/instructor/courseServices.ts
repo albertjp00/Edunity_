@@ -90,7 +90,7 @@ export class CourseService {
   }
 
 
-  getPurchaseDetails = async (id:string):Promise<IPurchaseDetails | null>=>{
+  getPurchaseDetails = async (id:string):Promise<IPurchaseDetails[] | null>=>{
     try {
       const details = await this.instructorRepository.purchaseDetails(id)
       

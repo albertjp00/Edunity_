@@ -8,17 +8,17 @@ import { Request, Response } from 'express';
 
 
 export class InsAuthController {
-  private instAuthService: InstAuthService
+  private _instAuthService: InstAuthService
 
   constructor() {
     const repo = new InstructorRepository();
-    this.instAuthService = new InstAuthService(repo)
+    this._instAuthService = new InstAuthService(repo)
   }
 
   login = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, password } = req.body;
-      const response = await this.instAuthService.instructorLogin(email, password);
+      const response = await this._instAuthService.instructorLogin(email, password);
 
       if (response.success) {
         res.status(200).json({
@@ -49,7 +49,7 @@ export class InsAuthController {
       const { name, email, password } = req.body;
       console.log('inst register', name, email);
 
-      const result = await this.instAuthService.instructorRegister(name, email, password);
+      const result = await this._instAuthService.instructorRegister(name, email, password);
 
       if (result.success) {
         res.status(200).json(result); // OK
@@ -76,7 +76,7 @@ export class InsAuthController {
         return;
       }
 
-      await this.instAuthService.resendOtpRequest(email);
+      await this._instAuthService.resendOtpRequest(email);
 
       res.status(200).json({ success: true, message: "OTP resent successfully" });
     } catch (error) {
@@ -88,7 +88,7 @@ export class InsAuthController {
   verifyOtp = async (req: Request, res: Response): Promise<void> => {
     try {
       const { otp, email } = req.body;
-      const result = await this.instAuthService.verifyOtpRequest(otp, email);
+      const result = await this._instAuthService.verifyOtpRequest(otp, email);
       console.log(result);
 
       if (result.success) {
@@ -114,7 +114,7 @@ export class InsAuthController {
       console.log(email);
 
 
-      const result = await this.instAuthService.forgotPassword(email);
+      const result = await this._instAuthService.forgotPassword(email);
 
       if (!result.success) {
         res.status(400).json({ message: result.message });
@@ -134,7 +134,7 @@ export class InsAuthController {
 
       const { email, otp } = req.body;
 
-      const result = await this.instAuthService.verifyForgotPasswordOtp(otp, email);
+      const result = await this._instAuthService.verifyForgotPasswordOtp(otp, email);
       console.log('verification ', result.success);
 
       if (!result.success) {
@@ -160,7 +160,7 @@ export class InsAuthController {
         return;
       }
 
-      await this.instAuthService.forgotPassword(email);
+      await this._instAuthService.forgotPassword(email);
 
       res.status(200).json({ success: true, message: "OTP resent successfully" });
     } catch (error) {
@@ -181,7 +181,7 @@ export class InsAuthController {
       //   return;
       // }
 
-      const result = await this.instAuthService.resetPassword(
+      const result = await this._instAuthService.resetPassword(
         email,
         newPassword
       );
