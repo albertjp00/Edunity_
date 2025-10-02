@@ -21,7 +21,7 @@ export interface IInsRepository {
 
     findById(id: string): Promise<IInstructor | null>
 
-    updateProfile(id: string, data: any): Promise<IInstructor | null>
+    updateProfile(id: string, data: Partial<IInstructor>): Promise<IInstructor | null>
 
     updatePassword(id: string, newPassword: string): Promise<IInstructor | null>
 
@@ -31,7 +31,7 @@ export interface IInsRepository {
 
 
 
-    addCourse(id: string, data: any): Promise<ICourse | null>
+    addCourse(id: string, data:Partial<ICourse>): Promise<ICourse | null>
 
     getCourses(id: string, skip: number, limit: number): Promise<ICourse[] | null>
 
@@ -39,7 +39,7 @@ export interface IInsRepository {
 
     purchaseDetails(id: string): Promise<IPurchaseDetails[] | null>
 
-    editCourse(id: string, data: any): Promise<ICourse | null>
+    editCourse(id: string, data: Partial<ICourse>): Promise<ICourse | null>
 
     countCourses(): Promise<number>;
 
@@ -59,7 +59,7 @@ export interface IInsRepository {
 
     getQuizByCourseId(courseId: string): Promise<IQuiz | null>
 
-    editQuiz(id: string, data: any): Promise<IQuiz>
+    editQuiz(id: string, data: Partial<IQuiz>): Promise<IQuiz>
 
     startEventById(id: string): Promise<IEvent | null>
 
@@ -86,7 +86,7 @@ export class InstructorRepository implements IInsRepository {
         return await InstructorModel.findById(id);
     }
 
-    async updateProfile(id: string, data: any): Promise<IInstructor | null> {
+    async updateProfile(id: string, data: Partial<IInstructor>): Promise<IInstructor | null> {
         return await InstructorModel.findByIdAndUpdate(id, data, { new: true })
     }
 
@@ -104,7 +104,7 @@ export class InstructorRepository implements IInsRepository {
         return await InstructorModel.findByIdAndUpdate(id, { password: password })
     }
 
-    async addCourse(id: string, data: any): Promise<ICourse | null> {
+    async addCourse(id: string, data: Partial<ICourse>): Promise<ICourse | null> {
         return await CourseModel.create({ instructorId: id, ...data, });
     }
 
@@ -196,7 +196,7 @@ export class InstructorRepository implements IInsRepository {
     }
 
 
-    async updateEvent(id: string, data: any): Promise<IEvent | null> {
+    async updateEvent(id: string, data: Partial<IEvent>): Promise<IEvent | null> {
         return await EventModel.findByIdAndUpdate(id, { ...data })
     }
 
@@ -219,7 +219,7 @@ export class InstructorRepository implements IInsRepository {
     }
 
 
-    async editQuiz(id: string, data: any): Promise<IQuiz> {
+    async editQuiz(id: string, data: Partial<IQuiz>): Promise<IQuiz> {
         console.log(data);
 
         const updatedQuiz = await QuizModel.findByIdAndUpdate(

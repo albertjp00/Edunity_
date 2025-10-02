@@ -44,7 +44,7 @@ export class InsAuthController {
   };
 
 
-  register = async (req: Request, res: Response): Promise<void> => {
+  register = async (req: Request, res: Response) => {
     try {
       const { name, email, password } = req.body;
       console.log('inst register', name, email);
@@ -67,7 +67,7 @@ export class InsAuthController {
   };
 
 
-  resendOtp = async (req: Request, res: Response): Promise<void> => {
+  resendOtp = async (req: Request, res: Response) => {
     try {
       const { email } = req.body;
 
@@ -85,7 +85,7 @@ export class InsAuthController {
     }
   };
 
-  verifyOtp = async (req: Request, res: Response): Promise<void> => {
+  verifyOtp = async (req: Request, res: Response) => {
     try {
       const { otp, email } = req.body;
       const result = await this._instAuthService.verifyOtpRequest(otp, email);
@@ -107,7 +107,7 @@ export class InsAuthController {
 
   // reset password 
 
-  forgotPassword = async (req: Request, res: Response): Promise<void> => {
+  forgotPassword = async (req: Request, res: Response) => {
     try {
 
       const { email } = req.body;
@@ -128,7 +128,7 @@ export class InsAuthController {
     }
   };
 
-  verifyOtpForgotPass = async (req: Request, res: Response): Promise<void> => {
+  verifyOtpForgotPass = async (req: Request, res: Response) => {
     try {
       console.log('verify password');
 
@@ -149,7 +149,7 @@ export class InsAuthController {
     }
   };
 
-  resendOtpForgotPassword = async (req: Request, res: Response): Promise<void> => {
+  resendOtpForgotPassword = async (req: Request, res: Response) => {
     try {
       const { email } = req.body;
       console.log('resend', email);
@@ -169,7 +169,7 @@ export class InsAuthController {
     }
   };
 
-  resetPassword = async (req: Request, res: Response): Promise<void> => {
+  resetPassword = async (req: Request, res: Response) => {
     try {
       const { email, newPassword } = req.body;
       console.log('reset pass ', email, newPassword);

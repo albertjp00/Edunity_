@@ -22,9 +22,9 @@ export const getUserMyCourses = async()=>{
     }
 }
 
-export const getEditProfile = async(formData:any)=>{
+export const getEditProfile = async(formData : FormData)=>{
     try {
-        const res =await api.put('/user/profile',formData,
+        const res =await api.patch('/user/profile',formData,
                 {
                     headers: { "Content-Type": "multipart/form-data" }
                 }
@@ -41,8 +41,8 @@ export const userPasswordChange = async(oldPassword:string , newPassword:string)
         const res =await api.put('/user/passwordChange',
         { oldPassword, newPassword })
         return res
-    } catch (error:any) {
+    } catch (error ) {
         console.log(error);
-        throw error.response ? error.response : error;
+        // throw error.response ? error.response : error;
     }
 }

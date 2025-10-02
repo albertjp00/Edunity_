@@ -15,7 +15,7 @@ export class EventController {
         this._eventService = new EventService(repo)
     }
 
-    createEvents = async (req: InstAuthRequest, res: Response): Promise<void> => {
+    createEvents = async (req: InstAuthRequest, res: Response) => {
         try {
             const id = req.instructor?.id
             const data = { ...req.body.formData }
@@ -30,7 +30,7 @@ export class EventController {
         }
     }
 
-    getMyEvents = async (req: InstAuthRequest, res: Response): Promise<void> => {
+    getMyEvents = async (req: InstAuthRequest, res: Response) => {
         try {
             const id = req.instructor?.id
             const result = await this._eventService.getMyEventsRequest(id)
@@ -43,7 +43,7 @@ export class EventController {
         }
     }
 
-    getEvent = async (req: InstAuthRequest, res: Response): Promise<void> => {
+    getEvent = async (req: InstAuthRequest, res: Response) => {
         try {
             const id = req.params.id!
             console.log("getEvent");
@@ -59,7 +59,7 @@ export class EventController {
         }
     }
 
-    editEvent = async (req: InstAuthRequest, res: Response): Promise<void> => {
+    editEvent = async (req: InstAuthRequest, res: Response) => {
         try {
             const id = req.params.id!
             const data = req.body
@@ -138,7 +138,7 @@ export class EventController {
             }
 
             const result = await this._eventService.endEventRequest(eventId, instructorId);
-
+ 
             if (!result || !result.success) {
                 return res.status(400).json({ message: result?.message || "Failed to end event" });
             }

@@ -3,6 +3,7 @@ import { CourseService } from "../../services/instructor/courseServices.js";
 import { InstructorRepository } from "../../repositories/instructorRepository.js";
 import { AuthRequest, InstAuthRequest } from "../../middleware/authMiddleware.js";
 import instructor from "../../routes/instructorRoutes.js";
+import logger from "../../utils/logger.js";
 
 export class InstCourseController {
   private _courseService: CourseService;
@@ -12,14 +13,14 @@ export class InstCourseController {
     this._courseService = new CourseService(repo);
   }
 
-  myCourses = async (req: InstAuthRequest, res: Response): Promise<void> => {
+  myCourses = async (req: InstAuthRequest, res: Response) => {
     try {
       const id = req.instructor?.id
-      console.log("get Courses user");
+      logger.info("get Courses user");
 
 
       const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 6;
+      const limit = parseInt(req.query.limit as string) || 10;
 
       const data = await this._courseService.fetchCourses(id, page, limit);
 
@@ -37,7 +38,7 @@ export class InstCourseController {
     }
   };
 
-  courseDetails = async (req: InstAuthRequest, res: Response): Promise<void> => {
+  courseDetails = async (req: InstAuthRequest, res: Response) => {
     try {
       const id = req.instructor?.id
       const courseId = req.params.id!
@@ -71,7 +72,7 @@ purchaseDetails = async (req: InstAuthRequest, res: Response) => {
 };
 
 
-  editCourse = async (req: Request, res: Response): Promise<void> => {
+  editCourse = async (req: Request, res: Response) => {
     try {
       const courseId = req.params.id!;
 
@@ -99,7 +100,7 @@ purchaseDetails = async (req: InstAuthRequest, res: Response) => {
     }
   };
 
-  addCourse = async (req: InstAuthRequest, res: Response): Promise<void> => {
+  addCourse = async (req: InstAuthRequest, res: Response) => {
     try {
       const id = req.instructor?.id; // should be ObjectId from middleware
       console.log("add Course ", id, req.body, req.file);

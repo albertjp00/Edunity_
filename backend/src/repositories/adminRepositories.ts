@@ -196,7 +196,7 @@ async getPurchases(search: string = "", page: number = 1): Promise<PurchaseResul
       purchases.map(async (purchase) => {
         const user = await UserModel.findById(purchase.userId).select("name email");
         const course = await CourseModel.findById(purchase.courseId).select("title price");
-
+ 
         return {
           _id: purchase._id,
           userId: purchase.userId,
