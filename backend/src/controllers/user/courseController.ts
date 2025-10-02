@@ -29,7 +29,7 @@ export class UserCourseController {
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 6;
 
-            const data = await this._courseService.getCourses(page, limit);
+            const data = await this._courseService.getCourses(page, limit); 
 
             res.json({
                 success: true,
@@ -100,7 +100,7 @@ export class UserCourseController {
                 Number(limit),
                 sortOption
             );
-            console.log(totalCount);
+            // console.log(totalCount);
             
 
             
@@ -121,7 +121,7 @@ export class UserCourseController {
 
     courseDetails = async (req: AuthRequest, res: Response , next:NextFunction): Promise<void> => {
         try {
-            console.log('details');
+            // console.log('details');
             
             const id = req.user?.id!
             const courseId = req.query.id as string
@@ -245,7 +245,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
             console.log('viewMyCourse', myCourseId, id);
 
             const result = await this._courseService.viewMyCourseRequest(id, myCourseId)
-            console.log('mycourses view', result);
+            // console.log('mycourses view', result);
 
 
             res.json({ success: true, course: result, instructor: result?.instructor, quiz: result?.quizExists })
@@ -300,7 +300,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
             const courseId = req.params.id!;
 
             const result = await this._courseService.addtoFavourites(userId, courseId);
-            console.log(result);
+            // console.log(result);
 
             if (!result.success) {
                 res.json({ success: false, message: "Course already exists in favourites" });
@@ -318,7 +318,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
         try {
             const userId = req.user?.id!
             const data = await this._courseService.getFavourites(userId)
-            console.log(data);
+            // console.log(data);
 
             res.json({ success: true, favourites: data })
 
@@ -334,7 +334,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
             const id = req.user?.id!
             const courseId = req.query.id as string
             const result = await this._courseService.favCourseDetails(id, courseId)
-            console.log("course", result);
+            // console.log("course", result);
 
             res.json({ success: true, course: result })
         } catch (error) {
@@ -374,7 +374,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
             // console.log(answers);
 
             const data = await this._courseService.submitQuiz(userId, courseId as string, quizId as string, answers)
-            console.log('submitted ', data);
+            // console.log('submitted ', data);
 
             res.json({ success: true, data })
         } catch (error) {

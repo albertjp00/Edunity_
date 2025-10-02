@@ -209,7 +209,7 @@ implements IUserRepository {
 
 
 
-  async addMyCourse(userId: string, courseData: any): Promise<IMyCourse | null> {
+  async addMyCourse(userId: string, courseData: Partial<ICourse>): Promise<IMyCourse | null> {
     try {
 
       const existingCourse = await MyCourseModel.findOne({

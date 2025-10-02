@@ -46,9 +46,8 @@ router.post("/resendOtp", authController.resendOtp);
 
 // Profile Routes (Protected)
 router.get("/profile", authMiddleware, profileController.getProfile);
-
+router.patch("/profile",authMiddleware,upload.single("profileImage"),profileController.editProfile);
 router.put('/passwordChange',authMiddleware,profileController.changePassword)
-router.put("/profile",authMiddleware,upload.single("profileImage"),profileController.editProfile);
 
 router.get('/getCourses',authMiddleware, courseController.showCourses)
 router.get('/getAllCourses',authMiddleware, courseController.getAllCourses)

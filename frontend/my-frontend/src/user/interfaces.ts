@@ -1,6 +1,18 @@
 
 
 
+export  interface IUser {
+  email: string ;
+  password : string ;
+}
+
+export interface IRegister{
+  name: string ;
+  email : string;
+  password : string;
+}
+
+
 export interface UEvent {
   _id: string;
   instructorName: string;
