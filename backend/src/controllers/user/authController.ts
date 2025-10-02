@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { AuthRequest } from "../../middleware/authMiddleware.js";
 import { OAuth2Client } from "google-auth-library";
 import { HttpStatus } from "../../enums/httpStatus.enums.js";
+import logger from "../../utils/logger.js";
 
 
 
@@ -24,12 +25,14 @@ export class AuthController {
   login = async (req: Request, res: Response , next:NextFunction): Promise<void> => {
     try {
       const { email, password } = req.body;
+      logger.info(`Login user: ${req.body.email}`);
 
       if (!email || !password) {
         res.status(HttpStatus.BAD_REQUEST).json({ message: "Email and password are required" });
         return;
       }
 
+       
       const result = await this._authService.loginRequest(email, password);
 
       if (result.success) {
@@ -56,16 +59,16 @@ export class AuthController {
       // console.error("Login error:", error);
       next(error)
       res.status(HttpStatus.UNAUTHORIZED).json({ message: "Invalid credentials" });
-
     }
   };
 
 
+  
   refreshToken = (req: Request, res: Response ,next:NextFunction) : void => {
     try {
-      console.log('refresh token ', req.cookies);
+      logger.info('refresh token ', req.cookies);
       const token = req.cookies.refreshToken;
-      console.log('refresh token ', token);
+      logger.info('refresh token ', token);
 
       if (!token) {
         res.status(HttpStatus.UNAUTHORIZED).json({ message: "Refresh token required" });
@@ -111,7 +114,7 @@ export class AuthController {
   checkBlocked = async (req:AuthRequest , res:Response) =>{
     try {
       const id = req.user?.id!
-      console.log('blocked or not ',id);
+      logger.info('blocked or not ',id); 
       
       const isBlocked = await this._authService.isBlocked(id)
       res.json({blocked:isBlocked})
@@ -130,7 +133,7 @@ export class AuthController {
       if (result.success) {
         res.status(HttpStatus.OK).json(result); // OK
       } else {
-        console.log('result', result);
+        logger.info('result', result);
 
         res.status(HttpStatus.BAD_REQUEST).json(result); // Failure
       }
@@ -167,7 +170,7 @@ export class AuthController {
     try {
       const { otp, email } = req.body;
       const result = await this._authService.verifyOtpRequest(otp, email);
-      console.log(result);
+      logger.info(result);
 
       if (result.success) {
         res.status(HttpStatus.OK).json({ success: true });
@@ -237,7 +240,7 @@ export class AuthController {
       const { email, otp } = req.body;
 
       const result = await this._authService.verifyForgotPasswordOtp(otp, email);
-      console.log('verification ', result.success);
+      logger.info('verification ', result.success);
 
       if (!result.success) {
         res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: result.message });
@@ -255,7 +258,7 @@ export class AuthController {
   resendOtpForgotPassword = async (req: Request, res: Response,next:NextFunction): Promise<void> => {
     try {
       const { email } = req.body;
-      console.log('resend' , email);
+      logger.info('resend' , email);
       
 
       if (!email) {
@@ -276,7 +279,7 @@ export class AuthController {
   resetPassword = async (req: Request, res: Response,next:NextFunction): Promise<void> => {
   try {
     const { email , newPassword } = req.body;
-    console.log('reset pass ' , email , newPassword);
+    logger.info('reset pass ' , email , newPassword);
 
     
 

@@ -133,7 +133,7 @@ const EditCourse: React.FC = () => {
 
             formData.append('modules', JSON.stringify(form.modules));
 
-            const res = await instructorApi.put(`/instructor/course/${id}`,
+            const res = await instructorApi.patch(`/instructor/course/${id}`,
                 formData,
                 {
                     headers: {

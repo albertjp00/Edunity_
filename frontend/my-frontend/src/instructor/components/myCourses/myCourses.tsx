@@ -30,7 +30,8 @@ const MyCourses = () => {
         setCourses(res.data.course);
         // setInstructor(res.data.instrcutor)
         // console.log(res.data.course);
-
+        console.log(res.data);
+        
       }
     } catch (err) {
       console.error("Error fetching courses:", err);

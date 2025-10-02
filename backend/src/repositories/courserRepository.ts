@@ -1,5 +1,6 @@
 import { IUserRepository } from "../interfaces/userInterfaces";
 import { CourseModel, ICourse } from "../models/course";
+import logger from "../utils/logger";
 import { BaseCourseRepository } from "./baseRepository";
 import { ISkills } from "./instructorRepository";
 
@@ -33,6 +34,7 @@ implements ICourseRepository {
     //User side course changes / updates -----------------------
 
       async getCourse(id: string): Promise<ICourse | null> {
+        logger.info('gettin course detailsss')
         return await this.model.findById(id)
       }
     

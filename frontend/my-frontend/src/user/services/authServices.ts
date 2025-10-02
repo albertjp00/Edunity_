@@ -1,8 +1,9 @@
 import api from "../../api/userApi";
+import type { IRegister, IUser } from "../interfaces";
 
 
 
-export const login = async(value:any)=>{
+export const login = async(value:IUser)=>{
     try {
         const res = await api.post("/user/login", value);
         return res
@@ -24,7 +25,7 @@ export const logout = async()=>{
 }
 
 
-export const userRegister = async(formData:any)=>{
+export const userRegister = async(formData:IRegister)=>{
     try {
         const res = await api.post("/user/register",formData);
         console.log('result',res);

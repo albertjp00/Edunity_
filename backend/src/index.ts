@@ -11,6 +11,7 @@ import cookieParser from 'cookie-parser';
 import { Server } from 'socket.io';
 import http from 'http'
 import { MessageController } from './controllers/messaage/messageController.js';
+import morgan from "morgan";
 
 
 dotenv.config()
@@ -28,25 +29,60 @@ app.use(cookieParser())
 //     methods:['GET','POST','PUT',"PATCH"]
 // }))------------------------------
 
+app.use(morgan('dev'))
 
+
+
+
+
+
+
+
+
+
+// app.use(cors({
+//   origin: "http://localhost:5173",
+//   credentials: true,
+//   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+//   allowedHeaders: ["Content-Type", "Authorization"],
+// }));
+
+
+// const io = new Server(server, {
+//   cors: {
+//     origin: "http://localhost:5173",  // frontend URL
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//   },
+// });
+
+
+
+
+
+
+// Express CORS
+app.use(cors({
+  origin: [/\.ngrok-free\.app$/, /\.ngrok-free\.dev$/], // allow all ngrok URLs
+  credentials: true,
+  methods: ["GET","POST","PUT","PATCH","DELETE"],
+  allowedHeaders: ["Content-Type","Authorization"],
+}));
+
+// Socket.IO CORS
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",  // frontend URL
+    origin: [/\.ngrok-free\.app$/, /\.ngrok-free\.dev$/],
     credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET","POST","PUT","PATCH","DELETE"],
+    allowedHeaders: ["Content-Type","Authorization"],
   },
 });
 
 
 
 
-app.use(cors({
-  origin: "http://localhost:5173",
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
 
 
 

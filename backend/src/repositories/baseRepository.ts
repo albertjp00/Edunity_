@@ -1,4 +1,3 @@
-// src/repositories/baseRepository.ts
 import { Model, Document } from "mongoose";
 
 export class BaseRepository<T extends Document> {

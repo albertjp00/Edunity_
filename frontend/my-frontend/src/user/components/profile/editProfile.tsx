@@ -4,7 +4,6 @@ import { toast } from 'react-toastify'
 import profilePic from '../../../assets/profilePic.png'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../../components/navbar/navbar'
-import api from '../../../api/userApi'
 import { getEditProfile, getUserProfile } from '../../services/profileServices'
 
 

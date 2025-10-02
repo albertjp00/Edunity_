@@ -2,21 +2,21 @@ import axios, { type AxiosInstance } from "axios";
 import { toast } from "react-toastify";
 
 
-const api: AxiosInstance = axios.create({
-  baseURL: "http://localhost:5000",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  withCredentials: true,
-});
-
 // const api: AxiosInstance = axios.create({
-//   baseURL: "https://abcd-1234.ngrok-free.app",
+//   baseURL: "http://localhost:5000",
 //   headers: {
 //     "Content-Type": "application/json",
 //   },
 //   withCredentials: true,
 // });
+
+const api: AxiosInstance = axios.create({
+  baseURL: "https://alejandra-windowless-arielle.ngrok-free.dev",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  withCredentials: true,
+});
 
 
 

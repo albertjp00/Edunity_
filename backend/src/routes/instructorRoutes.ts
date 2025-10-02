@@ -44,14 +44,14 @@ instructor.post('/kycSubmit' ,instAuthMiddleware ,
   profileController.kycSubmit
 );
 
-instructor.post('/forgotPassword',authController.forgotPassword)
-instructor.post('/otpVerify',authController.verifyOtpForgotPass)
+instructor.post('/forgotPassword',authController.forgotPassword)  
+instructor.post('/otpVerify',authController.verifyOtpForgotPass) 
 instructor.post('/resendOtpForgotPass',authController.resendOtpForgotPassword)
 instructor.put('/resetPassword',authController.resetPassword)
 
 instructor.get('/getCourse',instAuthMiddleware,courseController.myCourses)
 instructor.get('/course/:id', instAuthMiddleware, courseController.courseDetails);
-instructor.put('/course/:id', instAuthMiddleware,upload.single("thumbnail"), courseController.editCourse);
+instructor.patch('/course/:id', instAuthMiddleware,upload.single("thumbnail"), courseController.editCourse);
 instructor.post('/course',instAuthMiddleware,upload.single('thumbnail'),courseController.addCourse) 
 
 instructor.get('/purchaseDetails/:id',instAuthMiddleware , courseController.purchaseDetails)

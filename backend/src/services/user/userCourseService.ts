@@ -115,9 +115,9 @@ export class UserCourseService {
 
 
 
-// import OrderModel from "../models/orderModel"; // adjust path
+  // import OrderModel from "../models/orderModel"; // adjust path
 
-buyCourseRequest = async (userId: string, courseId: string) => {
+  buyCourseRequest = async (userId: string, courseId: string) => {
     try {
       console.log('buy course service');
       const course = await this.userRepository.getCourse(courseId);
@@ -155,6 +155,9 @@ buyCourseRequest = async (userId: string, courseId: string) => {
 
       if (razorpay_signature === expectedSign) {
         const course = await this.userRepository.buyCourse(courseId)
+        if (!course) {
+          return { success: false, message: "Course not found" };
+        }
         await this.userRepository.addMyCourse(userId, course);
 
         return { success: true, message: "Payment verified and course added" };
@@ -179,7 +182,7 @@ buyCourseRequest = async (userId: string, courseId: string) => {
     try {
 
       const myCourses = await this.userRepository.findMyCourses(id)
-      console.log("courseIdd ", myCourses);
+      // console.log("courseIdd ", myCourses);
 
       if (!myCourses || myCourses.length === 0) return [];
       const populatedCourses = await Promise.all(
@@ -191,7 +194,7 @@ buyCourseRequest = async (userId: string, courseId: string) => {
           };
         })
       );
-      console.log("my Courses ", populatedCourses);
+      // console.log("my Courses ", populatedCourses);
 
       return populatedCourses;
 
