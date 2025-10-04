@@ -1,90 +1,98 @@
-.event-details {
+/* Container */
+.ue-event-container {
   max-width: 900px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background: #f9f9f9;
-  border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  margin: 50px auto;
+  padding: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.event-header {
+/* Card */
+.ue-event-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  padding: 30px;
   text-align: center;
 }
 
-.event-thumbnail {
+/* Event Image */
+.ue-event-image {
   width: 100%;
-  max-height: 350px;
+  max-height: 450px;
   object-fit: cover;
-  border-radius: 15px;
-  margin-bottom: 1rem;
+  border-radius: 12px;
+  margin-bottom: 25px;
   transition: transform 0.3s ease;
 }
 
-.event-thumbnail:hover {
-  transform: scale(1.02);
+.ue-event-image:hover {
+  transform: scale(1.05);
 }
 
-.event-header h2 {
+/* Event Title & Description */
+.ue-event-title {
   font-size: 2rem;
-  margin-bottom: 0.5rem;
-  color: #222;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #1a1a1a;
 }
 
-.event-header p {
+.ue-event-description {
   font-size: 1rem;
   color: #555;
-  margin: 0.3rem 0;
+  margin-bottom: 12px;
+  line-height: 1.6;
 }
 
-.enroll-btn {
-  margin-top: 1.5rem;
-  padding: 0.8rem 2rem;
-  background: linear-gradient(90deg, #007bff, #00c6ff);
-  color: #fff;
-  font-weight: 600;
+.ue-event-datetime,
+.ue-event-online {
+  font-size: 0.95rem;
+  color: #777;
+  margin-bottom: 12px;
+}
+
+/* Buttons */
+.ue-enroll-btn,
+.ue-join-btn {
+  padding: 0.9rem 1.5rem;
   font-size: 1rem;
-  border: none;
+  font-weight: 600;
   border-radius: 12px;
+  border: none;
   cursor: pointer;
   transition: all 0.3s ease;
+  margin-top: 15px;
+  width: 220px;
 }
 
-.enroll-btn:hover {
+.ue-enroll-btn {
+  background: linear-gradient(135deg, #6366f1, #4338ca);
+  color: #fff;
+}
+
+.ue-enroll-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.4);
+  background: linear-gradient(135deg, #4f46e5, #3730a3);
 }
 
-.enroll-btn:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-  color: #666;
-  box-shadow: none;
+.ue-join-btn {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
 }
 
-.instructor-section {
-  margin-top: 3rem;
-  padding: 1.5rem;
-  border-top: 1px solid #e0e0e0;
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
+.ue-join-btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #059669, #047857);
 }
 
-.instructor-img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #007bff;
-}
-
-.instructor-section p {
-  margin: 0.2rem 0;
-  color: #444;
-}
-
-.instructor-section strong {
-  font-size: 1.2rem;
-  color: #222;
+/* Notice text */
+.ue-event-notice {
+  margin-top: 15px;
+  font-weight: 600;
+  color: #d97706;
+  background: rgba(255, 247, 237, 0.7);
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  display: inline-block;
+  border: 1px solid #fcd34d;
 }

@@ -10,7 +10,7 @@ const EventForm: React.FC = () => {
     topic: "",
     description: "",
     date: "",
-    time:''
+    time: ''
   });
 
   const [errors, setErrors] = useState<Partial<Ievent>>({});
@@ -37,9 +37,9 @@ const EventForm: React.FC = () => {
     if (!formData.date) {
       newErrors.date = "Please select a date.";
 
-    }if(formData.time){
+    } if (!formData.time) {
       newErrors.time = "Please select a time.";
-    } 
+    }
     else if (new Date(formData.date) < new Date()) {
       newErrors.date = "Date must be in the future.";
     }
@@ -53,12 +53,12 @@ const EventForm: React.FC = () => {
 
     if (!validate()) return;
 
-    const res =  await  addEvent(formData);
-    if(!res) return 
-    if(res.data.success){
+    const res = await addEvent(formData);
+    if (!res) return
+    if (res.data.success) {
       toast.success("Event Created")
-    setFormData({ title: "", topic: "", description: "", date: "" ,time:''});
-    setErrors({});
+      setFormData({ title: "", topic: "", description: "", date: "", time: '' });
+      setErrors({});
     }
   };
 
@@ -119,10 +119,11 @@ const EventForm: React.FC = () => {
             type="time"
             name="time"
             value={formData.time}
-            onChange={handleChange}
+            onChange={handleChange} 
           />
           {errors.time && <span className="error">{errors.time}</span>}
         </div>
+
 
         <button type="submit">➕ Add Event</button>
       </form>

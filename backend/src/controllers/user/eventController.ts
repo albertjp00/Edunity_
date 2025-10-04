@@ -5,6 +5,7 @@ import { EventFullError, NotFoundError, NotLiveError, UserEventService } from ".
 import { InstructorRepository } from "../../repositories/instructorRepository.js";
 import { Server } from "http";
 import { log } from "console";
+import logger from "../../utils/logger";
 
 
 
@@ -23,6 +24,8 @@ export class UserEventController {
     getEvents = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void | null> => {
         try {
             const result = await this._userEventService.getEventsRequest()
+            console.log(result);
+            
 
             res.json({ success: true, events: result })
         } catch (error) {
@@ -51,16 +54,35 @@ export class UserEventController {
         try {
             const id = req.user?.id!
             const eventId = req.params.id
+            logger.info('enroll events ',id , eventId )
             if (!eventId) {
                 res.status(400).json({ success: false, message: "event Id missing" });
                 return;
             }
             const result = await this._userEventService.eventEnrollRequest(id, eventId)
+            console.log('enrolled event ',result)
 
             res.json({ success: true })
         } catch (error) {
             // console.log(error);
             next(error)
+        }
+    }
+
+    getMyEvents = async(req:AuthRequest , res : Response)=>{
+        try {
+            // logger.info('getting my eventss ')
+            const userId = req.user?.id!
+            console.log(userId);
+            
+            const events = await this._userEventService.getMyEvents(userId)
+            logger.info('evetnssss',events)
+            console.log(events);
+            
+            res.json({success : true , events : events})
+        } catch (error) {
+            console.log(error);
+            
         }
     }
 
@@ -81,7 +103,7 @@ export class UserEventController {
                 return res.status(400).json({ message: result?.message || "Failed to start event" });
             }
 
-            console.log('result', result);
+            // console.log('result', result);
 
             // ✅ Only include meetingLink if it exists
             // const response: { success: boolean; message: string; meetingLink?: string } = {

@@ -76,6 +76,8 @@ router.post("/quiz/:courseId/:quizId",authMiddleware ,courseController.submitQui
 router.get('/events',authMiddleware , eventController.getEvents)
 router.get('/event/:id',authMiddleware , eventController.getEventDetails)
 router.get('/eventEnroll/:id',authMiddleware , eventController.enrollEvent)
+router.get('/myEvents',authMiddleware , eventController.getMyEvents)
+
 
 router.get("/joinEvent/:eventId",authMiddleware ,eventController.joinUserEvent);
 
