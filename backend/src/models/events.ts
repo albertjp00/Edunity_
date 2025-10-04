@@ -9,33 +9,31 @@ export interface IEvent extends Document {
   topic: string;
   date: Date;
   time: string
-  duration: number;
   participants: number;
-  participantsList: string[]; // store userIds of joined participants
-  isLive: boolean;            // indicates if the session is ongoing
-  maxParticipants?: number;   // optional limit for users
-  meetingLink?: string;       // link to join (Zoom/WebRTC/Socket room)
-  recordingUrl?: string;      // saved recording (optional)
+  participantsList: string[]; 
+  isLive: boolean;            
+  maxParticipants?: number;  
+  meetingLink?: string;      
+  recordingUrl?: string;      
   createdAt: Date;
   updatedAt: Date;
 }
 
-const EventSchema = new Schema<IEvent>(
+const EventSchema: Schema = new Schema<IEvent>(
   {
     instructorId: { type: String, required: true },
     instructorName: { type: String, required: true },
     title: { type: String, required: true },
-    description: { type: String },
-    topic: { type: String },
+    description: { type: String, required: true },
+    topic: { type: String, required: true },
     date: { type: Date, required: true },
-    time:{type : String },
-    duration: { type: Number },
-    participants: { type: Number, default: 0 },
-    participantsList: [{ type: String }], // array of userIds
+    time: { type: String, required: true },
+    participants: { type: Number, default: 0 },          // ✅ Counter
+    participantsList: { type: [String], default: [] },   // ✅ Array of userIds
     isLive: { type: Boolean, default: false },
-    maxParticipants: { type: Number , default:10},
+    maxParticipants: { type: Number },
     meetingLink: { type: String },
-    recordingUrl: { type: String }
+    recordingUrl: { type: String },
   },
   { timestamps: true }
 );

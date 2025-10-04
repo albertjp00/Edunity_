@@ -28,6 +28,8 @@ export interface IInsRepository {
 
     getCourseDetails(courseId: string): Promise<ICourse | null>
 
+    purchaseDetails(courseId: string): Promise<IPurchaseDetails[] | null>
+
     editCourse(id: string, data: any): Promise<ICourse | null>
 
     countCourses(): Promise<number>;

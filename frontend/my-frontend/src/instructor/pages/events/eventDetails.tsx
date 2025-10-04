@@ -3,6 +3,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./eventDetails.css";
 import instructorApi from "../../../api/instructorApi";
+import eventImage from '../../../assets/webinar_thumnail.png'
 
 interface IEvent {
   _id: string;
@@ -30,7 +31,7 @@ const EventDetails: React.FC = () => {
   const [event, setEvent] = useState<IEvent | null>(null);
   const [loading, setLoading] = useState(true);
   const [instructor, setInstructor] = useState<string | null>(null);
-  const [instructorName, setInstructorName] = useState<string |  null>(null)
+  const [instructorName, setInstructorName] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -63,8 +64,8 @@ const EventDetails: React.FC = () => {
     if (!event || !instructor) return;
     try {
       await instructorApi.patch(`/instructor/joinEvent/${event._id}`, { userId: instructor });
-      navigate(`/instructor/joinEvent/${event._id}`,{
-        state:{instructorName}
+      navigate(`/instructor/joinEvent/${event._id}`, {
+        state: { instructorName }
       });
     } catch (error) {
       console.error(error);
@@ -77,40 +78,47 @@ const EventDetails: React.FC = () => {
 
   return (
     <div className="event-container">
-      <h1 className="event-title">{event.title}</h1>
-      <p className="event-host">Hosted by {event.instructorName}</p>
-
-      <div className="event-info">
-        <p><strong>Topic:</strong> {event.topic}</p>
-        <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</p>
-        <p><strong>Time:</strong> {event.time}</p>
-        <p><strong>Duration:</strong> {event.duration} minutes</p>
-        <p><strong>Participants:</strong> {event.participants}/{event.maxParticipants}</p>
+      <div className="event-image">
+        <img src={eventImage} alt="" />
       </div>
 
-      <p className="event-description">{event.description}</p>
+      <div className="event-details">
+        <h1 className="event-title">{event.title}</h1>
+        <p className="event-host">Hosted by {event.instructorName}</p>
 
-      {canJoin ? (
-        event.isLive ? (
-          event.participants < (event.maxParticipants || Infinity) ? (
-            <button onClick={handleJoin} className="join-btn">
-              Join Event
-            </button>
+        <div className="event-info">
+          <p><strong>Topic:</strong> {event.topic}</p>
+          <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</p>
+          <p><strong>Time:</strong> {event.time}</p>
+          <p><strong>Duration:</strong> {event.duration} minutes</p>
+          <p><strong>Participants:</strong> {event.participants}</p>
+        </div>
+
+        <p className="event-description">{event.description}</p>
+
+        {canJoin ? (
+          event.isLive ? (
+            event.participants < (event.maxParticipants || Infinity) ? (
+              <button onClick={handleJoin} className="join-btn">
+                Join Event
+              </button>
+            ) : (
+              <p className="text-red">This event is full.</p>
+            )
           ) : (
-            <p className="text-red">This event is full.</p>
+            <button onClick={handleJoin} className="join-btn">
+              Start Event
+            </button>
           )
         ) : (
-          <button onClick={handleJoin} className="join-btn">
-            Start Event
-          </button>
-        )
-      ) : (
-        <p className="text-yellow">
-          Event can only be joined at {event.time} on{" "}
-          {new Date(event.date).toLocaleDateString()}.
-        </p>
-      )}
+          <p className="text-yellow">
+            Event can only be joined at {event.time} on{" "}
+            {new Date(event.date).toLocaleDateString()}.
+          </p>
+        )}
+      </div>
     </div>
+
   );
 };
 

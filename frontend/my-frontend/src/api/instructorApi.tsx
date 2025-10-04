@@ -25,10 +25,13 @@ instructorApi.interceptors.request.use((config) => {
 
 
 instructorApi.interceptors.response.use(
+
   (response) => response,
   (error) => {
 
     const originalRequest = error.config;
+    console.log('in instructor api');
+    
 
     if (
       originalRequest.url?.includes("/instructor/login") ||

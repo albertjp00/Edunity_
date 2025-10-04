@@ -12,15 +12,29 @@ export interface IRegister{
   password : string;
 }
 
+export interface MyEvent {
+  _id: string;
+  eventId: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  userId: string;
+}
+
 
 export interface UEvent {
-  _id: string;
+  _id:string
+  instructorId: string;
   instructorName: string;
   title: string;
-  description?: string;
-  date: string;
-  duration?: number;
-  category?: string;
+  description: string;
+  topic: string;
+  date: Date;
+  time: string
+  duration: number;
+  isLive: boolean;          
+  createdAt: Date;
+  updatedAt: Date;
 
 }
 

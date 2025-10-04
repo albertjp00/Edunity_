@@ -40,17 +40,18 @@ const LoginAdmin: React.FC = () => {
       }else{
         toast.error(response.data.message)
       }
-    } catch (error: any) {
+    } catch (error) {
       const err = error as AxiosError<{ message: string }>;
       const message = err.response?.data?.message || "Something went wrong";
       toast.error(message);
     }
   };
+  
 
   useEffect(() => {
     const token = localStorage.getItem("admin");
     if (token) {
-      navigate("/admin/login");
+      navigate("/admin/home");
     }
   }, [navigate]);
 
