@@ -45,7 +45,7 @@ export class UserCourseService {
     const skills = await this.userRepository.findSkills();
 
 
-    console.log('courses', courses);
+    // console.log('courses', courses);
 
 
     return {

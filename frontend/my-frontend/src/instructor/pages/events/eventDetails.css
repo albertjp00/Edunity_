@@ -1,52 +1,149 @@
+/* eventDetails.css */
 
+/* Main container */
 .event-container {
-  max-width: 768px; /* like max-w-3xl */
-  margin: 2.5rem auto; /* mt-10 + auto horizontal centering */
-  padding: 1.5rem; /* p-6 */
-  background-color: #ffffff; /* white bg */
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); /* shadow-lg */
-  border-radius: 0.75rem; /* rounded-lg */
-  font-family: Arial, sans-serif;
+  display: flex;
+  max-width: 1000px;
+  margin: 40px auto;
+  min-height: 80vh;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #fff;
 }
 
+/* Left image panel */
+.event-image {
+  flex: 1;
+  min-width: 300px;
+  overflow: hidden;
+}
+
+.event-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* makes the image cover the div nicely */
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.event-image img:hover {
+  transform: scale(1.05); /* subtle zoom on hover */
+}
+
+/* Right content panel */
+.event-details {
+  flex: 1.2;
+  padding: 2rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
+}
+
+/* Title & host */
 .event-title {
-  font-size: 1.875rem; /* text-3xl */
-  font-weight: 700; /* font-bold */
-  margin-bottom: 0.5rem; /* mb-2 */
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #1a1a1a;
 }
 
 .event-host {
-  color: #4b5563; /* gray-600 */
-  margin-bottom: 1rem; /* mb-4 */
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 2rem;
 }
 
-.event-info p {
-  margin-bottom: 0.5rem;
-}
-
-.event-description {
+/* Info grid */
+.event-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 30px;
   margin-bottom: 1.5rem;
 }
 
-.join-btn {
-  background-color: #2563eb; /* blue-600 */
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem; /* rounded */
-  border: none;
-  cursor: pointer;
+.event-info p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.event-info strong {
   font-weight: 600;
-  transition: background-color 0.3s ease;
+  color: #111;
+}
+
+/* Description */
+.event-description {
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: rgba(243, 244, 246, 0.8);
+  border-left: 4px solid #6366f1;
+  border-radius: 8px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* Button */
+.join-btn {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  padding: 0.9rem 1.2rem;
+  background: linear-gradient(135deg, #6366f1, #4338ca);
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 
 .join-btn:hover {
-  background-color: #1e40af; /* blue-700 */
+  background: linear-gradient(135deg, #4f46e5, #3730a3);
+  transform: translateY(-2px);
 }
 
+/* Messages */
 .text-red {
-  color: #dc2626; /* red-500 */
+  color: #dc2626;
+  text-align: center;
+  font-weight: 600;
+  margin-top: 1rem;
 }
 
 .text-yellow {
-  color: #ca8a04; /* yellow-600 */
+  color: #d97706;
+  text-align: center;
+  font-weight: 500;
+  margin-top: 1rem;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  padding: 0.8rem;
+  border: 1px solid #fde68a;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .event-container {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .event-image {
+    height: 250px;
+    width: 100%;
+  }
+
+  .event-details {
+    padding: 1.5rem 2rem;
+  }
+
+  .event-info {
+    grid-template-columns: 1fr;
+  }
 }

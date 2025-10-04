@@ -37,7 +37,7 @@ export interface IInsRepository {
 
     getCourseDetails(courseId: string): Promise<ICourse | null>
 
-    purchaseDetails(id: string): Promise<IPurchaseDetails[] | null>
+    purchaseDetails(courseId: string): Promise<IPurchaseDetails[] | null>
 
     editCourse(id: string, data: Partial<ICourse>): Promise<ICourse | null>
 

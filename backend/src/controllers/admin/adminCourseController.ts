@@ -15,6 +15,7 @@ export class AdminCourseController {
 
     //pass the dependencies from outside the class(DI)
     constructor(
+        
         repo: IAdminRepository,
         Irepo: IInsRepository,
         Urepo: IUserRepository

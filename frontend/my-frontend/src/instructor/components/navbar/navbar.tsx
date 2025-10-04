@@ -2,7 +2,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import profileImage from '../../../assets/profilePic.png'
 import './navbar.css'
 import logo from '../../../assets/logo.png'
-import instructorApi from '../../../api/instructorApi'
 
 
 

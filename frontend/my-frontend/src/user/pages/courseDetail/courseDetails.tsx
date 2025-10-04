@@ -1,6 +1,6 @@
 import React from 'react'
 import Navbar from '../../components/navbar/navbar'
-import CourseDetailsUser from '../../components/showCourses/courseDetails'
+import CourseDetailsUser from '../../components/showCourses/courseDetailsUser'
 
 const UserCourseDetails = () => {
   return (

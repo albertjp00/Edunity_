@@ -117,8 +117,8 @@ function App() {
 
             <Route path='/user/quiz/:courseId' element={<ProtectedRoute><DoQuiz /></ProtectedRoute>} />
 
-          <Route path='/user/joinEvent/:eventId' element={<ProtectedRoute><UserEvent /></ProtectedRoute>} />
-          
+            <Route path='/user/joinEvent/:eventId' element={<ProtectedRoute><UserEvent /></ProtectedRoute>} />
+
 
 
 
@@ -129,8 +129,8 @@ function App() {
 
             <Route path='/instructor/forgotPassword' element={<InstructorForgotPassword />} />
             <Route path='/instructor/otpVerification' element={<OtpVerificationInstructor />} />
-            <Route path='/instructor/otpVerify' element={<InstructorVerifyOtp /> } />
-            <Route path='/instructor/resetPassword' element={<InstructorResetPassword /> } />
+            <Route path='/instructor/otpVerify' element={<InstructorVerifyOtp />} />
+            <Route path='/instructor/resetPassword' element={<InstructorResetPassword />} />
 
             <Route path='/instructor/home' element={<InstProtectedRoute><InstructorHome /></InstProtectedRoute>} />
             <Route path='/instructor/profile' element={<InstProtectedRoute><ProfilePage /></InstProtectedRoute>} />
@@ -146,6 +146,10 @@ function App() {
 
             <Route path='/instructor/createEvent' element={<InstProtectedRoute><CreateEvents /></InstProtectedRoute>}></Route>
             <Route path='/instructor/editEvent/:id' element={<InstProtectedRoute><InstructorEditEvents /></InstProtectedRoute>}></Route>
+
+            <Route path='/instructor/eventDetails/:eventId' element={<InstProtectedRoute><EventDetails /></InstProtectedRoute>} />
+
+            <Route path='/instructor/joinEvent/:eventId' element={<InstProtectedRoute><InstructorEvent /></InstProtectedRoute>} />
 
             <Route path='/instructor/addQuiz/:id' element={<InstProtectedRoute><AddQuiz /></InstProtectedRoute>}></Route>
             <Route path='/instructor/quiz/:courseId' element={<InstProtectedRoute><Quiz /></InstProtectedRoute>}></Route>
@@ -164,9 +168,7 @@ function App() {
 
             {/* <Route path='/admin/purchases' element={<AdminProtectedRoute><PurchasesAdmin /></AdminProtectedRoute>} /> */}
 
-          <Route path='/instructor/eventDetails/:eventId' element={<ProtectedRoute><EventDetails /></ProtectedRoute>} />
 
-          <Route path='/instructor/joinEvent/:eventId' element={<InstProtectedRoute><InstructorEvent /></InstProtectedRoute>} />
 
 
 

@@ -15,11 +15,11 @@ import { BaseRepository } from './baseRepository.js';
 
 
 
-export class UserRepository  
-extends BaseRepository<IUser>
-implements IUserRepository {
+export class UserRepository
+  extends BaseRepository<IUser>
+  implements IUserRepository {
 
-  constructor(){
+  constructor() {
     super(UserModel)
   }
 
@@ -33,23 +33,23 @@ implements IUserRepository {
     return await newUser.save();
   }
 
-  async isBlocked(id: string):Promise<boolean>{
+  async isBlocked(id: string): Promise<boolean> {
     const blocked = await this.model.findById(id)
-    if(blocked?.blocked){
+    if (blocked?.blocked) {
       return true
     }
     console.log(blocked);
-    
+
     return false
   }
 
   async findByEmail(email: string): Promise<IUser | null> {
-    
+
     return await this.model.findOne({ email });
   }
 
-  async findById(id: string): Promise<IUser | null> {  
-    
+  async findById(id: string): Promise<IUser | null> {
+
     return await this.model.findById(id);
   }
 
@@ -72,7 +72,7 @@ implements IUserRepository {
 
 
 
-  
+
 
   async getCourses(skip: number, limit: number) {
     return CourseModel.aggregate([
@@ -202,7 +202,7 @@ implements IUserRepository {
   }
 
 
-  async findInstructors():Promise<IInstructor[] | null>{
+  async findInstructors(): Promise<IInstructor[] | null> {
     return await InstructorModel.find()
   }
 
@@ -281,10 +281,29 @@ implements IUserRepository {
     return await MyEventModel.findOne({ eventId: id })
   }
 
-  async enrollEvent(id: string, eventId: string): Promise<IMyEvent | null> {
-    await EventModel.findByIdAndUpdate(eventId, { $inc: { participants: 1 } }, { new: true })
-    
-    return await MyEventModel.create({ userId: id, eventId })
+
+  async enrollEvent(userId: string, eventId: string): Promise<IMyEvent> {
+    await EventModel.findByIdAndUpdate(
+      eventId,
+      { $inc: { participants: 1 }, $push: { participantsList: userId } },
+      { new: true }
+    );
+
+    const myEvent = await MyEventModel.create({
+      userId,
+      eventId,
+      enrolledAt: new Date(),
+      status: "enrolled",
+    });
+
+    return myEvent;
+  };
+
+
+  async getMyEvents(id: string): Promise<IEvent[] | null> {
+    console.log('userid - - - - -', id);
+
+    return await MyEventModel.find({ userId: id })
   }
 
   async addtoFavourites(userId: string, courseId: string): Promise<IFavourite | null> {
@@ -317,23 +336,23 @@ implements IUserRepository {
       { upsert: true, new: true }
     );
   }
-  
+
 
   addParticipant = async (
-  eventId: string,
-  userId: string
-): Promise<IEvent | null> => {
-  if (!Types.ObjectId.isValid(eventId)) return null;
+    eventId: string,
+    userId: string
+  ): Promise<IEvent | null> => {
+    if (!Types.ObjectId.isValid(eventId)) return null;
 
-  return EventModel.findByIdAndUpdate(
-    eventId,
-    {
-      $addToSet: { participantsList: userId }, // avoid duplicates
-      $inc: { participants: 1 },
-    },
-    { new: true }
-  ).exec();
-};
+    return EventModel.findByIdAndUpdate(
+      eventId,
+      {
+        $addToSet: { participantsList: userId }, // avoid duplicates
+        $inc: { participants: 1 },
+      },
+      { new: true }
+    ).exec();
+  };
 
 
 }

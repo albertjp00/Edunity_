@@ -5,7 +5,7 @@ import './myEvents.css'
 import webinarImage from '../../../assets/webinar_thumnail.png'
 import { useNavigate } from "react-router-dom";
 
-const EventList: React.FC = () => {
+const InstructorEventList: React.FC = () => {
   const [events, setEvents] = useState<Ievent[]>([]);
 
   const navigate = useNavigate()
@@ -36,42 +36,39 @@ const EventList: React.FC = () => {
   }, []);
 
 return (
-  <div className="events-container">
-    <h2>Your Events</h2>
-    {events.length === 0 ? (
-      <p>No events available</p>
-    ) : (
-      <div className="event-list">
-        {events.map((event) => (
-          <div key={event._id} className="event-card" onClick={()=>EventDetails(event._id!)}>
-            {event && (
-              <div className="event-image-container">
-                <img
-                  src={webinarImage}
-                  alt={event.title}
-                  className="event-thumbnail"
-                />
-                <span className="event-instructor">{event.instructorName}</span>
-                <span className="event-edit" onClick={()=>gotoEdit(event._id!)}>Edit</span>
-              </div>
-            )}
+  
+  <div className="my-events-container">
+    <div className="events-banner">
+  <h1>MY EVENTS</h1>
+</div>
 
-            {/* Event Details */}
-            <div className="event-details">
-              <h3 className="event-title">{event.title}</h3>
-              <p className="event-description">{event.description}</p>
-              <span className="event-date">
-                {new Date(event.date).toDateString()}
-              </span>
-            </div>
+  {/* <h2>Your Events</h2> */}
+  {events.length === 0 ? (
+    <p>No events available</p>
+  ) : (
+    <div className="events-grid">
+      {events.map((event) => (
+        <div key={event._id} className="event-tile" >
+          <div className="tile-image-wrapper">
+            <img src={webinarImage} alt={event.title} className="tile-thumbnail" />
+            <span className="tile-instructor">{event.instructorName}</span>
+            <span className="tile-edit" onClick={() => gotoEdit(event._id!)}>Edit</span>
           </div>
-        ))}
-      </div>
-    )}
-  </div>
+
+          <div className="tile-content" onClick={() => EventDetails(event._id!)}>
+            <h3 className="tile-title">{event.title}</h3>
+            <p className="tile-desc">{event.description}</p>
+            <span className="tile-date">{new Date(event.date).toDateString()}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
+
 );
 
 
 };
 
-export default EventList;
+export default InstructorEventList;

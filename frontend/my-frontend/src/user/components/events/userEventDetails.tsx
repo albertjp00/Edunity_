@@ -14,7 +14,7 @@ const EventDetails: React.FC = () => {
   const [event, setEvent] = useState<Ievent | null>(null);
   // const [instructor, setInstructor] = useState<string>();
   const [isEnrolled, setIsEnrolled] = useState(false);
-  const [user , setUser] = useState <string>()
+  const [user, setUser] = useState<string>()
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -27,21 +27,21 @@ const EventDetails: React.FC = () => {
         // setInstructor(res.data.instructor);
         setIsEnrolled(res.data.enrolled);
         console.log(res);
-        
+
       }
     };
     fetchEvent();
   }, [id]);
 
-  useEffect(()=>{
-    const getUser = async ()=>{
+  useEffect(() => {
+    const getUser = async () => {
       const res = await api.get('/user/profile')
       setUser(res.data.data.name)
-      
-      
+
+
     }
     getUser()
-  },[])
+  }, [])
 
   // ✅ Check if user can join based on current time
   const canJoin = useMemo(() => {
@@ -69,52 +69,49 @@ const EventDetails: React.FC = () => {
 
   const handleJoinEvent = () => {
     if (!event) return;
-    navigate(`/user/joinEvent/${event._id}`,{
-      state:{name : user}    });
+    navigate(`/user/joinEvent/${event._id}`, {
+      state: { name: user }
+    });
   };
 
   if (!event) return <p>Loading...</p>;
 
   return (
-    <div className="event-details">
-      <div className="event-header">
-        <img src={thumbnail} alt="Event Thumbnail" className="event-thumbnail" />
-        <h2>{event.title}</h2>
-        <p>{event.description}</p>
-        <p>
+    <div className="ue-event-container">
+      <div className="ue-event-card">
+
+        <img src={thumbnail} alt="Event Thumbnail" className="ue-event-image" />
+
+        <h2 className="ue-event-title">{event.title}</h2>
+
+        <p className="ue-event-description">{event.description}</p>
+
+        <p className="ue-event-datetime">
           📅 {new Date(event.date).toLocaleDateString()} | ⏱ {event.time} mins
+
         </p>
-        <p>🌐 Online Event</p>
+
+        <p className="ue-event-online">🌐 Online Event</p>
 
         {!isEnrolled ? (
-          <button onClick={handleEnroll} className="enroll-btn">
+          <button onClick={handleEnroll} className="ue-enroll-btn">
             Enroll Now
+            
           </button>
+          
         ) : canJoin ? (
-          <button onClick={handleJoinEvent} className="join-btn">
+          <button onClick={handleJoinEvent} className="ue-join-btn">
             Join Event
           </button>
         ) : (
-          <p className="text-yellow">
+          <p className="ue-event-notice">
             Event can be joined at {event.time} on {new Date(event.date).toLocaleDateString()}
           </p>
         )}
       </div>
-
-      {/* <div className="instructor-section">
-        <h3>Instructor</h3>
-        <img
-          src={instructor?.profileImage || profilePic}
-          alt="Instructor"
-          className="instructor-img"
-        />
-        <p>
-          <strong>{instructor?.name}</strong>
-        </p>
-        <p>{instructor?.bio || "No bio available"}</p>
-      </div> */}
     </div>
   );
+
 };
 
 export default EventDetails;

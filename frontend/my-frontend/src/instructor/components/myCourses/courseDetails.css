@@ -1,42 +1,228 @@
-.course-detail-page {
-  max-width: 900px;
-  margin: auto;
-  padding: 2rem;
-  background-color: #fdfdfd;
-  border-radius: 10px;
+.details {
+  background-color: #f9f9ff;
+  min-height: 100vh;
+  font-family: "Poppins", sans-serif;
 }
 
+/* ======= Banner/Header Section ======= */
+.course-detail-page {
+  max-width: 1100px;
+  margin: 40px auto;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  padding: 40px 60px;
+}
+
+/* ======= Title & Action Buttons ======= */
 .course-title {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  gap: 15px;
+}
+
+.course-title h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2251;
+}
+
+.edit-button {
+  background: #6a5af9;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.edit-button:hover {
+  background: #5a4fe1;
+  transform: translateY(-2px);
+}
+
+/* ======= Thumbnail ======= */
+.detail-thumbnail {
+  width: 100%;
+  max-height: 350px;
+  object-fit: cover;
+  border-radius: 15px;
+  margin: 25px 0;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ======= Course Info ======= */
+.course-detail-page p {
+  font-size: 1rem;
+  color: #444;
+  margin: 8px 0;
+  line-height: 1.6;
+}
+
+.course-detail-page strong {
+  color: #1f2251;
+}
+
+/* ======= Highlights Section ======= */
+.course-highlights {
+  margin-top: 30px;
+  background: #f4f3ff;
+  border-radius: 15px;
+  padding: 25px 20px;
+}
+
+.highlight-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.highlight-item {
+  flex: 1;
+  min-width: 200px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.highlight-item p {
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #1f2251;
+}
+
+.highlight-item span {
+  font-size: 0.9rem;
+  color: #707070;
+}
+
+/* ======= Skills Section ======= */
+.skills-box {
+  margin-top: 40px;
+  background: #fff;
+  border-radius: 15px;
+  padding: 25px;
+  border: 1px solid #e5e3ff;
+}
+
+.skills-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1f2251;
+  margin-bottom: 15px;
+}
+
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.skill-button {
+  background: #f2efff;
+  color: #6a5af9;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 500;
+  cursor: default;
+}
+
+/* ======= Modules Section ======= */
+.modules {
+  margin-top: 50px;
+}
+
+.modules h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2251;
+  margin-bottom: 20px;
+}
+
+.modules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.module {
+  border: 1px solid #e6e6ff;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fafaff;
+  transition: all 0.3s ease;
+}
+
+.module:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+.module-header {
+  background: linear-gradient(90deg, #ede9ff 0%, #f2efff 100%);
+  padding: 12px 20px;
+  cursor: pointer;
+  border-bottom: 1px solid #ddd;
+  font-weight: 600;
+  color: #1f2251;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.edit-buttons {
-  margin-left: auto;
+.module-body {
+  padding: 15px 25px;
+  background: #fff;
+  animation: fadeIn 0.3s ease;
 }
 
-.edit-button {
-  background-color: #0ea5e9;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
+.module-body strong {
+  color: #1f2251;
 }
 
-.detail-thumbnail {
-  width: 100%;
-  max-height: 300px;
-  object-fit: cover;
-  margin: 1rem 0;
+.module iframe,
+.module video {
+  margin-top: 12px;
   border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
 }
 
-.module {
-  border: 1px solid #e2e8f0;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  background: #f9fafb;
+/* ======= Animation ======= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .course-detail-page {
+    padding: 25px 20px;
+  }
+
+  .highlight-row {
+    flex-direction: column;
+  }
+
+  .course-title {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .edit-button {
+    width: 100%;
+    text-align: center;
+  }
 }

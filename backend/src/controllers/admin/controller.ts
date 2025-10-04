@@ -18,7 +18,7 @@ export class AdminController {
     }
 
 
-    adminLogin = async (req: AdminAuthRequest, res: Response): Promise<void> => {
+    adminLogin = async (req: AdminAuthRequest, res: Response) => {
         try {
             const { email, password } = req.body
             console.log(email);
@@ -35,7 +35,7 @@ export class AdminController {
         }
     }
 
-getUsers = async (req: Request, res: Response): Promise<void> => {
+getUsers = async (req: Request, res: Response) => {
   try {
     const { search, page } = req.query;
     let limit = 4
@@ -52,7 +52,7 @@ getUsers = async (req: Request, res: Response): Promise<void> => {
 };
 
 
-    blockUnblock = async (req: Request, res: Response): Promise<void | null> => {
+    blockUnblock = async (req: Request, res: Response) => {
         try {
             const id = req.params.id!
             console.log(id);
@@ -67,7 +67,7 @@ getUsers = async (req: Request, res: Response): Promise<void> => {
         }
     }
 
-    unblockUser = async (req: Request, res: Response): Promise<void | null> => {
+    unblockUser = async (req: Request, res: Response) => {
         try {
             console.log('unblock user');
 
@@ -80,7 +80,7 @@ getUsers = async (req: Request, res: Response): Promise<void> => {
         }
     }
 
-    getInstructors = async (req: Request, res: Response): Promise<void> => {
+    getInstructors = async (req: Request, res: Response) => {
         try {
             console.log('admin instrusss', req.query);
             const {page , search } = req.query
@@ -94,7 +94,7 @@ getUsers = async (req: Request, res: Response): Promise<void> => {
         }
     }
 
-    getKyc = async (req: Request, res: Response): Promise<void | null> => {
+    getKyc = async (req: Request, res: Response) => {
         try {
             const id = req.params.id!
             console.log('kyc detauls ', id);
@@ -107,7 +107,7 @@ getUsers = async (req: Request, res: Response): Promise<void> => {
         }
     }
 
-    verifyKyc = async (req: Request, res: Response): Promise<void | null> => {
+    verifyKyc = async (req: Request, res: Response) => {
         try {
             const id = req.params.id!
             console.log('kyc verify ', id);
@@ -120,7 +120,7 @@ getUsers = async (req: Request, res: Response): Promise<void> => {
 
         }
     }
-    rejectKyc = async (req: AdminAuthRequest, res: Response): Promise<void | null> => {
+    rejectKyc = async (req: AdminAuthRequest, res: Response) => {
         try {
             const id = req.params.id!
             const reason = req.body.reason

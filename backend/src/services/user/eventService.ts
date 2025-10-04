@@ -86,14 +86,30 @@ export class UserEventService {
         }
     }
 
-    eventEnrollRequest = async (id: string, eventId: string): Promise<void> => {
+    eventEnrollRequest = async (id: string, eventId: string): Promise<IMyEvent | null> => {
         try {
             const result = await this.userRepository.enrollEvent(id, eventId)
+            return result
         } catch (error) {
             console.log(error);
+            return null
+        }
+    }
+
+
+
+    getMyEvents = async (userId: string): Promise<IEvent[] | null> => {
+        try {
+            const result = await this.userRepository.getMyEvents(userId)
+            return result
+        } catch (error) {
+            console.log(error);
+            return null
 
         }
     }
+
+    
 
     joinUserEventRequest = async (eventId: string, userId: string): Promise<{ success: boolean; message: string; meetingLink?: string } | null> => {
         try {
