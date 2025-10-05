@@ -48,7 +48,7 @@ return (
   ) : (
     <div className="events-grid">
       {events.map((event) => (
-        <div key={event._id} className="event-tile" >
+        <div key={event._id} className="event-tile">
           <div className="tile-image-wrapper">
             <img src={webinarImage} alt={event.title} className="tile-thumbnail" />
             <span className="tile-instructor">{event.instructorName}</span>
