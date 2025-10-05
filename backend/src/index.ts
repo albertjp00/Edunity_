@@ -41,7 +41,7 @@ app.use(morgan('dev'))
 
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: process.env.FRONTEND_URL,
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -50,7 +50,7 @@ app.use(cors({
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",  // frontend URL
+    origin: process.env.FRONTEND_URL,  
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
