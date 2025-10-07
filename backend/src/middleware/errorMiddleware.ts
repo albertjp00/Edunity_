@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { HttpStatus } from "../enums/httpStatus.enums.js";
 
 interface CustomError extends Error {
   statusCode?: number;
@@ -10,7 +11,7 @@ export function errorHandler(
   res: Response,
   next: NextFunction
 ) {
-  const status = err.statusCode || 500;
+  const status = HttpStatus.INTERNAL_SERVER_ERROR;
 
   console.error(`[ERROR] ${status} - ${err.message}`);
 

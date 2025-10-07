@@ -6,19 +6,29 @@ import { InstProfileController } from "../controllers/instructor/profileControll
 import multer from "multer"
 import { EventController } from "../controllers/instructor/eventController.js"
 import { MessageController } from "../controllers/messaage/messageController.js"
+import path from "path"
+
 
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null,'src/assets');
+    // Different folders for videos and thumbnails (recommended)
+    if (file.fieldname === "thumbnail") {
+      cb(null, "src/assets");
+    } else if (file.fieldname.startsWith("modules")) {
+      cb(null, "src/assets");
+    } else {
+      cb(null, "src/assets");
+    }
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + "-" + file.originalname);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
   },
 });
 
-const upload = multer({ storage });
+export const upload = multer({ storage });
+
 
 const authController =new InsAuthController
 const courseController = new InstCourseController
@@ -51,8 +61,18 @@ instructor.put('/resetPassword',authController.resetPassword)
 
 instructor.get('/getCourse',instAuthMiddleware,courseController.myCourses)
 instructor.get('/course/:id', instAuthMiddleware, courseController.courseDetails);
-instructor.patch('/course/:id', instAuthMiddleware,upload.single("thumbnail"), courseController.editCourse);
-instructor.post('/course',instAuthMiddleware,upload.single('thumbnail'),courseController.addCourse) 
+instructor.patch('/course/:id', instAuthMiddleware,upload.any(), courseController.editCourse);
+
+
+
+instructor.post(
+  "/course",
+  instAuthMiddleware,
+  upload.any(),
+  courseController.addCourse
+);
+
+
 
 instructor.get('/purchaseDetails/:id',instAuthMiddleware , courseController.purchaseDetails)
 
@@ -68,7 +88,9 @@ instructor.patch('/joinEvent/:eventId',instAuthMiddleware , eventController.join
 
 instructor.get('/getMessagedStudents',instAuthMiddleware , messageController.getMessagedStudents)
 instructor.get('/messages/:receiverId',instAuthMiddleware , messageController.getMessages)
-instructor.post('/sendMessage/:receiverId',instAuthMiddleware , messageController.sendInstructorMessage)
+instructor.post('/sendMessage/:receiverId',instAuthMiddleware ,upload.single("attachment"), messageController.sendInstructorMessage)
+
+
 
 
 instructor.post('/addQuiz/:id',instAuthMiddleware , courseController.addQuiz)

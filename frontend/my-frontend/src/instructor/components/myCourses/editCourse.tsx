@@ -7,9 +7,11 @@ import './editCourse.css';
 // Interfaces
 interface Module {
     title: string;
-    videoUrl: string;
+    videoFile?: File;
+    videoUrl?: string;
     content: string;
 }
+
 
 interface CourseForm {
     title: string;
@@ -72,49 +74,42 @@ const EditCourse: React.FC = () => {
         }
     };
 
-    const updateModule = (index: number, field: keyof Module, value: string) => {
+    const updateModule = (index: number, field: keyof Module, value: string | File) => {
         const modules = [...form.modules];
-        modules[index][field] = value;
+        if (field === "videoFile") {
+            modules[index].videoFile = value as File;
+        } else {
+            modules[index][field] = value as string;
+        }
         setForm({ ...form, modules });
     };
 
-    const checkUrlExists = async (url: string): Promise<boolean> => {
-        try {
-            // Quick regex for YouTube / Vimeo / direct video links
-            const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
-            const vimeoRegex = /^(https?:\/\/)?(www\.)?vimeo\.com\/.+$/;
-            const videoFileRegex = /\.(mp4|webm|ogg)$/i;
 
-            if (youtubeRegex.test(url) || vimeoRegex.test(url) || videoFileRegex.test(url)) {
-                return true;
-            }
+    // const checkUrlExists = async (url: string): Promise<boolean> => {
+    //     try {
+    //         // Quick regex for YouTube / Vimeo / direct video links
+    //         const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
+    //         const vimeoRegex = /^(https?:\/\/)?(www\.)?vimeo\.com\/.+$/;
+    //         const videoFileRegex = /\.(mp4|webm|ogg)$/i;
 
-            return false;
-        } catch (error) {
-            if(error){
-                console.log(error);
-                
-            }
-            return false;
-        }
-    };
+    //         if (youtubeRegex.test(url) || vimeoRegex.test(url) || videoFileRegex.test(url)) {
+    //             return true;
+    //         }
+
+    //         return false;
+    //     } catch (error) {
+    //         if (error) {
+    //             console.log(error);
+
+    //         }
+    //         return false;
+    //     }
+    // };
 
 
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-
-        
-
-        for (const mod of form.modules) {
-            if (mod.videoUrl.trim()) {
-                const exists = await checkUrlExists(mod.videoUrl);
-                if (!exists) {
-                    toast.error(`Video URL "${mod.videoUrl}" is invalid or not reachable.`);
-                    return;
-                }
-            }
-        }
 
         try {
             const formData = new FormData();
@@ -123,24 +118,26 @@ const EditCourse: React.FC = () => {
             formData.append('skills', JSON.stringify(form.skills));
             formData.append('price', form.price);
             formData.append('level', form.level);
-            formData.append('category', form.category)
+            formData.append('category', form.category);
 
             if (form.thumbnail instanceof File) {
                 formData.append('thumbnail', form.thumbnail);
-            } else {
-                formData.append('thumbnail', form.thumbnail);
             }
 
-            formData.append('modules', JSON.stringify(form.modules));
-
-            const res = await instructorApi.patch(`/instructor/course/${id}`,
-                formData,
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
+            // Append modules individually
+            form.modules.forEach((mod, idx) => {
+                formData.append(`modules[${idx}][title]`, mod.title);
+                formData.append(`modules[${idx}][content]`, mod.content);
+                if (mod.videoFile) {
+                    formData.append(`modules[${idx}][video]`, mod.videoFile);
+                } else if (mod.videoUrl) {
+                    formData.append(`modules[${idx}][videoUrl]`, mod.videoUrl);
                 }
-            );
+            });
+
+            const res = await instructorApi.patch(`/instructor/course/${id}`, formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
 
             if (res.data.success) {
                 toast.success('Course Updated');
@@ -152,37 +149,38 @@ const EditCourse: React.FC = () => {
         }
     };
 
+
     const fetchData = async () => {
-  try {
-    const res = await instructorApi.get(`/instructor/course/${id}`);
-    console.log(res);
-    
-    
-    if (res.data.success) {
-      const course = res.data.course.course;
+        try {
+            const res = await instructorApi.get(`/instructor/course/${id}`);
+            console.log(res);
 
-      setForm({
-  title: course.title || '',
-  description: course.description || '',
-  skills: Array.isArray(course.skills) ? course.skills : [],
-  price: course.price ? String(course.price) : '',
-  thumbnail: course.thumbnail || '',
-  level: course.level || '',
-  modules: Array.isArray(course.modules)
-    ? course.modules.map((m:{ title?: string; videoUrl?: string; content?: string }) => ({
-        title: m.title || '',
-        videoUrl: m.videoUrl || '',
-        content: m.content || '',
-      }))
-    : [],
-  category: course.category || '',
-});
 
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
+            if (res.data.success) {
+                const course = res.data.course.course;
+
+                setForm({
+                    title: course.title || '',
+                    description: course.description || '',
+                    skills: Array.isArray(course.skills) ? course.skills : [],
+                    price: course.price ? String(course.price) : '',
+                    thumbnail: course.thumbnail || '',
+                    level: course.level || '',
+                    modules: Array.isArray(course.modules)
+                        ? course.modules.map((m: { title?: string; videoUrl?: string; content?: string }) => ({
+                            title: m.title || '',
+                            videoUrl: m.videoUrl || '',
+                            content: m.content || '',
+                        }))
+                        : [],
+                    category: course.category || '',
+                });
+
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
 
     useEffect(() => {
@@ -301,11 +299,22 @@ const EditCourse: React.FC = () => {
                                 onChange={(e) => updateModule(index, 'title', e.target.value)}
                             />
                             <input
-                                type="text"
-                                placeholder="Video URL"
-                                value={module.videoUrl}
-                                onChange={(e) => updateModule(index, 'videoUrl', e.target.value)}
+                                type="file"
+                                accept="video/*"
+                                onChange={(e) => {
+                                    if (e.target.files && e.target.files[0]) {
+                                        updateModule(index, 'videoFile', e.target.files[0]);
+                                        // Clear previous videoUrl if replacing with file
+                                        updateModule(index, 'videoUrl', '');
+                                    }
+                                }}
                             />
+                            {/* {module.videoUrl && !module.videoFile && (
+                                <video width="100%" controls style={{ marginTop: '10px' }}>
+                                    <source src={`http://localhost:5000${module.videoUrl}`} type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                </video>
+                            )} */}
                             <textarea
                                 placeholder="Content"
                                 value={module.content}
@@ -315,12 +324,13 @@ const EditCourse: React.FC = () => {
                         </div>
                     ))}
 
+
                     <button type="button" onClick={addModule}>+ Add Module</button>
 
                     <br /><br />
                     <button className="add-course-btn" type="submit">Save</button>
                 </form>
-                
+
             </div>
         </>
     );

@@ -41,6 +41,8 @@
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 15px;
+  background-color: white;
+  color: black;
 }
 
 .add-course-form textarea {

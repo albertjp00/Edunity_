@@ -22,7 +22,7 @@ export class AuthController {
     this._authService = new AuthService(repo);
   }
 
-  login = async (req: Request, res: Response , next:NextFunction): Promise<void> => {
+  login = async (req: Request, res: Response , next:NextFunction) => {
     try {
       const { email, password } = req.body;
       logger.info(`Login user: ${req.body.email}`);
