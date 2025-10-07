@@ -90,64 +90,67 @@ const Profile: React.FC = () => {
     <>
       <div className="profile-container1">
         {/* Left Side - Profile Info */}
-        <div className="profile-left">
-          <div className="profile-card1">
-            <div className="user-name-card">
-              <img
-                src={
-                  user.profileImage
-                    ? `http://localhost:5000/assets/${user.profileImage}`
-                    : profilePic
-                }
-                alt="Profile"
-                className="profile-avatar"
-              />
-              <div className="details">
-                <h2>{user.name}</h2>
-                <h5>Email: {user.email}</h5>
-              </div>
-            </div>
+<div className="profile-left">
+  <div className="profile-card1">
+    <div className="user-name-card-image">
+      <img
+        src={
+          user.profileImage
+            ? `http://localhost:5000/assets/${user.profileImage}`
+            : profilePic
+        }
+        alt="Profile"
+        className="profile-avatar"
+      />
+      <div className="user-name-card">
+        <h2>{user.name}</h2>
+        <h5>Email: {user.email}</h5>
+      </div>
+    </div>
 
-            <div className="about-me">
-              <h4>About me</h4>
-              <p>{user.bio}</p>
-            </div>
+    {/* About Me Box */}
+    <div className="about-me-box">
+      <h4>About Me</h4>
+      <p>{user.bio || "No bio available."}</p>
+    </div>
 
-            <div className="user-details-box">
-              <p>
-                <i className="fas fa-user-tag"></i> <strong>Role:</strong>{" "}
-                Student
-              </p>
-              <p>
-                <i className="fas fa-venus-mars"></i> <strong>Gender:</strong>{" "}
-                {user.gender}
-              </p>
-              <p>
-                <i className="fas fa-birthday-cake"></i> <strong>DOB:</strong>{" "}
-                {user.dob}
-              </p>
-              <p>
-                <i className="fas fa-map-marker-alt"></i>{" "}
-                <strong>Location:</strong> {user.location}
-              </p>
-              <p>
-                <i className="fas fa-phone"></i> <strong>Phone:</strong>{" "}
-                {user.phone}
-              </p>
-            </div>
+    {/* User Details Box */}
+    <div className="user-details-box">
+      <p>
+        <i className="fas fa-user-tag"></i> <strong>Role:</strong> Student
+      </p>
+      <p>
+        <i className="fas fa-venus-mars"></i> <strong>Gender:</strong>{" "}
+        {user.gender || "Not specified"}
+      </p>
+      <p>
+        <i className="fas fa-birthday-cake"></i> <strong>DOB:</strong>{" "}
+        {user.dob || "Not provided"}
+      </p>
+      <p>
+        <i className="fas fa-map-marker-alt"></i> <strong>Location:</strong>{" "}
+        {user.location || "Not specified"}
+      </p>
+      <p>
+        <i className="fas fa-phone"></i> <strong>Phone:</strong>{" "}
+        {user.phone || "Not provided"}
+      </p>
+    </div>
 
-            <div className="btn-edit">
-              <Link to="/user/editProfile">
-                <button>Edit</button>
-              </Link>
-              {!user.googleId &&
-              <Link to="/user/changePassword">
-                <button className="change-password-btn">Change Password</button> 
-              </Link>
-              }
-            </div>
-          </div>
-        </div>
+    <div className="btn-edit">
+      <Link to="/user/editProfile">
+        <button>Edit</button>
+      </Link>
+      {!user.googleId && (
+        <Link to="/user/changePassword">
+          <button className="change-password-btn">Change Password</button>
+        </Link>
+      )}
+    </div>
+  </div>
+</div>
+
+
 
         {/* Right Side - Purchased Courses */}
         <div className="profile-right">

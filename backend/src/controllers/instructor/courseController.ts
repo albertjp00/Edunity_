@@ -5,6 +5,10 @@ import { AuthRequest, InstAuthRequest } from "../../middleware/authMiddleware.js
 import instructor from "../../routes/instructorRoutes.js";
 import logger from "../../utils/logger.js";
 
+interface MulterFiles {
+  [fieldname: string]: Express.Multer.File[];
+}
+
 export class InstCourseController {
   private _courseService: CourseService;
 
@@ -43,48 +47,78 @@ export class InstCourseController {
       const id = req.instructor?.id
       const courseId = req.params.id!
       const result = await this._courseService.fetchCourseDetails(courseId)
-      console.log("course" ,result);
+      console.log("course", result);
 
 
-      res.json({ success: true, course: result ,quiz : result?.quizExists})
+      res.json({ success: true, course: result, quiz: result?.quizExists })
     } catch (error) {
       console.log(error);
 
     }
   }
 
-purchaseDetails = async (req: InstAuthRequest, res: Response) => {
-  try {
-    const courseId = req.params.id!;
-    const data = await this._courseService.getPurchaseDetails(courseId);
-
-    console.log(data);
-    
-    if (!data) {
-      return res.status(404).json({ success: false, message: "No purchases found" });
-    }
-
-    res.json({ success: true, details: data });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-};
-
-
-  editCourse = async (req: Request, res: Response) => {
+  purchaseDetails = async (req: InstAuthRequest, res: Response) => {
     try {
       const courseId = req.params.id!;
+      const data = await this._courseService.getPurchaseDetails(courseId);
+
+      console.log(data);
+
+      if (!data) {
+        return res.status(404).json({ success: false, message: "No purchases found" });
+      }
+
+      res.json({ success: true, details: data });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: "Server error" });
+    }
+  };
+
+  editCourse = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const courseId = req.params.id!;
+      const files = Array.isArray(req.files) ? req.files : [];
+      console.log("📦 Edit Course:", courseId);
+      console.log("🗂️ Multer Files:", files);
+
+      // Safely parse fields
+      const skills =
+        typeof req.body.skills === "string"
+          ? JSON.parse(req.body.skills || "[]")
+          : req.body.skills || [];
+
+      const modules =
+        typeof req.body.modules === "string"
+          ? JSON.parse(req.body.modules || "[]")
+          : req.body.modules || [];
+
+      // Update module videos if new files are uploaded
+      const updatedModules = modules.map((mod: any, index: number) => {
+        const videoFile = files.find(
+          (f: any) => f.fieldname === `modules[${index}][video]`
+        );
+        return {
+          ...mod,
+          videoUrl: videoFile ? videoFile.filename : mod.videoUrl || "",
+        };
+      });
+
+      // Check for a new thumbnail
+      const thumbnailFile = files.find((f: any) => f.fieldname === "thumbnail");
 
       const data = {
-        ...req.body,
-        skills: JSON.parse(req.body.skills),
-        modules: JSON.parse(req.body.modules),
-
+        title: req.body.title,
+        description: req.body.description,
+        skills,
+        price: Number(req.body.price),
+        level: req.body.level,
+        category: req.body.category,
+        modules: updatedModules,
+        thumbnail: thumbnailFile ? thumbnailFile.filename : req.body.thumbnail,
       };
-      data.thumbnail = req.file?.filename
-      console.log(courseId, data);
 
+      console.log("✅ Final Course Data:", data);
 
       const result = await this._courseService.editCourseRequest(courseId, data);
 
@@ -95,66 +129,116 @@ purchaseDetails = async (req: InstAuthRequest, res: Response) => {
 
       res.status(200).json({ success: true, course: result });
     } catch (error) {
-      console.error(error);
+      console.error("❌ Error editing course:", error);
       res.status(500).json({ success: false, message: "Internal Server Error" });
     }
   };
 
-  addCourse = async (req: InstAuthRequest, res: Response) => {
+
+
+
+
+
+  // interface MulterFiles {
+  //   [fieldname: string]: Express.Multer.File[];
+  // }
+
+
+  addCourse = async (req: InstAuthRequest, res: Response): Promise<void> => {
     try {
-      const id = req.instructor?.id; // should be ObjectId from middleware
-      console.log("add Course ", id, req.body, req.file);
+      const id = req.instructor?.id;
+      console.log("📦 Add Course", id, req.body);
+      console.log("🗂️ Multer Files:", req.files);
+
+      const files = Array.isArray(req.files) ? req.files : [];
+
+      // ✅ Extract module indexes from either body or video fieldnames
+      const moduleIndexes = new Set(
+        [
+          ...Object.keys(req.body).map((k) => k.match(/modules\[(\d+)\]/)?.[1]),
+          ...files.map((f) => f.fieldname.match(/modules\[(\d+)\]/)?.[1]),
+        ].filter(Boolean)
+      );
+
+      const modules: any[] = [];
+
+      moduleIndexes.forEach((index) => {
+        const title = req.body[`modules[${index}][title]`];
+        const content = req.body[`modules[${index}][content]`];
+
+        const videoFile = files.find(
+          (f) => f.fieldname === `modules[${index}][video]`
+        );
+
+        modules.push({
+          title,
+          content,
+          videoUrl: videoFile ? videoFile.filename : "",
+        });
+      });
+
+      console.log("✅ Modules:", modules);
+
+      const thumbnailFile = files.find((f) => f.fieldname === "thumbnail");
 
       const data = {
-        ...req.body,
-        modules: JSON.parse(req.body.modules),
-        skills: JSON.parse(req.body.skills),
-        thumbnail: req.file ? req.file.filename : undefined,
+        title: req.body.title,
+        description: req.body.description,
+        skills: JSON.parse(req.body.skills || "[]"),
+        price: Number(req.body.price),
+        level: req.body.level,
+        category: req.body.category,
+        modules,
+        thumbnail: thumbnailFile ? thumbnailFile.filename : undefined,
       };
 
       const result = await this._courseService.addCourseRequest(id, data);
-
       res.json({ success: !!result, course: result });
     } catch (error) {
-      console.error(error);
+      console.error("❌ Error adding course:", error);
       res.status(500).json({ success: false, message: "Error adding course" });
     }
   };
 
 
 
-addQuiz = async (req: AuthRequest, res: Response) => {
-  try {
-    const { id } = req.params;
-    const { title, questions } = req.body;
-    console.log('add quiz');
-    
 
-    if (!id || !title || !questions) {
-      res.status(400).json({ success: false, message: "Missing required fields" });
-      return;
+
+
+
+
+  addQuiz = async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { title, questions } = req.body;
+      console.log('add quiz');
+
+
+      if (!id || !title || !questions) {
+        res.status(400).json({ success: false, message: "Missing required fields" });
+        return;
+      }
+
+      const quiz = await this._courseService.addQuiz(id, title, questions);
+      console.log(quiz);
+
+
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error adding quiz:", error);
+      res.status(500).json({ success: false, message: error.message });
     }
-
-    const quiz = await this._courseService.addQuiz(id, title, questions);
-    console.log(quiz);
-    
-
-    res.json({ success: true });
-  } catch (error: any) {
-    console.error("Error adding quiz:", error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
+  };
 
 
- getQuiz = async (req: Request, res: Response) => {
+  getQuiz = async (req: Request, res: Response) => {
     try {
       console.log('get Quiz');
-      
+
       const { courseId } = req.params;
       console.log(courseId);
-      
-      
+
+
       const quiz = await this._courseService.getQuiz(courseId as string)
 
       if (!quiz) {
@@ -170,13 +254,13 @@ addQuiz = async (req: AuthRequest, res: Response) => {
   editQuiz = async (req: Request, res: Response) => {
     try {
       console.log('edit Quiz');
-      
+
       const { quizId } = req.params;
       const data = req.body
-      console.log("quizId",quizId,req.body);
-      
-      const quiz = await this._courseService.updateQuiz(quizId as string  , data)
-    
+      console.log("quizId", quizId, req.body);
+
+      const quiz = await this._courseService.updateQuiz(quizId as string, data)
+
       res.json({ success: true });
     } catch (error: any) {
       console.error("Error fetching quiz:", error);

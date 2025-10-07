@@ -35,9 +35,13 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
   useEffect(() => {
     const fetchMessages = async () => {
       try {
+
+
         const res = await instructorApi.get(`/instructor/messages/${receiverId}`);
         if (res.data.success) {
           setMessages(res.data.messages);
+          console.log(res.data);
+
           socket.emit("markAsRead", { instructorId, receiverId });
         }
       } catch (err) {
@@ -47,23 +51,33 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
     fetchMessages();
   }, [instructorId, receiverId]);
 
+
+  
   useEffect(() => {
-    if (receiverId && instructorId) {
-      socket.emit("joinRoom", { userId: receiverId, receiverId: instructorId });
+  const fetchMessages = async () => {
+    try {
+      const res = await instructorApi.get(`/instructor/messages/${receiverId}`);
+      if (res.data.success) {
+        // ✅ Sort messages by timestamp (oldest → newest)
+        const sortedMessages = res.data.messages.sort(
+          (a: Message, b: Message) =>
+            new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+        );
+
+        setMessages(sortedMessages);
+        console.log(sortedMessages);
+
+        socket.emit("markAsRead", { instructorId, receiverId });
+      }
+    } catch (err) {
+      console.error("Failed to load chat history", err);
     }
+  };
+  fetchMessages();
+}, [instructorId, receiverId]);
 
-    socket.on("receiveMessage", (message: Message) => {
-      setMessages((prev) => [...prev, message]);
-    });
 
-    return () => {
-      socket.off("receiveMessage");
-    };
-  }, [instructorId, receiverId]);
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
 
   const sendMessage = async (file?: File) => {
     if (!receiverId) return;
@@ -76,7 +90,7 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
     if (file) formData.append("attachment", file);
 
     try {
-      const res = await instructorApi.post("/instructor/sendMessage", formData, {
+      const res = await instructorApi.post(`/instructor/sendMessage/${receiverId}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -119,11 +133,14 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
       </div>
 
       <div className="chat-messages">
+        
         {messages.map((msg, idx) => (
+          
           <div
             key={idx}
             className={`message ${msg.senderId === instructorId ? "sent" : "received"}`}
           >
+            
             {msg.text && <div className="message-text">{msg.text}</div>}
 
             {msg.attachment && (
@@ -145,6 +162,7 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
                 )}
               </div>
             )}
+
 
             <div className="message-time">
               {new Date(msg.timestamp).toLocaleTimeString([], {

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
+import { UserModel } from "../models/user.js";
 
 dotenv.config();
 
@@ -24,11 +25,11 @@ export interface AuthRequest extends Request {
 }
 
 
-export const authMiddleware = (
+export const authMiddleware = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
-): void => {
+) => {
   try {
     const authHeader = req.headers.authorization;
 
@@ -45,6 +46,17 @@ export const authMiddleware = (
 
     const decoded = jwt.verify(token, secret) as JwtUserPayload;
     req.user = decoded;
+
+    const user = await UserModel.findById(decoded.id)
+    if(!user){
+      res.json({success:false , message : 'user not found'})
+      return
+    }
+
+    if(user.blocked){
+      res.status(403).json({ success: false, message: "Your account has been blocked" });
+      return;
+    }
 
     next();
   } catch {

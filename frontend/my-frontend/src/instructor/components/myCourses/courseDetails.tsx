@@ -27,7 +27,7 @@ const InstructorCourseDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [course, setCourse] = useState<Course | null>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-  const [quizExists , setQuizExists] = useState<boolean>(false)
+  const [quizExists, setQuizExists] = useState<boolean>(false)
 
   const navigate = useNavigate();
 
@@ -54,28 +54,19 @@ const InstructorCourseDetails: React.FC = () => {
     navigate(`/instructor/addQuiz/${id}`);
   };
 
-//   const editQuiz = (id: string): void => {
-//   navigate(`/instructor/editQuiz/${id}`);
-// };
+  //   const editQuiz = (id: string): void => {
+  //   navigate(`/instructor/editQuiz/${id}`);
+  // };
 
 
 
-  const convertToEmbedUrl = (url: string): string => {
-    if (url.includes('watch?v=')) {
-      return url.replace('watch?v=', 'embed/');
-    }
-    if (url.includes('youtu.be/')) {
-      return url.replace('youtu.be/', 'www.youtube.com/embed/');
-    }
-    return url;
-  };
 
   useEffect(() => {
     fetchCourse();
   }, []);
 
 
-  const purchaseDetails = (id:string)=>{
+  const purchaseDetails = (id: string) => {
     navigate(`/instructor/purchaseDetails/${id}`)
   }
 
@@ -107,7 +98,7 @@ const InstructorCourseDetails: React.FC = () => {
             </>
           )}
 
-          <button onClick={()=>purchaseDetails(course._id)} className='edit-button'>
+          <button onClick={() => purchaseDetails(course._id)} className='edit-button'>
             📚Purchase Details</button>
 
           <button onClick={() => handleEdit(course._id)} className="edit-button">
@@ -178,25 +169,13 @@ const InstructorCourseDetails: React.FC = () => {
                     <div className="module-body" style={{ padding: '10px 20px' }}>
                       <div>
                         <strong>🎥 Video:</strong>
-                        {module.videoUrl && (module.videoUrl.includes('youtube.com') || module.videoUrl.includes('youtu.be')) ? (
-                          <iframe
-                            width="100%"
-                            height="315"
-                            src={convertToEmbedUrl(module.videoUrl)}
-                            title="Lesson Video"
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                            style={{ marginTop: '10px' }}
-                          ></iframe>
-                        ) : (
-                          module.videoUrl && (
-                            <video width="100%" height="auto" controls style={{ marginTop: '10px' }}>
-                              <source src={module.videoUrl} type="video/mp4" />
-                              Your browser does not support the video tag.
-                            </video>
-                          )
+                        {module.videoUrl && (
+                          <video width="100%" height="auto" controls style={{ marginTop: '10px' }}>
+                            <source src={`http://localhost:5000/assets/${module.videoUrl}`} type="video/mp4" />
+                            Your browser does not support the video tag.
+                          </video>
                         )}
+
                       </div>
                       <p><strong>📝 Content:</strong> {module.content}</p>
                     </div>

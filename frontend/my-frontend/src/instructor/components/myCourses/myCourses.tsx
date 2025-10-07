@@ -34,6 +34,10 @@ const MyCourses: React.FC = () => {
     navigate(`/instructor/courseDetails/${id}`);
   };
 
+  const addCourse = () => {
+    navigate('/instructor/addCourse')
+  }
+
   useEffect(() => {
     fetchCourses();
   }, []);
@@ -56,7 +60,7 @@ const MyCourses: React.FC = () => {
             <h2>Courses</h2>
           </div>
 
-          <button className="create-course-btn">Create Course</button>
+          <button className="create-course-btn" onClick={addCourse}>Create Course</button>
         </div>
 
         {courses.length === 0 ? (

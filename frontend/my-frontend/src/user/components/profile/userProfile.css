@@ -6,21 +6,24 @@
 }
 
 .profile-left {
-  flex: .7;
+  flex: 0.7;
+  display: flex;
+  justify-content: center;
 }
 
 .profile-card1 {
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  padding: 30px 50px;
+  padding: 30px 40px;
   width: 100%;
   max-width: 500px;
-  text-align: left; /* Align text to left */
+  text-align: left;
   animation: fadeIn 0.5s ease-in-out;
 }
 
-.user-name-card {
+/* Profile header (image + name) */
+.user-name-card-image {
   display: flex;
   align-items: center;
   gap: 20px;
@@ -32,139 +35,82 @@
   margin-bottom: 20px;
 }
 
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
+}
+
 .user-name-card h2 {
-  font-size: 1.5rem;
-  margin-bottom: 6px;
+  font-size: 1.4rem;
+  margin: 0;
 }
 
 .user-name-card h5 {
   color: #666;
   font-weight: normal;
+  margin-top: 5px;
 }
 
-
-
-/* .profile-avatar {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 2px solid #007bff;
-} */
-
-
-.profile-avatar {
-  width: 120px;
-  height: 120px;
-  max-width: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 3px solid #007bff;
-  margin-bottom: 20px;
-  flex-shrink: 0;
-}
-
-.about-me {
-  margin-top: 10px;
-  padding: 15px 20px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  background-color: #fcfcfc;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-}
-
-.about-me h4 {
-  margin-bottom: 10px;
-  font-size: 1.2rem;
-  color: #333;
-}
-
-.about-me p {
-  margin: 0;
-  color: #555;
-  line-height: 1.5;
-}
-
-.profile-card1 p {
-  padding: 8px 0;
-  margin: 0;
-  font-size: 0.95rem;
-  color: #444;
-}
-
-.profile-card1 p strong {
-  color: #111;
-  margin-right: 5px;
-}
-
-
-.profile-avatar {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 3px solid #007bff;
-  margin-bottom: 20px;
-}
-
-.profile-card h2 {
-  font-size: 26px;
-  margin-bottom: 10px;
-  color: #333;
-}
-
-.profile-card p {
-  font-size: 16px;
-  color: #555;
-  margin: 6px 0;
-}
-
-.profile-card p strong {
-  color: #444;
-}
-
-
-.user-details-box {
-  margin-top: 20px;
+/* About Me as separate box */
+.about-me-box {
   border: 1px solid #ddd;
   border-radius: 10px;
   padding: 20px;
-  background-color: #fafafa;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  background-color: #fefefe;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+.about-me-box h4 {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.about-me-box p {
+  color: #555;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* User details box */
+.user-details-box {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  background-color: #fefefe;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .user-details-box p {
-  margin: 10px 0;
-  font-size: 1rem;
+  margin: 8px 0;
   color: #444;
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
 .user-details-box i {
-  color: #007bff;
-  min-width: 20px;
+  margin-right: 8px;
+  color: #666;
 }
 
-
+/* Buttons */
 .btn-edit {
   display: flex;
-  justify-content: flex-start; /* Align buttons left */
-  margin-top: 25px;
   gap: 15px;
-  flex-wrap: wrap;
+  margin-top: 25px;
 }
 
 .btn-edit button {
-  padding: 10px 16px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 8px;
   background-color: #007bff;
   color: #fff;
-  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: 0.3s;
 }
 
 .btn-edit button:hover {
@@ -172,17 +118,25 @@
 }
 
 .change-password-btn {
-  background-color: #28a745;
+  background-color: #f44336;
 }
 
 .change-password-btn:hover {
-  background-color: #1e7e34;
+  background-color: #d32f2f;
 }
 
+/* Smooth fade-in animation */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
+
 
 
 .profile-right {

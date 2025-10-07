@@ -5,46 +5,56 @@ import profileImage from "../../../assets/profilePic.png";
 import "./instructorChat.css";
 import InstructorChatWindow from "./instChatWindow";
 import InstructorNavbar from "../navbar/navbar";
+import type { ApiStudent, IStudent } from "../../interterfaces/chat";
 
-interface IStudent {
-  id: string;
-  name: string;
-  avatar?: string;
-}
 
-const InstructorChat = () => {
-  const { id: userId } = useParams(); // optional userId from route (like /instructor/chat/:id)
+
+const InstructorChat: React.FC = () => {
+  const { id: userId } = useParams<{ id?: string }>();
   const [students, setStudents] = useState<IStudent[]>([]);
   const [selected, setSelected] = useState<IStudent | null>(null);
   const [instructorId, setInstructorId] = useState<string | null>(null);
 
   const getMessagedStudents = async () => {
     try {
-      const response = await instructorApi.get(`/instructor/getMessagedStudents`);
+      const response = await instructorApi.get("/instructor/getMessagedStudents");
+
       if (response.data.success) {
-        // ✅ backend should send instructorId after decoding the token
+        // assuming the backend also returns instructorId
         setInstructorId(response.data.instructorId);
 
-        interface ApiStudent {
-          _id: string;
-          name: string;
-          avatar?: string;
-        }
-        const normalized = response.data.students.map((stu: ApiStudent) => ({
-          id: stu._id,
-          name: stu.name,
-          avatar: stu.avatar || profileImage,
-        }));
+
+        
+
+
+       const normalized: IStudent[] = response.data.students.map(
+  (item: ApiStudent) => ({
+    id: item.instructor._id,
+    name: item.instructor.name,
+    avatar: item.instructor.avatar
+      ? `http://localhost:5000/assets/${item.instructor.avatar}`
+      : profileImage,
+    hasAttachment: !!item.lastMessage.attachment,
+    lastMessage: item.lastMessage.text
+      ? item.lastMessage.text
+      : item.lastMessage.attachment
+      ? "📎 Attachment"
+      : "No messages yet",
+    timestamp: item.lastMessage.timestamp, 
+  })
+);
+
+
         setStudents(normalized);
 
-        // auto-select if URL has userId
+        // Auto-select if userId exists in route
         if (userId) {
-          const found = normalized.find((s: IStudent) => s.id === userId);
+          const found = normalized.find((s) => s.id === userId);
           if (found) setSelected(found);
         }
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching messaged students:", error);
     }
   };
 
@@ -54,48 +64,68 @@ const InstructorChat = () => {
 
   return (
     <>
-    <InstructorNavbar />
-    <div className="instructor-chat-container">
-      {/* Sidebar */}
-      <div className="chat-sidebar">
-        <h2 className="sidebar-title">Students</h2>
-        {students.map((stu) => (
-          <div
-            key={stu.id}
-            className={`sidebar-user ${selected?.id === stu.id ? "active" : ""}`}
-            onClick={() => setSelected(stu)}
-          >
-            <img
-              src={stu.avatar || profileImage}
-              alt={stu.name}
-              className="sidebar-avatar"
-            />
-            <div>
-              <p className="user-name">{stu.name}</p>
-            </div>
-          </div>
-        ))}
-      </div>
+      <InstructorNavbar />
+      <div className="instructor-chat-container">
+        {/* Sidebar */}
+        <div className="chat-sidebar">
+          <h2 className="sidebar-title">Students</h2>
 
-      {/* Chat Area */}
-      <div className="chat-area">
-        {selected && instructorId ? (
-          <>
-            <h1 className="chat-title">Chat with {selected.name}</h1>
-            <div className="chat-box">
-              <InstructorChatWindow
-                instructorId={instructorId}
-                receiverId={selected.id}
-                receiverName={selected.name}
-                receiverAvatar={selected.avatar || profileImage}
-              />
-            </div>
-          </>
-        ) : (
-          <p>Select a student to start chatting</p>
-        )}
+          {students.length > 0 ? (
+            students.map((stu) => (
+              <div
+                key={stu.id}
+                className={`sidebar-user ${selected?.id === stu.id ? "active" : ""
+                  }`}
+                onClick={() => setSelected(stu)}
+              >
+                <img
+                  src={stu.avatar || profileImage}
+                  alt={stu.name}
+                  className="sidebar-avatar"
+                />
+                <div className="sidebar-user-info">
+                  <p className="user-name">{stu.name}</p>
+                  <p className="last-message">
+  {stu.lastMessage?.length ? stu.lastMessage : "No messages yet"}
+  <span className="message-time">
+    {stu.timestamp
+      ? new Date(stu.timestamp).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })
+      : ""}
+  </span>
+</p>
+
+
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="no-students">No students yet</p>
+          )}
+        </div>
+
+        {/* Chat Area */}
+        <div className="chat-area">
+          {selected && instructorId ? (
+            <>
+              <h1 className="chat-title">Chat with {selected.name}</h1>
+              <div className="chat-box">
+                <InstructorChatWindow
+                  instructorId={instructorId}
+                  receiverId={selected.id}
+                  receiverName={selected.name}
+                  receiverAvatar={selected.avatar || profileImage}
+                />
+              </div>
+            </>
+          ) : (
+            <p className="chat-placeholder">Select a student to start chatting</p>
+          )}
+        </div>
       </div>
-    </div>
     </>
   );
 };

@@ -2,6 +2,7 @@ import { ICourse } from "../models/course.js";
 import { IEvent } from "../models/events.js";
 import { IFavourite } from "../models/favourites.js";
 import { IInstructor } from "../models/instructor.js";
+import { IMessage } from "../models/message.js";
 import { IMyCourse } from "../models/myCourses.js";
 import { IMyEvent } from "../models/myEvents.js";
 import { IUser } from "../models/user.js";
@@ -60,6 +61,13 @@ export interface IUserRepository {
 
 }
 
+
+
+
+export interface IMessagedUser {
+    instructor : IUser;
+    lastMessage : IMessage
+}
 
 
 

@@ -51,19 +51,19 @@ const ViewMyCourse: React.FC = () => {
   const [expandedModule, setExpandedModule] = useState<number | null>(null);
   const [completedModules, setCompletedModules] = useState<string[]>([]);
   const [instructor, setInstructor] = useState<IInstructor | null>(null);
-  const [quiz , setQuiz] = useState<boolean>()
+  const [quiz, setQuiz] = useState<boolean>()
 
   const navigate = useNavigate()
 
 
-  const courseId = id
+  // const courseId = id
   const fetchCourse = async (): Promise<void> => {
     try {
       if (!id) {
         console.error("Course ID is missing");
         return;
       }
-      const res: any = await viewMyCourse(id)
+      const res = await viewMyCourse(id)
 
       if (!res) return
       console.log(res);
@@ -74,7 +74,7 @@ const ViewMyCourse: React.FC = () => {
       setInstructor(fetchedInstructor)
       setCompletedModules(fetchedMyCourse.progress?.completedModules || []);
       console.log(res.data.quiz);
-      
+
       setQuiz(res.data.quiz)
       console.log(res);
 
@@ -92,12 +92,6 @@ const ViewMyCourse: React.FC = () => {
     setExpandedModule(expandedModule === index ? null : index);
   };
 
-  const convertToEmbedUrl = (url: string): string => {
-    if (url.includes("watch?v=")) return url.replace("watch?v=", "embed/");
-    if (url.includes("youtu.be/"))
-      return url.replace("youtu.be/", "www.youtube.com/embed/");
-    return url;
-  };
 
   const markAsCompleted = async (moduleTitle: string): Promise<void> => {
     try {
@@ -112,7 +106,7 @@ const ViewMyCourse: React.FC = () => {
     }
   };
 
-  const gotoQuiz = (myCourseId:string)=>{
+  const gotoQuiz = (myCourseId: string) => {
     navigate(`/user/quiz/${myCourseId}`)
   }
 
@@ -182,26 +176,9 @@ const ViewMyCourse: React.FC = () => {
                 {expandedModule === idx && (
                   <div className="module-body" style={{ padding: "10px 20px" }}>
                     {/* Video */}
-                    {module.videoUrl.includes("youtube.com") ||
-                      module.videoUrl.includes("youtu.be") ? (
-                      <iframe
-                        width="100%"
-                        height="315"
-                        src={convertToEmbedUrl(module.videoUrl)}
-                        title="Lesson Video"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        style={{ marginTop: "10px" }}
-                      ></iframe>
-                    ) : (
-                      <video
-                        width="100%"
-                        height="auto"
-                        controls
-                        style={{ marginTop: "10px" }}
-                      >
-                        <source src={module.videoUrl} type="video/mp4" />
+                    {module.videoUrl && (
+                      <video width="100%" height="auto" controls style={{ marginTop: '10px' }}>
+                        <source src={`http://localhost:5000/assets/${module.videoUrl}`} type="video/mp4" />
                         Your browser does not support the video tag.
                       </video>
                     )}

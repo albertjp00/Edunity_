@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { MessageService } from "../../services/message/messageService.js";
 import { MessageRepository } from "../../repositories/messageRepositories.js";
 import { AuthRequest, InstAuthRequest } from "../../middleware/authMiddleware.js";
+import { log } from "winston";
 
 export class MessageController {
   private messageService: MessageService;
@@ -138,9 +139,9 @@ sendMessage = async (req: AuthRequest, res: Response) => {
 
 
       const result = await this.messageService.getStudents(instructorId )
-      // console.log(result);
+      console.log(result);
 
-      res.json({ success: true, students: result  , instructorId})
+      res.json({ success: true, students: result  , instructorId })
 
     } catch (error) {
       console.log(error);
@@ -159,7 +160,7 @@ sendMessage = async (req: AuthRequest, res: Response) => {
 
 
       const messages = await this.messageService.getMessages(instructorId as string,receiverId as string);
-      console.log('messages ',messages);
+      // console.log('messages ',messages);
       
 
       res.json({success:true , messages : messages  , instructorId})
@@ -172,12 +173,22 @@ sendMessage = async (req: AuthRequest, res: Response) => {
 
   sendInstructorMessage = async (req: InstAuthRequest, res: Response) => {
     try {
+      
       const {  text } = req.body;
+      console.log('message to user ' , text);
+
+      const file = req.file ? req.file.filename : null;
+      console.log(file);
+      
+
+
+      
       const receiverId = req.params.receiverId!
       console.log('message send instructor', receiverId); 
       const instructorId = req.instructor?.id as string
 
-      const message = await this.messageService.sendInstructorMessage(instructorId, receiverId, text);
+
+      const message = await this.messageService.sendInstructorMessage(instructorId, receiverId, text , file);
       console.log('sended message ',message);
       
       
