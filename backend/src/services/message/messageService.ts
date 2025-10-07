@@ -51,7 +51,7 @@ export class MessageService {
         return await this.messageRepository.getUserMessages(instructorId , receiverId)
     }
 
-    async sendInstructorMessage(instructorId:string , receiverId:string , text:string){
-        return await this.messageRepository.sendInstructorsMessage(instructorId, receiverId , text)
+    async sendInstructorMessage(instructorId:string , receiverId:string , text:string , file : string | null){
+        return await this.messageRepository.sendInstructorsMessage(instructorId, receiverId , text , file)
     }
 }

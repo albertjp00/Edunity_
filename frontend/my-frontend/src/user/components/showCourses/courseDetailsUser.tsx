@@ -122,16 +122,7 @@ const CourseDetailsUser: React.FC = () => {
   };
 
 
-  // Converts normal YouTube URLs into embeddable format
-  const convertToEmbedUrl = (url: string) => {
-    if (url.includes("watch?v=")) {
-      return url.replace("watch?v=", "embed/");
-    }
-    if (url.includes("youtu.be/")) {
-      return url.replace("youtu.be/", "www.youtube.com/embed/");
-    }
-    return url;
-  };
+
 
 
   useEffect(() => {
@@ -143,141 +134,133 @@ const CourseDetailsUser: React.FC = () => {
   return (
     <div className="contain">
 
-        <header className="course-header">
-          <h1>COURSE DETAILS</h1>
-          <p>Home / Course</p>
-        </header>
+      <header className="course-header">
+        <h1>COURSE DETAILS</h1>
+        <p>Home / Course</p>
+      </header>
 
-        <div className="course-content">
-          <div className="course-left">
-            <img
-              src={`http://localhost:5000/assets/${course.thumbnail}`}
-              alt="Course Thumbnail"
-              className="course-banner"
-            />
+      <div className="course-content">
+        <div className="course-left">
+          <img
+            src={`http://localhost:5000/assets/${course.thumbnail}`}
+            alt="Course Thumbnail"
+            className="course-banner"
+          />
 
-            <h2 className="course-title">{course.title}</h2>
-            <p className="lesson-count">Lesson 10</p>
+          <h2 className="course-title">{course.title}</h2>
+          <p className="lesson-count">Lesson 10</p>
 
-            {/* Tabs */}
-            <div className="tabs">
-              <button
-                className={activeTab === "overview" ? "active" : ""}
-                onClick={() => setActiveTab("overview")}
-              >
-                Overview
-              </button>
-              <button
-                className={activeTab === "curriculum" ? "active" : ""}
-                onClick={() => setActiveTab("curriculum")}
-              >
-                Curriculum
-              </button>
-              <button
-                className={activeTab === "instructor" ? "active" : ""}
-                onClick={() => setActiveTab("instructor")}
-              >
-                Instructor
-              </button>
-            </div>
-
-            {/* Tab content */}
-            {activeTab === "overview" && (
-              <div className="tab-content">
-                <h3>Course Description</h3>
-                <p>{course.description}</p>
-
-                <h3>What Will I Learn From This Course?</h3>
-                <p>
-                  This course covers everything from basic HTML and CSS to advanced
-                  full-stack development topics. Learn at your own pace and become a
-                  professional web developer.
-                </p>
-              </div>
-            )}
-
-            {activeTab === "curriculum" && (
-              <div className="tab-content">
-                <h3>Curriculum</h3>
-                {course.modules.map((module, idx) => (
-                  <details key={idx} className="module-item">
-                    <summary>{module.title || `Module ${idx + 1}`}</summary>
-                    {hasAccess ? (
-                      <div className="video-wrapper">
-                        <iframe
-                          width="100%"
-                          height="400"
-                          src={
-                            module.videoUrl.includes("youtube.com") ||
-                              module.videoUrl.includes("youtu.be")
-                              ? convertToEmbedUrl(module.videoUrl)
-                              : module.videoUrl
-                          }
-                          title={`Module ${idx + 1}`}
-                          frameBorder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                        ></iframe>
-                      </div>
-                    ) : (
-                      <p className="locked-message">
-                        Purchase the course to unlock this video.
-                      </p>
-                    )}
-                  </details>
-                ))}
-              </div>
-            )}
-
-
-            {activeTab === "instructor" && instructor && (
-              <div className="tab-content instructor-tab">
-                <img
-                  src={`http://localhost:5000/assets/${instructor.profileImage}`}
-                  alt={instructor.name}
-                  className="instructor-photo"
-                />
-                <h3>{instructor.name}</h3>
-                <p>{instructor.bio}</p>
-                <p>
-                  <strong>Expertise:</strong> {instructor.expertise}
-                </p>
-              </div>
-            )}
+          {/* Tabs */}
+          <div className="tabs">
+            <button
+              className={activeTab === "overview" ? "active" : ""}
+              onClick={() => setActiveTab("overview")}
+            >
+              Overview
+            </button>
+            <button
+              className={activeTab === "curriculum" ? "active" : ""}
+              onClick={() => setActiveTab("curriculum")}
+            >
+              Curriculum
+            </button>
+            <button
+              className={activeTab === "instructor" ? "active" : ""}
+              onClick={() => setActiveTab("instructor")}
+            >
+              Instructor
+            </button>
           </div>
 
-          {/* Right Sidebar */}
-          <div className="course-right">
-            <div className="course-card">
-              <img
-                src={buyNowImage}
-                alt="Thumbnail"
-                className="sidebar-img"
-              />
-              <div className="price-section">
-                <span className="discount-price">₹{course.price}</span>
-                <span className="original-price">₹120</span>
-                <p className="guarantee-text">30-Day Money-Back Guarantee</p>
-              </div>
-              {!hasAccess && (
-                <button
-                  onClick={() => buyCourse(course._id)}
-                  className="buy-btn"
-                  disabled={activePayment === course._id}
-                >
-                  {activePayment === course._id ? "Processing..." : "BUY NOW"}
-                </button>
-              )}
+          {/* Tab content */}
+          {activeTab === "overview" && (
+            <div className="tab-content">
+              <h3>Course Description</h3>
+              <p>{course.description}</p>
 
-              <ul className="course-info">
-                <li><strong>Enrolled:</strong> {course.enrolled || 100}</li>
-                <li><strong>Lectures:</strong> {course.lectures || 80}</li>
-                <li><strong>Skill Level:</strong> {course.level}</li>
-                <li><strong>Language:</strong> {course.language || "English"}</li>
-              </ul>
+              <h3>What Will I Learn From This Course?</h3>
+              <p>
+                This course covers everything from basic HTML and CSS to advanced
+                full-stack development topics. Learn at your own pace and become a
+                professional web developer.
+              </p>
             </div>
+          )}
+
+          {activeTab === "curriculum" && (
+            <div className="tab-content">
+              <h3>Curriculum</h3>
+              {course.modules.map((module, idx) => (
+                <details key={idx} className="module-item">
+                  <summary>{module.title || `Module ${idx + 1}`}</summary>
+                  {hasAccess ? (
+                    <div className="video-wrapper">
+                      {module.videoUrl && (
+                        <video width="100%" height="auto" controls style={{ marginTop: '10px' }}>
+                          <source src={`http://localhost:5000/assets/${module.videoUrl}`} type="video/mp4" />
+                          Your browser does not support the video tag.
+                        </video>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="locked-message">
+                      Purchase the course to unlock this video.
+                    </p>
+                  )}
+                </details>
+              ))}
+            </div>
+          )}
+
+
+          {activeTab === "instructor" && instructor && (
+            <div className="tab-content instructor-tab">
+              <img
+                src={`http://localhost:5000/assets/${instructor.profileImage}`}
+                alt={instructor.name}
+                className="instructor-photo"
+              />
+              <h3>{instructor.name}</h3>
+              <p>{instructor.bio}</p>
+              <p>
+                <strong>Expertise:</strong> {instructor.expertise}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Right Sidebar */}
+        <div className="course-right">
+          <div className="course-card">
+            <img
+              src={buyNowImage}
+              alt="Thumbnail"
+              className="sidebar-img"
+            />
+            <div className="price-section">
+              <span className="discount-price">₹{course.price}</span>
+              <span className="original-price">₹120</span>
+              <p className="guarantee-text">30-Day Money-Back Guarantee</p>
+            </div>
+            {!hasAccess && (
+              <button
+                onClick={() => buyCourse(course._id)}
+                className="buy-btn"
+                disabled={activePayment === course._id}
+              >
+                {activePayment === course._id ? "Processing..." : "BUY NOW"}
+              </button>
+            )}
+
+            <ul className="course-info">
+              <li><strong>Enrolled:</strong> {course.enrolled || 100}</li>
+              <li><strong>Lectures:</strong> {course.lectures || 80}</li>
+              <li><strong>Skill Level:</strong> {course.level}</li>
+              <li><strong>Language:</strong> {course.language || "English"}</li>
+            </ul>
           </div>
         </div>
+      </div>
       {/* </div> */}
     </div>
   );

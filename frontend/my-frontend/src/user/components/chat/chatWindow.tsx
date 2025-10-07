@@ -138,10 +138,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   };
 
 
-  const viewFile =  (fileName: string) => {
-  const fileUrl = `${import.meta.env.VITE_API_URL}/assets/${fileName}`;
-  window.open(fileUrl, "_blank"); // opens in new tab
-};
+  const viewFile = (fileName: string) => {
+    const fileUrl = `${import.meta.env.VITE_API_URL}/assets/${fileName}`;
+    window.open(fileUrl, "_blank"); // opens in new tab
+  };
 
 
   return (
@@ -205,25 +205,25 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
 
                   <div className="message-attachment">
-  {msg.attachment &&
-    (/\.(jpg|jpeg|png|gif|webp)$/i.test(msg.attachment) ? (
-      // Render image inline
-      <img onClick={()=>viewFile(msg.attachment!)}
-        src={`${import.meta.env.VITE_API_URL}/assets/${msg.attachment}`}
-        alt="attachment"
-        className="message-image"
-      />
-    ) : (
-      // Render file link
-      <img
-        onClick={()=>viewFile(msg.attachment!)}
-        src={attachmentImage}
-        alt="_blank"
-        className="message-image"
-      />
+                    {msg.attachment &&
+                      (/\.(jpg|jpeg|png|gif|webp)$/i.test(msg.attachment) ? (
+                        // Render image inline
+                        <img onClick={() => viewFile(msg.attachment!)}
+                          src={`${import.meta.env.VITE_API_URL}/assets/${msg.attachment}`}
+                          alt="attachment"
+                          className="message-image"
+                        />
+                      ) : (
+                        // Render file link
+                        <img
+                          onClick={() => viewFile(msg.attachment!)}
+                          src={attachmentImage}
+                          alt="_blank"
+                          className="message-image"
+                        />
 
-    ))}
-</div>
+                      ))}
+                  </div>
 
                 )}
 

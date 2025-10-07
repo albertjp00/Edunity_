@@ -6,6 +6,8 @@
 
 .contain{
   /* background-color: red; */
+  margin: 20px 200px 0 200px ;
+  height: 190vh;
 }
 
 .course-header {
@@ -38,8 +40,10 @@
   flex: 2;
 }
 
+
+
 .course-banner {
-  width: 100%;
+  width: 80%;
   border-radius: 12px;
 }
 

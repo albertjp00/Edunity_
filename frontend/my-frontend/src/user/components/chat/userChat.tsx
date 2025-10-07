@@ -34,40 +34,38 @@ const UserChat = () => {
 
 
       const normalized = response.data.data.map(
-  (item: {
-    instructor: IInstructorChat;
-    lastMessage: { text?: string; attachment?: string; timeStamp: Date; createdAt: string };
-  }) => {
-    let displayMessage = "";
+        (item: {
+          instructor: IInstructorChat;
+          lastMessage: { text?: string; attachment?: string; timeStamp: Date; createdAt: string };
+        }) => {
+          let displayMessage = "";
 
-    if (item.lastMessage?.text) {
-      displayMessage = item.lastMessage.text;
-    } else if (item.lastMessage?.attachment) {
-      if (/\.(jpg|jpeg|png|gif|webp)$/i.test(item.lastMessage.attachment)) {
-        displayMessage = "📷 Image";
-      } else {
-        displayMessage = "📄 Document";
-      }
-    }
+          if (item.lastMessage?.text) {
+            displayMessage = item.lastMessage.text;
+          } else if (item.lastMessage?.attachment) {
+            if (/\.(jpg|jpeg|png|gif|webp)$/i.test(item.lastMessage.attachment)) {
+              displayMessage = "📷 Image";
+            } else {
+              displayMessage = "📄 Document";
+            }
+          }
 
-    return {
-      id: item.instructor._id,
-      name: item.instructor.name,
-      avatar: item.instructor.avatar || profileImage,
-      lastMessage: displayMessage || "No messages yet",
-      time: item.lastMessage?.timeStamp || item.lastMessage?.createdAt || null,
-    };
-  }
-);
+          return {
+            id: item.instructor._id,
+            name: item.instructor.name,
+            avatar: item.instructor.avatar || profileImage,
+            lastMessage: displayMessage || "No messages yet",
+            time: item.lastMessage?.timeStamp || item.lastMessage?.createdAt || null,
+          };
+        }
+      );
 
 
 
-      // first-time chat
       if (instructorId) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const exists = normalized.find((i: any) => i.id === instructorId);
         if (!exists) {
-          // fetch instructor details
           const instRes = await api.get(`/user/instructor/${instructorId}`);
           if (instRes.data.success) {
             normalized.unshift(instRes.data.instructor); // add at top
@@ -124,17 +122,17 @@ const UserChat = () => {
                 <p className="instructor-name">{inst.name}</p>
                 <div className="message-and-time">
                   <p className="last-message">
-                  {inst.lastMessage || "No messages yet"}
+                    {inst.lastMessage || "No messages yet"}
 
-                </p>
-                <p className="message-time">
-                  {inst.time
-                    ? new Date(inst.time).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })
-                    : ""}
-                </p>
+                  </p>
+                  <p className="message-time">
+                    {inst.time
+                      ? new Date(inst.time).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                      : ""}
+                  </p>
                 </div>
 
                 {/* <p className="instructor-status">Online</p> */}
