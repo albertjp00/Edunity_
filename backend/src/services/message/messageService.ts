@@ -35,7 +35,9 @@ export class MessageService {
         return await this.messageRepository.getMessages(userId, receiverId);
     }
 
-    async markMessagesAsRead(senderId: string, receiverId: string): Promise<boolean> {
+    async   markMessagesAsRead(senderId: string, receiverId: string): Promise<boolean> {
+        console.log('repository',senderId , receiverId);
+        
         return await this.messageRepository.markAsRead(senderId, receiverId);
     }
 
