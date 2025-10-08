@@ -41,12 +41,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await api.get(`/user/messages/${userId}/${receiverId}`
-        );
+        const res = await api.get(`/user/messages/${userId}/${receiverId}`);
         if (res.data.success) {
           setMessages(res.data.messages);
 
-          // socket.emit("markAsRead", { userId, receiverId })
+          //Notify backend and the other user that messages are read
+          socket.emit("messagesRead", { senderId: receiverId, receiverId: userId });
         }
       } catch (err) {
         console.error("Failed to load chat history", err);
@@ -57,17 +57,39 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   }, [userId, receiverId]);
 
 
+
+  // useEffect(() => {
+  //   const fetchMessages = async () => {
+  //     try {
+  //       const res = await api.get(`/user/messages/${userId}/${receiverId}`);
+  //       if (res.data.success) {
+  //         setMessages(res.data.messages);
+
+  //         // Notify backend and the other user that messages are read
+  //         socket.emit("messagesRead ", { senderId: receiverId, receiverId: userId });
+  //       }
+  //     } catch (err) {
+  //       console.error("Failed to load chat history", err);
+  //     }
+  //   };
+
+  //   fetchMessages();
+  // }, [userId, receiverId]);
+
+
   useEffect(() => {
-    socket.on("messagesRead", ({ userId: readerId }) => {
+    socket.on("messagesReadUpdate", ({ senderId, receiverId }) => {
       setMessages((prev) =>
         prev.map((msg) =>
-          msg.receiverId === readerId ? { ...msg, read: true } : msg
+          msg.senderId === senderId && msg.receiverId === receiverId
+            ? { ...msg, read: true }
+            : msg
         )
       );
     });
 
     return () => {
-      socket.off("messagesRead");
+      socket.off("messagesReadUpdate");
     };
   }, []);
 
@@ -75,9 +97,33 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   useEffect(() => {
     socket.emit("joinRoom", { userId, receiverId });
 
+
+    socket.on("messagesReadUpdate", ({ senderId, receiverId }) => {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.senderId === senderId && msg.receiverId === receiverId
+            ? { ...msg, read: true }
+            : msg
+        )
+      );
+    });
+
+
     socket.on("receiveMessage", (message: Message) => {
       setMessages((prev) => [...prev, message]);
+
+      // If message is from the other user, mark as read immediately
+      if (message.senderId === receiverId && message.receiverId === userId) {
+        socket.emit("messagesRead", {
+          senderId: receiverId,
+          receiverId: userId,
+        });
+      }
     });
+
+
+
+
 
     return () => {
       socket.off("receiveMessage");

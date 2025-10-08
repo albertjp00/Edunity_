@@ -23,26 +23,28 @@ const InstructorChat: React.FC = () => {
         // assuming the backend also returns instructorId
         setInstructorId(response.data.instructorId);
 
+        console.log(response.data);
 
-        
 
 
-       const normalized: IStudent[] = response.data.students.map(
-  (item: ApiStudent) => ({
-    id: item.instructor._id,
-    name: item.instructor.name,
-    avatar: item.instructor.avatar
-      ? `http://localhost:5000/assets/${item.instructor.avatar}`
-      : profileImage,
-    hasAttachment: !!item.lastMessage.attachment,
-    lastMessage: item.lastMessage.text
-      ? item.lastMessage.text
-      : item.lastMessage.attachment
-      ? "📎 Attachment"
-      : "No messages yet",
-    timestamp: item.lastMessage.timestamp, 
-  })
-);
+
+
+        const normalized: IStudent[] = response.data.students.map(
+          (item: ApiStudent) => ({
+            id: item.instructor._id,
+            name: item.instructor.name,
+            avatar: item.instructor.avatar
+              ? `http://localhost:5000/assets/${item.instructor.avatar}`
+              : profileImage,
+            hasAttachment: !!item.lastMessage.attachment,
+            lastMessage: item.lastMessage.text
+              ? item.lastMessage.text
+              : item.lastMessage.attachment
+                ? "📎 Attachment"
+                : "No messages yet",
+            timestamp: item.lastMessage.timestamp,
+          })
+        );
 
 
         setStudents(normalized);
@@ -56,7 +58,9 @@ const InstructorChat: React.FC = () => {
     } catch (error) {
       console.error("Error fetching messaged students:", error);
     }
-  };
+  }
+
+
 
   useEffect(() => {
     getMessagedStudents();
@@ -86,17 +90,17 @@ const InstructorChat: React.FC = () => {
                 <div className="sidebar-user-info">
                   <p className="user-name">{stu.name}</p>
                   <p className="last-message">
-  {stu.lastMessage?.length ? stu.lastMessage : "No messages yet"}
-  <span className="message-time">
-    {stu.timestamp
-      ? new Date(stu.timestamp).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        })
-      : ""}
-  </span>
-</p>
+                    {stu.lastMessage?.length ? stu.lastMessage : "No messages yet"}
+                    <span className="message-time">
+                      {stu.timestamp
+                        ? new Date(stu.timestamp).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: true,
+                        })
+                        : ""}
+                    </span>
+                  </p>
 
 
                 </div>

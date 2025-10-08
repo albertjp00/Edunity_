@@ -105,7 +105,7 @@ async getMessages(userId: string, instructorId: string): Promise<IMessage[]> {
 
 async markAsRead(senderId : string , receiverId :string):Promise<boolean>{
   const read =  await MessageModel.updateMany(
-    {senderId : senderId , receiverId : senderId , read : false},
+    {senderId : senderId , receiverId : receiverId , read : false},
     {$set :{read : true}}
   )
   return true
@@ -126,6 +126,7 @@ async markAsRead(senderId : string , receiverId :string):Promise<boolean>{
         ],
       },
     },
+
     { $sort: { timestamp: -1 } },
     {
       $group: {
@@ -139,6 +140,7 @@ async markAsRead(senderId : string , receiverId :string):Promise<boolean>{
         lastMessage: { $first: "$$ROOT" },
       },
     },
+    {$sort : {'lastMessage.timestamp':-1}}
   ]);
 
   const users = await UserModel.find(

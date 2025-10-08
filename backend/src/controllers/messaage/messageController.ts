@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { MessageService } from "../../services/message/messageService.js";
 import { MessageRepository } from "../../repositories/messageRepositories.js";
 import { AuthRequest, InstAuthRequest } from "../../middleware/authMiddleware.js";
@@ -131,14 +131,15 @@ sendMessage = async (req: AuthRequest, res: Response) => {
 
 
   // Instructor side -------------------------------
+
   getMessagedStudents = async (req: InstAuthRequest, res: Response) => {
     try {
       const instructorId = req.instructor?.id
    
       console.log('get messaged users ', instructorId);
 
+      const result = await this.messageService.getStudents(instructorId)
 
-      const result = await this.messageService.getStudents(instructorId )
       console.log(result);
 
       res.json({ success: true, students: result  , instructorId })
@@ -148,6 +149,8 @@ sendMessage = async (req: AuthRequest, res: Response) => {
 
     }
   }
+
+
 
   getMessages = async (req:InstAuthRequest , res : Response) => {
     try {
@@ -199,6 +202,21 @@ sendMessage = async (req: AuthRequest, res: Response) => {
       res.status(500).json({ success: false, error: "Failed to send message" });
     }
   };
+
+
+
+  markAsRead = async (senderId : string , receiverId : string)=>{
+    try {
+      console.log('Message marked as read');
+      
+      const update = await this.messageService.markMessagesAsRead(senderId , receiverId)
+
+    } catch (error) {
+      console.log(error);
+      
+      
+    }
+  }
 
 
 }

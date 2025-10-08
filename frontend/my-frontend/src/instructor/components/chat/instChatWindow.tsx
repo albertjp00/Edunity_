@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import "./chatwindow.css";
 import instructorApi from "../../../api/instructorApi";
-import attachmentImage from '../../../assets/documentImage.jpg'
+import attachmentImage from "../../../assets/documentImage.jpg";
 
-const socket = io("http://localhost:5000");
+const socket = io(import.meta.env.VITE_API_URL);
 
 interface Message {
   senderId: string;
@@ -32,70 +32,109 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
   const [newMsg, setNewMsg] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
+  // ---------------- Fetch messages once ----------------
   useEffect(() => {
+    if (!receiverId) return;
+
     const fetchMessages = async () => {
       try {
-
-
         const res = await instructorApi.get(`/instructor/messages/${receiverId}`);
         if (res.data.success) {
-          setMessages(res.data.messages);
-          console.log(res.data);
+          const sorted = res.data.messages.sort(
+            (a: Message, b: Message) =>
+              new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+          );
+          setMessages(sorted);
 
-          socket.emit("markAsRead", { instructorId, receiverId });
+          // Mark messages as read in real-time
+          if (res.data.messages.some((m: Message) => m.senderId !== instructorId && !m.read)) {
+            socket.emit("messagesRead", { senderId: receiverId, receiverId: instructorId });
+          }
+
+
         }
       } catch (err) {
         console.error("Failed to load chat history", err);
       }
     };
+
     fetchMessages();
   }, [instructorId, receiverId]);
 
-
-  
+  // ---------------- Auto-scroll ----------------
   useEffect(() => {
-  const fetchMessages = async () => {
-    try {
-      const res = await instructorApi.get(`/instructor/messages/${receiverId}`);
-      if (res.data.success) {
-        // ✅ Sort messages by timestamp (oldest → newest)
-        const sortedMessages = res.data.messages.sort(
-          (a: Message, b: Message) =>
-            new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-        );
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-        setMessages(sortedMessages);
-        console.log(sortedMessages);
+  useEffect(() => {
+    if (!receiverId) return;
 
-        socket.emit("markAsRead", { instructorId, receiverId });
+    socket.emit("joinRoom", { userId: instructorId, receiverId });
+
+    // const handleReceiveMessage = (message: Message) => {
+    //   setMessages((prev) => [...prev, message]);
+    // };
+
+    socket.on("messagesReadUpdate", ({ senderId, receiverId }) => {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.senderId === senderId && msg.receiverId === receiverId
+            ? { ...msg, read: true }
+            : msg
+        )
+      );
+    });
+
+
+    socket.on("receiveMessage", (message: Message) => {
+      setMessages((prev) => [...prev, message]);
+
+      //  marking read immediately
+      if (message.senderId === receiverId && message.receiverId === instructorId) {
+        socket.emit("messagesRead", {
+          senderId: receiverId,
+          receiverId: instructorId,
+        });
       }
-    } catch (err) {
-      console.error("Failed to load chat history", err);
-    }
-  };
-  fetchMessages();
-}, [instructorId, receiverId]);
+    });
 
+
+    // socket.on("messagesReadUpdate", handleMessagesRead);
+
+    return () => {
+      // socket.off("receiveMessage", handleReceiveMessage);
+      // socket.off("messagesReadUpdate", handleMessagesRead);
+    };
+  }, [instructorId, receiverId]);
 
 
 
   const sendMessage = async (file?: File) => {
-    if (!receiverId) return;
+    if (!receiverId || (!newMsg && !file)) return;
 
     const formData = new FormData();
     formData.append("receiverId", receiverId);
     formData.append("senderId", instructorId);
     formData.append("text", newMsg.trim() || "");
-
     if (file) formData.append("attachment", file);
 
+
+
+
     try {
-      const res = await instructorApi.post(`/instructor/sendMessage/${receiverId}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const res = await instructorApi.post(
+        `/instructor/sendMessage/${receiverId}`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
 
       if (res.data.success) {
         const newMessage = res.data.message;
+
+
+        setMessages((prev) => [...prev, newMessage]);
+
+
         socket.emit("sendMessage", newMessage);
       }
 
@@ -105,20 +144,26 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
     }
   };
 
-  const handleSendMessage = () => sendMessage();
 
+
+
+  const handleSendMessage = () => sendMessage();
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) sendMessage(file);
   };
+
 
   const viewFile = (fileName: string) => {
     const fileUrl = `${import.meta.env.VITE_API_URL}/assets/${fileName}`;
     window.open(fileUrl, "_blank");
   };
 
+
+
   return (
     <div className="chat-window">
+      {/* Header */}
       <div className="chat-header">
         <div className="user-info">
           <img
@@ -132,15 +177,13 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
         </div>
       </div>
 
+      {/* Messages */}
       <div className="chat-messages">
-        
         {messages.map((msg, idx) => (
-          
           <div
-            key={idx}
             className={`message ${msg.senderId === instructorId ? "sent" : "received"}`}
+            key={idx}
           >
-            
             {msg.text && <div className="message-text">{msg.text}</div>}
 
             {msg.attachment && (
@@ -156,13 +199,12 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
                   <img
                     onClick={() => viewFile(msg.attachment!)}
                     src={attachmentImage}
-                    alt="_blank"
+                    alt="file"
                     className="message-image"
                   />
                 )}
               </div>
             )}
-
 
             <div className="message-time">
               {new Date(msg.timestamp).toLocaleTimeString([], {
@@ -170,14 +212,17 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
                 minute: "2-digit",
               })}
             </div>
+
             <div className="message-read">
               {msg.senderId === instructorId && (msg.read ? "✓✓" : "✓")}
             </div>
           </div>
         ))}
+
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Input */}
       <div className="chat-input">
         <input
           type="file"

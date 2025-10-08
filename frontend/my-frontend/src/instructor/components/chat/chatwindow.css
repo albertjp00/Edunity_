@@ -22,6 +22,14 @@
   border-bottom: 1px solid #ddd;
 }
 
+.date-header {
+  text-align: center;
+  margin: 10px 0;
+  font-size: 0.85rem;
+  color: #999;
+}
+
+
 .user-info {
   display: flex;
   align-items: center;
