@@ -3,6 +3,7 @@ import { MessageService } from "../../services/message/messageService.js";
 import { MessageRepository } from "../../repositories/messageRepositories.js";
 import { AuthRequest, InstAuthRequest } from "../../middleware/authMiddleware.js";
 import { log } from "winston";
+import logger from "../../utils/logger.js";
 
 export class MessageController {
   private messageService: MessageService;
@@ -63,8 +64,26 @@ getInstructortoMessage = async (req: AuthRequest, res: Response) => {
 
     }
   }
-// messageController.ts
-sendMessage = async (req: AuthRequest, res: Response) => {
+
+
+  getUnreadMessages = async (req:AuthRequest , res : Response) =>{
+    try {
+      const userId = req.user?.id!
+      const {instructorId} = req.params!
+      console.log('count  -----------------------');
+
+      
+       const result = await this.messageService.getUnreadMessages(userId , instructorId as string)
+       console.log("count -------------------",result)
+       res.json({success:true ,  message: result})
+    } catch (error) {
+      console.log(error);
+      
+    }
+  } 
+
+
+  sendMessage = async (req: AuthRequest, res: Response) => {
   try {
     const { receiverId, text='' } = req.body;
     const userId = req.user?.id as string;
@@ -213,7 +232,6 @@ sendMessage = async (req: AuthRequest, res: Response) => {
 
     } catch (error) {
       console.log(error);
-      
       
     }
   }

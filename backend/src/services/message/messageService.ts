@@ -1,4 +1,4 @@
-import { IMessagedInstructor } from "../../interfaces/instructorInterfaces.js";
+import { ILastMessage, IMessagedInstructor } from "../../interfaces/instructorInterfaces.js";
 import { IInstructor } from "../../models/instructor.js";
 import { IMessage } from "../../models/message.js";
 import { MessageRepository } from "../../repositories/messageRepositories.js";
@@ -23,6 +23,10 @@ export class MessageService {
 
     async getInstructors(userId: string): Promise<IMessagedInstructor[] > {
         return await this.messageRepository.getInstructors(userId)
+    }
+
+    async getUnreadMessages(userId:string , instructorId:string) : Promise<ILastMessage | null>{
+        return await this.messageRepository.getUnreadMessages(userId , instructorId)
     }
 
     async sendMessage(senderId: string, receiverId: string, text: string , file: string | null): Promise<IMessage> {

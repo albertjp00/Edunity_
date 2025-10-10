@@ -1,11 +1,12 @@
-import { AuthRequest } from "../../middleware/authMiddleware";
-import { UserRepository } from "../../repositories/userRepository";
+import { AuthRequest } from "../../middleware/authMiddleware.js";
+import { UserRepository } from "../../repositories/userRepository.js";
 import { NextFunction, Response } from "express"
 import { EventFullError, NotFoundError, NotLiveError, UserEventService } from "../../services/user/eventService.js";
 import { InstructorRepository } from "../../repositories/instructorRepository.js";
 import { Server } from "http";
 import { log } from "console";
-import logger from "../../utils/logger";
+import logger from "../../utils/logger.js";
+
 
 
 

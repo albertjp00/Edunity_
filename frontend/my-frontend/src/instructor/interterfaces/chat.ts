@@ -11,6 +11,7 @@ export interface ApiStudent {
     avatar?: string;
   };
   lastMessage: LastMessage;
+  unreadCount : number
 }
 
 export interface IStudent {
@@ -20,4 +21,5 @@ export interface IStudent {
   hasAttachment: boolean;
   lastMessage: string;
   timestamp?: string;
+  unreadCount : number
 }

@@ -23,36 +23,25 @@ export const setupSocket = (io: Server) => {
     console.log("Client connected:", socket.id);
 
     // ----------------- Chat -----------------
-    socket.on("joinRoom", ({ userId, receiverId }: { userId: string; receiverId: string }) => {
-      const room = [userId, receiverId].sort().join("_");
-      socket.join(room);
-      console.log(`User ${userId} joined chat room ${room}`);
-    });
 
-  
-    socket.on("sendMessage", (message: any) => {
-      const room = [message.senderId, message.receiverId].sort().join("_");
-      io.to(room).emit("receiveMessage", message);
-    });
-
-
-    socket.on("messagesRead", async ({ senderId, receiverId }) => {
-    const room = [senderId, receiverId].sort().join("_");
-
-
-    const update  = await messageController.markAsRead(senderId , receiverId)
-
-    // Update database messages (example)
-    // await Message.updateMany(
-    //   { senderId, receiverId, read: false },
-    //   { $set: { read: true } }
-    // );
-
-
-    // Notify both users that messages are read
-    io.to(room).emit("messagesReadUpdate", { senderId, receiverId });
-    console.log(`Messages from ${senderId} to ${receiverId} marked as read`);
+  socket.on("joinRoom", ({ userId, receiverId }) => {
+    const room = [userId, receiverId].sort().join("_");
+    socket.join(room);
+    console.log(`User ${userId} joined chat room ${room}`);
   });
+
+  socket.on("sendMessage", (message) => {
+    const room = [message.senderId, message.receiverId].sort().join("_");
+    io.to(room).emit("receiveMessage", message); // ✅ correct room
+  });
+
+  socket.on("messagesRead", async ({ senderId, receiverId }) => {
+    const room = [senderId, receiverId].sort().join("_");
+    await messageController.markAsRead(senderId, receiverId);
+    io.to(room).emit("messagesReadUpdate", { senderId, receiverId });
+  });
+
+
 
 
 

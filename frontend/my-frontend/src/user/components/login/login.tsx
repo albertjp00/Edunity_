@@ -2,7 +2,6 @@ import React, { useState, useEffect, type FormEvent, type ChangeEvent } from "re
 import "./login.css";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { GoogleLogin } from "@react-oauth/google";
 import type { AxiosError } from "axios";
 import api from "../../../api/userApi";
 import GoogleLoginButton from "../googleLogin/googleLogin";
@@ -20,7 +19,7 @@ const LoginUser: React.FC = () => {
     password: "",
   });
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => { 
     setValue({
       ...value,
       [e.target.name]: e.target.value,
@@ -36,7 +35,7 @@ const LoginUser: React.FC = () => {
         localStorage.setItem("token", response.data.accessToken);
         navigate("/user/home");
       }
-    } catch (error: any) {
+    } catch (error) {
       const err = error as AxiosError<{ message: string }>;
       const message = err.response?.data?.message || "Something went wrong";
       toast.error(message);

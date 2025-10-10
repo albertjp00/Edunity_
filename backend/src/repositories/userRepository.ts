@@ -25,8 +25,11 @@ export class UserRepository
 
   async create(user: Partial<IUser>): Promise<IUser> {
     const newUser = new this.model(user);
+
     return await newUser.save();
   }
+
+  
 
   async googleLogIn(user: Partial<IUser>): Promise<IUser> {
     const newUser = new this.model(user);
