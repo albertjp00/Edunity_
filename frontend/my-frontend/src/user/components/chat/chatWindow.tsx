@@ -21,6 +21,8 @@ interface ChatWindowProps {
   receiverId?: string;
   receiverName: string;
   receiverAvatar?: string;
+  onMessageSent? : (receiverId : string) => void
+  unreadIncrease : (receiverId : string)=>void
 }
 
 
@@ -30,22 +32,31 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   receiverId,
   receiverName,
   receiverAvatar,
+  onMessageSent,
+  unreadIncrease
 }) => {
+
+
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMsg, setNewMsg] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  // const {instructorId} = useParams()
 
-  // const receiverId = instructorId 
-
+  // ---------------- Fetch chat history once ----------------
   useEffect(() => {
+    if (!receiverId) return;
+
     const fetchMessages = async () => {
       try {
         const res = await api.get(`/user/messages/${userId}/${receiverId}`);
         if (res.data.success) {
-          setMessages(res.data.messages);
+          const sorted = res.data.messages.sort(
+            (a: Message, b: Message) =>
+              new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+          );
+          setMessages(sorted);
 
-          //Notify backend and the other user that messages are read
+          // Notify backend that messages are read
           socket.emit("messagesRead", { senderId: receiverId, receiverId: userId });
         }
       } catch (err) {
@@ -56,49 +67,31 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     fetchMessages();
   }, [userId, receiverId]);
 
-
-
-  // useEffect(() => {
-  //   const fetchMessages = async () => {
-  //     try {
-  //       const res = await api.get(`/user/messages/${userId}/${receiverId}`);
-  //       if (res.data.success) {
-  //         setMessages(res.data.messages);
-
-  //         // Notify backend and the other user that messages are read
-  //         socket.emit("messagesRead ", { senderId: receiverId, receiverId: userId });
-  //       }
-  //     } catch (err) {
-  //       console.error("Failed to load chat history", err);
-  //     }
-  //   };
-
-  //   fetchMessages();
-  // }, [userId, receiverId]);
-
-
+  // ---------------- Socket: join room + receive messages ----------------
   useEffect(() => {
-    socket.on("messagesReadUpdate", ({ senderId, receiverId }) => {
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.senderId === senderId && msg.receiverId === receiverId
-            ? { ...msg, read: true }
-            : msg
-        )
-      );
-    });
+    if (!receiverId) return;
 
-    return () => {
-      socket.off("messagesReadUpdate");
-    };
-  }, []);
-
-
-  useEffect(() => {
     socket.emit("joinRoom", { userId, receiverId });
 
+    // Handle incoming messages
+    const handleReceive = (message: Message) => {
 
-    socket.on("messagesReadUpdate", ({ senderId, receiverId }) => {
+
+      if (message.senderId === userId) return;
+
+      setMessages((prev) => [...prev, message]);
+
+      if(message.senderId === receiverId){
+        unreadIncrease(message.senderId)
+      }
+
+      if (message.senderId === receiverId && message.receiverId === userId) {
+        socket.emit("messagesRead", { senderId: receiverId, receiverId: userId });
+      }
+    };
+
+    // messages read is updates here
+    const handleReadUpdate = ({ senderId, receiverId }: { senderId: string; receiverId: string }) => {
       setMessages((prev) =>
         prev.map((msg) =>
           msg.senderId === senderId && msg.receiverId === receiverId
@@ -106,27 +99,14 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             : msg
         )
       );
-    });
+    };
 
-
-    socket.on("receiveMessage", (message: Message) => {
-      setMessages((prev) => [...prev, message]);
-
-      // If message is from the other user, mark as read immediately
-      if (message.senderId === receiverId && message.receiverId === userId) {
-        socket.emit("messagesRead", {
-          senderId: receiverId,
-          receiverId: userId,
-        });
-      }
-    });
-
-
-
-
+    socket.on("receiveMessage", handleReceive);
+    socket.on("messagesReadUpdate", handleReadUpdate);
 
     return () => {
-      socket.off("receiveMessage");
+      socket.off("receiveMessage", handleReceive);
+      socket.off("messagesReadUpdate", handleReadUpdate);
     };
   }, [userId, receiverId]);
 
@@ -134,23 +114,14 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-
-
-
-
   const sendMessage = async (file?: File) => {
-    if (!receiverId) return;
+    if (!receiverId || (!newMsg && !file)) return;
 
     const formData = new FormData();
     formData.append("receiverId", receiverId);
     formData.append("senderId", userId);
-
-    // always append text
     formData.append("text", newMsg.trim() || "");
-
-    if (file) {
-      formData.append("attachment", file);
-    }
+    if (file) formData.append("attachment", file);
 
     try {
       const res = await api.post("/user/chat", formData, {
@@ -160,35 +131,33 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       if (res.data.success) {
         const newMessage = res.data.message;
 
-        // setMessages((prev) => [...prev, newMessage]);
+        setMessages((prev) => [...prev, { ...newMessage, read: false }]);
+
         socket.emit("sendMessage", newMessage);
+
+        if(onMessageSent) {
+          onMessageSent(receiverId)
+        }
       }
 
-      setNewMsg("")
+
+
+      setNewMsg("");
     } catch (error) {
       console.error("Failed to send message", error);
     }
   };
 
-
-
-
-
-  const handleSendMessage = () => {
-    sendMessage()
-  }
-
+  const handleSendMessage = () => sendMessage();
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) sendMessage(file);
   };
 
-
   const viewFile = (fileName: string) => {
     const fileUrl = `${import.meta.env.VITE_API_URL}/assets/${fileName}`;
-    window.open(fileUrl, "_blank"); // opens in new tab
+    window.open(fileUrl, "_blank");
   };
-
 
   return (
     <div className="chat-window-user">

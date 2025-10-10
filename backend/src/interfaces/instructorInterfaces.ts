@@ -82,6 +82,10 @@ export interface IMessagedInstructor {
 }
 
 
+export interface ILastMessage{
+    lastMessage : IMessage | null,
+    unReadCount : number | null
+}
 
 
 export interface IPurchaseDetails {

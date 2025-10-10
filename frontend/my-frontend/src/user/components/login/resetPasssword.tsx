@@ -2,7 +2,6 @@ import React, { useState, type FormEvent, type ChangeEvent } from 'react';
 import './resetPassword.css';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
-import api from '../../../api/userApi';
 import publicApi from '../../../api/publicApi';
 
 
@@ -69,10 +68,21 @@ const UserResetPassword: React.FC = () => {
       } else {
         toast.error(response?.data.message);
       }
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.response?.data?.message || 'Something went wrong'); 
-    }
+    } catch (error) {
+  console.error(error);
+
+  if (error instanceof Error) {
+    // For general JS errors
+    toast.error(error.message || 'Something went wrong');
+  } else if (typeof error === 'object' && error !== null && 'response' in error) {
+    // For Axios errors
+    const axiosError = error as { response?: { data?: { message?: string } } };
+    toast.error(axiosError.response?.data?.message || 'Something went wrong');
+  } else {
+    toast.error('Something went wrong');
+  }
+}
+
   };
 
   return (
