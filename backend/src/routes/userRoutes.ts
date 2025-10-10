@@ -86,6 +86,8 @@ router.post("/chat",authMiddleware ,upload.single("attachment"),messageControlle
 router.get("/getInstructor/:instructorId",authMiddleware , messageController.getInstructor)
 router.get("/messages/:userId/:receiverId",authMiddleware , messageController.getChatHistory);
 router.get("/messagedInstructors",authMiddleware,messageController.getMessagedInstructors)
+router.get("/getUnreadMessages/:instructorId",authMiddleware,messageController.getUnreadMessages)
+
 
 router.get("/instructor/:id", authMiddleware, messageController.getInstructortoMessage);
 

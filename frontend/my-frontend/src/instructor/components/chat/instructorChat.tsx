@@ -43,6 +43,7 @@ const InstructorChat: React.FC = () => {
                 ? "📎 Attachment"
                 : "No messages yet",
             timestamp: item.lastMessage.timestamp,
+            unreadCount: item.unreadCount || 0,
           })
         );
 
@@ -61,6 +62,40 @@ const InstructorChat: React.FC = () => {
   }
 
 
+  const sortStudents = (students: IStudent[]) => {
+    return [...students].sort((a, b) => {
+      const timeA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+      const timeB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+      return timeB - timeA; // newest first
+    });
+  };
+
+
+
+  const handleMessageSent = (receiverId: string) => {
+    setStudents((prev) => {
+      const updated = prev.map((stu) =>
+        stu.id === receiverId
+          ? { ...stu, timestamp: new Date().toISOString() }
+          : stu
+      );
+      return sortStudents(updated);
+    });
+  };
+
+
+  const handleUnreadIncrease = (senderId: string) => {
+    setStudents(prev =>
+      prev.map(stu =>
+        stu.id === senderId ? { ...stu, unreadCount: (stu.unreadCount || 0) + 1 } : stu
+      )
+    );
+  };
+
+
+
+
+
 
   useEffect(() => {
     getMessagedStudents();
@@ -74,41 +109,46 @@ const InstructorChat: React.FC = () => {
         <div className="chat-sidebar">
           <h2 className="sidebar-title">Students</h2>
 
-          {students.length > 0 ? (
-            students.map((stu) => (
-              <div
-                key={stu.id}
-                className={`sidebar-user ${selected?.id === stu.id ? "active" : ""
-                  }`}
-                onClick={() => setSelected(stu)}
-              >
-                <img
-                  src={stu.avatar || profileImage}
-                  alt={stu.name}
-                  className="sidebar-avatar"
-                />
-                <div className="sidebar-user-info">
-                  <p className="user-name">{stu.name}</p>
-                  <p className="last-message">
-                    {stu.lastMessage?.length ? stu.lastMessage : "No messages yet"}
-                    <span className="message-time">
-                      {stu.timestamp
-                        ? new Date(stu.timestamp).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          hour12: true,
-                        })
-                        : ""}
-                    </span>
-                  </p>
+          {students.map((stu) => (
+            <div
+              key={stu.id}
+              className={`sidebar-user ${selected?.id === stu.id ? "active" : ""}`}
+              onClick={() => {
+                setSelected(stu);
+                setStudents(prev =>
+                  prev.map(s =>
+                    s.id === stu.id ? { ...s, unreadCount: 0 } : s
+                  )
+                );
+              }}
+            >
+              <img
+                src={stu.avatar || profileImage}
+                alt={stu.name}
+                className="sidebar-avatar"
+              />
+              <div className="sidebar-user-info">
+                <p className="user-name">{stu.name}</p>
+                <p className="last-message">
+                  {stu.lastMessage?.length ? stu.lastMessage : "No messages yet"}
+                  <span className="message-time">
+                    {stu.timestamp
+                      ? new Date(stu.timestamp).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })
+                      : ""}
+                  </span>
+                </p>
 
-
-                </div>
+                {stu.unreadCount > 0 && (
+                  <span className="unread-badge">{stu.unreadCount}</span>
+                )} 
               </div>
-            ))
-          ) : (
-            <p className="no-students">No students yet</p>
-          )}
+            </div>
+          ))}
+
         </div>
 
         {/* Chat Area */}
@@ -122,6 +162,8 @@ const InstructorChat: React.FC = () => {
                   receiverId={selected.id}
                   receiverName={selected.name}
                   receiverAvatar={selected.avatar || profileImage}
+                  onMessageSent={() => handleMessageSent(selected.id)}
+                  unreadIncrease={handleUnreadIncrease}
                 />
               </div>
             </>

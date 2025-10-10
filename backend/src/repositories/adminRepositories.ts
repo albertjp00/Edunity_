@@ -42,7 +42,6 @@ export interface IAdminRepository {
 
     getPurchases(search: string, page: number): Promise<PurchaseResult | null>
 
-
 }
 
 export class AdminRepository implements IAdminRepository {

@@ -20,19 +20,27 @@ interface ChatWindowProps {
   receiverId?: string;
   receiverName: string;
   receiverAvatar?: string;
+  onMessageSent?: (receiverId: string) => void;
+  unreadIncrease?: (senderId: string) => void
 }
+
+
 
 const InstructorChatWindow: React.FC<ChatWindowProps> = ({
   instructorId,
   receiverId,
   receiverName,
   receiverAvatar,
+  onMessageSent,
+  unreadIncrease
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMsg, setNewMsg] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  // ---------------- Fetch messages once ----------------
+
+
+
   useEffect(() => {
     if (!receiverId) return;
 
@@ -46,12 +54,10 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
           );
           setMessages(sorted);
 
-          // Mark messages as read in real-time
+          // Notify backend that messages are read;
           if (res.data.messages.some((m: Message) => m.senderId !== instructorId && !m.read)) {
             socket.emit("messagesRead", { senderId: receiverId, receiverId: instructorId });
           }
-
-
         }
       } catch (err) {
         console.error("Failed to load chat history", err);
@@ -61,54 +67,56 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
     fetchMessages();
   }, [instructorId, receiverId]);
 
-  // ---------------- Auto-scroll ----------------
+
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+
+
+
 
   useEffect(() => {
     if (!receiverId) return;
 
     socket.emit("joinRoom", { userId: instructorId, receiverId });
 
-    // const handleReceiveMessage = (message: Message) => {
-    //   setMessages((prev) => [...prev, message]);
-    // };
+    const handleReceive = (message: Message) => {
 
-    socket.on("messagesReadUpdate", ({ senderId, receiverId }) => {
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.senderId === senderId && msg.receiverId === receiverId
-            ? { ...msg, read: true }
-            : msg
-        )
-      );
-    });
-
-
-    socket.on("receiveMessage", (message: Message) => {
+      if (message.senderId === instructorId) return;
       setMessages((prev) => [...prev, message]);
 
-      //  marking read immediately
-      if (message.senderId === receiverId && message.receiverId === instructorId) {
-        socket.emit("messagesRead", {
-          senderId: receiverId,
-          receiverId: instructorId,
-        });
+      if (message.senderId !== receiverId && unreadIncrease) {
+        unreadIncrease(message.senderId);
       }
-    });
+
+      if (message.senderId === receiverId && message.receiverId === instructorId) {
 
 
-    // socket.on("messagesReadUpdate", handleMessagesRead);
+        socket.emit("messagesRead", { senderId: receiverId, receiverId: instructorId });
+      }
+    };
+
+    const handleReadUpdate = ({ senderId, receiverId }: { senderId: string; receiverId: string }) => {
+
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.senderId === senderId && msg.receiverId === receiverId ? { ...msg, read: true } : msg
+        )
+      );
+    };
+
+    socket.on("receiveMessage", handleReceive);
+    socket.on("messagesReadUpdate", handleReadUpdate);
 
     return () => {
-      // socket.off("receiveMessage", handleReceiveMessage);
-      // socket.off("messagesReadUpdate", handleMessagesRead);
+      socket.off("receiveMessage", handleReceive);
+      socket.off("messagesReadUpdate", handleReadUpdate);
     };
   }, [instructorId, receiverId]);
 
-
-
+  // ---------------- Send message ----------------
   const sendMessage = async (file?: File) => {
     if (!receiverId || (!newMsg && !file)) return;
 
@@ -118,24 +126,22 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
     formData.append("text", newMsg.trim() || "");
     if (file) formData.append("attachment", file);
 
-
-
-
     try {
-      const res = await instructorApi.post(
-        `/instructor/sendMessage/${receiverId}`,
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
+      const res = await instructorApi.post(`/instructor/sendMessage/${receiverId}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       if (res.data.success) {
         const newMessage = res.data.message;
 
+        setMessages((prev) => [...prev, { ...newMessage, read: false }]);
 
-        setMessages((prev) => [...prev, newMessage]);
-
-
+        // Let socket handle adding the message
         socket.emit("sendMessage", newMessage);
+
+        if (onMessageSent) {
+          onMessageSent(receiverId)
+        }
       }
 
       setNewMsg("");
@@ -144,22 +150,16 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
     }
   };
 
-
-
-
   const handleSendMessage = () => sendMessage();
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) sendMessage(file);
   };
 
-
   const viewFile = (fileName: string) => {
     const fileUrl = `${import.meta.env.VITE_API_URL}/assets/${fileName}`;
     window.open(fileUrl, "_blank");
   };
-
-
 
   return (
     <div className="chat-window">
