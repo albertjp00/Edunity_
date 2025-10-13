@@ -1,106 +1,118 @@
+/* Container layout */
 .user-chat-container {
-    display: flex;
-    height: 90vh;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  height: 90vh;
+  background-color: #f9fafb;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* Sidebar */
+/* ---------- Sidebar ---------- */
 .chat-sidebar {
-    width: 25%;
-    background: #f9f9f9;
-    border-right: 1px solid #ddd;
-    padding: 16px;
+  width: 30%;
+  max-width: 340px;
+  background-color: #ffffff;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  overflow-y: auto;
 }
 
 .sidebar-title {
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin-bottom: 16px;
-    color: #333;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #333;
+  padding-left: 8px;
 }
 
+/* Instructor list items */
 .sidebar-instructor {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 12px;
-  background: #fff;
+  padding: 10px;
+  margin-bottom: 8px;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease-in-out;
+  position: relative;
 }
 
 .sidebar-instructor:hover {
-  background: #f3f4f6; /* subtle hover */
+  background-color: #f1f5f9;
+}
+
+.sidebar-instructor.active {
+  background-color: #e0f2fe;
 }
 
 .sidebar-avatar {
-  width: 40px;   /* smaller avatar */
-  height: 40px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
   object-fit: cover;
+  margin-right: 10px;
+  border: 2px solid #f3f4f6;
 }
 
+/* Instructor name + message preview */
 .instructor-name {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
-  color: #222;
-  margin: 0; /* remove default p spacing */
-  line-height: 1.2;
+  color: #111827;
+  margin: 0;
 }
 
-
-.instructor-status {
-    font-size: 0.85rem;
-    color: #4caf50;
-    /* green status */
-}
-
-/* Main chat window */
-.chat-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+.message-and-time {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
 }
 
 .last-message {
-  font-size: 0.9rem;
-  color: #555;
-  margin: 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-top: 2px;
+  max-width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .message-time {
   font-size: 0.75rem;
-  color: gray;
-  margin: 0;
+  color: #9ca3af;
+  margin-left: 8px;
+  min-width: 50px;
   text-align: right;
 }
 
-.message-and-time{
-  display: flex;
-  justify-content:space-around;
-  align-items: center;
-  width: 200px;
-}
-
+/* Unread badge */
 .unread-badge {
-  background-color: #19b6c1; /* red color for unread count */
-  color: black;
-  font-size: 12px;
+  background-color: #3b82f6;
+  color: white;
+  font-size: 0.7rem;
   font-weight: bold;
+  padding: 2px 6px;
   border-radius: 50%;
-  min-width: 20px;
-  height: 20px;
+  position: absolute;
+  top: 0;
+  right: -8px;
+  transform: translate(-50%, 0);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 6px;
-  position: absolute;
-  top: 8px;
-  right: 10px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+/* ---------- Main Chat Section ---------- */
+.chat-main {
+  flex: 1;
+  background-color: #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }

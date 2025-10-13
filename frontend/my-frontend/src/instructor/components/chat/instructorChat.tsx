@@ -6,14 +6,20 @@ import "./instructorChat.css";
 import InstructorChatWindow from "./instChatWindow";
 import InstructorNavbar from "../navbar/navbar";
 import type { ApiStudent, IStudent } from "../../interterfaces/chat";
+import { io } from "socket.io-client";
 
 
+const socket = io(import.meta.env.VITE_API_URL)
 
 const InstructorChat: React.FC = () => {
   const { id: userId } = useParams<{ id?: string }>();
   const [students, setStudents] = useState<IStudent[]>([]);
   const [selected, setSelected] = useState<IStudent | null>(null);
   const [instructorId, setInstructorId] = useState<string | null>(null);
+  const [typingStudents, setTypingStudents] = useState<Record<string, boolean>>({});
+  // const [isTyping, setIsTyping] = useState(false);
+
+
 
   const getMessagedStudents = async () => {
     try {
@@ -50,7 +56,7 @@ const InstructorChat: React.FC = () => {
 
         setStudents(normalized);
 
-        // Auto-select if userId exists in route
+
         if (userId) {
           const found = normalized.find((s) => s.id === userId);
           if (found) setSelected(found);
@@ -72,16 +78,38 @@ const InstructorChat: React.FC = () => {
 
 
 
-  const handleMessageSent = (receiverId: string) => {
+  const handleMessageSent = (
+    receiverId: string,
+    messageText?: string,
+    attachment?: string
+  ) => {
     setStudents((prev) => {
-      const updated = prev.map((stu) =>
-        stu.id === receiverId
-          ? { ...stu, timestamp: new Date().toISOString() }
-          : stu
-      );
+      const updated = prev.map((stu) => {
+        if (stu.id === receiverId) {
+          let displayMessage = "";
+
+          if (messageText && messageText.trim() !== "") {
+            displayMessage = messageText;
+          } else if (attachment) {
+            displayMessage = /\.(jpg|jpeg|png|gif|webp)$/i.test(attachment)
+              ? "📷 Image"
+              : "📄 Document";
+          }
+
+          return {
+            ...stu,
+            lastMessage: displayMessage || stu.lastMessage,
+            timestamp: new Date().toISOString(),
+            unreadCount: 0,
+          };
+        }
+        return stu;
+      });
+
       return sortStudents(updated);
     });
   };
+
 
 
   const handleUnreadIncrease = (senderId: string) => {
@@ -97,9 +125,74 @@ const InstructorChat: React.FC = () => {
 
 
 
+
   useEffect(() => {
     getMessagedStudents();
   }, []);
+
+
+  // const timeoutRefs = useRef<NodeJS.Timeout | null>(null);
+
+  //joining room for typing status 
+  useEffect(() => {
+    if (!userId) return;
+
+    const handleTyping = ({ senderId }: { senderId: string }) => {
+      console.log(`💬 Typing event received from: ${senderId}`);
+      setTypingStudents((prev) => ({ ...prev, [senderId]: true }));
+
+
+    setTimeout(() => {
+        setTypingStudents((prev) => ({ ...prev, [senderId]: false }));
+      }, 2000);
+    };
+    
+
+    const handleStopTyping = ({ senderId }: { senderId: string }) => {
+      setTypingStudents((prev) => ({ ...prev, [senderId]: false }));
+    };
+
+    socket.on("userTyping", handleTyping);
+    socket.on("userStopTyping", handleStopTyping);
+
+    return () => {
+      socket.off("userTyping", handleTyping);
+      socket.off("userStopTyping", handleStopTyping);
+    };
+  }, [userId]);
+
+
+
+  // console.log("🔗 Socket ID:", socket.id);
+
+
+  //to show typing status in the list 
+  useEffect(() => {
+    const handleTyping = ({ senderId }: { senderId: string }) => {
+      console.log(`💬 Typing event received from: ${senderId}`);
+      setTypingStudents((prev) => ({ ...prev, [senderId]: true }));
+
+      // Auto-clear after 2s of inactivity
+      setTimeout(() => {
+        setTypingStudents((prev) => ({ ...prev, [senderId]: false }));
+      }, 2000);
+    };
+
+    const handleStopTyping = ({ senderId }: { senderId: string }) => {
+      console.log(`🛑 Stop typing received from: ${senderId}`);
+      setTypingStudents((prev) => ({ ...prev, [senderId]: false }));
+    };
+
+    socket.on("userTyping", handleTyping);
+    socket.on("userStopTyping", handleStopTyping);
+
+    return () => {
+      socket.off("userTyping", handleTyping);
+      socket.off("userStopTyping", handleStopTyping);
+    };
+  }, []);
+
+
 
   return (
     <>
@@ -114,7 +207,7 @@ const InstructorChat: React.FC = () => {
               key={stu.id}
               className={`sidebar-user ${selected?.id === stu.id ? "active" : ""}`}
               onClick={() => {
-                setSelected(stu);
+                setSelected({ ...stu });
                 setStudents(prev =>
                   prev.map(s =>
                     s.id === stu.id ? { ...s, unreadCount: 0 } : s
@@ -129,9 +222,19 @@ const InstructorChat: React.FC = () => {
               />
               <div className="sidebar-user-info">
                 <p className="user-name">{stu.name}</p>
+
+                {/* <p className="last-message">
+                  {typingInstructors[stu.id] ? "Typing..." : stu.lastMessage || "No messages yet"}
+                </p> */}
+
                 <p className="last-message">
-                  {stu.lastMessage?.length ? stu.lastMessage : "No messages yet"}
-                  <span className="message-time">
+                  {typingStudents[stu.id]
+                    ? "Typing..."
+                    : stu.lastMessage || "No messages yet"}
+                </p>
+
+                {!typingStudents[stu.id] && (
+                  <p className="message-time">
                     {stu.timestamp
                       ? new Date(stu.timestamp).toLocaleTimeString([], {
                         hour: "2-digit",
@@ -139,12 +242,15 @@ const InstructorChat: React.FC = () => {
                         hour12: true,
                       })
                       : ""}
-                  </span>
-                </p>
+                  </p>
+                )}
 
-                {stu.unreadCount > 0 && (
+
+
+
+                {/* {stu.unreadCount > 0 && (
                   <span className="unread-badge">{stu.unreadCount}</span>
-                )} 
+                )} */}
               </div>
             </div>
           ))}
@@ -162,7 +268,10 @@ const InstructorChat: React.FC = () => {
                   receiverId={selected.id}
                   receiverName={selected.name}
                   receiverAvatar={selected.avatar || profileImage}
-                  onMessageSent={() => handleMessageSent(selected.id)}
+                  onMessageSent={(receiverId, messageText, attachment) =>
+                    handleMessageSent(receiverId, messageText, attachment)
+                  }
+
                   unreadIncrease={handleUnreadIncrease}
                 />
               </div>

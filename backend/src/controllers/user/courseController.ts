@@ -22,14 +22,14 @@ export class UserCourseController {
     }
 
     // Explicitly type as Express RequestHandler
-    showCourses: RequestHandler = async (req: AuthRequest, res: Response, next : NextFunction) => {
+    showCourses: RequestHandler = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             console.log("get Courses user");
 
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 6;
 
-            const data = await this._courseService.getCourses(page, limit); 
+            const data = await this._courseService.getCourses(page, limit);
 
             res.json({
                 success: true,
@@ -46,9 +46,9 @@ export class UserCourseController {
     };
 
 
-    getAllCourses = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void> => {
+    getAllCourses = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            console.log("get all courses",req.query);
+            console.log("get all courses", req.query);
 
             const {
                 categories,
@@ -101,9 +101,9 @@ export class UserCourseController {
                 sortOption
             );
             // console.log(totalCount);
-            
 
-            
+
+
             res.json({
                 courses,
                 totalPages: Math.ceil(totalCount / Number(limit)),
@@ -119,10 +119,10 @@ export class UserCourseController {
 
 
 
-    courseDetails = async (req: AuthRequest, res: Response , next:NextFunction): Promise<void> => {
+    courseDetails = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             // console.log('details');
-            
+
             const id = req.user?.id!
             const courseId = req.query.id as string
             const result = await this._courseService.fetchCourseDetails(id, courseId)
@@ -152,38 +152,38 @@ export class UserCourseController {
     //     }
     // }
     // controller
-buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void> => {
-    try {
-        const userId = req.user?.id!;
-        const courseId = req.params.id!;
-        console.log('Buy course',userId, courseId);
+    buyCourse = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const userId = req.user?.id!;
+            const courseId = req.params.id!;
+            console.log('Buy course', userId, courseId);
 
-        // Key for debouncing (user + course)
-        const key = `buyCourse_${userId}_${courseId}`;
+            // Key for debouncing (user + course)
+            const key = `buyCourse_${userId}_${courseId}`;
 
-        const order = await debounceCall(key, 2000, async () => {
-            // This function runs only if user hasn't triggered in last 2s
-            return await this._courseService.buyCourseRequest(userId, courseId);
-        });
+            const order = await debounceCall(key, 2000, async () => {
+                // This function runs only if user hasn't triggered in last 2s
+                return await this._courseService.buyCourseRequest(userId, courseId);
+            });
 
-        res.json({
-            success: true,
-            orderId: order.id,
-            amount: order.amount,
-            currency: order.currency,
-            key: process.env.RAZORPAY_KEY_ID,
-            courseId,
-        });
+            res.json({
+                success: true,
+                orderId: order.id,
+                amount: order.amount,
+                currency: order.currency,
+                key: process.env.RAZORPAY_KEY_ID,
+                courseId,
+            });
 
-    } catch (error) {
-        // console.error("Error in buyCourse:", error);
-        next(error)
-        res.status(500).json({ success: false, message: "Payment initiation failed" });
-    }
-};
+        } catch (error) {
+            // console.error("Error in buyCourse:", error);
+            next(error)
+            res.status(500).json({ success: false, message: "Payment initiation failed" });
+        }
+    };
 
 
-    verifyPayment = async (req: AuthRequest, res: Response, next : NextFunction) => {
+    verifyPayment = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             const { razorpay_order_id, razorpay_payment_id, razorpay_signature, courseId } = req.body;
             const userId = req.user?.id!;
@@ -222,14 +222,28 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
 
 
 
-    myCourses = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void> => {
+    myCourses = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             const id = req.user?.id!
-            console.log(id);
 
-            const result = await this._courseService.myCoursesRequest(id)
-            // console.log('my courses result ', result);
-            res.status(200).json({ success: true, course: result })
+            const page = parseInt(req.params.page as string) || 1
+            console.log(id, page);
+
+
+            const result = await this._courseService.myCoursesRequest(id, page)
+            console.log('my courses result ', result);
+
+            if(!result) return
+
+            const { populatedCourses, result: paginationData } = result;
+
+            res.json({
+                success: true,
+                courses: populatedCourses,
+                totalCount: paginationData?.totalCount,
+                totalPages: paginationData?.totalPages,
+                currentPage: page,
+            });
 
         } catch (error) {
             // console.log(error);
@@ -238,7 +252,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
         }
     }
 
-    viewMyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void> => {
+    viewMyCourse = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             const id = req.user?.id!
             const myCourseId = req.params.id!
@@ -259,7 +273,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
 
 
 
-    updateProgress = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void> => {
+    updateProgress = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             const userId = req.user?.id as string;
             const { courseId, moduleTitle } = req.body;
@@ -281,7 +295,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
     };
 
 
-    getInstructors = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void> => {
+    getInstructors = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             const instructor = await this._courseService.getInstructorsRequest()
 
@@ -294,7 +308,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
     };
 
 
-    addtoFavourites = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void> => {
+    addtoFavourites = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             const userId = req.user?.id as string;
             const courseId = req.params.id!;
@@ -314,7 +328,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
         }
     };
 
-    getFavourites = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void> => {
+    getFavourites = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             const userId = req.user?.id!
             const data = await this._courseService.getFavourites(userId)
@@ -329,7 +343,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
         }
     }
 
-    favCourseDetails = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void> => {
+    favCourseDetails = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             const id = req.user?.id!
             const courseId = req.query.id as string
@@ -344,7 +358,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
     }
 
 
-    getQuiz = async (req: AuthRequest, res: Response, next : NextFunction) => {
+    getQuiz = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             const { courseId } = req.params
             const userId = req.user?.id
@@ -362,7 +376,7 @@ buyCourse = async (req: AuthRequest, res: Response, next : NextFunction): Promis
     }
 
 
-    submitQuiz = async (req: AuthRequest, res: Response , next : NextFunction) => {
+    submitQuiz = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             const userId = req.user?.id!
 

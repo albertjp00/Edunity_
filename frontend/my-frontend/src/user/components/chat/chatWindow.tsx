@@ -3,44 +3,48 @@ import { io } from "socket.io-client";
 import "./chatWindow.css";
 import api from "../../../api/userApi";
 
+
 import attachmentImage from '../../../assets/documentImage.jpg'
 
 const socket = io(import.meta.env.VITE_API_URL);
 
+// ---------- Message Interface ----------
 interface Message {
   senderId: string;
   receiverId?: string;
   text: string;
   attachment?: string;
   timestamp: Date | string;
-  read?: boolean
+  read?: boolean;
 }
 
+// ---------- ChatWindow Props ----------
 interface ChatWindowProps {
   userId: string;
   receiverId?: string;
   receiverName: string;
   receiverAvatar?: string;
-  onMessageSent? : (receiverId : string) => void
-  unreadIncrease : (receiverId : string)=>void
+  onMessageSent?: (receiverId: string, message: string, file?: string) => void;
+  unreadIncrease: (receiverId: string) => void;
+  resetUnread: (receiverId: string) => void;
 }
 
-
-
+// ---------- ChatWindow Component ----------
 const ChatWindow: React.FC<ChatWindowProps> = ({
   userId,
   receiverId,
   receiverName,
   receiverAvatar,
   onMessageSent,
-  unreadIncrease
+  unreadIncrease,
+  resetUnread,
 }) => {
-
-
-
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMsg, setNewMsg] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const [isTyping, setIsTyping] = useState(false);
+
+
 
   // ---------------- Fetch chat history once ----------------
   useEffect(() => {
@@ -56,8 +60,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           );
           setMessages(sorted);
 
-          // Notify backend that messages are read
+          // Mark messages as read
           socket.emit("messagesRead", { senderId: receiverId, receiverId: userId });
+
+          // Reset unread count in parent
+          resetUnread(receiverId);
         }
       } catch (err) {
         console.error("Failed to load chat history", err);
@@ -73,30 +80,25 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
     socket.emit("joinRoom", { userId, receiverId });
 
-    // Handle incoming messages
     const handleReceive = (message: Message) => {
-
-
       if (message.senderId === userId) return;
 
       setMessages((prev) => [...prev, message]);
 
-      if(message.senderId === receiverId){
-        unreadIncrease(message.senderId)
-      }
-
-      if (message.senderId === receiverId && message.receiverId === userId) {
+      // Increase unread if current chat not open
+      if (message.senderId !== receiverId) {
+        unreadIncrease(message.senderId);
+      } else {
+        // Mark as read instantly
         socket.emit("messagesRead", { senderId: receiverId, receiverId: userId });
+        resetUnread(receiverId);
       }
     };
 
-    // messages read is updates here
     const handleReadUpdate = ({ senderId, receiverId }: { senderId: string; receiverId: string }) => {
       setMessages((prev) =>
         prev.map((msg) =>
-          msg.senderId === senderId && msg.receiverId === receiverId
-            ? { ...msg, read: true }
-            : msg
+          msg.senderId === senderId && msg.receiverId === receiverId ? { ...msg, read: true } : msg
         )
       );
     };
@@ -114,6 +116,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // ---------------- Send Message ----------------
   const sendMessage = async (file?: File) => {
     if (!receiverId || (!newMsg && !file)) return;
 
@@ -130,17 +133,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
       if (res.data.success) {
         const newMessage = res.data.message;
-
         setMessages((prev) => [...prev, { ...newMessage, read: false }]);
-
         socket.emit("sendMessage", newMessage);
+        onMessageSent?.(receiverId, newMsg.trim(), file?.name);
 
-        if(onMessageSent) {
-          onMessageSent(receiverId)
-        }
       }
-
-
 
       setNewMsg("");
     } catch (error) {
@@ -159,6 +156,78 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     window.open(fileUrl, "_blank");
   };
 
+
+
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // to 
+  useEffect(() => {
+    if (!receiverId) return;
+
+    const handleTyping = ({ senderId }: { senderId: string }) => {
+      if (senderId === receiverId) {
+        setIsTyping(true);
+        setTimeout(() => setIsTyping(false), 2000); // auto hide after 2s
+      }
+    };
+
+    const handleStopTyping = ({ senderId }: { senderId: string }) => {
+      if (senderId === receiverId) {
+        setIsTyping(false);
+      }
+    };
+
+    socket.on("userTyping", handleTyping);
+    socket.on("userStopTyping", handleStopTyping);
+
+    return () => {
+      socket.off("userTyping", handleTyping);
+      socket.off("userStopTyping", handleStopTyping);
+    };
+  }, [receiverId]);
+
+
+
+
+  // Updated input handler
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setNewMsg(value);
+
+    if (!receiverId) return;
+
+    // Emit typing
+    socket.emit("typing", { senderId: userId, receiverId });
+
+    // Clear previous timeout
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
+    // Set timeout to emit stopTyping after 1.5s of inactivity
+    typingTimeoutRef.current = setTimeout(() => {
+      socket.emit("stopTyping", { senderId: userId, receiverId });
+    }, 1500);
+  };
+
+
+
+
+  useEffect(() => {
+    if (!newMsg) {
+      socket.emit("stopTyping", { senderId: userId, receiverId });
+    }
+  }, [newMsg]);
+
+
+  // clears timeout when timeout unmounts
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    };
+  }, []);
+
+
+
+
   return (
     <div className="chat-window-user">
       {/* Header */}
@@ -171,7 +240,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           />
           <div>
             <h4>{receiverName}</h4>
-            {/* <small>Online - Last seen just now</small> */}
+            {isTyping && <small className="typing-text">Typing...</small>}
+
           </div>
         </div>
         {/* <div className="chat-actions">
@@ -272,7 +342,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         <input
           type="text"
           value={newMsg}
-          onChange={(e) => setNewMsg(e.target.value)}
+          onChange={handleInputChange}
           placeholder="Type a message..."
         />
 

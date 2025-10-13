@@ -1,3 +1,4 @@
+import { IMyCourses } from '../../interfaces/userInterfaces.js';
 import { ICourse } from '../../models/course.js';
 import { IFavourite } from '../../models/favourites.js';
 import { IInstructor } from '../../models/instructor.js';
@@ -178,15 +179,15 @@ export class UserCourseService {
 
 
 
-  myCoursesRequest = async (id: string): Promise<IMyCourse[] | null> => {
+  myCoursesRequest = async (id: string , page:number): Promise<{populatedCourses : IMyCourse[] ,result : IMyCourses} | null> => {
     try {
 
-      const myCourses = await this.userRepository.findMyCourses(id)
+      const result = await this.userRepository.findMyCourses(id , page)
       // console.log("courseIdd ", myCourses);
 
-      if (!myCourses || myCourses.length === 0) return [];
+      if (!result.myCourses || result.myCourses.length === 0) return { populatedCourses: [], result };
       const populatedCourses = await Promise.all(
-        myCourses.map(async (mc) => {
+        result.myCourses.map(async (mc) => {
           const course = await this.userRepository.getCourse(mc.courseId.toString());
           return {
             ...mc.toObject?.() || mc,
@@ -196,7 +197,7 @@ export class UserCourseService {
       );
       // console.log("my Courses ", populatedCourses);
 
-      return populatedCourses;
+      return {populatedCourses , result};
 
     } catch (error) {
       console.log(error);

@@ -21,25 +21,41 @@ export const setupSocket = (io: Server) => {
   // ----------------- Socket.IO -----------------
   io.on("connection", (socket) => {
     console.log("Client connected:", socket.id);
+    
 
     // ----------------- Chat -----------------
 
-  socket.on("joinRoom", ({ userId, receiverId }) => {
-    const room = [userId, receiverId].sort().join("_");
-    socket.join(room);
-    console.log(`User ${userId} joined chat room ${room}`);
-  });
+    socket.on("joinRoom", ({ userId, receiverId }) => {
+      const room = [userId, receiverId].sort().join("_");
+      socket.join(room);
+      console.log(`User ${userId} joined chat room ${room}`);
+    });
 
-  socket.on("sendMessage", (message) => {
-    const room = [message.senderId, message.receiverId].sort().join("_");
-    io.to(room).emit("receiveMessage", message); // ✅ correct room
-  });
+    socket.on("sendMessage", (message) => {
+      const room = [message.senderId, message.receiverId].sort().join("_");
+      io.to(room).emit("receiveMessage", message);
+    });
 
-  socket.on("messagesRead", async ({ senderId, receiverId }) => {
-    const room = [senderId, receiverId].sort().join("_");
-    await messageController.markAsRead(senderId, receiverId);
-    io.to(room).emit("messagesReadUpdate", { senderId, receiverId });
-  });
+    socket.on("messagesRead", async ({ senderId, receiverId }) => {
+      const room = [senderId, receiverId].sort().join("_");
+      await messageController.markAsRead(senderId, receiverId);
+      io.to(room).emit("messagesReadUpdate", { senderId, receiverId });
+    });
+
+    //typing
+    socket.on("typing", ({ senderId, receiverId }) => {
+      const room = [senderId, receiverId].sort().join("_");
+      console.log(`Typing received from ${senderId}, emitting to ${room}`);
+      io.to(room).emit("userTyping", { senderId });
+    });
+
+    //stop typing
+    socket.on("stopTyping", ({ senderId, receiverId }) => {
+      const room = [senderId, receiverId].sort().join("_");
+      io.to(room).emit("userStopTyping", { senderId });
+    });
+
+
 
 
 

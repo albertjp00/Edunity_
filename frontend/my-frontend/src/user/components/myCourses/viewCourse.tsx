@@ -3,9 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./viewMyCourse.css";
 import api from "../../../api/userApi";
 import { viewMyCourse } from "../../services/courseServices";
-const API_URL = import.meta.env.VITE_API_URL
 
-
+const API_URL = import.meta.env.VITE_API_URL;
 
 interface IInstructor {
   _id: string;
@@ -18,8 +17,6 @@ interface IInstructor {
   education?: string;
 }
 
-
-// Interfaces
 interface IModule {
   title: string;
   videoUrl: string;
@@ -51,12 +48,10 @@ const ViewMyCourse: React.FC = () => {
   const [expandedModule, setExpandedModule] = useState<number | null>(null);
   const [completedModules, setCompletedModules] = useState<string[]>([]);
   const [instructor, setInstructor] = useState<IInstructor | null>(null);
-  const [quiz, setQuiz] = useState<boolean>()
+  const [quiz, setQuiz] = useState<boolean>();
+  const [activeTab, setActiveTab] = useState<string>("overview");
+  const navigate = useNavigate();
 
-  const navigate = useNavigate()
-
-
-  // const courseId = id
   const fetchCourse = async (): Promise<void> => {
     try {
       if (!id) {
@@ -67,22 +62,16 @@ const ViewMyCourse: React.FC = () => {
 
       if (!res) return
       console.log(res);
-
       const fetchedMyCourse: IMyCourse = res.data.course;
       const fetchedInstructor: IInstructor = res.data.instructor;
       setCourse(fetchedMyCourse.course);
-      setInstructor(fetchedInstructor)
+      setInstructor(fetchedInstructor);
       setCompletedModules(fetchedMyCourse.progress?.completedModules || []);
-      console.log(res.data.quiz);
-
-      setQuiz(res.data.quiz)
-      console.log(res);
-
+      setQuiz(res.data.quiz);
     } catch (err) {
       console.error("Error fetching course:", err);
     }
   };
-
 
   useEffect(() => {
     fetchCourse();
@@ -92,14 +81,9 @@ const ViewMyCourse: React.FC = () => {
     setExpandedModule(expandedModule === index ? null : index);
   };
 
-
   const markAsCompleted = async (moduleTitle: string): Promise<void> => {
     try {
-      await api.post(
-        "/user/updateProgress",
-        { courseId: id, moduleTitle },
-
-      );
+      await api.post("/user/updateProgress", { courseId: id, moduleTitle });
       setCompletedModules((prev) => [...prev, moduleTitle]);
     } catch (err) {
       console.error("Error updating progress:", err);
@@ -107,8 +91,8 @@ const ViewMyCourse: React.FC = () => {
   };
 
   const gotoQuiz = (myCourseId: string) => {
-    navigate(`/user/quiz/${myCourseId}`)
-  }
+    navigate(`/user/quiz/${myCourseId}`);
+  };
 
   if (!course) return <p>Loading...</p>;
 
@@ -117,131 +101,133 @@ const ViewMyCourse: React.FC = () => {
   const progressPercent = Math.round((completedCount / totalModules) * 100);
 
   return (
-    <div>
+    <div className="course-details-wrapper">
+      <div className="course-header">
+        <h2>Course Details</h2>
+        <p className="breadcrumb">Home / My Course</p>
+      </div>
 
-      <div className="course-detail-page">
-        <h2>{course.title}</h2>
-
-        {course.thumbnail && (
+      <div className="course-container">
+        {/* LEFT SIDE */}
+        <div className="course-main">
           <img
             src={`${API_URL}/assets/${course.thumbnail}`}
             alt="Course Thumbnail"
-            className="detail-thumbnail"
+            className="course-banner"
           />
-        )}
 
-        {/* Progress Bar */}
-        <div className="progress-bar" style={{ marginBottom: "20px" }}>
-          <p>
-            <strong>Progress:</strong> {progressPercent}%
-          </p>
-          <div
-            style={{
-              height: "10px",
-              background: "#eee",
-              borderRadius: "5px",
-            }}
-          >
-            <div
-              style={{
-                width: `${progressPercent}%`,
-                height: "10px",
-                background: "#4caf50",
-                borderRadius: "5px",
-              }}
-            ></div>
-          </div>
-        </div>
+          <h3 className="course-title">{course.title}</h3>
+          <p className="lesson-count">Lesson {totalModules}</p>
 
-        {/* Modules */}
-        <div className="modules">
-          <h3>Modules:</h3>
-          {course.modules.map((module, idx) => {
-            const isCompleted = completedModules.includes(module.title);
-            return (
-              <div key={idx} className="module">
-                <div
-                  className="module-header"
-                  onClick={() => toggleModule(idx)}
-                  style={{
-                    cursor: "pointer",
-                    background: "#f0f0f0",
-                    padding: "10px",
-                    borderRadius: "5px",
-                  }}
-                >
-                  <h4>📘 {module.title || `Module ${idx + 1}`}</h4>
-                </div>
-
-                {expandedModule === idx && (
-                  <div className="module-body" style={{ padding: "10px 20px" }}>
-                    {/* Video */}
-                    {module.videoUrl && (
-                      <video width="100%" height="auto" controls style={{ marginTop: '10px' }}>
-                        <source src={`http://localhost:5000/assets/${module.videoUrl}`} type="video/mp4" />
-                        Your browser does not support the video tag.
-                      </video>
-                    )}
-
-                    <p style={{ marginTop: "10px" }}>
-                      <strong>📝 Content:</strong> {module.content}
-                    </p>
-
-                    {/* Progress Button */}
-                    {!isCompleted ? (
-                      <button
-                        onClick={() => markAsCompleted(module.title)}
-                        style={{
-                          marginTop: "10px",
-                          padding: "8px 16px",
-                          backgroundColor: "#1976d2",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "5px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Mark as Completed
-                      </button>
-                    ) : (
-                      <p style={{ color: "green", marginTop: "10px" }}>
-                        ✅ Completed
-                      </p>
-                    )}
-                  </div>
-
-
-
-
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {completedModules.length === course.modules.length && quiz && (
-          <div style={{ marginTop: "20px", textAlign: "center" }}>
+          {/* Tabs */}
+          <div className="course-tabs">
             <button
-              onClick={() => gotoQuiz(course._id)}
-              style={{
-                padding: "10px 20px",
-                backgroundColor: "#4caf50",
-                color: "#fff",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-                fontWeight: "bold",
-              }}
+              className={activeTab === "overview" ? "active" : ""}
+              onClick={() => setActiveTab("overview")}
             >
-              🎯 Go to Quiz
+              Overview
+            </button>
+            <button
+              className={activeTab === "curriculum" ? "active" : ""}
+              onClick={() => setActiveTab("curriculum")}
+            >
+              Curriculum
+            </button>
+            <button
+              className={activeTab === "instructor" ? "active" : ""}
+              onClick={() => setActiveTab("instructor")}
+            >
+              Instructor
             </button>
           </div>
-        )}
 
-        {instructor && (
-          <div className="instructor-card">
-            <h3>👨‍🏫 Instructor</h3>
-            <div className="instructor-info">
+          {/* OVERVIEW TAB */}
+          {activeTab === "overview" && (
+            <div className="tab-content">
+              <h4>Course Description</h4>
+              <p>{course.description}</p>
+
+              <h4>What Will I Learn?</h4>
+              <p>
+                You’ll learn everything from frontend to backend development
+                including real-world projects and best practices to become a
+                professional web developer.
+              </p>
+            </div>
+          )}
+
+          {/* CURRICULUM TAB */}
+          {activeTab === "curriculum" && (
+            <div className="tab-content">
+              <h4>Course Progress: {progressPercent}%</h4>
+              <div className="progress-bar">
+                <div
+                  className="progress-fill"
+                  style={{ width: `${progressPercent}%` }}
+                ></div>
+              </div>
+
+              <div className="modules">
+                {course.modules.map((module, idx) => {
+                  const isCompleted = completedModules.includes(module.title);
+                  return (
+                    <div key={idx} className="module-card">
+                      <div
+                        className="module-header"
+                        onClick={() => toggleModule(idx)}
+                      >
+                        <h5>
+                          📘 {module.title || `Module ${idx + 1}`}
+                          {isCompleted && (
+                            <span className="completed-tag">Completed</span>
+                          )}
+                        </h5>
+                      </div>
+                      {expandedModule === idx && (
+                        <div className="module-body">
+                          {module.videoUrl && (
+                            <video
+                              width="100%"
+                              height="auto"
+                              controls
+                              className="module-video"
+                            >
+                              <source
+                                src={`${API_URL}/assets/${module.videoUrl}`}
+                                type="video/mp4"
+                              />
+                            </video>
+                          )}
+                          <p>{module.content}</p>
+                          {!isCompleted && (
+                            <button
+                              onClick={() => markAsCompleted(module.title)}
+                              className="mark-complete-btn"
+                            >
+                              Mark as Completed
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {completedModules.length === totalModules && quiz && (
+                <button
+                  className="quiz-btn"
+                  onClick={() => gotoQuiz(course._id)}
+                >
+                  🎯 Go to Quiz
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* INSTRUCTOR TAB */}
+          {activeTab === "instructor" && instructor && (
+            <div className="tab-content instructor-tab">
               <img
                 src={
                   instructor.profileImage
@@ -249,28 +235,57 @@ const ViewMyCourse: React.FC = () => {
                     : "https://via.placeholder.com/100"
                 }
                 alt="Instructor"
-                className="instructor-img"
+                className="instructor-photo"
               />
-              <div className="instructor-details">
-                <p><strong>{instructor.name}</strong></p>
-                <p>{instructor.expertise || "Expert in teaching"}</p>
-                <p>{instructor.bio || "No bio available"}</p>
+              <h4>{instructor.name}</h4>
+              <p className="instructor-role">
+                {instructor.expertise || "Professional Instructor"}
+              </p>
+              <p>{instructor.bio || "No bio available."}</p>
 
-                <button
-                  className="chat-btn"
-                  onClick={() =>
-                    window.location.href = `/user/chat/${instructor._id}`
-                  }
-                >
-                  💬 Chat with Instructor
-                </button>
+              <button
+                className="chat-btn"
+                onClick={() =>
+                  (window.location.href = `/user/chat/${instructor._id}`)
+                }
+              >
+                💬 Chat with Instructor
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* RIGHT SIDE */}
+        <div className="course-sidebar">
+          <div className="sidebar-card">
+            <img
+              src={`${API_URL}/assets/${course.thumbnail}`}
+              alt="Course"
+              className="sidebar-thumbnail"
+            />
+            <div className="sidebar-info">
+              <p className="price">
+                {/* <span className="current-price">${course.price}</span> */}
+                {/* <span className="old-price">$120</span> */}
+              </p>
+              <button className="buy-btn">Continue Course</button>
+              <div className="sidebar-stats">
+                <p>
+                  <strong>Enrolled:</strong> 100
+                </p>
+                <p>
+                  <strong>Lectures:</strong> {totalModules}
+                </p>
+                <p>
+                  <strong>Skill Level:</strong> Beginner
+                </p>
+                <p>
+                  <strong>Language:</strong> English
+                </p>
               </div>
             </div>
           </div>
-        )}
-
-
-
+        </div>
       </div>
     </div>
   );

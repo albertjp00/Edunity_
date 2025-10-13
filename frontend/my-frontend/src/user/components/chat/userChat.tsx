@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import ChatWindow from "./chatWindow";
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 import profileImage from "../../../assets/profilePic.png";
 import "./userChat.css";
 import api from "../../../api/userApi";
 import Navbar from "../navbar/navbar";
+import { io } from "socket.io-client";
+
+
+const socket = io(import.meta.env.VITE_API_URL)
 
 interface IInstructorChat {
   id: string;
@@ -12,24 +16,23 @@ interface IInstructorChat {
   name: string;
   avatar?: string;
   lastMessage?: string;
-  time?: Date | string;
-  unreadCount: number
+  time?: Date | string | null;
+  unreadCount: number;
 }
 
 const UserChat = () => {
-  const { instructorId } = useParams();
-
+  // const { instructorId } = useParams();
   const [instructors, setInstructors] = useState<IInstructorChat[]>([]);
   const [selected, setSelected] = useState<IInstructorChat | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  // const [count, setUnreadCount] = useState<number | null>(null)
+  const [typingInstructors, setTypingInstructors] = useState<Record<string, boolean>>({});
 
 
   const sortInstructors = (list: IInstructorChat[]) => {
     return [...list].sort((a, b) => {
       const timeA = a.time ? new Date(a.time).getTime() : 0;
       const timeB = b.time ? new Date(b.time).getTime() : 0;
-      return timeB - timeA; // latest first
+      return timeB - timeA;
     });
   };
 
@@ -48,11 +51,9 @@ const UserChat = () => {
           if (item.lastMessage?.text) {
             displayMessage = item.lastMessage.text;
           } else if (item.lastMessage?.attachment) {
-            if (/\.(jpg|jpeg|png|gif|webp)$/i.test(item.lastMessage.attachment)) {
-              displayMessage = "📷 Image";
-            } else {
-              displayMessage = "📄 Document";
-            }
+            displayMessage = /\.(jpg|jpeg|png|gif|webp)$/i.test(item.lastMessage.attachment)
+              ? "📷 Image"
+              : "📄 Document";
           }
 
           return {
@@ -61,86 +62,51 @@ const UserChat = () => {
             avatar: item.instructor.avatar || profileImage,
             lastMessage: displayMessage || "No messages yet",
             time: item.lastMessage?.timeStamp || item.lastMessage?.createdAt || null,
-            unreadCount: 0
+            unreadCount: 0,
           };
         }
       );
 
       const sorted = sortInstructors(normalized);
-
-      // ✅ Add instructor if route param provided
-
-
-      if (instructorId) {
-        const exists = sorted.find((i) => i.id === instructorId);
-        if (!exists) {
-          const instRes = await api.get(`/user/instructor/${instructorId}`);
-          if (instRes.data.success) {
-            sorted.unshift(instRes.data.instructor);
-          }
-        }
-      }
-
       setInstructors(sorted);
 
-      if (instructorId) {
-        const found = sorted.find((i) => i.id === instructorId);
-        if (found) setSelected(found);
-      }
+      // ❌ Remove this part so it doesn't auto-select
+      // if (instructorId) {
+      //   const found = sorted.find((i) => i.id === instructorId);
+      //   if (found) setSelected(found);
+      // }
+
     } catch (error) {
       console.log(error);
     }
   };
 
-
-  useEffect(() => {
-    const fetchUnreadAndLastMessage = async () => {
-      try {
-        if (!instructorId) return;
-
-        const res = await api.get(`/user/getUnreadMessages/${instructorId}`);
-        if (res.data.success) {
-          const { lastMessage, unreadCount } = res.data.data;
-
-          setInstructors((prev) =>
-            prev.map((inst) =>
-              inst.id === instructorId
-                ? {
-                  ...inst,
-                  lastMessage: lastMessage?.text
-                    ? lastMessage.text
-                    : lastMessage?.attachment
-                      ? /\.(jpg|jpeg|png|gif|webp)$/i.test(lastMessage.attachment)
-                        ? "📷 Image"
-                        : "📄 Document"
-                      : "No messages yet",
-                  time: lastMessage?.timestamp || new Date().toISOString(),
-                  unreadCount: unreadCount || 0,
-                }
-                : inst
-            )
-          );
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchUnreadAndLastMessage();
-  }, [instructorId]);
-
-
-  const handleMessageSent = (receiverId: string) => {
+  const handleMessageSent = (receiverId: string, messageText?: string, attachment?: string) => {
     setInstructors((prev) => {
-      const updated = prev.map((inst) =>
-        inst.id === receiverId
-          ? { ...inst, time: new Date().toISOString() } // update last message time
-          : inst
-      );
+      const updated = prev.map((inst) => {
+        if (inst.id === receiverId) {
+          let displayMessage = "";
+
+          if (messageText && messageText.trim() !== "") {
+            displayMessage = messageText;
+          } else if (attachment) {
+            displayMessage = /\.(jpg|jpeg|png|gif|webp)$/i.test(attachment)
+              ? "📷 Image"
+              : "📄 Document";
+          }
+
+          return {
+            ...inst,
+            lastMessage: displayMessage || inst.lastMessage,
+            time: new Date().toISOString(),
+          };
+        }
+        return inst;
+      });
+
       return sortInstructors(updated);
     });
   };
-
 
 
   const handleUnreadIncrease = (senderId: string) => {
@@ -153,13 +119,60 @@ const UserChat = () => {
     );
   };
 
-
-
-
+  const resetUnread = (receiverId: string) => {
+    setInstructors((prev) =>
+      prev.map((inst) =>
+        inst.id === receiverId ? { ...inst, unreadCount: 0 } : inst
+      )
+    );
+  };
 
   useEffect(() => {
     getInstructors();
   }, []);
+
+
+  //joining room for typing status 
+  useEffect(() => {
+    if (selected && userId) {
+      const room = [userId, selected.id].sort().join("_");
+      console.log(`🟢 User joining room: ${room}`);
+      socket.emit("joinRoom", { userId, receiverId: selected.id });
+    }
+  }, [selected, userId]);
+
+
+console.log("🔗 Socket ID:", socket.id);
+
+
+
+  //to show typing status in the list 
+  useEffect(() => {
+    const handleTyping = ({ senderId }: { senderId: string }) => {
+      console.log(`💬 Typing event received from: ${senderId}`);
+      setTypingInstructors((prev) => ({ ...prev, [senderId]: true }));
+
+      // Auto-clear after 2s of inactivity
+      setTimeout(() => {
+        setTypingInstructors((prev) => ({ ...prev, [senderId]: false }));
+      }, 2000);
+    };
+
+    const handleStopTyping = ({ senderId }: { senderId: string }) => {
+      console.log(`🛑 Stop typing received from: ${senderId}`);
+      setTypingInstructors((prev) => ({ ...prev, [senderId]: false }));
+    };
+
+    socket.on("userTyping", handleTyping);
+    socket.on("userStopTyping", handleStopTyping);
+
+    return () => {
+      socket.off("userTyping", handleTyping);
+      socket.off("userStopTyping", handleStopTyping);
+    };
+  }, []);
+
+
 
   if (!instructors.length) return <p>Loading...</p>;
 
@@ -174,13 +187,25 @@ const UserChat = () => {
             <div
               key={inst.id}
               className={`sidebar-instructor ${selected?.id === inst.id ? "active" : ""}`}
-              onClick={() => setSelected(inst)}
+              onClick={() => {
+                // ✅ Load messages ONLY when user clicks
+                setSelected(inst);
+                resetUnread(inst.id);
+              }}
             >
-              <img src={inst.avatar || profileImage} alt={inst.name} className="sidebar-avatar" />
+              <img
+                src={inst.avatar || profileImage}
+                alt={inst.name}
+                className="sidebar-avatar"
+              />
               <div>
                 <p className="instructor-name">{inst.name}</p>
                 <div className="message-and-time">
-                  <p className="last-message">{inst.lastMessage || "No messages yet"}</p>
+
+                  <p className="last-message">
+                    {typingInstructors[inst.id] ? "Typing..." : inst.lastMessage || "No messages yet"}
+                  </p>
+
                   <p className="message-time">
                     {inst.time
                       ? new Date(inst.time).toLocaleTimeString([], {
@@ -189,15 +214,10 @@ const UserChat = () => {
                       })
                       : ""}
                   </p>
-
-
-                  {inst.unreadCount > 0 && (
-                    <span className="unread-badge">{inst.unreadCount}</span>
-                  )}
-
-
-
                 </div>
+                {inst.unreadCount > 0 && (
+                  <span className="unread-badge">{inst.unreadCount}</span>
+                )}
               </div>
             </div>
           ))}
@@ -211,8 +231,9 @@ const UserChat = () => {
               receiverId={selected.id}
               receiverName={selected.name}
               receiverAvatar={selected.avatar || profileImage}
-              onMessageSent={() => handleMessageSent(selected.id)}
+              onMessageSent={() => handleMessageSent}
               unreadIncrease={handleUnreadIncrease}
+              resetUnread={resetUnread}
             />
           ) : (
             <p>Select an instructor to start chatting</p>

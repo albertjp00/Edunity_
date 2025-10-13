@@ -8,9 +8,9 @@ import { IUser, UserModel } from '../models/user.js';
 import { ISkills } from './instructorRepository.js';
 import { IQuiz, QuizModel } from '../models/quiz.js';
 import { IInstructor, InstructorModel } from '../models/instructor.js';
-import { IUserRepository } from '../interfaces/userInterfaces.js';
 import { BaseRepository } from './baseRepository.js';
 
+import { IMyCourses, IUserRepository } from '../interfaces/userInterfaces.js';
 
 
 
@@ -66,6 +66,7 @@ export class UserRepository
   }
 
   async getCourse(id: string): Promise<ICourse | null> {
+
     return await CourseModel.findById(id)
   }
 
@@ -239,9 +240,17 @@ export class UserRepository
     }
   }
 
-  async findMyCourses(id: string): Promise<IMyCourse[] | null> {
-    return await MyCourseModel.find({ userId: id })
-  }
+  async findMyCourses(id: string , page: number): Promise<IMyCourses> {
+
+    const limit = 3
+    const count = await MyCourseModel.countDocuments({userId : id})
+    const totalPages = Math.ceil(count / limit) 
+    
+    const skip = (page - 1 ) * limit
+    const myCourses =  await MyCourseModel.find({ userId: id }).sort({createdAt:-1}).skip(skip).limit(limit)
+
+    return {myCourses , totalCount : count , totalPages :  totalPages , currentPage : page} 
+    }
 
 
 
