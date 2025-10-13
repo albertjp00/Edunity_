@@ -2,9 +2,9 @@ import api from "../../api/userApi";
 
 
 
-export const getMyCourses = async()=>{
+export const getMyCourses = async(page:number = 1)=>{
     try {
-        const res = await api.get(`/user/myCourses`);
+        const res = await api.get(`/user/myCourses/${page}`);
         return res
     } catch (error) {
         console.log(error);

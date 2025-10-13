@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./courseDetailsUser.css";
 import api from "../../../api/userApi";
 import { toast } from "react-toastify";
-import buyNowImage from '../../../assets/buyCourse1.png'
+import buyNowImage from '../../../assets/buyCourse.png'
 
 interface Module {
   title: string;
@@ -237,11 +237,15 @@ const CourseDetailsUser: React.FC = () => {
               alt="Thumbnail"
               className="sidebar-img"
             />
-            <div className="price-section">
-              <span className="discount-price">₹{course.price}</span>
-              <span className="original-price">₹120</span>
-              <p className="guarantee-text">30-Day Money-Back Guarantee</p>
-            </div>
+
+            {!hasAccess &&
+              <div className="price-section">
+                <span className="discount-price">₹{course.price}</span>
+                <span className="original-price">₹120</span>
+                <p className="guarantee-text">30-Day Money-Back Guarantee</p>
+              </div>
+            }
+
             {!hasAccess && (
               <button
                 onClick={() => buyCourse(course._id)}
