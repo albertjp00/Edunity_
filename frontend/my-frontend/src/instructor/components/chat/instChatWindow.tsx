@@ -20,7 +20,7 @@ interface ChatWindowProps {
   receiverId?: string;
   receiverName: string;
   receiverAvatar?: string;
-  onMessageSent?: (receiverId: string) => void;
+  onMessageSent?: (receiverId: string, messageText: string, attachment: string) => void;
   unreadIncrease?: (senderId: string) => void
 }
 
@@ -37,6 +37,8 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMsg, setNewMsg] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const [isTyping, setIsTyping] = useState(false);
+
 
 
 
@@ -140,8 +142,9 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
         socket.emit("sendMessage", newMessage);
 
         if (onMessageSent) {
-          onMessageSent(receiverId)
+          onMessageSent(receiverId, newMsg.trim() || "", file?.name || "");
         }
+
       }
 
       setNewMsg("");
@@ -161,6 +164,94 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
     window.open(fileUrl, "_blank");
   };
 
+
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+
+useEffect(() => {
+  if (receiverId && instructorId) {
+    const room = [instructorId, receiverId].sort().join("_");
+    console.log(`🟣 Instructor joining room: ${room}`);
+    socket.emit("joinRoom", { userId: instructorId, receiverId });
+  }
+}, [receiverId, instructorId]);
+
+
+// console.log("🔗 Socket ID:", socket.id);
+
+
+
+  // to 
+  useEffect(() => {
+    if (!receiverId) return;
+
+    const handleTyping = ({ senderId }: { senderId: string }) => {
+      if (senderId === receiverId) {
+        console.log('user is typing',receiverId);
+        
+        setIsTyping(true);
+        setTimeout(() => setIsTyping(false), 2000); // auto hide after 2s
+      }
+    };
+
+    const handleStopTyping = ({ senderId }: { senderId: string }) => {
+      if (senderId === receiverId) {
+        setIsTyping(false);
+      }
+    };
+
+    socket.on("userTyping", handleTyping);
+    socket.on("userStopTyping", handleStopTyping);
+
+    return () => {
+      socket.off("userTyping", handleTyping);
+      socket.off("userStopTyping", handleStopTyping);
+    };
+  }, [receiverId]);
+
+
+
+
+  // Updated input handler
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setNewMsg(value);
+
+    if (!receiverId) return;
+
+    // Emit typing
+    socket.emit("typing", { senderId: instructorId, receiverId });
+
+    // Clear previous timeout
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
+    // Set timeout to emit stopTyping after 1.5s of inactivity
+    typingTimeoutRef.current = setTimeout(() => {
+      socket.emit("stopTyping", { senderId: instructorId, receiverId });
+    }, 1500);
+  };
+
+
+
+
+  useEffect(() => {
+    if (!newMsg) {
+      socket.emit("stopTyping", { senderId: instructorId, receiverId });
+    }
+  }, [newMsg]);
+
+
+  // clears timeout when timeout unmounts
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    };
+  }, []);
+
+
+
+
+
   return (
     <div className="chat-window">
       {/* Header */}
@@ -172,7 +263,10 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
             className="avatar"
           />
           <div>
+
             <h4>{receiverName}</h4>
+            {isTyping && <small className="typing-text">Typing...</small>}
+          
           </div>
         </div>
       </div>
@@ -233,7 +327,7 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
         <input
           type="text"
           value={newMsg}
-          onChange={(e) => setNewMsg(e.target.value)}
+          onChange={handleInputChange}
           placeholder="Type a message..."
         />
         <button onClick={handleSendMessage}>Send</button>

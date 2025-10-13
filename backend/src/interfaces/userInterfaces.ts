@@ -40,7 +40,7 @@ export interface IUserRepository {
 
   addMyCourse(id: string, data: any): Promise<IMyCourse | null>
 
-  findMyCourses(id: string): Promise<IMyCourse[] | null>
+  findMyCourses(id: string , page : number): Promise<IMyCourses | null>
 
   viewMyCourse(id: string, courseId: string): Promise<IMyCourse | null>
 
@@ -90,4 +90,13 @@ export interface googleLoginResult{
      accessToken: string;
      refreshToken : string ; 
      user: IUser;
+}
+
+
+export interface IMyCourses {
+  myCourses : IMyCourse[];
+      totalCount : number;
+      totalPages : number;
+      currentPage : number; 
+      
 }
