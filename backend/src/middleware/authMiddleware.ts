@@ -44,6 +44,7 @@ export const authMiddleware = async (
       return;
     }
 
+
     const decoded = jwt.verify(token, secret) as JwtUserPayload;
     req.user = decoded;
 
@@ -63,7 +64,7 @@ export const authMiddleware = async (
     res.status(401).json({ success: false, message: "Invalid or expired token" });
   }
 }
-
+ 
 
 export interface InstAuthRequest extends Request {
   instructor?: JwtPayload | undefined;

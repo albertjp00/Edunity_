@@ -58,7 +58,7 @@ export class AuthController {
     } catch (error) {
       // console.error("Login error:", error);
       next(error)
-      res.status(HttpStatus.UNAUTHORIZED).json({ message: "Invalid credentials" });
+      // res.status(HttpStatus.UNAUTHORIZED).json({ message: "Invalid credentials" });
     }
   };
 
