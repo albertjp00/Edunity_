@@ -1,9 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import { HttpStatus } from "../enums/httpStatus.enums.js";
+import logger from "../utils/logger.js";
 
 interface CustomError extends Error {
   statusCode?: number;
 }
+
+
 
 export function errorHandler(
   err: CustomError,
@@ -11,12 +14,25 @@ export function errorHandler(
   res: Response,
   next: NextFunction
 ) {
-  const status = HttpStatus.INTERNAL_SERVER_ERROR;
+  const status = err.statusCode || HttpStatus.INTERNAL_SERVER_ERROR;
 
-  console.error(`[ERROR] ${status} - ${err.message}`);
+  // Correct way to log an error object
+  logger.error(err.message, {
+    stack: err.stack,
+    route: req.originalUrl,
+    method: req.method,
+    body: req.body ? { ...req.body, password: undefined } : undefined,
+    query: req.query,
+    params: req.params,
+  });
+
+  if (process.env.NODE_ENV !== "production") {
+    console.error(`[ERROR] ${status} - ${err.message}`);
+  }
 
   res.status(status).json({
     success: false,
     message: err.message || "Internal Server Error",
   });
 }
+
