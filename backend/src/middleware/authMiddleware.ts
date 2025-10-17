@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { UserModel } from "../models/user.js";
+import { InstructorModel } from "../models/instructor.js";
+import { Socket } from "socket.io";
 
 dotenv.config();
 
@@ -76,7 +78,12 @@ export interface AdminAuthRequest extends Request {
   admin?: JwtUserPayload;
   file?: Express.Multer.File | undefined;
   files?: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] } | undefined; 
+}
 
+
+export interface SocketAuthRequest {
+  user? : JwtUserPayload;
+  instructor : JwtPayload;
 }
 
 export const instAuthMiddleware = (
@@ -147,3 +154,88 @@ export const adminAuthMiddleware = (
     res.status(401).json({ message: "Unauthorized: Invalid token" });
   }
 };
+
+
+
+
+//socket authentication 
+
+
+
+export const verifySocketToken = async (token: string) => {
+  const decoded = jwt.verify(token, secret) as { id: string };
+
+  let user = await UserModel.findById(decoded.id);
+  if (user) {
+    if (user.blocked) throw new Error("Your account has been blocked");
+    return { id: user._id.toString(), name: user.name, role: "user" };
+  }
+
+  const instructor = await InstructorModel.findById(decoded.id);
+  if (instructor) {
+    return { id: instructor._id.toString(), name: instructor.name, role: "instructor" };
+  }
+
+  throw new Error("Account not found");
+};
+
+
+
+
+
+
+
+
+interface JwtPayload {
+  id: string;
+  email: string;
+  role?: string;
+}
+
+interface SocketWithAuth extends Socket {
+  data: {
+    user?: JwtPayload;
+  };
+}
+
+export const socketAuthMiddleware = async (
+  socket: SocketWithAuth,
+  next: (err?: Error) => void
+) => {
+  
+
+  try {
+    // Token can come from either handshake.auth or authorization header
+    const authHeader =
+      socket.handshake.auth?.token ||
+      socket.handshake.headers?.authorization?.split(" ")[1];
+
+    if (!authHeader) {
+      return next(new Error("Unauthorized: No token provided"));
+    }
+
+    const token = authHeader.startsWith("Bearer ")
+      ? authHeader.split(" ")[1]
+      : authHeader;
+
+    // Verify token
+    const decoded = jwt.verify(token, secret) as JwtPayload;
+
+  
+    const verifiedUser = await verifySocketToken(token);
+    console.log("socketAuthMiddleware ",verifiedUser.role);
+    if (!verifiedUser) {
+      return next(new Error("Unauthorized: User not found"));
+    }
+
+    // Attach verified user/instructor data to socket
+    socket.data.user = decoded;
+
+    next();
+  } catch (error: any) {
+    console.error("❌ Socket authentication failed:", error.message);
+    next(new Error("Unauthorized: Invalid or expired token"));
+  }
+};
+
+

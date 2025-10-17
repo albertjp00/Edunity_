@@ -8,6 +8,8 @@ import { UserCourseController } from "../controllers/user/courseController.js";
 import { UserEventController } from "../controllers/user/eventController.js";
 import { MessageController } from "../controllers/messaage/messageController.js";
 
+
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null,'src/assets');
@@ -17,6 +19,8 @@ const storage = multer.diskStorage({
     cb(null, uniqueSuffix + "-" + file.originalname);
   },
 });
+
+
 
 const upload = multer({ storage });
 

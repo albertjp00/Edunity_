@@ -1,5 +1,6 @@
 import { Server } from "socket.io";
 import { MessageController } from "./controllers/messaage/messageController.js";
+import { socketAuthMiddleware } from "./middleware/authMiddleware.js";
 
 interface Participant {
   socketId: string;
@@ -13,6 +14,9 @@ const messageController = new MessageController()
 const eventParticipants: Record<string, Participant[]> = {};
 
 export const setupSocket = (io: Server) => {
+ 
+  io.use(socketAuthMiddleware)
+
 
 
   // Map of eventId -> participants
@@ -20,15 +24,20 @@ export const setupSocket = (io: Server) => {
 
   // ----------------- Socket.IO -----------------
   io.on("connection", (socket) => {
-    console.log("Client connected:", socket.id);
+    
+
+    const userData = socket.data.user
+    console.log("Client connected:", socket.id , userData);
     
 
     // ----------------- Chat -----------------
+    
 
     socket.on("joinRoom", ({ userId, receiverId }) => {
       const room = [userId, receiverId].sort().join("_");
       socket.join(room);
       console.log(`User ${userId} joined chat room ${room}`);
+
     });
 
     socket.on("sendMessage", (message) => {

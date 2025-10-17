@@ -1,4 +1,4 @@
-// api/publicApi.ts
+
 import axios from "axios";
 
 const publicApi = axios.create({

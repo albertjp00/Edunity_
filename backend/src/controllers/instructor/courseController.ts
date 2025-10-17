@@ -26,7 +26,7 @@ export class InstCourseController {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
 
-      const data = await this._courseService.fetchCourses(id, page, limit);
+      const data = await this._courseService.fetchCourses(id as string, page, limit);
 
       res.json({
         success: true,
@@ -147,8 +147,8 @@ export class InstCourseController {
   addCourse = async (req: InstAuthRequest, res: Response): Promise<void> => {
     try {
       const id = req.instructor?.id;
-      console.log("📦 Add Course", id, req.body);
-      console.log("🗂️ Multer Files:", req.files);
+      console.log("Add Course", id, req.body);
+      console.log("Multer Files:", req.files);
 
       const files = Array.isArray(req.files) ? req.files : [];
 
@@ -173,7 +173,7 @@ export class InstCourseController {
         modules.push({
           title,
           content,
-          videoUrl: videoFile ? videoFile.filename : "",
+          video: videoFile,
         });
       });
 
@@ -192,7 +192,7 @@ export class InstCourseController {
         thumbnail: thumbnailFile ? thumbnailFile.filename : undefined,
       };
 
-      const result = await this._courseService.addCourseRequest(id, data);
+      const result = await this._courseService.addCourseRequest(id as string, data);
       res.json({ success: !!result, course: result });
     } catch (error) {
       console.error("❌ Error adding course:", error);
