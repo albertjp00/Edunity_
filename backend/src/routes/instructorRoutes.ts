@@ -63,14 +63,7 @@ instructor.get('/getCourse',instAuthMiddleware,courseController.myCourses)
 instructor.get('/course/:id', instAuthMiddleware, courseController.courseDetails);
 instructor.patch('/course/:id', instAuthMiddleware,upload.any(), courseController.editCourse);
 
-
-
-instructor.post(
-  "/course",
-  instAuthMiddleware,
-  upload.any(),
-  courseController.addCourse
-);
+instructor.post("/course",instAuthMiddleware,upload.any(),courseController.addCourse);
 
 
 

@@ -193,7 +193,8 @@ const ViewMyCourse: React.FC = () => {
                               className="module-video"
                             >
                               <source
-                                src={`${API_URL}/assets/${module.videoUrl}`}
+                                // src={`${API_URL}/assets/${module.videoUrl}`}
+                                src = 'https://bucketedunity.s3.ap-south-1.amazonaws.com/tutorial.mp4'
                                 type="video/mp4"
                               />
                             </video>

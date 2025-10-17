@@ -104,6 +104,7 @@ export class InstructorRepository implements IInsRepository {
         return await InstructorModel.findByIdAndUpdate(id, { password: password })
     }
 
+    
     async addCourse(id: string, data: Partial<ICourse>): Promise<ICourse | null> {
         return await CourseModel.create({ instructorId: id, ...data, });
     }
@@ -112,7 +113,6 @@ export class InstructorRepository implements IInsRepository {
     async getCourses(id: string, skip: number, limit: number): Promise<ICourse[]> {
         const courses = await CourseModel.find({ instructorId: id }).skip(skip).limit(limit);
         // console.log(courses);
-
         return courses || [];
     }
 

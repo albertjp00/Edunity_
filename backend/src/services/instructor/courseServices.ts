@@ -1,6 +1,7 @@
 import { IPurchaseDetails } from "../../interfaces/instructorInterfaces.js";
 import { ICourse } from "../../models/course.js";
 import { IInsRepository, InstructorRepository, ISkills } from "../../repositories/instructorRepository.js";
+import { uploadVideoToS3 } from "../../utils/s3Upload.js";
 
 // Define what a single course looks like
 interface ICourseDetails {
@@ -102,16 +103,43 @@ export class CourseService {
     }
   }
 
-  addCourseRequest = async (id: string, data: any): Promise<boolean> => {
-    try {
-      // data.category = data.trim().toLowerCase();
+  // addCourseRequest = async (id: string, data: any): Promise<boolean> => {
+  //   try {
+  //     // data.category = data.trim().toLowerCase();
 
+  //     const create = await this.instructorRepository.addCourse(id, data)
+  //     return true
+  //   } catch (error) {
+  //     console.log(error);
+  //     return false
+  //   }
+  // }
+
+
+  addCourseRequest = async (id: string, data: any) => {
+    try {
+      const { title, description, modules } = data;
+
+      // Upload videos only
+      for (const module of modules) {
+        if (module.video && module.video.path) {
+          const videoUrl = await uploadVideoToS3(module.video);
+          module.videoUrl = videoUrl; // replace local file info with S3 URL
+          delete module.video; // remove the file reference
+        }
+      }
+      console.log("service add course data",data);
+    
       const create = await this.instructorRepository.addCourse(id, data)
-      return true
+  
+
+      // await newCourse.save();
+      return true;
     } catch (error) {
-      console.log(error);
-      return false
+      console.error("Add Course Error:", error);
+      throw error;
     }
+  
   }
 
   editCourseRequest = async (id: string, data: Partial<ICourse>): Promise<ICourse | null> => {

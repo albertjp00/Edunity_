@@ -13,6 +13,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import { setupSocket } from "./socket.js"; 
 import { errorHandler } from "./middleware/errorMiddleware.js";
+import { socketAuthMiddleware } from "./middleware/authMiddleware.js";
 
 dotenv.config();
 
@@ -49,7 +50,11 @@ const io = new Server(server, {
     credentials: true,
   },
 });
+
+
 setupSocket(io); // ✅ attach all socket handlers
+
+io.use(socketAuthMiddleware)
 
 connectDB().then(() => {
   server.listen(PORT, () => {

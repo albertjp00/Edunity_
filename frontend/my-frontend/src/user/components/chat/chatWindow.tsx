@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import { io } from "socket.io-client";
+
 import "./chatWindow.css";
 import api from "../../../api/userApi";
 
 
 import attachmentImage from '../../../assets/documentImage.jpg'
+import { connectSocket } from "../../../api/socketApi";
 
-const socket = io(import.meta.env.VITE_API_URL);
+const socket = connectSocket()
 
 // ---------- Message Interface ----------
 interface Message {
@@ -60,10 +61,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           );
           setMessages(sorted);
 
-          // Mark messages as read
+    
           socket.emit("messagesRead", { senderId: receiverId, receiverId: userId });
 
-          // Reset unread count in parent
+    
           resetUnread(receiverId);
         }
       } catch (err) {
@@ -74,7 +75,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     fetchMessages();
   }, [userId, receiverId]);
 
-  // ---------------- Socket: join room + receive messages ----------------
+
+
+
   useEffect(() => {
     if (!receiverId) return;
 
