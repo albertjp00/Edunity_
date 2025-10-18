@@ -51,11 +51,9 @@ export class InstCourseController {
       const result = await this._courseService.fetchCourseDetails(courseId)
       console.log("course", result);
 
-
       res.json({ success: true, course: result, quiz: result?.quizExists })
     } catch (error) {
       console.log(error);
-
     }
   }
 
