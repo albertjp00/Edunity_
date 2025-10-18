@@ -4,6 +4,8 @@ import { InstructorRepository } from "../../repositories/instructorRepository.js
 import { AuthRequest, InstAuthRequest } from "../../middleware/authMiddleware.js";
 import instructor from "../../routes/instructorRoutes.js";
 import logger from "../../utils/logger.js";
+import { uploadToS3 } from "../../utils/s3Upload.js";
+import fs from 'fs'
 
 interface MulterFiles {
   [fieldname: string]: Express.Multer.File[];
@@ -75,64 +77,74 @@ export class InstCourseController {
     }
   };
 
-  editCourse = async (req: Request, res: Response): Promise<void> => {
-    try {
-      const courseId = req.params.id!;
-      const files = Array.isArray(req.files) ? req.files : [];
-      console.log("📦 Edit Course:", courseId);
-      console.log("🗂️ Multer Files:", files);
+editCourse = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const courseId = req.params.id!;
+    const files = Array.isArray(req.files) ? req.files : [];
+    console.log("📦 Edit Course:", courseId);
+    console.log("🗂️ Multer Files:", files);
 
-      // Safely parse fields
-      const skills =
-        typeof req.body.skills === "string"
-          ? JSON.parse(req.body.skills || "[]")
-          : req.body.skills || [];
+    const skills =
+      typeof req.body.skills === "string"
+        ? JSON.parse(req.body.skills || "[]")
+        : req.body.skills || [];
 
-      const modules =
-        typeof req.body.modules === "string"
-          ? JSON.parse(req.body.modules || "[]")
-          : req.body.modules || [];
+    const modules =
+      typeof req.body.modules === "string"
+        ? JSON.parse(req.body.modules || "[]")
+        : req.body.modules || [];
 
-      // Update module videos if new files are uploaded
-      const updatedModules = modules.map((mod: any, index: number) => {
-        const videoFile = files.find(
-          (f: any) => f.fieldname === `modules[${index}][video]`
-        );
-        return {
-          ...mod,
-          videoUrl: videoFile ? videoFile.filename : mod.videoUrl || "",
-        };
-      });
+    const updatedModules: any[] = [];
+    for (let index = 0; index < modules.length; index++) {
+      const mod = modules[index];
+      const videoFile = files.find(
+        (f: any) => f.fieldname === `modules[${index}][video]`
+      );
 
-      // Check for a new thumbnail
-      const thumbnailFile = files.find((f: any) => f.fieldname === "thumbnail");
+      let videoUrl = mod.videoUrl || "";
 
-      const data = {
-        title: req.body.title,
-        description: req.body.description,
-        skills,
-        price: Number(req.body.price),
-        level: req.body.level,
-        category: req.body.category,
-        modules: updatedModules,
-        thumbnail: thumbnailFile ? thumbnailFile.filename : req.body.thumbnail,
-      };
+      if (videoFile) {
+        const fileBuffer = fs.readFileSync(videoFile.path);
 
-      console.log("✅ Final Course Data:", data);
-
-      const result = await this._courseService.editCourseRequest(courseId, data);
-
-      if (!result) {
-        res.status(404).json({ success: false, message: "Course not found" });
-        return;
+        videoUrl = await uploadToS3(fileBuffer, videoFile.originalname, videoFile.mimetype);
+        console.log(`✅ Uploaded video for module ${index}: ${videoUrl}`);
       }
 
-      res.status(200).json({ success: true, course: result });
-    } catch (error) {
-      console.error("❌ Error editing course:", error);
-      res.status(500).json({ success: false, message: "Internal Server Error" });
+      updatedModules.push({
+        ...mod,
+        videoUrl,
+      });
     }
-  };
+
+    const thumbnailFile = files.find((f: any) => f.fieldname === "thumbnail");
+
+    const data = {
+      title: req.body.title,
+      description: req.body.description,
+      skills,
+      price: Number(req.body.price),
+      level: req.body.level,
+      category: req.body.category,
+      modules: updatedModules,
+      thumbnail: thumbnailFile ? thumbnailFile.filename : req.body.thumbnail,
+    };
+
+    console.log("✅ Final Course Data:", data);
+
+    const result = await this._courseService.editCourseRequest(courseId, data);
+
+    if (!result) {
+      res.status(404).json({ success: false, message: "Course not found" });
+      return;
+    }
+
+    res.status(200).json({ success: true, course: result });
+  } catch (error) {
+    console.error("❌ Error editing course:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
 
 
 
@@ -144,6 +156,10 @@ export class InstCourseController {
   // }
 
 
+
+
+
+
   addCourse = async (req: InstAuthRequest, res: Response): Promise<void> => {
     try {
       const id = req.instructor?.id;
@@ -152,7 +168,7 @@ export class InstCourseController {
 
       const files = Array.isArray(req.files) ? req.files : [];
 
-      // ✅ Extract module indexes from either body or video fieldnames
+
       const moduleIndexes = new Set(
         [
           ...Object.keys(req.body).map((k) => k.match(/modules\[(\d+)\]/)?.[1]),
@@ -162,23 +178,31 @@ export class InstCourseController {
 
       const modules: any[] = [];
 
-      moduleIndexes.forEach((index) => {
+
+      for (const index of moduleIndexes) {
         const title = req.body[`modules[${index}][title]`];
         const content = req.body[`modules[${index}][content]`];
 
-        const videoFile = files.find(
-          (f) => f.fieldname === `modules[${index}][video]`
-        );
+        const videoFile = files.find((f) => f.fieldname === `modules[${index}][video]`);
+
+        let videoUrl: string | undefined;
+
+        if (videoFile) {
+          const fileBuffer = fs.readFileSync(videoFile.path);
+
+          // Upload to AWS S3
+          videoUrl = await uploadToS3(fileBuffer, videoFile.originalname, videoFile.mimetype);
+          console.log(`✅ Uploaded video for module ${index}: ${videoUrl}`);
+        }
 
         modules.push({
           title,
           content,
-          video: videoFile,
+          videoUrl,
         });
-      });
+      }
 
-      console.log("✅ Modules:", modules);
-
+      // ✅ Handle thumbnail (stored locally)
       const thumbnailFile = files.find((f) => f.fieldname === "thumbnail");
 
       const data = {
@@ -192,7 +216,9 @@ export class InstCourseController {
         thumbnail: thumbnailFile ? thumbnailFile.filename : undefined,
       };
 
+      // ✅ Save course data to DB (no need to re-upload videos in service)
       const result = await this._courseService.addCourseRequest(id as string, data);
+
       res.json({ success: !!result, course: result });
     } catch (error) {
       console.error("❌ Error adding course:", error);

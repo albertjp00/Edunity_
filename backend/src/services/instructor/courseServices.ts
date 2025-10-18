@@ -1,7 +1,10 @@
 import { IPurchaseDetails } from "../../interfaces/instructorInterfaces.js";
 import { ICourse } from "../../models/course.js";
 import { IInsRepository, InstructorRepository, ISkills } from "../../repositories/instructorRepository.js";
-import { uploadVideoToS3 } from "../../utils/s3Upload.js";
+import { generateSignedUrl } from "../../utils/getSignedUrl.js";
+import { uploadToS3 } from "../../utils/s3Upload.js";
+import fs from 'fs'
+
 
 // Define what a single course looks like
 interface ICourseDetails {
@@ -68,27 +71,32 @@ export class CourseService {
 
 
 
-  fetchCourseDetails = async (courseId: string) => {
-    try {
-      console.log('service get course details', courseId);
+fetchCourseDetails = async (courseId: string) => {
+  try {
+    console.log("service get course details", courseId);
 
-      const course = await this.instructorRepository.getCourseDetails(courseId)
-      // console.log(course);
+    const course = await this.instructorRepository.getCourseDetails(courseId);
+    if (!course) return null;
 
-      const quiz = await this.instructorRepository.getQuizByCourseId(courseId)
-      let quizExists = false
-      if (quiz) {
-        quizExists = true
+    if (course.modules && course.modules.length > 0) {
+      for (const module of course.modules) {
+        if (module.videoUrl) {
+          const key = module.videoUrl.split(".amazonaws.com/")[1]; 
+          module.videoUrl = await generateSignedUrl(key as string);
+        }
       }
-
-
-      return { course, quizExists }
-
-    } catch (error) {
-      console.log(error);
-      return null
     }
+
+    const quiz = await this.instructorRepository.getQuizByCourseId(courseId);
+    const quizExists = !!quiz;
+
+    return { course, quizExists };
+  } catch (error) {
+    console.log("Error fetching course details:", error);
+    return null;
   }
+};
+
 
 
   getPurchaseDetails = async (id:string):Promise<IPurchaseDetails[] | null>=>{
@@ -116,31 +124,18 @@ export class CourseService {
   // }
 
 
-  addCourseRequest = async (id: string, data: any) => {
-    try {
-      const { title, description, modules } = data;
-
-      // Upload videos only
-      for (const module of modules) {
-        if (module.video && module.video.path) {
-          const videoUrl = await uploadVideoToS3(module.video);
-          module.videoUrl = videoUrl; // replace local file info with S3 URL
-          delete module.video; // remove the file reference
-        }
-      }
-      console.log("service add course data",data);
-    
-      const create = await this.instructorRepository.addCourse(id, data)
-  
-
-      // await newCourse.save();
-      return true;
-    } catch (error) {
-      console.error("Add Course Error:", error);
-      throw error;
-    }
-  
+addCourseRequest = async (id: string, data: any) => {
+  try {
+    console.log("service add course data", data);
+    const createdCourse = await this.instructorRepository.addCourse(id, data);
+    return createdCourse;
+  } catch (error) {
+    console.error("Add Course Error:", error);
+    throw error;
   }
+};
+
+
 
   editCourseRequest = async (id: string, data: Partial<ICourse>): Promise<ICourse | null> => {
     try {
