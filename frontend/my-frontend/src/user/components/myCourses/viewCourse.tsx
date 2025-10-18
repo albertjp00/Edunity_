@@ -194,7 +194,7 @@ const ViewMyCourse: React.FC = () => {
                             >
                               <source
                                 // src={`${API_URL}/assets/${module.videoUrl}`}
-                                src = 'https://bucketedunity.s3.ap-south-1.amazonaws.com/tutorial.mp4'
+                                src = {module.videoUrl}
                                 type="video/mp4"
                               />
                             </video>
