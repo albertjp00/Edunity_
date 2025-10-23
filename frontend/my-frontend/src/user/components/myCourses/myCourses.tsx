@@ -17,26 +17,19 @@ interface ICourse {
   description: string;
   price: string;
   thumbnail: string;
-  modules: IModule[];
+  modules?: IModule[];
 }
 
 interface IMyCourse {
   _id: string;
   userId: string;
   courseId: string;
-  course: ICourse;
+  course: ICourse | null; 
   progress: {
     completedModules: string[];
   };
   createdAt: string;
 }
-
-// interface IApiResponse {
-//   success: boolean;
-//   course: IMyCourse[];
-//   currentPage: number;
-//   totalPages: number;
-// }
 
 const UserMyCourses: React.FC = () => {
   const [courses, setCourses] = useState<IMyCourse[]>([]);
@@ -48,9 +41,18 @@ const UserMyCourses: React.FC = () => {
     try {
       const res = await getMyCourses(page);
       if (res?.data.success) {
-        setCourses(res.data.courses);
-        setCurrentPage(res.data.currentPage);
-        setTotalPages(res.data.totalPages);
+        // console.log("📦 My Courses Result:", res.data);
+
+        const rawCourses =
+          res.data.courses || res.data.populatedCourses || [];
+
+        const validCourses = rawCourses.filter(
+          (item: IMyCourse) => item.course !== null
+        );
+
+        setCourses(validCourses);
+        setCurrentPage(res.data.currentPage || 1);
+        setTotalPages(res.data.totalPages || 1);
       }
     } catch (err) {
       console.error("Error fetching courses:", err);
@@ -62,12 +64,11 @@ const UserMyCourses: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchCourses();
-  }, []);
+    fetchCourses(currentPage);
+  }, [currentPage]);
 
   return (
     <div className="my-course-container">
-
       <h2 className="course-header">My Courses</h2>
 
       {courses.length === 0 ? (
@@ -76,30 +77,39 @@ const UserMyCourses: React.FC = () => {
         <>
           <div className="my-courseList">
             {courses.map((myCourse) => {
-              const totalModules = myCourse.course.modules?.length || 0;
-              const completedModules = myCourse.progress.completedModules.length;
+              if (!myCourse.course) {
+                // ✅ Handle deleted/unavailable course
+                return (
+                  <div key={myCourse._id} className="course-card unavailable">
+                    <p>⚠️ This course is no longer available.</p>
+                  </div>
+                );
+              }
+
+              const { _id, title, description, thumbnail, modules = [] } =
+                myCourse.course;
+              const completedModules =
+                myCourse.progress?.completedModules?.length || 0;
 
               return (
                 <div
                   key={myCourse._id}
                   className="course-card"
-                  onClick={() => selectCourse(myCourse._id)}
+                  onClick={() => selectCourse(_id)}
                 >
-                  {myCourse.course.thumbnail && (
+                  {thumbnail && (
                     <img
-                      src={`${API_URL}/assets/${myCourse.course.thumbnail}`}
+                      src={`${API_URL}/assets/${thumbnail}`}
                       alt="Thumbnail"
                       className="course-thumbnail"
                     />
                   )}
 
                   <div className="course-details">
-                    <h3 className="course-title">{myCourse.course.title}</h3>
-                    <p className="course-description">
-                      {myCourse.course.description}
-                    </p>
+                    <h3 className="course-title">{title}</h3>
+                    <p className="course-description">{description}</p>
                     <p className="course-modules">
-                      Modules: {completedModules}/{totalModules}
+                      Modules: {completedModules}/{modules.length}
                     </p>
                     <p className="course-enrolled">
                       Enrolled:{" "}
@@ -111,20 +121,20 @@ const UserMyCourses: React.FC = () => {
             })}
           </div>
 
-          {/* Pagination Controls */}
+       
           <div className="pagination-controls">
             <button
               disabled={currentPage === 1}
-              onClick={() => fetchCourses(currentPage - 1)}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             >
               Prev
             </button>
 
-            {[...Array(totalPages)].map((_, i) => (
+            {Array.from({ length: totalPages }, (_, i) => (
               <button
                 key={i + 1}
                 className={currentPage === i + 1 ? "active" : ""}
-                onClick={() => fetchCourses(i + 1)}
+                onClick={() => setCurrentPage(i + 1)}
               >
                 {i + 1}
               </button>
@@ -132,7 +142,9 @@ const UserMyCourses: React.FC = () => {
 
             <button
               disabled={currentPage === totalPages}
-              onClick={() => fetchCourses(currentPage + 1)}
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
             >
               Next
             </button>

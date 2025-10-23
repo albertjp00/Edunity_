@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
 import './navbar.css';
 import { Link, useNavigate } from 'react-router-dom';
 import profilePic from './../../../assets/profilePic.png';
 import logo from '../../../assets/logo.png';
-import api from '../../../api/userApi';
 import { logout } from '../../services/authServices';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
+  // const [searchTerm, setSearchTerm] = useState('');
 
 const handleLogout = async () => {
   try {
@@ -41,6 +39,9 @@ const handleLogout = async () => {
       </Link>
         <Link to="/user/myCourses">
           <p className="add-course">My Courses</p>
+        </Link>
+        <Link to='/user/chat'>
+          <p className='add-course'>Messages</p>
         </Link>
         {/* <div className="hamburger" onClick={toggleSidebar}>
           ☰

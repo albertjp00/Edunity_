@@ -73,4 +73,8 @@ admin.get('/courseDetails/:id', adminAuthMiddleware,courseController.getCourseDe
 admin.get("/purchases", adminAuthMiddleware, courseController.getAllPurchases);
 
 
+admin.get('/stats',adminAuthMiddleware , dashboardController.dashboardStats)
+admin.get('/userOverview',adminAuthMiddleware,dashboardController.getUserOverview)
+
+
 export default admin

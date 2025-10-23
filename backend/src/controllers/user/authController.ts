@@ -22,7 +22,7 @@ export class AuthController {
     this._authService = new AuthService(repo);
   }
 
-  login = async (req: Request, res: Response , next:NextFunction) => {
+  login = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, password } = req.body;
       logger.info(`Login user: ${req.body.email}`);
@@ -32,7 +32,7 @@ export class AuthController {
         return;
       }
 
-       
+
       const result = await this._authService.loginRequest(email, password);
 
       if (result.success) {
@@ -63,8 +63,8 @@ export class AuthController {
   };
 
 
-  
-  refreshToken = (req: Request, res: Response ,next:NextFunction) : void => {
+
+  refreshToken = (req: Request, res: Response, next: NextFunction): void => {
     try {
       logger.info('refresh token ', req.cookies);
       const token = req.cookies.refreshToken;
@@ -94,7 +94,7 @@ export class AuthController {
     }
   };
 
-  logoutUser = async (req: Request, res: Response ,next:NextFunction) => {
+  logoutUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
       res.clearCookie("refreshToken", {
         httpOnly: true,
@@ -111,13 +111,13 @@ export class AuthController {
     }
   };
 
-  checkBlocked = async (req:AuthRequest , res:Response) =>{
+  checkBlocked = async (req: AuthRequest, res: Response) => {
     try {
       const id = req.user?.id!
-      logger.info('blocked or not ',id); 
-      
+      logger.info('blocked or not ', id);
+
       const isBlocked = await this._authService.isBlocked(id)
-      res.json({blocked:isBlocked})
+      res.json({ blocked: isBlocked })
     } catch (error) {
       console.log(error);
     }
@@ -125,7 +125,7 @@ export class AuthController {
 
 
 
-  register = async (req: Request, res: Response,next:NextFunction): Promise<void> => {
+  register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { name, email, password } = req.body;
       const result = await this._authService.registerRequest(name, email, password);
@@ -147,7 +147,7 @@ export class AuthController {
   };
 
 
-  resendOtp = async (req: Request, res: Response,next:NextFunction): Promise<void> => {
+  resendOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { email } = req.body;
 
@@ -166,7 +166,7 @@ export class AuthController {
     }
   };
 
-  verifyOtp = async (req: Request, res: Response,next:NextFunction): Promise<void> => {
+  verifyOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { otp, email } = req.body;
       const result = await this._authService.verifyOtpRequest(otp, email);
@@ -186,7 +186,7 @@ export class AuthController {
 
 
 
-  googleSignIn = async (req: Request, res: Response,next:NextFunction): Promise<void> => {
+  googleSignIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { token } = req.body;
       // console.log(req.body);
@@ -202,7 +202,7 @@ export class AuthController {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
           sameSite: "strict",
-          maxAge:2 * 24 * 60 * 60 * 1000, // 1 day
+          maxAge: 2 * 24 * 60 * 60 * 1000, // 1 day
         });
       }
 
@@ -214,7 +214,7 @@ export class AuthController {
     }
   };
 
-  forgotPassword = async (req: AuthRequest, res: Response,next:NextFunction): Promise<void> => {
+  forgotPassword = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { email } = req.body;
 
@@ -233,7 +233,7 @@ export class AuthController {
     }
   };
 
-  verifyOtpForgotPass = async (req: AuthRequest, res: Response,next:NextFunction): Promise<void> => {
+  verifyOtpForgotPass = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
       console.log('verify password');
 
@@ -255,11 +255,11 @@ export class AuthController {
     }
   };
 
-  resendOtpForgotPassword = async (req: Request, res: Response,next:NextFunction): Promise<void> => {
+  resendOtpForgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { email } = req.body;
-      logger.info('resend' , email);
-      
+      logger.info('resend', email);
+
 
       if (!email) {
         res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: "Email is required" });
@@ -276,35 +276,37 @@ export class AuthController {
     }
   };
 
-  resetPassword = async (req: Request, res: Response,next:NextFunction): Promise<void> => {
-  try {
-    const { email , newPassword } = req.body;
-    logger.info('reset pass ' , email , newPassword);
+  resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { email, newPassword } = req.body;
+      logger.info('reset pass ', email, newPassword);
 
-    
 
-    // if (!req.user) {
-    //   res.status(401).json({ success: false, message: "Unauthorized" });
-    //   return;
-    // }
 
-    const result = await this._authService.resetPassword(
-      email,
-      newPassword
-    );
+      // if (!req.user) {
+      //   res.status(401).json({ success: false, message: "Unauthorized" });
+      //   return;
+      // }
 
-    if (!result.success) {
-      res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: result.message });
-      return;
+      const result = await this._authService.resetPassword(
+        email,
+        newPassword
+      );
+
+      if (!result.success) {
+        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: result.message });
+        return;
+      }
+
+      res.json({ success: true, message: "Password changed successfully" });
+    } catch (error) {
+      // console.error(error);
+      next(error)
+      res.json({ success: false, message: "Internal server error" });
     }
+  };
 
-    res.json({ success: true, message: "Password changed successfully" });
-  } catch (error) {
-    // console.error(error);
-    next(error)
-    res.json({ success: false, message: "Internal server error" });
-  }
-};
+
 
 
 

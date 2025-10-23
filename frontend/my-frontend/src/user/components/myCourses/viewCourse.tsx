@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./viewMyCourse.css";
 import api from "../../../api/userApi";
 import { viewMyCourse } from "../../services/courseServices";
+import VideoPlayerUser from "../videoPlayer/videoPlayer";
+import { toast } from "react-toastify";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -39,7 +41,7 @@ interface IMyCourse {
   progress: {
     completedModules: string[];
   };
-  createdAt: string;
+  enrolledAt: string;
 }
 
 const ViewMyCourse: React.FC = () => {
@@ -52,26 +54,41 @@ const ViewMyCourse: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("overview");
   const navigate = useNavigate();
 
+  const [canCancel, setCanCancel] = useState<boolean>(false);
+
   const fetchCourse = async (): Promise<void> => {
     try {
       if (!id) {
         console.error("Course ID is missing");
         return;
       }
-      const res = await viewMyCourse(id)
+      const res = await viewMyCourse(id);
+      if (!res) return;
 
-      if (!res) return
-      console.log(res);
+      // console.log(res);
+      
       const fetchedMyCourse: IMyCourse = res.data.course;
       const fetchedInstructor: IInstructor = res.data.instructor;
       setCourse(fetchedMyCourse.course);
       setInstructor(fetchedInstructor);
       setCompletedModules(fetchedMyCourse.progress?.completedModules || []);
       setQuiz(res.data.quiz);
+
+
+      const enrolledDate = new Date(fetchedMyCourse.enrolledAt);
+      const now = new Date();
+      const diffDays =
+        (now.getTime() - enrolledDate.getTime()) / (1000 * 60 * 60 * 24);
+
+      const hasViewedMoreThanOne =
+        fetchedMyCourse.progress.completedModules.length > 1;
+
+      setCanCancel(diffDays <= 10 && !hasViewedMoreThanOne);
     } catch (err) {
       console.error("Error fetching course:", err);
     }
   };
+
 
   useEffect(() => {
     fetchCourse();
@@ -82,13 +99,35 @@ const ViewMyCourse: React.FC = () => {
   };
 
   const markAsCompleted = async (moduleTitle: string): Promise<void> => {
+    if (completedModules.includes(moduleTitle)) return;
     try {
+      console.log('marked as completed');
+
       await api.post("/user/updateProgress", { courseId: id, moduleTitle });
       setCompletedModules((prev) => [...prev, moduleTitle]);
     } catch (err) {
       console.error("Error updating progress:", err);
     }
   };
+
+
+  const cancelCourse = async (courseId: string) => {
+    if (!window.confirm("Are you sure you want to cancel this course?")) return;
+
+    try {
+      const res = await api.delete(`/user/cancelCourse/${courseId}`);
+      if (res.data.success) {
+        toast.success("Course cancelled successfully!");
+        navigate("/user/myCourses");
+      }
+    } catch (err) {
+      console.error("Error cancelling course:", err);
+      alert("Unable to cancel course.");
+    }
+  };
+
+
+
 
   const gotoQuiz = (myCourseId: string) => {
     navigate(`/user/quiz/${myCourseId}`);
@@ -185,29 +224,21 @@ const ViewMyCourse: React.FC = () => {
                       </div>
                       {expandedModule === idx && (
                         <div className="module-body">
-                          {module.videoUrl && (
-                            <video
-                              width="100%"
-                              height="auto"
-                              controls
-                              className="module-video"
-                            >
-                              <source
-                                // src={`${API_URL}/assets/${module.videoUrl}`}
-                                src = {module.videoUrl}
-                                type="video/mp4"
-                              />
-                            </video>
-                          )}
+                          <VideoPlayerUser
+                            initialUrl={module.videoUrl}
+                            onComplete={() => markAsCompleted(module.title)} // ✅ called when video ends
+                          />
+
                           <p>{module.content}</p>
-                          {!isCompleted && (
+
+                          {/* {!isCompleted && (
                             <button
                               onClick={() => markAsCompleted(module.title)}
                               className="mark-complete-btn"
                             >
                               Mark as Completed
                             </button>
-                          )}
+                          )} */}
                         </div>
                       )}
                     </div>
@@ -270,6 +301,16 @@ const ViewMyCourse: React.FC = () => {
                 {/* <span className="old-price">$120</span> */}
               </p>
               <button className="buy-btn">Continue Course</button>
+
+              {canCancel && (
+                <button
+                  className="cancel-btn"
+                  onClick={() => cancelCourse( id!)}
+                >
+                  ❌ Cancel Course
+                </button>
+              )}
+
               <div className="sidebar-stats">
                 <p>
                   <strong>Enrolled:</strong> 100

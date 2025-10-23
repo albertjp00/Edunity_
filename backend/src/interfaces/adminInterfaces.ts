@@ -12,16 +12,27 @@ export interface PaginatedUsers {
 
 
 export interface PaginatedInstructors {
-  instructors : IInstructor[];
+  instructors: IInstructor[];
   totalPages: number;
   currentPage: number;
-  totalInstructors : number;
+  totalInstructors: number;
 }
 
 
-export interface PurchaseResult{
-        purchases: any[];
-        totalPurchases: number;
-        totalPages: number;
-        currentPage: number;
+export interface PurchaseResult {
+  purchases: any[];
+  totalPurchases: number;
+  totalPages: number;
+  currentPage: number;
 }
+
+
+export interface ICount {
+  count : number
+}
+
+export interface IUserOverview {
+  name: string;  // "Oct 2025"
+  count: number;
+}
+

@@ -52,10 +52,14 @@ router.post("/resendOtp", authController.resendOtp);
 router.get("/profile", authMiddleware, profileController.getProfile);
 router.patch("/profile",authMiddleware,upload.single("profileImage"),profileController.editProfile);
 router.put('/passwordChange',authMiddleware,profileController.changePassword)
+router.get('/wallet',authMiddleware , profileController.getWallet)
+
 
 router.get('/getCourses',authMiddleware, courseController.showCourses)
 router.get('/getAllCourses',authMiddleware, courseController.getAllCourses)
 router.get('/courseDetails',authMiddleware,courseController.courseDetails)
+router.get("/videos/refresh",authMiddleware, courseController.refreshVideoUrl);
+
 router.get('/myCourses/:page',authMiddleware , courseController.myCourses)
 router.get('/getInstructors',authMiddleware , courseController.getInstructors)
 router.get('/getFavourites',authMiddleware ,courseController.getFavourites)
@@ -76,7 +80,6 @@ router.post("/quiz/:courseId/:quizId",authMiddleware ,courseController.submitQui
 
 
 
-
 router.get('/events',authMiddleware , eventController.getEvents)
 router.get('/event/:id',authMiddleware , eventController.getEventDetails)
 router.get('/eventEnroll/:id',authMiddleware , eventController.enrollEvent)
@@ -94,6 +97,9 @@ router.get("/getUnreadMessages/:instructorId",authMiddleware,messageController.g
 
 
 router.get("/instructor/:id", authMiddleware, messageController.getInstructortoMessage);
+
+
+router.delete('/cancelCourse/:id',authMiddleware,courseController.cancelCourse);
 
 
 export default router;

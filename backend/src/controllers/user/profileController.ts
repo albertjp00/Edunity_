@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import { UserRepository } from '../../repositories/userRepository';
-import { ProfileService } from '../../services/user/profileService';
-import { AuthRequest } from '../../middleware/authMiddleware';
-import { HttpStatus } from '../../enums/httpStatus.enums';
+import { UserRepository } from '../../repositories/userRepository.js';
+import { ProfileService } from '../../services/user/profileService.js';
+import { AuthRequest } from '../../middleware/authMiddleware.js';
+import { HttpStatus } from '../../enums/httpStatus.enums.js';
 
 export class ProfileController {
     private _profileService: ProfileService;
@@ -104,4 +104,17 @@ export class ProfileController {
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
         }
     };
+
+
+      getWallet = async (req: AuthRequest, res: Response) => {
+    try {
+        const userId = req.user?.id
+        const wallet = await this._profileService.getWallet(userId as string)
+        res.json({success:true , wallet})
+
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
 }

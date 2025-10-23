@@ -23,6 +23,8 @@ const ShowCourses: React.FC = () => {
     try {
       const res = await api.get(`/user/getCourses?page=1&limit=6`);
       if (res.data.success) {
+        console.log(res);
+        
         setCourses(res.data.course);
       }
     } catch (err) {

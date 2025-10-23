@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import './courseDetails.css';
 import Navbar from '../../components/navbar/navbar';
 import instructorApi from '../../../api/instructorApi';
+import VideoPlayer from '../videoPlayer/videoPlayer';
 
 // Define types for Module and Course
 interface Module {
@@ -169,12 +170,8 @@ const InstructorCourseDetails: React.FC = () => {
                     <div className="module-body" style={{ padding: '10px 20px' }}>
                       <div>
                         <strong>🎥 Video:</strong>
-                        {module.videoUrl && (
-                          <video width="100%" height="auto" controls style={{ marginTop: '10px' }}>
-                            <source src={module.videoUrl} type="video/mp4" />
-                            Your browser does not support the video tag.
-                          </video>
-                        )}
+                        {module.videoUrl && <VideoPlayer initialUrl={module.videoUrl} />}
+
 
                       </div>
                       <p><strong>📝 Content:</strong> {module.content}</p>

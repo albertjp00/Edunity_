@@ -13,7 +13,7 @@ export interface IUser extends Document {
   dob?: string;
   gender?: 'Male' | 'Female' | 'Other';
   blocked: boolean;
-  createdAt: string;
+  createdAt: Date;
   googleId : string;
 }
 
@@ -72,8 +72,8 @@ const UserSchema: Schema = new Schema<IUser>({
   },
 
   createdAt: {
-    type: String,
-    default: () => new Date().toISOString(),
+    type: Date,
+    default: Date.now
   },
 
   googleId : {

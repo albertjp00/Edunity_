@@ -6,6 +6,7 @@ import "./userChat.css";
 import api from "../../../api/userApi";
 import Navbar from "../navbar/navbar";
 import { io } from "socket.io-client";
+import { useParams } from "react-router-dom";
 
 
 const socket = io(import.meta.env.VITE_API_URL)
@@ -21,7 +22,7 @@ interface IInstructorChat {
 }
 
 const UserChat = () => {
-  // const { instructorId } = useParams();
+  const { instructorId } = useParams();
   const [instructors, setInstructors] = useState<IInstructorChat[]>([]);
   const [selected, setSelected] = useState<IInstructorChat | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
@@ -70,11 +71,11 @@ const UserChat = () => {
       const sorted = sortInstructors(normalized);
       setInstructors(sorted);
 
-      // ❌ Remove this part so it doesn't auto-select
-      // if (instructorId) {
-      //   const found = sorted.find((i) => i.id === instructorId);
-      //   if (found) setSelected(found);
-      // }
+      //auto-selected instructor with chatWindow opened
+      if (instructorId) {
+        const found = sorted.find((i) => i.id === instructorId);
+        if (found) setSelected(found);
+      }
 
     } catch (error) {
       console.log(error);
@@ -97,7 +98,7 @@ const UserChat = () => {
 
           return {
             ...inst,
-            lastMessage: displayMessage || inst.lastMessage,
+            lastMessage: displayMessage || inst.lastMessage, 
             time: new Date().toISOString(),
           };
         }
