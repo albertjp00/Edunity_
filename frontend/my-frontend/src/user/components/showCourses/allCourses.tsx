@@ -63,7 +63,8 @@ const AllCourses: React.FC = () => {
       const response = await api.get(
         `/user/getAllCourses?${queryParams.toString()}`
       );
-
+      console.log("response",response);
+      
       setCourses(response.data.courses);
       setTotalPages(response.data.totalPages);
     } catch (error) {
@@ -131,6 +132,7 @@ const AllCourses: React.FC = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
           <button type="submit" className="search-bttn">
+            
             🔍 Search
           </button>
         </form>

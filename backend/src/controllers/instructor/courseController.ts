@@ -6,6 +6,7 @@ import instructor from "../../routes/instructorRoutes.js";
 import logger from "../../utils/logger.js";
 import { uploadToS3 } from "../../utils/s3Upload.js";
 import fs from 'fs'
+import { generateSignedUrl } from "../../utils/getSignedUrl.js";
 
 interface MulterFiles {
   [fieldname: string]: Express.Multer.File[];
@@ -57,6 +58,25 @@ export class InstCourseController {
     }
   }
 
+
+
+  refreshVideoUrl = async (req: Request, res: Response) => {
+    try {
+      const { key } = req.query; // frontend sends the key (filename)
+      if (!key) {
+        return res.status(400).json({ success: false, message: "Missing key" });
+      }
+
+      const signedUrl = await generateSignedUrl(key as string);
+      res.json({ success: true, url: signedUrl });
+    } catch (error) {
+      console.error("Error refreshing video URL:", error);
+      res.status(500).json({ success: false, message: "Error generating URL" });
+    }
+  };
+
+
+
   purchaseDetails = async (req: InstAuthRequest, res: Response) => {
     try {
       const courseId = req.params.id!;
@@ -75,73 +95,73 @@ export class InstCourseController {
     }
   };
 
-editCourse = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const courseId = req.params.id!;
-    const files = Array.isArray(req.files) ? req.files : [];
-    console.log("📦 Edit Course:", courseId);
-    console.log("🗂️ Multer Files:", files);
+  editCourse = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const courseId = req.params.id!;
+      const files = Array.isArray(req.files) ? req.files : [];
+      console.log("📦 Edit Course:", courseId);
+      console.log("🗂️ Multer Files:", files);
 
-    const skills =
-      typeof req.body.skills === "string"
-        ? JSON.parse(req.body.skills || "[]")
-        : req.body.skills || [];
+      const skills =
+        typeof req.body.skills === "string"
+          ? JSON.parse(req.body.skills || "[]")
+          : req.body.skills || [];
 
-    const modules =
-      typeof req.body.modules === "string"
-        ? JSON.parse(req.body.modules || "[]")
-        : req.body.modules || [];
+      const modules =
+        typeof req.body.modules === "string"
+          ? JSON.parse(req.body.modules || "[]")
+          : req.body.modules || [];
 
-    const updatedModules: any[] = [];
-    for (let index = 0; index < modules.length; index++) {
-      const mod = modules[index];
-      const videoFile = files.find(
-        (f: any) => f.fieldname === `modules[${index}][video]`
-      );
+      const updatedModules: any[] = [];
+      for (let index = 0; index < modules.length; index++) {
+        const mod = modules[index];
+        const videoFile = files.find(
+          (f: any) => f.fieldname === `modules[${index}][video]`
+        );
 
-      let videoUrl = mod.videoUrl || "";
+        let videoUrl = mod.videoUrl || "";
 
-      if (videoFile) {
-        const fileBuffer = fs.readFileSync(videoFile.path);
+        if (videoFile) {
+          const fileBuffer = fs.readFileSync(videoFile.path);
 
-        videoUrl = await uploadToS3(fileBuffer, videoFile.originalname, videoFile.mimetype);
-        console.log(`✅ Uploaded video for module ${index}: ${videoUrl}`);
+          videoUrl = await uploadToS3(fileBuffer, videoFile.originalname, videoFile.mimetype);
+          console.log(`✅ Uploaded video for module ${index}: ${videoUrl}`);
+        }
+
+        updatedModules.push({
+          ...mod,
+          videoUrl,
+        });
       }
 
-      updatedModules.push({
-        ...mod,
-        videoUrl,
-      });
+      const thumbnailFile = files.find((f: any) => f.fieldname === "thumbnail");
+
+      const data = {
+        title: req.body.title,
+        description: req.body.description,
+        skills,
+        price: Number(req.body.price),
+        level: req.body.level,
+        category: req.body.category,
+        modules: updatedModules,
+        thumbnail: thumbnailFile ? thumbnailFile.filename : req.body.thumbnail,
+      };
+
+      console.log("✅ Final Course Data:", data);
+
+      const result = await this._courseService.editCourseRequest(courseId, data);
+
+      if (!result) {
+        res.status(404).json({ success: false, message: "Course not found" });
+        return;
+      }
+
+      res.status(200).json({ success: true, course: result });
+    } catch (error) {
+      console.error("❌ Error editing course:", error);
+      res.status(500).json({ success: false, message: "Internal Server Error" });
     }
-
-    const thumbnailFile = files.find((f: any) => f.fieldname === "thumbnail");
-
-    const data = {
-      title: req.body.title,
-      description: req.body.description,
-      skills,
-      price: Number(req.body.price),
-      level: req.body.level,
-      category: req.body.category,
-      modules: updatedModules,
-      thumbnail: thumbnailFile ? thumbnailFile.filename : req.body.thumbnail,
-    };
-
-    console.log("✅ Final Course Data:", data);
-
-    const result = await this._courseService.editCourseRequest(courseId, data);
-
-    if (!result) {
-      res.status(404).json({ success: false, message: "Course not found" });
-      return;
-    }
-
-    res.status(200).json({ success: true, course: result });
-  } catch (error) {
-    console.error("❌ Error editing course:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
-  }
-};
+  };
 
 
 

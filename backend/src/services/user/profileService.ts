@@ -1,3 +1,4 @@
+import { IWallet } from '../../models/wallet.js';
 import { UserRepository } from '../../repositories/userRepository.js';
 import bcrypt from 'bcrypt'
 
@@ -66,6 +67,16 @@ export class ProfileService {
     } catch (error) {
       console.error(error);
       return false;
+    }
+  }
+
+  async getWallet (userId : string ):Promise<IWallet | null>{
+    try {
+      const wallet = await this.userRepository.getWallet(userId)
+      return wallet 
+    } catch (error) {
+      console.log(error);
+      return null
     }
   }
 }

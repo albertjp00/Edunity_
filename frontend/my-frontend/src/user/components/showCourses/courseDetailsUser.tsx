@@ -4,6 +4,7 @@ import "./courseDetailsUser.css";
 import api from "../../../api/userApi";
 import { toast } from "react-toastify";
 import buyNowImage from '../../../assets/buyCourse.png'
+import VideoPlayerUser from "../videoPlayer/videoPlayer";
 
 interface Module {
   title: string;
@@ -195,12 +196,7 @@ const CourseDetailsUser: React.FC = () => {
                   <summary>{module.title || `Module ${idx + 1}`}</summary>
                   {hasAccess ? (
                     <div className="video-wrapper">
-                      {module.videoUrl && (
-                        <video width="100%" height="auto" controls style={{ marginTop: '10px' }}>
-                          <source src={`http://localhost:5000/assets/${module.videoUrl}`} type="video/mp4" />
-                          Your browser does not support the video tag.
-                        </video>
-                      )}
+                      {module.videoUrl && <VideoPlayerUser initialUrl={module.videoUrl} />}
                     </div>
                   ) : (
                     <p className="locked-message">

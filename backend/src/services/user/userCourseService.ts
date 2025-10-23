@@ -23,6 +23,7 @@ export interface IviewCourse {
   instructor: IInstructor
   progress: IProgress
   quizExists: boolean
+  enrolledAt : Date
 }
 
 
@@ -64,7 +65,7 @@ export class UserCourseService {
 
     const courses = await this.userRepository.getAllCourses(query, skip, limit, sortOption);
     // const totalCount = await this.userRepository.countCourses(query);
-    const totalCount = await this.userRepository.countCourses();
+    const totalCount = await this.userRepository.countAllCourses(query);
     // const totalCount = courses.length
 
     // console.log(courses);
@@ -179,10 +180,10 @@ export class UserCourseService {
 
 
 
-  myCoursesRequest = async (id: string , page:number): Promise<{populatedCourses : IMyCourse[] ,result : IMyCourses} | null> => {
+  myCoursesRequest = async (id: string, page: number): Promise<{ populatedCourses: IMyCourse[], result: IMyCourses } | null> => {
     try {
 
-      const result = await this.userRepository.findMyCourses(id , page)
+      const result = await this.userRepository.findMyCourses(id, page)
       // console.log("courseIdd ", myCourses);
 
       if (!result.myCourses || result.myCourses.length === 0) return { populatedCourses: [], result };
@@ -197,7 +198,7 @@ export class UserCourseService {
       );
       // console.log("my Courses ", populatedCourses);
 
-      return {populatedCourses , result};
+      return { populatedCourses, result };
 
     } catch (error) {
       console.log(error);
@@ -210,9 +211,14 @@ export class UserCourseService {
     myCourseId: string
   ): Promise<IviewCourse | null> => {
     try {
+      // console.log('service myCourse');
+      
       const myCourse = await this.userRepository.viewMyCourse(id, myCourseId);
       if (!myCourse) return null;
       const progress = myCourse.progress
+      // console.log('service my course details',myCourse);
+      const enrolledAt = myCourse.createdAt
+      
 
       const course = await this.userRepository.getCourse(myCourse.courseId.toString());
       if (!course) return null;
@@ -228,7 +234,8 @@ export class UserCourseService {
       }
 
 
-      return { course, instructor, progress, quizExists };
+
+      return { course, instructor, progress, quizExists , enrolledAt };
     } catch (error) {
       console.log(error);
       return null;
@@ -404,6 +411,30 @@ export class UserCourseService {
   };
 
 
+  async cancelCourseRequest(userId: string, courseId: string): Promise<void> {
+    // 1️⃣ Verify enrollment
+    const enrollment = await this.userRepository.findUserCourse(userId, courseId);
+    if (!enrollment) throw new Error("User not enrolled in this course");
 
+    // 2️⃣ Get course details
+    const course = await this.userRepository.getCourse(courseId);
+    if (!course) throw new Error("Course not found");
+
+    // 3️⃣ Refund only if paid
+    if (course.price && course.price > 0) {
+      await this.userRepository.addTransaction(userId, {
+        type: "credit",
+        amount: course.price,
+        courseId,
+        description: `Refund for canceled course: ${course.title}`,
+      });
+    }
+
+    // 4️⃣ Remove course from user's enrolled list
+    await this.userRepository.removeUserCourse(userId, courseId);
+
+    // 5️⃣ Decrease total enrolled count
+    await this.userRepository.decreaseCourseEnrollment(courseId);
+  }
 
 }

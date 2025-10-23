@@ -14,7 +14,7 @@ export const getUserProfile = async()=>{
 
 export const getUserMyCourses = async()=>{
     try {
-        const res = await api.get("/user/myCourses");
+        const res = await api.get("/user/myCourses/1");
         return res
     } catch (error) {
         console.log(error);

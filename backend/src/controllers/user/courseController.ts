@@ -6,6 +6,7 @@ import { InstructorRepository } from "../../repositories/instructorRepository.js
 import { AdminRepository } from "../../repositories/adminRepositories.js";
 import instructor from "../../routes/instructorRoutes.js";
 import { debounceCall } from "../../utils/debounce.js";
+import { generateSignedUrl } from "../../utils/getSignedUrl.js";
 
 export class UserCourseController {
     private _courseService: UserCourseService;
@@ -61,7 +62,7 @@ export class UserCourseController {
                 limit = 10,
                 search
             } = req.query;
-            // console.log("search ", search);
+            // console.log("search ", search); 
 
 
             const query: any = {};
@@ -109,6 +110,8 @@ export class UserCourseController {
                 totalPages: Math.ceil(totalCount / Number(limit)),
                 totalCount,
             });
+
+
         } catch (error) {
             // console.log("Error in getAllCourses:", error);
             next(error)
@@ -136,6 +139,8 @@ export class UserCourseController {
 
         }
     }
+
+
 
     // buyCourse = async (req: AuthRequest, res: Response): Promise<void> => {
     //     try {
@@ -225,6 +230,7 @@ export class UserCourseController {
     myCourses = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             const id = req.user?.id!
+            console.log('courses mine');
 
             const page = parseInt(req.params.page as string) || 1
             console.log(id, page);
@@ -232,8 +238,7 @@ export class UserCourseController {
 
             const result = await this._courseService.myCoursesRequest(id, page)
             console.log('my courses result ', result);
-
-            if(!result) return
+            if (!result) return
 
             const { populatedCourses, result: paginationData } = result;
 
@@ -248,28 +253,43 @@ export class UserCourseController {
         } catch (error) {
             // console.log(error);
             next(error)
-
         }
     }
+
 
     viewMyCourse = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             const id = req.user?.id!
             const myCourseId = req.params.id!
-            console.log('viewMyCourse', myCourseId, id);
+            console.log('viewMyCourse', id , myCourseId);
 
             const result = await this._courseService.viewMyCourseRequest(id, myCourseId)
-            // console.log('mycourses view', result);
+            console.log('mycourses view', result);
 
-
-            res.json({ success: true, course: result, instructor: result?.instructor, quiz: result?.quizExists })
+            res.json({ success: true, course: result, instructor: result?.instructor, quiz: result?.quizExists , createdAt : result?.enrolledAt })
         } catch (error) {
             // console.log(error);
             next(error)
         }
     }
 
-    // controllers/courseController.ts
+
+
+
+    refreshVideoUrl = async (req: AuthRequest, res: Response) => {
+        try {
+            const { key } = req.query
+            if (!key) {
+                return res.status(400).json({ success: false, message: "Missing key" });
+            }
+
+            const signedUrl = await generateSignedUrl(key as string);
+            res.json({ success: true, url: signedUrl });
+        } catch (error) {
+            console.error("Error refreshing video URL:", error);
+            res.status(500).json({ success: false, message: "Error generating URL" });
+        }
+    };
 
 
 
@@ -277,22 +297,24 @@ export class UserCourseController {
         try {
             const userId = req.user?.id as string;
             const { courseId, moduleTitle } = req.body;
-            console.log('progress', courseId, moduleTitle);
+            console.log('progress',req.body, courseId);
 
             if (!userId || !courseId || !moduleTitle) {
                 res.status(400).json({ success: false, message: "Missing required fields" });
                 return;
             }
 
+
             const result = await this._courseService.updateProgress(userId, courseId, moduleTitle);
+            console.log('progress updated ', result);
 
             res.json({ success: true, progress: result });
         } catch (error) {
-            // console.error("Error updating progress:", error);
             next(error)
             res.status(500).json({ success: false, message: "Internal server error" });
         }
     };
+
 
 
     getInstructors = async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -398,5 +420,20 @@ export class UserCourseController {
     }
 
 
+
+    cancelCourse = async (req: AuthRequest, res: Response) => {
+        try {
+            const userId = req.user?.id
+            const courseId = req.params.id
+
+            const result = await this._courseService.cancelCourseRequest(userId as string, courseId as string)
+
+            
+            res.json({ success: true })
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
 
 }

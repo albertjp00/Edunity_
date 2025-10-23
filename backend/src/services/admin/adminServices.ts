@@ -1,7 +1,7 @@
 import { IInstructor } from "../../models/instructor.js";
 import { IUser } from "../../models/user.js";
 import { IAdminRepository } from "../../repositories/adminRepositories.js";
-import { IUserRepository } from "../../repositories/userRepository.js";
+import { UserRepository } from "../../repositories/userRepository.js";
 import { kycRejectMail } from "../../utils/sendMail.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -17,7 +17,7 @@ const secret: string = process.env.SECRET_KEY || '';
 
 
 export class AdminService {
-    constructor(private adminRepository: IAdminRepository, private userRepository: IUserRepository) { }
+    constructor(private adminRepository: IAdminRepository, private userRepository: UserRepository) { }
 
     loginRequest = async (email: string, password: string): Promise<adminLoginResult | null> => {
         try {
@@ -41,9 +41,9 @@ export class AdminService {
         }
     }
 
-    getUsers = async (search:string , page : number): Promise<PaginatedUsers | null> => {
+    getUsers = async (search: string, page: number): Promise<PaginatedUsers | null> => {
         try {
-            const result = await this.adminRepository.findUsers(search , page)
+            const result = await this.adminRepository.findUsers(search, page)
             return result
         } catch (error) {
             console.log(error);
@@ -77,9 +77,9 @@ export class AdminService {
         }
     }
 
-    getInstructors = async (page:string , search : string): Promise<PaginatedInstructors | null> => {
+    getInstructors = async (page: string, search: string): Promise<PaginatedInstructors | null> => {
         try {
-            const result = await this.adminRepository.findInstructors(page , search)
+            const result = await this.adminRepository.findInstructors(page, search)
             return result
         } catch (error) {
             console.log(error);
@@ -120,5 +120,66 @@ export class AdminService {
 
         }
     }
+
+
+    getStats = async () => {
+        try {
+            const totalUsers = await this.adminRepository.getTotalUsers()
+            const totalInstructors = await this.adminRepository.getTotalInstructors()
+            const totalCourses = await this.adminRepository.getCourses()
+            const totalEnrolled = await this.adminRepository.getTotalEnrolled()
+
+            return  { totalUsers, totalInstructors, totalCourses, totalEnrolled }
+
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+
+    getUserOverview = async () => {
+        try {
+            
+            const oneYearAgo = new Date();
+            oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+            
+            const usersByMonth = await this.adminRepository.getUserOverview(oneYearAgo);
+
+            
+            const monthNames = [
+                "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+            ];
+
+            // Step 3: Create an array for all 12 months (default count = 0)
+            const now = new Date();
+            const months: { name: string; count: number }[] = [];
+
+            for (let i = 11; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const year = d.getFullYear();
+                const month = d.getMonth() + 1;
+                const name = `${monthNames[month - 1]} ${year}`;
+                months.push({ name, count: 0 });
+            }
+
+            // Step 4: Fill counts from Mongo data
+            usersByMonth.forEach((item: any) => {
+                const [year, month] = item._id.split("-");
+                const monthName = `${monthNames[parseInt(month) - 1]} ${year}`;
+                const found = months.find((m) => m.name === monthName);
+                if (found) found.count = item.count;
+            });
+
+            return months;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    };
+
+
 
 }

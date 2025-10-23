@@ -27,6 +27,7 @@ export interface IMyCourse extends Document {
   quizScore : number
   amountPaid:number
   paymentStatus:string
+  cancelCourse : boolean
 }
 
 
@@ -56,6 +57,10 @@ const myCourseSchema: Schema<IMyCourse> = new Schema({
     type: String,
     enum: ["pending", "completed", "failed"],
     default: "completed",
+  },
+  cancelCourse:{
+    type:Boolean,
+    default:true
   }
 });
 

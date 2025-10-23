@@ -72,6 +72,7 @@ import InstructorEvent from './instructor/pages/events/joinEvent'
 import UserEvent from './user/pages/event/joinEvent'
 import EventDetails from './instructor/pages/events/eventDetails'
 import CoursePurchaseDetails from './instructor/pages/course/purchaseDetails'
+import Wallet from './user/components/profile/wallet'
 // import PurchasesAdmin from './admin/pages/purchases/purchasesAdmin'
 
 function App() {
@@ -96,7 +97,7 @@ function App() {
             <Route path='/user/profile' element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
             <Route path='/user/editProfile' element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
             <Route path='/user/changePassword' element={<ProtectedRoute><UserPasswordChange /></ProtectedRoute>} />
-
+            <Route path='/user/wallet' element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
 
             {/* <Route path='/user/purchaseHistory' element={<PurchaseHistory />} /> */}
 
@@ -111,6 +112,7 @@ function App() {
 
             <Route path='/user/eventDetails/:id' element={<ProtectedRoute><UserEventDetails /></ProtectedRoute>} />
 
+            <Route path='/user/chat' element={<ProtectedRoute><UserChat /></ProtectedRoute>} />
             <Route path="/user/chat/:instructorId" element={<ProtectedRoute><UserChat /></ProtectedRoute>} />
 
             <Route path='/user/favourites' element={<ProtectedRoute><Favourites /></ProtectedRoute>} />
@@ -119,7 +121,7 @@ function App() {
 
             <Route path='/user/joinEvent/:eventId' element={<ProtectedRoute><UserEvent /></ProtectedRoute>} />
 
-
+            
 
 
             {/* Instructor */}

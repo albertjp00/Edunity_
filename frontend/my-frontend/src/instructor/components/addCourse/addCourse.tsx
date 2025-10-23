@@ -68,21 +68,34 @@ const AddCourse: React.FC = () => {
     });
   };
 
-  const validateForm = () => {
-    if (!form.title.trim() || !form.description.trim() || !form.price) {
-      toast.error("Please fill all course details.");
+const validateForm = () => {
+  if (!form.title.trim() || !form.description.trim() || !form.price) {
+    toast.error("Please fill all course details.");
+    return false;
+  }
+
+  if (!form.modules || form.modules.length === 0) {
+    toast.error("Please add at least one module.");
+    return false;
+  }
+
+  for (let i = 0; i < form.modules.length; i++) {
+    const module = form.modules[i];
+    if (!module.title.trim() || !module.video) {
+      toast.error(`Module ${i + 1} must have a title and video file.`);
       return false;
     }
+  }
 
-    for (let i = 0; i < form.modules.length; i++) {
-      const module = form.modules[i];
-      if (!module.title.trim() || !module.video) {
-        toast.error(`Module ${i + 1} must have a title and video file.`);
-        return false;
-      }
-    }
-    return true;
-  };
+  // Trim whitespace before submission
+  form.modules = form.modules.map((m) => ({
+    ...m,
+    title: m.title.trim(),
+  }));
+
+  return true;
+};
+
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();

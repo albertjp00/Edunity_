@@ -2,18 +2,19 @@ import { Response, Request } from "express";
 import { AdminRepository, IAdminRepository } from "../../repositories/adminRepositories.js";
 import { AdminService } from "../../services/admin/adminServices.js";
 import { IKyc } from "../../models/kyc.js";
-import {  UserRepository } from "../../repositories/userRepository.js";
+import { UserRepository } from "../../repositories/userRepository.js";
 import { AdminAuthRequest } from "../../middleware/authMiddleware.js";
 import { IUserRepository } from "../../interfaces/userInterfaces.js";
+import logger from "../../utils/logger.js";
 
 export class AdminController {
     private _adminService: AdminService
 
-    constructor( 
-        repo :IAdminRepository,
-        uRepo:IUserRepository
-    ){
-        this._adminService =new AdminService(repo, uRepo)
+    constructor(
+        repo: IAdminRepository,
+        uRepo: IUserRepository
+    ) {
+        this._adminService = new AdminService(repo, uRepo)
 
     }
 
@@ -35,21 +36,21 @@ export class AdminController {
         }
     }
 
-getUsers = async (req: Request, res: Response) => {
-  try {
-    const { search, page } = req.query;
-    let limit = 4
+    getUsers = async (req: Request, res: Response) => {
+        try {
+            const { search, page } = req.query;
+            let limit = 4
 
-    const data = await this._adminService.getUsers(
-      String(search),
-      Number(page),
-    );
+            const data = await this._adminService.getUsers(
+                String(search),
+                Number(page),
+            );
 
-    res.status(200).json(data);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching users", error });
-  }
-};
+            res.status(200).json(data);
+        } catch (error) {
+            res.status(500).json({ message: "Error fetching users", error });
+        }
+    };
 
 
     blockUnblock = async (req: Request, res: Response) => {
@@ -57,7 +58,7 @@ getUsers = async (req: Request, res: Response) => {
             const id = req.params.id!
             console.log(id);
             console.log('block / unblock');
-            
+
 
             const result = await this._adminService.blockUnblockUser(id)
             res.json({ success: true })
@@ -83,12 +84,12 @@ getUsers = async (req: Request, res: Response) => {
     getInstructors = async (req: Request, res: Response) => {
         try {
             console.log('admin instrusss', req.query);
-            const {page , search } = req.query
+            const { page, search } = req.query
 
-            const data = await this._adminService.getInstructors(page as string , search as string)
+            const data = await this._adminService.getInstructors(page as string, search as string)
             // console.log(data);
-            
-            res.json({ success: true, data})
+
+            res.json({ success: true, data })
         } catch (error) {
             console.log(error);
         }
@@ -134,5 +135,44 @@ getUsers = async (req: Request, res: Response) => {
 
         }
     }
+
+
+
+    dashboardStats = async (req: AdminAuthRequest, res: Response) => {
+        try {
+
+            const result = await this._adminService.getStats()
+            console.log(result);
+
+
+            res.json({ success: true, stats: result })
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+
+
+    getUserOverview = async (req: Request, res: Response) => {
+        try {
+            const result = await this._adminService.getUserOverview();
+            console.log('overview',result);
+
+
+            res.status(200).json({
+                success: true,
+                data: result,
+            });
+        } catch (error) {
+            console.error("Error fetching user overview:", error);
+            res.status(500).json({
+                success: false,
+                message: "Failed to fetch user overview chart data",
+            });
+        }
+    };
+
+
 
 }

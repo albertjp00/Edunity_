@@ -6,6 +6,7 @@ import { IMessage } from "../models/message.js";
 import { IMyCourse } from "../models/myCourses.js";
 import { IMyEvent } from "../models/myEvents.js";
 import { IUser } from "../models/user.js";
+import { IWallet } from "../models/wallet.js";
 import { ISkills } from "../repositories/instructorRepository.js";
 import { UserRepository } from "../repositories/userRepository.js";
 
@@ -21,6 +22,8 @@ export interface IUserRepository {
   updateProfile(id: string, data: Partial<IUser>): Promise<IUser | null>;
 
   changePassword(id: string, password: string): Promise<IUser | null>;
+
+  getWallet(userId: string):Promise<IWallet | null>
 
   getCourse(id: string): Promise<ICourse | null>
 
@@ -99,4 +102,12 @@ export interface IMyCourses {
       totalPages : number;
       currentPage : number; 
       
+}
+
+
+export interface WalletTransaction {
+  type: "credit" | "debit";
+  amount: number;
+  courseId?: string;
+  description?: string;
 }

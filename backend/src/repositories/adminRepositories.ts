@@ -1,4 +1,4 @@
-import { PaginatedInstructors, PaginatedUsers, PurchaseResult } from "../interfaces/adminInterfaces.js";
+import { ICount, IUserOverview, PaginatedInstructors, PaginatedUsers, PurchaseResult } from "../interfaces/adminInterfaces.js";
 import { CourseModel, ICourse } from "../models/course.js";
 import { FavouritesModel, IFavourite } from "../models/favourites.js";
 import { IInstructor, InstructorModel } from "../models/instructor.js";
@@ -42,6 +42,13 @@ export interface IAdminRepository {
 
     getPurchases(search: string, page: number): Promise<PurchaseResult | null>
 
+    getTotalUsers(): Promise<number | null>
+    getTotalInstructors(): Promise<number | null>
+    getCourses(): Promise<number | null>
+    getTotalEnrolled(): Promise<number | null>
+    getUserOverview(oneYearAgo:Date): Promise<IUserOverview[]>
+
+
 }
 
 export class AdminRepository implements IAdminRepository {
@@ -49,7 +56,7 @@ export class AdminRepository implements IAdminRepository {
     async findByEmail(email: string, password: string): Promise<IUser | null> {
         const user = await UserModel.findOne({ email, password })
         console.log(user);
-        
+
         return user
     }
 
@@ -174,71 +181,139 @@ export class AdminRepository implements IAdminRepository {
         };
     }
 
-async getPurchases(search: string = "", page: number = 1): Promise<PurchaseResult | null> {
-  try {
-    const limit = 4;
-    const skip = (page - 1) * limit;
+    async getPurchases(search: string = "", page: number = 1): Promise<PurchaseResult | null> {
+        try {
+            const limit = 4;
+            const skip = (page - 1) * limit;
 
-    // 1. Build search filter for DB query
-    const searchFilter: any = {};
-    if (search) {
-      // Search needs to happen on user or course → so we need lookup
-      // Simpler: fetch all purchases, then filter by joining user/course
-      // ✅ Better approach: pre-populate user & course
+            // 1. Build search filter for DB query
+            const searchFilter: any = {};
+            if (search) {
+                // Search needs to happen on user or course → so we need lookup
+                // Simpler: fetch all purchases, then filter by joining user/course
+                // ✅ Better approach: pre-populate user & course
+            }
+
+            // 2. Fetch ALL purchases (no skip/limit yet) to apply search properly
+            const purchases = await MyCourseModel.find().lean();
+
+            // 3. Map purchases with user & course info
+            const mapped = await Promise.all(
+                purchases.map(async (purchase) => {
+                    const user = await UserModel.findById(purchase.userId).select("name email");
+                    const course = await CourseModel.findById(purchase.courseId).select("title price");
+
+                    return {
+                        _id: purchase._id,
+                        userId: purchase.userId,
+                        userName: user?.name || "Unknown",
+                        userEmail: user?.email || "Unknown",
+                        courseId: purchase.courseId,
+                        courseTitle: course?.title || "Unknown",
+                        coursePrice: course?.price || 0,
+                        amountPaid: (purchase as any).amountPaid ?? course?.price,
+                        paymentStatus: (purchase as any).paymentStatus ?? "completed",
+                        createdAt: purchase.createdAt,
+                    };
+                })
+            );
+
+            // 4. Apply search filter
+            const filtered = mapped.filter((p) => {
+                if (!search) return true;
+                return (
+                    p.userName.toLowerCase().includes(search.toLowerCase()) ||
+                    p.userEmail.toLowerCase().includes(search.toLowerCase()) ||
+                    p.courseTitle.toLowerCase().includes(search.toLowerCase())
+                );
+            });
+
+            // 5. Apply pagination AFTER filtering
+            const totalPurchases = filtered.length;
+            const totalPages = Math.ceil(totalPurchases / limit);
+
+            const paginated = filtered.slice(skip, skip + limit);
+
+            return {
+                purchases: paginated,
+                totalPurchases,
+                totalPages,
+                currentPage: page,
+            };
+        } catch (error) {
+            console.error("Error fetching purchases:", error);
+            return null;
+        }
     }
 
-    // 2. Fetch ALL purchases (no skip/limit yet) to apply search properly
-    const purchases = await MyCourseModel.find().lean();
 
-    // 3. Map purchases with user & course info
-    const mapped = await Promise.all(
-      purchases.map(async (purchase) => {
-        const user = await UserModel.findById(purchase.userId).select("name email");
-        const course = await CourseModel.findById(purchase.courseId).select("title price");
- 
-        return {
-          _id: purchase._id,
-          userId: purchase.userId,
-          userName: user?.name || "Unknown",
-          userEmail: user?.email || "Unknown",
-          courseId: purchase.courseId,
-          courseTitle: course?.title || "Unknown",
-          coursePrice: course?.price || 0,
-          amountPaid: (purchase as any).amountPaid ?? course?.price,
-          paymentStatus: (purchase as any).paymentStatus ?? "completed",
-          createdAt: purchase.createdAt,
-        };
-      })
-    );
 
-    // 4. Apply search filter
-    const filtered = mapped.filter((p) => {
-      if (!search) return true;
-      return (
-        p.userName.toLowerCase().includes(search.toLowerCase()) ||
-        p.userEmail.toLowerCase().includes(search.toLowerCase()) ||
-        p.courseTitle.toLowerCase().includes(search.toLowerCase())
-      );
-    });
 
-    // 5. Apply pagination AFTER filtering
-    const totalPurchases = filtered.length;
-    const totalPages = Math.ceil(totalPurchases / limit);
+    async getTotalUsers(): Promise<number | null> {
+        try {
+            const users = await UserModel.countDocuments()
+            return users
+        } catch (error) {
+            console.log(error);
+            return null
+        }
+    }
 
-    const paginated = filtered.slice(skip, skip + limit);
 
-    return {
-      purchases: paginated,
-      totalPurchases,
-      totalPages,
-      currentPage: page,
-    };
-  } catch (error) {
-    console.error("Error fetching purchases:", error);
-    return null;
-  }
-}
+    async getTotalInstructors(): Promise<number | null> {
+        try {
+            const instructors = await UserModel.countDocuments()
+            return instructors
+        } catch (error) {
+            console.log(error);
+            return null
+        }
+    }
 
+
+    async getCourses(): Promise<number | null> {
+        try {
+            const courses = await CourseModel.countDocuments()
+            return courses
+        } catch (error) {
+            console.log(error);
+            return null
+        }
+    }
+
+
+    async getTotalEnrolled(): Promise<number | null> {
+        try {
+            const enrolled = await MyCourseModel.countDocuments()
+            return enrolled
+        } catch (error) {
+            console.log(error);
+            return null
+        }
+    }
+
+
+
+    async getUserOverview(oneYearAgo: Date): Promise<IUserOverview[]> {
+        try {
+            const usersByMonth = await UserModel.aggregate([
+                { $match: { createdAt: { $gte: oneYearAgo } } },
+                {
+                    $group: {
+                        _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+                        count: { $sum: 1 },
+                    },
+                },
+                { $sort: { _id: 1 } },
+            ]);
+            console.log(usersByMonth);
+            
+            return usersByMonth;
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
+    }
 
 
 
