@@ -5,9 +5,13 @@ import api from "../../../api/userApi";
 
 
 import attachmentImage from '../../../assets/documentImage.jpg'
-import { connectSocket } from "../../../api/socketApi";
+import { io } from "socket.io-client";
+// import { connectSocket } from "../../../api/socketApi";
 
-const socket = connectSocket()
+// const socket = connectSocket()
+// if (!socket) throw new Error("Socket not connected")
+
+const socket = io(import.meta.env.VITE_API_URL);
 
 // ---------- Message Interface ----------
 interface Message {
@@ -124,7 +128,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     if (!receiverId || (!newMsg && !file)) return;
 
     const formData = new FormData();
-    formData.append("receiverId", receiverId);
+    formData.append("receiverId", receiverId); 
     formData.append("senderId", userId);
     formData.append("text", newMsg.trim() || "");
     if (file) formData.append("attachment", file);

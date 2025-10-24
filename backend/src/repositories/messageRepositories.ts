@@ -116,6 +116,8 @@ export class MessageRepository implements IMessageRepository {
 
   async createMessage(userId: string, instructorId: string, text?: string, file?: string | null): Promise<IMessage> {
     const message = new MessageModel({ senderId: userId, receiverId: instructorId, text, attachment: file });
+    // console.log("messsages repo",message);
+    
     return message.save();
   }
 
