@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import { MessageController } from "./controllers/messaage/messageController.js";
-import { socketAuthMiddleware } from "./middleware/authMiddleware.js";
+// import { socketAuthMiddleware } from "./middleware/authMiddleware.js";
+
 
 interface Participant {
   socketId: string;
@@ -15,7 +16,7 @@ const eventParticipants: Record<string, Participant[]> = {};
 
 export const setupSocket = (io: Server) => {
  
-  io.use(socketAuthMiddleware)
+  // io.use(socketAuthMiddleware)
 
 
 
@@ -130,7 +131,7 @@ export const setupSocket = (io: Server) => {
 
       console.log(`User ${userId} left event ${eventId}`);
     });
-
+    
     // ----------------- Disconnect -----------------
     socket.on("disconnect", () => {
       console.log("Client disconnected:", socket.id);

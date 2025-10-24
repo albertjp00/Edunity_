@@ -15,6 +15,7 @@ const secret = process.env.SECRET_KEY as string;
 
 
 
+
 export interface JwtUserPayload extends JwtPayload {
   id: string;
   email: string;
@@ -198,44 +199,44 @@ interface SocketWithAuth extends Socket {
   };
 }
 
-export const socketAuthMiddleware = async (
-  socket: SocketWithAuth,
-  next: (err?: Error) => void
-) => {
+// export const socketAuthMiddleware = async (
+//   socket: SocketWithAuth,
+//   next: (err?: Error) => void
+// ) => {
   
 
-  try {
-    // Token can come from either handshake.auth or authorization header
-    const authHeader =
-      socket.handshake.auth?.token ||
-      socket.handshake.headers?.authorization?.split(" ")[1];
+//   try {
+//     // Token can come from either handshake.auth or authorization header
+//     const authHeader =
+//       socket.handshake.auth?.token ||
+//       socket.handshake.headers?.authorization?.split(" ")[1];
 
-    if (!authHeader) {
-      return next(new Error("Unauthorized: No token provided"));
-    }
+//     if (!authHeader) {
+//       return next(new Error("Unauthorized: No token provided"));
+//     }
 
-    const token = authHeader.startsWith("Bearer ")
-      ? authHeader.split(" ")[1]
-      : authHeader;
+//     const token = authHeader.startsWith("Bearer ")
+//       ? authHeader.split(" ")[1]
+//       : authHeader;
 
-    // Verify token
-    const decoded = jwt.verify(token, secret) as JwtPayload;
+//     // Verify token
+//     const decoded = jwt.verify(token, secret) as JwtPayload;
 
   
-    const verifiedUser = await verifySocketToken(token);
-    console.log("socketAuthMiddleware ",verifiedUser.role);
-    if (!verifiedUser) {
-      return next(new Error("Unauthorized: User not found"));
-    }
+//     const verifiedUser = await verifySocketToken(token);
+//     console.log("socketAuthMiddleware ",verifiedUser.role);
+//     if (!verifiedUser) {
+//       return next(new Error("Unauthorized: User not found"));
+//     }
 
-    // Attach verified user/instructor data to socket
-    socket.data.user = decoded;
+//     // Attach verified user/instructor data to socket
+//     socket.data.user = decoded;
 
-    next();
-  } catch (error: any) {
-    console.error("❌ Socket authentication failed:", error.message);
-    next(new Error("Unauthorized: Invalid or expired token"));
-  }
-};
+//     next();
+//   } catch (error: any) {
+//     console.error("❌ Socket authentication failed:", error.message);
+//     next(new Error("Unauthorized: Invalid or expired token"));
+//   }
+// };
 
 

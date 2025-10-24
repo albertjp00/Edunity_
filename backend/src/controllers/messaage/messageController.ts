@@ -36,6 +36,7 @@ getInstructortoMessage = async (req: AuthRequest, res: Response) => {
     if (!instructor) {
       return res.status(404).json({ success: false, message: "Instructor not found" });
     }
+
     res.json({
       success: true,
       instructor: {
@@ -61,17 +62,16 @@ getInstructortoMessage = async (req: AuthRequest, res: Response) => {
 
     } catch (error) {
       console.log(error);
-
     }
   }
 
+  
 
   getUnreadMessages = async (req:AuthRequest , res : Response) =>{
     try {
       const userId = req.user?.id!
       const {instructorId} = req.params!
       console.log('count  -----------------------');
-
       
        const result = await this.messageService.getUnreadMessages(userId , instructorId as string)
        console.log("count -------------------",result)
@@ -87,7 +87,8 @@ getInstructortoMessage = async (req: AuthRequest, res: Response) => {
   try {
     const { receiverId, text='' } = req.body;
     const userId = req.user?.id as string;
-
+    // console.log("sendMessage",req.body);
+    
     const file = req.file ? req.file.filename : null;
     console.log("file",file);
     
@@ -157,7 +158,7 @@ getInstructortoMessage = async (req: AuthRequest, res: Response) => {
    
       console.log('get messaged users ', instructorId);
 
-      const result = await this.messageService.getStudents(instructorId)
+      const result = await this.messageService.getStudents(instructorId as string)
 
       console.log(result);
 

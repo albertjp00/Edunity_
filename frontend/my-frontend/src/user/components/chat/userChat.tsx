@@ -48,7 +48,6 @@ const UserChat = () => {
           lastMessage: { text?: string; attachment?: string; timeStamp: Date; createdAt: string };
         }) => {
           let displayMessage = "";
-
           if (item.lastMessage?.text) {
             displayMessage = item.lastMessage.text;
           } else if (item.lastMessage?.attachment) {
@@ -69,18 +68,57 @@ const UserChat = () => {
       );
 
       const sorted = sortInstructors(normalized);
+      console.log(sorted);
+      
       setInstructors(sorted);
 
-      //auto-selected instructor with chatWindow opened
+      //auto-selecting instructor with chatWindow opened
       if (instructorId) {
-        const found = sorted.find((i) => i.id === instructorId);
-        if (found) setSelected(found);
+      const found = sorted.find((i) => i.id === instructorId);
+      if (found) {
+        setSelected(found);
+      } else {
+        //to select the new Instructor to message
+        getInstructorToMessage(instructorId);
       }
+    }
 
     } catch (error) {
       console.log(error);
     }
   };
+
+const getInstructorToMessage = async (id: string) => {
+  try {
+    const response = await api.get(`/user/instructor/${id}`);
+    const instructor = response.data.instructor;
+
+    if (instructor) {
+      const newInstructor = {
+        id: instructor.id,
+        name: instructor.name,
+        avatar: instructor.avatar || profileImage,
+        lastMessage: "No messages yet",
+        time: null,
+        unreadCount: 0,
+      };
+
+      setInstructors((prev) => [...prev, newInstructor]);
+
+      setSelected(newInstructor);
+    }
+  } catch (error) {
+    console.error("Failed to fetch instructor to message:", error);
+  }
+};
+
+
+
+
+
+  
+
+
 
   const handleMessageSent = (receiverId: string, messageText?: string, attachment?: string) => {
     setInstructors((prev) => {
@@ -108,6 +146,9 @@ const UserChat = () => {
       return sortInstructors(updated);
     });
   };
+
+
+  
 
 
   const handleUnreadIncrease = (senderId: string) => {
@@ -143,7 +184,7 @@ const UserChat = () => {
   }, [selected, userId]);
 
 
-console.log("🔗 Socket ID:", socket.id);
+// console.log("🔗 Socket ID:", socket.id);
 
 
 
