@@ -117,7 +117,7 @@ const ViewMyCourse: React.FC = () => {
     try {
       const res = await api.delete(`/user/cancelCourse/${courseId}`);
       if (res.data.success) {
-        toast.success("Course cancelled successfully!");
+        toast.success("Course cancelled successfully!"); 
         navigate("/user/myCourses");
       }
     } catch (err) {

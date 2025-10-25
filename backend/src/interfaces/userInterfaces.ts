@@ -61,8 +61,8 @@ export interface IUserRepository {
 
   addParticipant(eventId: string,userId: string): Promise<IEvent | null>
 
-
 }
+
 
 
 

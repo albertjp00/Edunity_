@@ -1,11 +1,11 @@
 import { Response, Request } from "express";
-import { AdminRepository, IAdminRepository } from "../../repositories/adminRepositories.js";
-import { AdminService } from "../../services/admin/adminServices.js";
-import { IKyc } from "../../models/kyc.js";
-import { UserRepository } from "../../repositories/userRepository.js";
-import { AdminAuthRequest } from "../../middleware/authMiddleware.js";
-import { IUserRepository } from "../../interfaces/userInterfaces.js";
-import logger from "../../utils/logger.js";
+import { AdminRepository, IAdminRepository } from "../../repositories/adminRepositories";
+import { AdminService } from "../../services/admin/adminServices";
+import { IKyc } from "../../models/kyc";
+import { UserRepository } from "../../repositories/userRepository";
+import { AdminAuthRequest } from "../../middleware/authMiddleware";
+import { IUserRepository } from "../../interfaces/userInterfaces";
+import logger from "../../utils/logger";
 
 export class AdminController {
     private _adminService: AdminService

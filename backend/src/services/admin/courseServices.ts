@@ -1,14 +1,15 @@
-import { IUserRepository } from "../../interfaces/userInterfaces.js";
-import { ICourse } from "../../models/course.js";
-import { IInstructor } from "../../models/instructor.js";
-import { IAdminRepository } from "../../repositories/adminRepositories.js";
-import { IInsRepository, InstructorRepository } from "../../repositories/instructorRepository.js";
-import {  UserRepository } from "../../repositories/userRepository.js";
+import { IUserRepository } from "../../interfaces/userInterfaces";
+import { ICourse } from "../../models/course";
+import { IInstructor } from "../../models/instructor";
+import { IAdminRepository } from "../../repositories/adminRepositories";
+import { IInsRepository, InstructorRepository } from "../../repositories/instructorRepository";
+import {  UserRepository } from "../../repositories/userRepository";
 
 
 
 export class AdminCourseService {
-    constructor(private adminRepository: IAdminRepository,
+    constructor(
+        private adminRepository: IAdminRepository,
         private instructorRepository: IInsRepository,
         private userRepository: IUserRepository
     ) { }
