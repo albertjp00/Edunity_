@@ -1,8 +1,8 @@
 import { Response , Request } from "express";
-import { AdminRepository, IAdminRepository } from "../../repositories/adminRepositories.js";
+import { AdminRepository, IAdminRepository } from "../../repositories/adminRepositories";
 import { IKyc } from "../../models/kyc.js";
-import { AdminInstructorService } from "../../services/admin/instructorServices.js";
-import { IInsRepository, InstructorRepository } from "../../repositories/instructorRepository.js";
+import { AdminInstructorService } from "../../services/admin/instructorServices";
+import { IInsRepository, InstructorRepository } from "../../repositories/instructorRepository";
 
 export class AdminInstructorController {
     private _instructorService: AdminInstructorService

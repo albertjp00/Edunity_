@@ -1,21 +1,20 @@
 import { Response, Request } from "express";
-import { AdminRepository, IAdminRepository } from "../../repositories/adminRepositories.js";
+import { AdminRepository, IAdminRepository } from "../../repositories/adminRepositories";
 import { IKyc } from "../../models/kyc.js";
-import { AdminInstructorService } from "../../services/admin/instructorServices.js";
-import { InstructorRepository } from "../../repositories/instructorRepository.js";
-import { AdminCourseService } from "../../services/admin/courseServices.js";
-import { ICourse } from "../../models/course.js";
-import { UserRepository } from "../../repositories/userRepository.js";
-import { AdminAuthRequest } from "../../middleware/authMiddleware.js";
-import { IUserRepository } from "../../interfaces/userInterfaces.js";
-import { IInsRepository } from "../../interfaces/instructorInterfaces.js";
+import { AdminInstructorService } from "../../services/admin/instructorServices";
+import { InstructorRepository } from "../../repositories/instructorRepository";
+import { AdminCourseService } from "../../services/admin/courseServices";
+import { ICourse } from "../../models/course";
+import { UserRepository } from "../../repositories/userRepository";
+import { AdminAuthRequest } from "../../middleware/authMiddleware";
+import { IUserRepository } from "../../interfaces/userInterfaces";
+import { IInsRepository } from "../../interfaces/instructorInterfaces";
 
 export class AdminCourseController {
     private _courseService: AdminCourseService
 
     //pass the dependencies from outside the class(DI)
     constructor(
-        
         repo: IAdminRepository,
         Irepo: IInsRepository,
         Urepo: IUserRepository
