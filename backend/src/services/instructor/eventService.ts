@@ -6,7 +6,7 @@ import { IInsRepository } from "../../repositories/instructorRepository.js";
 
 
 
-export class EventService {
+export class InstEventService {
     constructor(private InstructorRepository: IInsRepository) { }
 
     createEventRequest = async (id: string, data: any): Promise<IEvent | null> => {

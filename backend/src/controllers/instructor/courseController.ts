@@ -12,12 +12,14 @@ interface MulterFiles {
   [fieldname: string]: Express.Multer.File[];
 }
 
+
+
 export class InstCourseController {
   private _courseService: CourseService;
 
-  constructor() {
-    const repo = new InstructorRepository();
-    this._courseService = new CourseService(repo);
+  constructor(courseService : CourseService) {
+    // const repo = new InstructorRepository();
+    this._courseService = courseService
   }
 
   myCourses = async (req: InstAuthRequest, res: Response) => {

@@ -11,19 +11,18 @@ import { generateSignedUrl } from "../../utils/getSignedUrl.js";
 export class UserCourseController {
     private _courseService: UserCourseService;
 
-    constructor() {
+    constructor(courseService : UserCourseService) {
         // const repo = new UserRepository();
         // this.courseService = new UserCourseService(repo);
 
-        const userRepo = new UserRepository();
-        const instructorRepo = new InstructorRepository();
-        const adminRepo = new AdminRepository()
+        // const userRepo = new UserRepository();
+        // const instructorRepo = new InstructorRepository();
+        // const adminRepo = new AdminRepository()
 
-        this._courseService = new UserCourseService(userRepo, instructorRepo, adminRepo);
+        this._courseService = courseService
     }
 
-    // Explicitly type as Express RequestHandler
-    showCourses: RequestHandler = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    showCourses = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             console.log("get Courses user");
 

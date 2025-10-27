@@ -1,4 +1,4 @@
-import { InsAuthController } from "../controllers/instructor/authController.js"
+import { InstAuthController } from "../controllers/instructor/authController.js"
 import  express  from "express"
 import { InstCourseController } from "../controllers/instructor/courseController.js"
 import { instAuthMiddleware } from "../middleware/authMiddleware.js"
@@ -7,6 +7,13 @@ import multer from "multer"
 import { EventController } from "../controllers/instructor/eventController.js"
 import { MessageController } from "../controllers/messaage/messageController.js"
 import path from "path"
+import { MessageRepository } from "../repositories/messageRepositories.js"
+import { MessageService } from "../services/message/messageService.js"
+import { InstructorRepository } from "../repositories/instructorRepository.js"
+import { InstAuthService } from "../services/instructor/authService.js"
+import { CourseService } from "../services/instructor/courseServices.js"
+import { InstructorProfileService } from "../services/instructor/profileServices.js"
+import { InstEventService } from "../services/instructor/eventService.js"
 
 
 
@@ -30,11 +37,30 @@ const storage = multer.diskStorage({
 export const upload = multer({ storage });
 
 
-const authController =new InsAuthController
-const courseController = new InstCourseController
-const profileController = new InstProfileController
-const eventController = new EventController
-const messageController = new MessageController
+const instRepo =  new InstructorRepository() 
+
+
+const instService = new InstAuthService(instRepo)
+const authController =new InstAuthController(instService)
+
+
+const courseService = new CourseService(instRepo)
+const courseController = new InstCourseController(courseService)
+
+
+const profileService = new InstructorProfileService(instRepo)
+const profileController = new InstProfileController(profileService)
+
+
+
+const eventService = new InstEventService(instRepo)
+const eventController = new EventController(eventService)
+
+
+
+const messageRepo = new MessageRepository()
+const messageService = new MessageService(messageRepo)
+const messageController = new MessageController(messageService)
 
 const instructor = express.Router()
 

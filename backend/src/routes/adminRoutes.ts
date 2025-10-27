@@ -7,17 +7,16 @@ import { adminAuthMiddleware } from '../middleware/authMiddleware.js'
 import { AdminRepository } from '../repositories/adminRepositories.js'
 import { InstructorRepository } from '../repositories/instructorRepository.js'
 import { UserRepository } from '../repositories/userRepository.js'
+import { AdminService } from '../services/admin/adminServices.js'
 
 const admin = express.Router()
 
 
 // const dashboardController = new AdminController()
-const dashboardController = new AdminController(
-  new AdminRepository(),
-//   new InstructorRepository(),
-  new UserRepository()
-);
-
+const adminRepo = new AdminRepository()
+const userRepo = new UserRepository()
+const adminService = new AdminService(adminRepo , userRepo)
+const dashboardController = new AdminController(adminService)
 
 
 // const instructorController = new AdminInstructorController()

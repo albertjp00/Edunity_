@@ -22,14 +22,14 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || "");
 export class AuthController {
   private _authService: AuthService;
 
-  constructor() {
-    const repo = new UserRepository();
-    this._authService = new AuthService(repo);
+  constructor(authService : AuthService) {
+    // const repo = new UserRepository();
+    this._authService = authService
   }
 
 
 
-    
+
   login = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, password } = req.body;

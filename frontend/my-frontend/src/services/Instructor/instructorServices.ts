@@ -4,7 +4,7 @@ import instructorApi from "../../api/instructorApi"
 
 
 
-export const addEvent = async(formData :any )=>{
+export const addEvent = async(formData : FormData )=>{
     try {
         const res = await instructorApi.post('/instructor/event',{
         formData

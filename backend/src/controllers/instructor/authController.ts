@@ -7,13 +7,15 @@ import { Request, Response } from 'express';
 
 
 
-export class InsAuthController {
+export class InstAuthController {
   private _instAuthService: InstAuthService
 
-  constructor() {
-    const repo = new InstructorRepository();
-    this._instAuthService = new InstAuthService(repo)
+  
+  constructor(instAuthService : InstAuthService) {
+    // const repo = new InstructorRepository();
+    this._instAuthService = instAuthService
   }
+
 
   login = async (req: Request, res: Response): Promise<void> => {
     try {

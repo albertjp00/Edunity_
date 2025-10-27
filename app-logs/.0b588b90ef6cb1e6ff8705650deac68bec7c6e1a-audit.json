@@ -6,14 +6,14 @@
     "auditLog": "C:\\Edunity_\\app-logs\\.0b588b90ef6cb1e6ff8705650deac68bec7c6e1a-audit.json",
     "files": [
         {
-            "date": 1761282403313,
-            "name": "C:\\Edunity_\\app-logs\\error-2025-10-24.log",
-            "hash": "938272eafde8a4a220d8e9024c5a2989ac6c3294f50c39256db864b58efb1ac5"
-        },
-        {
             "date": 1761368920037,
             "name": "C:\\Edunity_\\app-logs\\error-2025-10-25.log",
             "hash": "627bb8f19d197da6528ac0974cba4f58f0ab057eb07a2740fdc3115978534a16"
+        },
+        {
+            "date": 1761457390606,
+            "name": "C:\\Edunity_\\app-logs\\error-2025-10-26.log",
+            "hash": "d27ce4f6f4f30f36bd5447f8a70e628fb308f9efa3f58642591c65f08269533f"
         }
     ],
     "hashType": "sha256"

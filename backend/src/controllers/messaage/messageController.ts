@@ -8,9 +8,11 @@ import logger from "../../utils/logger.js";
 export class MessageController {
   private messageService: MessageService;
 
-  constructor() {
-    const repo = new MessageRepository();
-    this.messageService = new MessageService(repo)
+  constructor(messageService : MessageService) {
+
+    // const repo = new MessageRepository(); 
+    this.messageService = messageService
+  
   }
 
   getInstructor = async (req:AuthRequest , res:Response) =>{

@@ -56,7 +56,7 @@ interface Iforgot {
 
 // Main Auth Service
 export class AuthService {
-    constructor(private userRepository: IUserRepository) { }
+    constructor(private userRepository: IUserRepository) { }    
 
 
 

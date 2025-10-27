@@ -33,7 +33,12 @@ export class UserEventService {
     private userRepository: UserRepository;
     private instructorRepository: InstructorRepository;
 
-    constructor(userRepository: UserRepository, instructorRepository: InstructorRepository) {
+    constructor(
+        userRepository: UserRepository, 
+        instructorRepository: InstructorRepository
+    ) {
+
+         
         this.userRepository = userRepository;
         this.instructorRepository = instructorRepository
     }
@@ -46,7 +51,6 @@ export class UserEventService {
         } catch (error) {
             console.log(error);
             return null
-
         }
     }
 

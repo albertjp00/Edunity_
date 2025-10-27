@@ -7,9 +7,9 @@ import { loadavg } from 'os';
 export class InstProfileController {
     private _profileService: InstructorProfileService;
 
-    constructor() {
-        const repo = new InstructorRepository();
-        this._profileService = new InstructorProfileService(repo);
+    constructor(instProfileService : InstructorProfileService) {
+        // const repo = new InstructorRepository();
+        this._profileService = instProfileService
     }
 
 

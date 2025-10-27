@@ -11,10 +11,9 @@ export class AdminController {
     private _adminService: AdminService
 
     constructor(
-        repo: IAdminRepository,
-        uRepo: IUserRepository
+        adminService : AdminService
     ) {
-        this._adminService = new AdminService(repo, uRepo)
+        this._adminService = adminService
 
     }
 
