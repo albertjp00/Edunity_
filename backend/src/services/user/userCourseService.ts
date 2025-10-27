@@ -32,7 +32,11 @@ export class UserCourseService {
   private instructorRepository: InstructorRepository;
   private adminRepository: AdminRepository;
 
-  constructor(userRepository: UserRepository, instructorRepository: InstructorRepository, adminRepository: AdminRepository) {
+  constructor(
+    userRepository: UserRepository, 
+    instructorRepository: InstructorRepository, 
+    adminRepository: AdminRepository) {
+      
     this.userRepository = userRepository;
     this.instructorRepository = instructorRepository;
     this.adminRepository = adminRepository

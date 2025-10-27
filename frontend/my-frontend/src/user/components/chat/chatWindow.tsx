@@ -6,6 +6,7 @@ import api from "../../../api/userApi";
 
 import attachmentImage from '../../../assets/documentImage.jpg'
 import { io } from "socket.io-client";
+import { getMessages } from "../../../services/user/userServices";
 // import { connectSocket } from "../../../api/socketApi";
 
 // const socket = connectSocket()
@@ -57,7 +58,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
     const fetchMessages = async () => {
       try {
-        const res = await api.get(`/user/messages/${userId}/${receiverId}`);
+        // const res = await api.get(`/user/messages/${userId}/${receiverId}`);
+        const res = await getMessages(userId , receiverId);
+        if(!res) return 
         if (res.data.success) {
           const sorted = res.data.messages.sort(
             (a: Message, b: Message) =>
@@ -65,10 +68,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           );
           setMessages(sorted);
 
-    
+
           socket.emit("messagesRead", { senderId: receiverId, receiverId: userId });
 
-    
+
           resetUnread(receiverId);
         }
       } catch (err) {
@@ -128,7 +131,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     if (!receiverId || (!newMsg && !file)) return;
 
     const formData = new FormData();
-    formData.append("receiverId", receiverId); 
+    formData.append("receiverId", receiverId);
     formData.append("senderId", userId);
     formData.append("text", newMsg.trim() || "");
     if (file) formData.append("attachment", file);

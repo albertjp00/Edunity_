@@ -1,18 +1,18 @@
 import { Response } from "express"
 import { InstAuthRequest } from "../../middleware/authMiddleware.js"
 import { InstructorRepository } from "../../repositories/instructorRepository.js"
-import { EventService } from "../../services/instructor/eventService.js"
+import {  InstEventService } from "../../services/instructor/eventService.js"
 import { Server } from "http"
 
 
 
 
 export class EventController {
-    private _eventService: EventService
+    private _eventService: InstEventService
 
-    constructor() {
-        const repo = new InstructorRepository()
-        this._eventService = new EventService(repo)
+    constructor(eventService : InstEventService) {
+        // const repo = new InstructorRepository()
+        this._eventService = eventService
     }
 
     createEvents = async (req: InstAuthRequest, res: Response) => {
@@ -22,7 +22,7 @@ export class EventController {
             console.log("event creation", data);
 
 
-            const result = await this._eventService.createEventRequest(id, data)
+            const result = await this._eventService.createEventRequest(id as string, data)
             res.json({ success: true })
         } catch (error) {
             console.log(error);
@@ -33,7 +33,7 @@ export class EventController {
     getMyEvents = async (req: InstAuthRequest, res: Response) => {
         try {
             const id = req.instructor?.id
-            const result = await this._eventService.getMyEventsRequest(id)
+            const result = await this._eventService.getMyEventsRequest(id as string)
             console.log(result)
 
             res.json({ success: true, events: result })

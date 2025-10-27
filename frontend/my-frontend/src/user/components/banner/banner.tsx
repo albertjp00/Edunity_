@@ -7,13 +7,10 @@ const Banner: React.FC = () => {
 
   return (
     <header className="hero">
-      {/* background image */}
       <div className="hero__bg" role="img" aria-label="Students learning together" />
 
-      {/* overlay */}
       <div className="hero__overlay" />
 
-      {/* content */}
       <div className="hero__content">
         <span className="hero__eyebrow">Start Learning Today</span>
         <h1 className="hero__title">

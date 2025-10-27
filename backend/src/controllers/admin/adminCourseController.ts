@@ -10,6 +10,9 @@ import { AdminAuthRequest } from "../../middleware/authMiddleware";
 import { IUserRepository } from "../../interfaces/userInterfaces";
 import { IInsRepository } from "../../interfaces/instructorInterfaces";
 
+
+
+
 export class AdminCourseController {
     private _courseService: AdminCourseService
 

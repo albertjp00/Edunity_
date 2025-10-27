@@ -7,9 +7,9 @@ import { HttpStatus } from '../../enums/httpStatus.enums.js';
 export class ProfileController {
     private _profileService: ProfileService;
 
-    constructor() {
-        const repo = new UserRepository();
-        this._profileService = new ProfileService(repo);
+    constructor(profileService : ProfileService) {
+        // const repo = new UserRepository(); 
+        this._profileService = profileService
     }
 
 

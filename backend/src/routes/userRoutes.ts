@@ -7,6 +7,16 @@ import path from "path";
 import { UserCourseController } from "../controllers/user/courseController.js";
 import { UserEventController } from "../controllers/user/eventController.js";
 import { MessageController } from "../controllers/messaage/messageController.js";
+import { UserRepository } from "../repositories/userRepository.js";
+import { AuthService } from "../services/user/authService.js";
+import { CourseRepository } from "../repositories/courserRepository.js";
+import { UserCourseService } from "../services/user/userCourseService.js";
+import { InstructorRepository } from "../repositories/instructorRepository.js";
+import { AdminRepository } from "../repositories/adminRepositories.js";
+import { ProfileService } from "../services/user/profileService.js";
+import { UserEventService } from "../services/user/eventService.js";
+import { MessageService } from "../services/message/messageService.js";
+import { MessageRepository } from "../repositories/messageRepositories.js";
 
 
 
@@ -25,11 +35,39 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 const router = express.Router();
-const authController = new AuthController();
-const profileController = new ProfileController();
-const courseController = new UserCourseController()
-const eventController = new UserEventController()
-const messageController = new MessageController()
+
+
+//auth routes
+const userRepository = new UserRepository()
+const authService = new AuthService(userRepository)
+const authController = new AuthController(authService)
+
+
+//course routes 
+const userRepo = new UserRepository()
+const instructorRepo = new InstructorRepository()
+const adminRepo = new AdminRepository()
+
+const courseService = new UserCourseService(userRepo , instructorRepo , adminRepo)
+const courseController = new UserCourseController(courseService)
+
+
+//profile routes
+const userRepos = new UserRepository
+const profileService = new ProfileService(userRepos)
+const profileController = new ProfileController(profileService);
+
+
+
+const eventService = new  UserEventService(userRepo , instructorRepo)
+const eventController = new UserEventController(eventService)
+
+
+const messageRepo = new MessageRepository()
+const messageService = new MessageService(messageRepo)
+const messageController = new MessageController(messageService)
+
+
 
 // Auth Routes
 router.post("/login", authController.login);

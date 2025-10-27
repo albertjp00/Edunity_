@@ -14,7 +14,6 @@ export class ProfileService {
   //     name  : string ,
   //     email : string ,
   //     role: string,
-
   //   }
 
   async getProfile(userId: string) {

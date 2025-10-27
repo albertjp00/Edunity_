@@ -3,10 +3,10 @@ import ChatWindow from "./chatWindow";
 // import { useParams } from "react-router-dom";
 import profileImage from "../../../assets/profilePic.png";
 import "./userChat.css";
-import api from "../../../api/userApi";
 import Navbar from "../navbar/navbar";
 import { io } from "socket.io-client";
 import { useParams } from "react-router-dom";
+import { getMessagedInstructors, toMessageInstructor } from "../../../services/user/userServices";
 
 
 const socket = io(import.meta.env.VITE_API_URL)
@@ -39,7 +39,9 @@ const UserChat = () => {
 
   const getInstructors = async () => {
     try {
-      const response = await api.get("/user/messagedInstructors");
+      // const response = await api.get("/user/messagedInstructors");
+      const response = await getMessagedInstructors()
+      if(!response) return
       setUserId(response.data.userId);
 
       const normalized = response.data.data.map(
@@ -90,7 +92,9 @@ const UserChat = () => {
 
 const getInstructorToMessage = async (id: string) => {
   try {
-    const response = await api.get(`/user/instructor/${id}`);
+    // const response = await api.get(`/user/instructor/${id}`);
+    const response = await toMessageInstructor(id)
+    if(!response) return 
     const instructor = response.data.instructor;
 
     if (instructor) {

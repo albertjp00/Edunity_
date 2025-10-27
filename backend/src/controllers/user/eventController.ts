@@ -15,10 +15,10 @@ import logger from "../../utils/logger.js";
 export class UserEventController {
     private _userEventService: UserEventService;
 
-    constructor() {
-        const repo = new UserRepository()
-        const Irepo = new InstructorRepository()
-        this._userEventService = new UserEventService(repo, Irepo)
+    constructor(userEventService : UserEventService) {
+        // const repo = new UserRepository()
+        // const Irepo = new InstructorRepository()
+        this._userEventService = userEventService
 
     }
 
