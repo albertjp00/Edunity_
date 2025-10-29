@@ -73,6 +73,7 @@ import UserEvent from './user/pages/event/joinEvent'
 import EventDetails from './instructor/pages/events/eventDetails'
 import CoursePurchaseDetails from './instructor/pages/course/purchaseDetails'
 import Wallet from './user/components/profile/wallet'
+import InstructorAllEventList from './instructor/components/events/allEvents'
 // import PurchasesAdmin from './admin/pages/purchases/purchasesAdmin'
 
 function App() {
@@ -152,6 +153,8 @@ function App() {
             <Route path='/instructor/eventDetails/:eventId' element={<InstProtectedRoute><EventDetails /></InstProtectedRoute>} />
 
             <Route path='/instructor/joinEvent/:eventId' element={<InstProtectedRoute><InstructorEvent /></InstProtectedRoute>} />
+
+            <Route path='/instructor/allEvents' element={<InstProtectedRoute><InstructorAllEventList /></InstProtectedRoute>} />
 
             <Route path='/instructor/addQuiz/:id' element={<InstProtectedRoute><AddQuiz /></InstProtectedRoute>}></Route>
             <Route path='/instructor/quiz/:courseId' element={<InstProtectedRoute><Quiz /></InstProtectedRoute>}></Route>

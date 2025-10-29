@@ -15,14 +15,33 @@ export const addEvent = async(formData : FormData )=>{
     }
 }
 
-export const getMyEvents = async()=>{
+
+export const getMyEventsHomePage = async()=>{
     try {
-        const res = await instructorApi.get('/instructor/event')
+        const query  = ''
+        const page = 1
+        const res = await instructorApi.get(`/instructor/event`, {
+      params: { query , page },
+    })
         return res
     } catch (error) {
         console.log(error);
     }
 }
+
+
+export const getMyEvents = async (search = "", page = 1) => {
+  try {
+    const res = await instructorApi.get(`/instructor/allEvents`, {
+      params: { query: search, page },
+    });
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
 
 
 

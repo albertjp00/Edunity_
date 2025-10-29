@@ -25,7 +25,7 @@ export class InstCourseController {
   myCourses = async (req: InstAuthRequest, res: Response) => {
     try {
       const id = req.instructor?.id
-      logger.info("get Courses user");
+      logger.info("get Courses instructor");
 
 
       const page = parseInt(req.query.page as string) || 1;

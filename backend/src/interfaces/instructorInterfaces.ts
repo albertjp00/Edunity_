@@ -99,3 +99,10 @@ export interface IPurchaseDetails {
   createdAt: Date;       // from purchase
 }
 
+
+
+export interface IEventResult{
+    events : IEvent[],
+    totalPages : number,
+    currentPage : number
+}

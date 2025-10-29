@@ -1,12 +1,12 @@
 import { NextFunction, RequestHandler, Response } from "express";
-import { AuthRequest } from "../../middleware/authMiddleware.js";
-import { UserRepository } from "../../repositories/userRepository.js";
-import { UserCourseService } from "../../services/user/userCourseService.js";
-import { InstructorRepository } from "../../repositories/instructorRepository.js";
-import { AdminRepository } from "../../repositories/adminRepositories.js";
-import instructor from "../../routes/instructorRoutes.js";
-import { debounceCall } from "../../utils/debounce.js";
-import { generateSignedUrl } from "../../utils/getSignedUrl.js";
+import { AuthRequest } from "../../middleware/authMiddleware";
+import { UserRepository } from "../../repositories/userRepository";
+import { UserCourseService } from "../../services/user/userCourseService";
+import { InstructorRepository } from "../../repositories/instructorRepository";
+import { AdminRepository } from "../../repositories/adminRepositories";
+import instructor from "../../routes/instructorRoutes";
+import { debounceCall } from "../../utils/debounce";
+import { generateSignedUrl } from "../../utils/getSignedUrl";
 
 export class UserCourseController {
     private _courseService: UserCourseService;

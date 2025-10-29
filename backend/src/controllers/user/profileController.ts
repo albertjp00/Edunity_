@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import { UserRepository } from '../../repositories/userRepository.js';
-import { ProfileService } from '../../services/user/profileService.js';
-import { AuthRequest } from '../../middleware/authMiddleware.js';
-import { HttpStatus } from '../../enums/httpStatus.enums.js';
+import { UserRepository } from '../../repositories/userRepository';
+import { ProfileService } from '../../services/user/profileService';
+import { AuthRequest } from '../../middleware/authMiddleware';
+import { HttpStatus } from '../../enums/httpStatus.enums';
 
 export class ProfileController {
     private _profileService: ProfileService;
@@ -22,10 +22,8 @@ export class ProfileController {
                 res.status(401).json({ error: 'Unauthorized' });
                 return;
             }
-
             const profile = await this._profileService.getProfile(userId);
             // console.log(profile);
-
 
             if (profile) {
                 res.status(200).json({ data: profile });
@@ -46,7 +44,6 @@ export class ProfileController {
             console.log('user profiel ', req.user?.id, req.file)
             const userId = req.user?.id; // Assuming `req.user` is set by auth middleware
             const updateData = req.body;
-
 
             const data = { ...req.body }
             const file = req.file?.filename

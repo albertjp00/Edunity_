@@ -1,17 +1,17 @@
 import mongoose, { Types } from 'mongoose';
-import { CourseModel, ICourse } from '../models/course.js';
-import { EventModel, IEvent } from '../models/events.js';
-import { FavouritesModel, IFavourite } from '../models/favourites.js';
-import { IMyCourse, MyCourseModel } from '../models/myCourses.js';
-import { IMyEvent, MyEventModel } from '../models/myEvents.js';
-import { IUser, UserModel } from '../models/user.js';
-import { ISkills } from './instructorRepository.js';
-import { IQuiz, QuizModel } from '../models/quiz.js';
-import { IInstructor, InstructorModel } from '../models/instructor.js';
-import { BaseRepository } from './baseRepository.js';
+import { CourseModel, ICourse } from '../models/course';
+import { EventModel, IEvent } from '../models/events';
+import { FavouritesModel, IFavourite } from '../models/favourites';
+import { IMyCourse, MyCourseModel } from '../models/myCourses';
+import { IMyEvent, MyEventModel } from '../models/myEvents';
+import { IUser, UserModel } from '../models/user';
+import { ISkills } from './instructorRepository';
+import { IQuiz, QuizModel } from '../models/quiz';
+import { IInstructor, InstructorModel } from '../models/instructor';
+import { BaseRepository } from './baseRepository';
 
-import { IMyCourses, IUserRepository, WalletTransaction } from '../interfaces/userInterfaces.js';
-import { IWallet, WalletModel } from '../models/wallet.js';
+import { IMyCourses, IUserRepository, WalletTransaction } from '../interfaces/userInterfaces';
+import { IWallet, WalletModel } from '../models/wallet';
 import { log } from 'winston';
 
 

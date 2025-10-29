@@ -5,6 +5,7 @@ import api from "../../../api/userApi";
 import { viewMyCourse } from "../../services/courseServices";
 import VideoPlayerUser from "../videoPlayer/videoPlayer";
 import { toast } from "react-toastify";
+import ConfirmModal from "../modal/modal";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -52,6 +53,8 @@ const ViewMyCourse: React.FC = () => {
   const [instructor, setInstructor] = useState<IInstructor | null>(null);
   const [quiz, setQuiz] = useState<boolean>();
   const [activeTab, setActiveTab] = useState<string>("overview");
+  const [showModal, setShowModal] = useState(false);
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const [canCancel, setCanCancel] = useState<boolean>(false);
@@ -66,7 +69,7 @@ const ViewMyCourse: React.FC = () => {
       if (!res) return;
 
       // console.log(res);
-      
+
       const fetchedMyCourse: IMyCourse = res.data.course;
       const fetchedInstructor: IInstructor = res.data.instructor;
       setCourse(fetchedMyCourse.course);
@@ -111,19 +114,31 @@ const ViewMyCourse: React.FC = () => {
   };
 
 
-  const cancelCourse = async (courseId: string) => {
-    if (!window.confirm("Are you sure you want to cancel this course?")) return;
+  const handleCancelClick = (courseId : string | null) => {
+    setSelectedCourseId(courseId);
+    setShowModal(true);
+  };
 
+
+  const confirmCancel = async () => {
     try {
-      const res = await api.delete(`/user/cancelCourse/${courseId}`);
+      const res = await api.delete(`/user/cancelCourse/${selectedCourseId}`);
       if (res.data.success) {
-        toast.success("Course cancelled successfully!"); 
+        toast.success("Course cancelled successfully!");
         navigate("/user/myCourses");
       }
     } catch (err) {
       console.error("Error cancelling course:", err);
-      alert("Unable to cancel course.");
+      toast.error("Unable to cancel course.");
+    } finally {
+      setShowModal(false);
+      setSelectedCourseId(null);
     }
+  };
+
+  const cancelAction = () => {
+    setShowModal(false);
+    setSelectedCourseId(null);
   };
 
 
@@ -305,11 +320,20 @@ const ViewMyCourse: React.FC = () => {
               {canCancel && (
                 <button
                   className="cancel-btn"
-                  onClick={() => cancelCourse( id!)}
+                  onClick={() => handleCancelClick(id!)}
                 >
                   ❌ Cancel Course
                 </button>
               )}
+
+              <ConfirmModal
+                show={showModal}
+                title="Cancel Course"
+                message="Are you sure you want to cancel this course? This action cannot be undone."
+                onConfirm={confirmCancel}
+                onCancel={cancelAction}
+              />
+
 
               <div className="sidebar-stats">
                 <p>

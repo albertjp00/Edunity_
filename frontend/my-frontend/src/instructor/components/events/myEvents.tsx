@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getMyEvents } from "../../../services/Instructor/instructorServices";
+import { getMyEventsHomePage } from "../../../services/Instructor/instructorServices";
 import type { Ievent } from "../../interterfaces/events";
 import './myEvents.css'
 import webinarImage from '../../../assets/webinar_thumnail.png'
@@ -12,7 +12,7 @@ const InstructorEventList: React.FC = () => {
 
   const fetchEvents = async () => {
       try {
-        const result = await getMyEvents();
+        const result = await getMyEventsHomePage();
         if(!result) return;
         console.log(result.data);
         setEvents(result.data.events);
@@ -30,6 +30,9 @@ const InstructorEventList: React.FC = () => {
     }
 
 
+    const allEvents = ()=>{
+      navigate('/instructor/allEvents')
+    }
 
   useEffect(() => {
     fetchEvents();
@@ -40,7 +43,18 @@ return (
   <div className="my-events-container">
     <div className="events-banner">
   <h1>MY EVENTS</h1>
+  
 </div>
+<div className="courses-header">
+          <div className="left-section">
+            <span className="provides-label">PROVIDES</span>
+            <h2>Events</h2>
+          </div>
+
+          <button className="create-course-btn" onClick={allEvents}>
+            Show all Events
+          </button>
+        </div>
 
   {/* <h2>Your Events</h2> */}
   {events.length === 0 ? (

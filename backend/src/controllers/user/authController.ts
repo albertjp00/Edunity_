@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import { AuthService } from "../../services/user/authService.js";
-import { UserRepository } from "../../repositories/userRepository.js";
+import { AuthService } from "../../services/user/authService";
+import { UserRepository } from "../../repositories/userRepository";
 import jwt from "jsonwebtoken";
-import { AuthRequest } from "../../middleware/authMiddleware.js";
+import { AuthRequest } from "../../middleware/authMiddleware";
 import { OAuth2Client } from "google-auth-library";
-import { HttpStatus } from "../../enums/httpStatus.enums.js";
-import logger from "../../utils/logger.js";
+import { HttpStatus } from "../../enums/httpStatus.enums";
+import logger from "../../utils/logger";
 
 
 

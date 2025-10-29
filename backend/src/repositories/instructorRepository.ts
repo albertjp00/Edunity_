@@ -6,7 +6,7 @@ import { IKyc, KycModel } from "../models/kyc.js";
 import { IMyCourse, MyCourseModel } from "../models/myCourses.js";
 import { IQuiz, QuizModel } from "../models/quiz.js";
 import { IUser, UserModel } from "../models/user.js";
-import { IPurchaseDetails } from "../interfaces/instructorInterfaces.js";
+import { IEventResult, IPurchaseDetails } from "../interfaces/instructorInterfaces.js";
 // import { IInsRepository } from "../interfaces/instructorInterfaces.js";
 
 
@@ -31,7 +31,7 @@ export interface IInsRepository {
 
 
 
-    addCourse(id: string, data:Partial<ICourse>): Promise<ICourse | null>
+    addCourse(id: string, data: Partial<ICourse>): Promise<ICourse | null>
 
     getCourses(id: string, skip: number, limit: number): Promise<ICourse[] | null>
 
@@ -47,7 +47,7 @@ export interface IInsRepository {
 
     addEvent(id: string, name: string, data: Partial<IEvent>): Promise<IEvent>
 
-    getMyEvents(id: string): Promise<IEvent[] | null>
+    getMyEvents(id: string, search: string, page: string): Promise<IEventResult | null>
 
     getEvent(id: string): Promise<IEvent | null>
 
@@ -104,7 +104,7 @@ export class InstructorRepository implements IInsRepository {
         return await InstructorModel.findByIdAndUpdate(id, { password: password })
     }
 
-    
+
     async addCourse(id: string, data: Partial<ICourse>): Promise<ICourse | null> {
         return await CourseModel.create({ instructorId: id, ...data, });
     }
@@ -141,7 +141,7 @@ export class InstructorRepository implements IInsRepository {
         // map purchases to details
         const result: IPurchaseDetails[] = purchases.map(purchase => {
             const user = userMap.get(String(purchase.userId));
-            if (!user) return 
+            if (!user) return
 
             return {
                 name: user.name,
@@ -187,9 +187,37 @@ export class InstructorRepository implements IInsRepository {
         return await EventModel.create({ instructorId: id, instructorName: name, ...data })
     }
 
-    async getMyEvents(id: string): Promise<IEvent[] | null> {
-        return await EventModel.find({ instructorId: id })
+
+    async getMyEvents(id: string, search: string, page: string): Promise<IEventResult | null> {
+        const limit = 3;
+        const skip = (parseInt(page) - 1) * limit;
+        console.log(search);
+        
+        const query: any = { instructorId: id };
+
+        if (search && search.trim() !== "") {
+            query.title = { $regex: search, $options: "i" };
+        }
+
+        const events = await EventModel.find(query)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+            console.log(events);
+            
+
+        const total = await EventModel.countDocuments(query);
+
+        return {
+            events,
+            totalPages: Math.ceil(total / limit),
+            currentPage: parseInt(page),
+        };
     }
+
+
+
 
     async getEvent(id: string): Promise<IEvent | null> {
         return EventModel.findById(id)

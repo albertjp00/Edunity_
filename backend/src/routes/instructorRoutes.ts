@@ -95,13 +95,15 @@ instructor.patch('/course/:id', instAuthMiddleware,upload.any(), courseControlle
 instructor.post("/course",instAuthMiddleware,upload.any(),courseController.addCourse);
 
 
-
 instructor.get('/purchaseDetails/:id',instAuthMiddleware , courseController.purchaseDetails)
 
+
+
 instructor.post('/event',instAuthMiddleware ,eventController.createEvents)
-instructor.get('/event',instAuthMiddleware ,eventController.getMyEvents)
+instructor.get('/event',instAuthMiddleware ,eventController.getAllEvents)
 instructor.get('/getEvent/:id',instAuthMiddleware ,eventController.getEvent)
 instructor.patch('/event/:id',instAuthMiddleware ,eventController.editEvent)
+instructor.get('/allEvents',instAuthMiddleware ,eventController.getAllEvents)
 
 
 instructor.patch('/joinEvent/:eventId',instAuthMiddleware , eventController.joinEvent)

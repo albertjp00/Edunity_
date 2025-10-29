@@ -80,47 +80,69 @@ const CourseDetailsUser: React.FC = () => {
     }
   };
 
-  const buyCourse = async (courseId: string) => {
-    if (activePayment === courseId) {
-      toast.warning("Payment window already open for this course!");
-      return;
-    }
+const buyCourse = async (courseId: string) => {
+  // 1️⃣ Prevent duplicate clicks in the same tab
+  if (activePayment === courseId) {
+    toast.warning("Payment window already open for this course!");
+    return;
+  }
 
-    setActivePayment(courseId);
+  // 2️⃣ Prevent multiple tabs from triggering payment
+  const isPaymentInProgress = localStorage.getItem("payment_in_progress");
+  if (isPaymentInProgress === "true") {
+    toast.warning("Payment already in progress in another tab!");
+    return;
+  }
 
-    try {
-      const { data } = await api.get(`/user/buyCourse/${courseId}`);
-      const options: RazorpayOptions = {
-        key: data.key,
-        amount: data.amount,
-        currency: data.currency,
-        name: "Edunity",
-        description: "Course Purchase",
-        order_id: data.orderId,
-        handler: async function (response) {
-          try {
-            await api.post("/user/payment/verify", {
-              ...response,
-              courseId,
-            });
-            toast.success("Payment Successful! Course Unlocked.");
-            navigate("/user/myCourses");
-          } finally {
-            setActivePayment(null);
-          }
+  // 3️⃣ Lock the payment process globally
+  localStorage.setItem("payment_in_progress", "true");
+  setActivePayment(courseId);
+
+  try {
+    // 4️⃣ Fetch order details *after* locking
+    const { data } = await api.get(`/user/buyCourse/${courseId}`);
+
+    const options: RazorpayOptions = {
+      key: data.key,
+      amount: data.amount,
+      currency: data.currency,
+      name: "Edunity",
+      description: "Course Purchase",
+      order_id: data.orderId,
+      handler: async function (response) {
+        try {
+          await api.post("/user/payment/verify", {
+            ...response,
+            courseId,
+          });
+          toast.success("Payment Successful! Course Unlocked.");
+          navigate("/user/myCourses");
+        } finally {
+          // 5️⃣ Always clear lock
+          setActivePayment(null);
+          localStorage.removeItem("payment_in_progress");
+        }
+      },
+      modal: {
+        ondismiss: function () {
+          // 6️⃣ Clear lock if user closes payment window
+          setActivePayment(null);
+          localStorage.removeItem("payment_in_progress");
         },
-        modal: { ondismiss: () => setActivePayment(null) },
-        theme: { color: "#6a5af9" },
-      };
+      },
+      theme: { color: "#6a5af9" },
+    };
 
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (error) {
-      console.error("Payment error:", error);
-      toast.error("Payment failed. Try again.");
-      setActivePayment(null);
-    }
-  };
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  } catch (error) {
+    console.error("Payment error:", error);
+    toast.error("Payment failed. Try again.");
+    setActivePayment(null);
+    localStorage.removeItem("payment_in_progress");
+  }
+};
+
 
 
 

@@ -1,5 +1,5 @@
 import { Server } from "http";
-import { IMyEventInterface } from "../../interfaces/instructorInterfaces.js";
+import { IEventResult, IMyEventInterface } from "../../interfaces/instructorInterfaces.js";
 import { IEvent } from "../../models/events.js";
 import { NextFunction } from "express";
 import { IInsRepository } from "../../repositories/instructorRepository.js";
@@ -23,11 +23,12 @@ export class InstEventService {
         }
     }
 
-    getMyEventsRequest = async (id: string): Promise<IEvent[] | null> => {
+    getMyEventsRequest = async (id: string , search : string , page : string): Promise<IEventResult | null> => {
         try {
 
-            const events = await this.InstructorRepository.getMyEvents(id)
+            const events = await this.InstructorRepository.getMyEvents(id , search , page)
             return events
+
         } catch (error) {
             console.log(error);
             return null
