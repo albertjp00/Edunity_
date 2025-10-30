@@ -64,7 +64,13 @@ const Purchases: React.FC = () => {
     fetchPurchases(searchTerm, 1);
   };
 
-  if (loading) return <p className="p-4">Loading purchases...</p>;
+    if (loading)
+    return (
+      <div className="loader-container">
+        <div className="loader"></div>
+        <p>Loading...</p>
+      </div>
+    );
 
   return (
     <div className="purchases-container">

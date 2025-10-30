@@ -17,7 +17,7 @@ export class InstProfileController {
     getProfile = async (req: InstAuthRequest, res: Response): Promise<void> => {
         try {
             const userId = req.instructor?.id
-            console.log('instructor get profile ');
+            console.log('instructor get profile');
 
 
             if (!userId) {

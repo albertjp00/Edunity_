@@ -9,8 +9,11 @@ import logger from "../../utils/logger";
 
 
 
-const ACCESS_SECRET = process.env.SECRET_KEY || "access_secret";
-const REFRESH_SECRET = process.env.REFRESH_KEY || "refresh_secret";
+const SECRET_KEY = process.env.SECRET_KEY || "access_secret";
+const REFRESH_KEY = process.env.REFRESH_KEY || "refresh_secret";
+const REFRESH_TIME = process.env.REFRESH_TIME 
+
+
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || "");
 
@@ -22,7 +25,7 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || "");
 export class AuthController {
   private _authService: AuthService;
 
-  constructor(authService : AuthService) {
+  constructor(authService: AuthService) {
     // const repo = new UserRepository();
     this._authService = authService
   }
@@ -83,16 +86,18 @@ export class AuthController {
         return;
       }
 
-      jwt.verify(token, REFRESH_SECRET, (err: any, user: any) => {
+      jwt.verify(token, REFRESH_KEY, (err: any, user: any) => {
         if (err) {
           res.status(HttpStatus.FORBIDDEN).json({ message: "Invalid refresh token" });
           return;
         }
 
-        const newAccessToken = jwt.sign({ id: user.id }, ACCESS_SECRET, {
-          expiresIn: "15m",
-        });
+        if (!process.env.ACCESS_SECRET) throw new Error("ACCESS_SECRET not set");
+        if (!process.env.REFRESH_TIME) throw new Error("REFRESH_TIME not set");
 
+        const newAccessToken = jwt.sign({ id: user.id }, SECRET_KEY, {
+          expiresIn: '15m',
+        });
 
         res.json({ accessToken: newAccessToken });
       });

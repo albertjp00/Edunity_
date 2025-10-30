@@ -173,5 +173,17 @@ export class AdminController {
     };
 
 
+    getEarnings = async (req : AdminAuthRequest , res : Response)=>{
+        try {
+            const result = await this._adminService.getEarningsData()
+            console.log(result);
+            
+            res.json({success:true , earnings : result})
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
 
 }

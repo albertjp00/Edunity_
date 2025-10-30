@@ -30,7 +30,6 @@ const InstructorProfile: React.FC = () => {
   const [courses, setCourses] = useState<ICourse[]>([]);
 
   const navigate = useNavigate();
-  const token = localStorage.getItem('instructor');
 
   const getProfile = async () => {
     try {

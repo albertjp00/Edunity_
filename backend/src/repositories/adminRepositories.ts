@@ -1,5 +1,6 @@
 import { ICount, IUserOverview, PaginatedInstructors, PaginatedUsers, PurchaseResult } from "../interfaces/adminInterfaces.js";
 import { CourseModel, ICourse } from "../models/course.js";
+import { EarningModel, IEarnings } from "../models/earnings.js";
 import { FavouritesModel, IFavourite } from "../models/favourites.js";
 import { IInstructor, InstructorModel } from "../models/instructor.js";
 import { KycModel } from "../models/kyc.js";
@@ -46,7 +47,9 @@ export interface IAdminRepository {
     getTotalInstructors(): Promise<number | null>
     getCourses(): Promise<number | null>
     getTotalEnrolled(): Promise<number | null>
-    getUserOverview(oneYearAgo:Date): Promise<IUserOverview[]>
+    getUserOverview(oneYearAgo: Date): Promise<IUserOverview[]>
+
+    getEarningsData():Promise<IEarnings[] | null>
 
 
 }
@@ -180,6 +183,7 @@ export class AdminRepository implements IAdminRepository {
             totalEnrolled: enrolledUsers.length,
         };
     }
+    
 
     async getPurchases(search: string = "", page: number = 1): Promise<PurchaseResult | null> {
         try {
@@ -282,6 +286,34 @@ export class AdminRepository implements IAdminRepository {
     }
 
 
+    async updateEarnings(courseId: string, coursePrice: 
+        number,instructorId : string , instructorEarning: number, 
+        adminEarning: number): Promise<void> {
+        try {
+
+
+            await EarningModel.findOneAndUpdate(
+                { courseId: courseId },
+                {
+                    $inc: {
+                        totalSales: 1,
+                        CoursePrice: coursePrice,
+                        instructorEarnings: instructorEarning,
+                        adminEarnings: adminEarning,
+                    },
+                    instructorId: instructorId,
+                    lastUpdated: new Date(),
+                },
+                { upsert: true, new: true }
+            )
+
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+
     async getTotalEnrolled(): Promise<number | null> {
         try {
             const enrolled = await MyCourseModel.countDocuments()
@@ -307,7 +339,7 @@ export class AdminRepository implements IAdminRepository {
                 { $sort: { _id: 1 } },
             ]);
             console.log(usersByMonth);
-            
+
             return usersByMonth;
         } catch (err) {
             console.log(err);
@@ -315,10 +347,15 @@ export class AdminRepository implements IAdminRepository {
         }
     }
 
-
-
-
-
+    async getEarningsData():Promise<IEarnings[] | null>{
+        try {
+            const earnings = await EarningModel.find()
+            return earnings
+        } catch (error) {
+            console.log(error);
+            return null
+        }
+    }
 
 
 }

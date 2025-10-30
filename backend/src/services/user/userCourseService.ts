@@ -23,7 +23,7 @@ export interface IviewCourse {
   instructor: IInstructor
   progress: IProgress
   quizExists: boolean
-  enrolledAt : Date
+  enrolledAt: Date
 }
 
 
@@ -33,10 +33,10 @@ export class UserCourseService {
   private adminRepository: AdminRepository;
 
   constructor(
-    userRepository: UserRepository, 
-    instructorRepository: InstructorRepository, 
+    userRepository: UserRepository,
+    instructorRepository: InstructorRepository,
     adminRepository: AdminRepository) {
-      
+
     this.userRepository = userRepository;
     this.instructorRepository = instructorRepository;
     this.adminRepository = adminRepository
@@ -160,11 +160,24 @@ export class UserCourseService {
         .digest("hex");
 
       if (razorpay_signature === expectedSign) {
-        const course = await this.userRepository.buyCourse(courseId)
+        const course = await this.userRepository.getCourse(courseId)
         if (!course) {
           return { success: false, message: "Course not found" };
         }
+        const updateEnrolled = await this.userRepository.buyCourse(courseId)
+
         await this.userRepository.addMyCourse(userId, course);
+
+       const instructorId = course.instructorId as string
+
+        const ADMIN_COMMISSION_RATE = 0.2;
+        const coursePrice = course.price ?? 0;
+
+        const adminEarning = coursePrice * ADMIN_COMMISSION_RATE;
+        const instructorEarning = coursePrice - adminEarning;
+
+        const adminEarningsUpdate = await this.adminRepository.updateEarnings(courseId ,coursePrice ,instructorId, 
+          instructorEarning, adminEarning)
 
         return { success: true, message: "Payment verified and course added" };
       } else {
@@ -216,13 +229,13 @@ export class UserCourseService {
   ): Promise<IviewCourse | null> => {
     try {
       // console.log('service myCourse');
-      
+
       const myCourse = await this.userRepository.viewMyCourse(id, myCourseId);
       if (!myCourse) return null;
       const progress = myCourse.progress
       // console.log('service my course details',myCourse);
       const enrolledAt = myCourse.createdAt
-      
+
 
       const course = await this.userRepository.getCourse(myCourse.courseId.toString());
       if (!course) return null;
@@ -239,7 +252,7 @@ export class UserCourseService {
 
 
 
-      return { course, instructor, progress, quizExists , enrolledAt };
+      return { course, instructor, progress, quizExists, enrolledAt };
     } catch (error) {
       console.log(error);
       return null;

@@ -32,6 +32,11 @@ const Sidebar = () => {
             <p>Purchases</p>
           </NavLink>
         </li>
+        <li>
+          <NavLink to="/admin/earnings" className="sidebar-option">
+            <p>Earnings</p>
+          </NavLink>
+        </li>
       </ul>
     </div>
   )

@@ -181,5 +181,15 @@ export class AdminService {
     };
 
 
+    getEarningsData = async ()=>{
+        try {
+            const data = await this.adminRepository.getEarningsData()
+            return data
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
+
 
 }

@@ -17,12 +17,9 @@ export class AdminCourseController {
     private _courseService: AdminCourseService
 
     //pass the dependencies from outside the class(DI)
-    constructor(
-        repo: IAdminRepository,
-        Irepo: IInsRepository,
-        Urepo: IUserRepository
+    constructor(adminCourseService : AdminCourseService 
     ) {
-        this._courseService = new AdminCourseService(repo, Irepo, Urepo)
+        this._courseService = adminCourseService
     }
 
 

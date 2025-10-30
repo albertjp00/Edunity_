@@ -8,9 +8,10 @@ import InstructorsAdmin from "./adminInstructors/adminInstructors";
 import Sidebar from "../components/sidebar/sidebar";
 import AdminNavbar from "../components/navbar/navbar";
 import PurchasesAdmin from "./purchases/purchasesAdmin";
+import AdminEarnings from "../components/earnings/earnings";
 
 const AdminHome: React.FC = () => {
-  const [select, setSelect] = useState<"dashboard" | "users" | "instructors">(
+  const [select] = useState<"dashboard" | "users" | "instructors">(
     "dashboard"
   );
 
@@ -31,6 +32,7 @@ const AdminHome: React.FC = () => {
             <Route path="instructors" element={<InstructorsAdmin />} />
             {/* <Route path='courses' element={<CourseAdmin />}/> */}
             <Route path="purchases" element={<PurchasesAdmin />} />
+            <Route path="earnings" element={<AdminEarnings />} />
           </Routes>
         </div>
 

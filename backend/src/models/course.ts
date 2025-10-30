@@ -20,6 +20,8 @@ export interface ICourse extends Document {
     category:string;
 }
 
+
+
 const CourseSchema: Schema = new Schema<ICourse>({
   instructorId: {
     type: String,

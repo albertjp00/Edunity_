@@ -29,3 +29,12 @@ export const blockUser = async (userId: string) => {
   const res = await adminApi.put(`/admin/blockUser/${userId}`);
   return res.data;
 };
+
+
+
+//earnings 
+
+export const getEarnings= async ()=>{
+  const res = await adminApi.get('/admin/getEarnings')
+  return res
+}

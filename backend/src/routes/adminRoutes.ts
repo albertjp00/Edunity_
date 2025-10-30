@@ -8,6 +8,7 @@ import { AdminRepository } from '../repositories/adminRepositories.js'
 import { InstructorRepository } from '../repositories/instructorRepository.js'
 import { UserRepository } from '../repositories/userRepository.js'
 import { AdminService } from '../services/admin/adminServices.js'
+import { AdminCourseService } from '../services/admin/courseServices.js'
 
 const admin = express.Router()
 
@@ -34,11 +35,9 @@ const userController = new AdminUserController(
 
 
 // const courseController = new AdminCourseController()
-const courseController = new AdminCourseController(
-  new AdminRepository(),
-  new InstructorRepository(),
-  new UserRepository()
-);
+const instRepo = new InstructorRepository()
+const adminCourseService = new AdminCourseService(adminRepo ,  instRepo , userRepo)
+const courseController = new AdminCourseController(adminCourseService);
 
 admin.post('/login',dashboardController.adminLogin)
 
@@ -75,5 +74,6 @@ admin.get("/purchases", adminAuthMiddleware, courseController.getAllPurchases);
 admin.get('/stats',adminAuthMiddleware , dashboardController.dashboardStats)
 admin.get('/userOverview',adminAuthMiddleware,dashboardController.getUserOverview)
 
+admin.get('/getEarnings',adminAuthMiddleware,dashboardController.getEarnings)
 
 export default admin

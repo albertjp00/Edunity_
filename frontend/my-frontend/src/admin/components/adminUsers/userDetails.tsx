@@ -13,6 +13,7 @@ const AdminUserDetails: React.FC = () => {
   const [user, setUser] = useState<User>({});
   const [courses, setCourses] = useState<EnrolledCourse[]>([]);
   const { id } = useParams<{ id: string }>();
+  const [loading, setLoading] = useState(true)
   const navigate = useNavigate();
 
   // Get user profile
@@ -51,7 +52,9 @@ const AdminUserDetails: React.FC = () => {
       setUser({ ...user, blocked: !user.blocked });
     } catch (error) {
       console.error("Error blocking/unblocking user:", error);
-    }
+    } finally {
+        setLoading(false);
+      }
   };
 
   useEffect(() => {
@@ -60,6 +63,14 @@ const AdminUserDetails: React.FC = () => {
       fetchCourses();
     }
   }, [id]);
+
+  if (loading)
+    return (
+      <div className="loader-container">
+        <div className="loader"></div>
+        <p>Loading...</p>
+      </div>
+    );
 
   return (
     <div className="profile-container1">
