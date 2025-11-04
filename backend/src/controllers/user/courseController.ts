@@ -263,7 +263,7 @@ export class UserCourseController {
             console.log('viewMyCourse', id , myCourseId);
 
             const result = await this._courseService.viewMyCourseRequest(id, myCourseId)
-            console.log('mycourses view', result);
+            // console.log('mycourses view', result);
 
             res.json({ success: true, course: result, instructor: result?.instructor, quiz: result?.quizExists , createdAt : result?.enrolledAt })
         } catch (error) {
@@ -313,6 +313,27 @@ export class UserCourseController {
             res.status(500).json({ success: false, message: "Internal server error" });
         }
     };
+
+
+    getCertificate = async (req : AuthRequest , res : Response ) =>{
+        try {
+
+            const userId = req.user?.id
+            const {courseId} = req.params
+
+            console.log(courseId );
+            
+
+            const result  = await this._courseService.getCertificateRequest(userId as string , courseId as string)
+            console.log(result);
+            
+            res.json({success : true , certificate : result})
+            
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
 
 
 

@@ -100,6 +100,9 @@ export class AdminService {
     verifyKyc = async (id: string): Promise<void | null> => {
         try {
             const result = await this.adminRepository.verifyKyc(id)
+            if(result){
+                const notification = await this.adminRepository.verifyKycNotification(id)
+            }
             return result
         } catch (error) {
             console.log(error);

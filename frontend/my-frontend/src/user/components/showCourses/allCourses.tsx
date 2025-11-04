@@ -22,7 +22,7 @@ const AllCourses: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const coursesPerPage = 4; // backend limit
+  const coursesPerPage = 6; // backend limit
 
   // ✅ filter states
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -140,51 +140,48 @@ const AllCourses: React.FC = () => {
 
 
         <h2 className="course-header">All Courses</h2>
-        <div className="course-grid">
+        <div className="course-grid-allCourses">
           {courses.map((course) => (
-            <div className="courses-card" key={course._id}>
-              <div className="course-thumbnail-wrapper">
-                <img
-                  src={`http://localhost:5000/assets/${course.thumbnail}`}
-                  alt={course.title}
-                  className="course-thumbnail"
-                />
-                <span className="course-category">
-                  {course.category || "General"}
-                </span>
-                <span className="course-price">
-                  {course.price && course.price > 0
-                    ? `$${course.price}`
-                    : "Free"}
-                </span>
-              </div>
+            <div key={course._id} className="course-card">
+  <div className="course-thumbnail-wrapper">
+    <img
+      src={`http://localhost:5000/assets/${course.thumbnail}`}
+      alt={course.title}
+      className="course-thumbnail"
+    />
+    <span className="course-category">{course.category || 'Web-development'}</span>
+  </div>
 
-              <div className="course-body">
-                <h3 className="course-title">{course.title}</h3>
-                <div className="course-meta">
-                  <span>Modules {course.moduleCount}</span>
-                  <span>{course.duration || "2h 30m"}</span>
-                  <span>Students {course.totalEnrolled || "20+"}</span>
-                </div>
+  <div className="course-details">
+    <span className="price">₹{course.price}</span>
 
-                <div className="course-footer">
-                  <div className="instructor">
-                    <img
-                      src={`http://localhost:5000/assets/${course.instructorImage}`}
-                      alt={course.instructorName || "Unknown"}
-                      className="instructor-img"
-                    />
-                    <span>{course.instructorName || "Unknown"}</span>
-                  </div>
-                  <button
-                    className="enroll-btn"
-                    onClick={() => gotoCourse(course._id)}
-                  >
-                    Enroll →
-                  </button>
-                </div>
-              </div>
-            </div>
+    <h3 className="course-title">{course.title}</h3>
+
+    <div className="course-meta">
+      <span>📚 Lesson 10</span>
+      <span>⏰ 6h</span>
+      <span>👨‍🎓 Students 20+</span>
+    </div>
+
+    <div className="course-footer">
+      <div className="instructor">
+        <img
+          src={`http://localhost:5000/assets/${course.instructorImage}`}
+          alt="instructor"
+          className="instructor-img"
+        />
+        <span>{course.instructorName}</span>
+      </div>
+
+      <button
+        className="enroll-btn"
+        onClick={() => gotoCourse(course._id)}
+      >
+        Enroll →
+      </button>
+    </div>
+  </div>
+</div>
           ))}
         </div>
 

@@ -1,3 +1,4 @@
+import { INotification } from "../../models/notification.js";
 import { InstructorRepository } from "../../repositories/instructorRepository.js";
 import bcrypt from 'bcrypt'
 
@@ -64,6 +65,16 @@ export class InstructorProfileService {
     try {
       const save = await this.instructorRepository.kycSubmit(id , idProof,addressProof)
       return true
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+  }
+
+    getNotifications = async(id : string):Promise<INotification[] | null>=>{
+    try {
+      const notifications = await this.instructorRepository.getNotifications(id)
+      return notifications
     } catch (error) {
       console.log(error);
       return null

@@ -80,6 +80,8 @@ instructor.post('/kycSubmit' ,instAuthMiddleware ,
   profileController.kycSubmit
 );
 
+instructor.get('/notifications',instAuthMiddleware,profileController.getNotifications)
+
 instructor.post('/forgotPassword',authController.forgotPassword)  
 instructor.post('/otpVerify',authController.verifyOtpForgotPass) 
 instructor.post('/resendOtpForgotPass',authController.resendOtpForgotPassword)

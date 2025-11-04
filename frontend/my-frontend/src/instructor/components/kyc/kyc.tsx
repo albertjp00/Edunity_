@@ -1,9 +1,8 @@
 import React, { useState, type ChangeEvent, type FormEvent } from 'react'
 import './kyc.css'
-import axios from 'axios'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
-import instructorApi from '../../../api/instructorApi'
+import { kycSubmit } from '../../services/Instructor/instructorServices'
 
 interface KycFiles {
   idProof: File | null
@@ -72,16 +71,9 @@ const KycVerification: React.FC = () => {
 
 
     try {
-      const response = await instructorApi.post('/instructor/kycSubmit',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      )
+      const response = await kycSubmit(formData)
 
-      if (response.data.success) {
+      if (response?.data.success) {
         toast.success('KYC submitted successfully!')
         navigate('/instructor/profile')
       }

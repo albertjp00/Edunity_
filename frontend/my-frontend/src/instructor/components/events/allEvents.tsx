@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getMyEvents } from "../../../services/Instructor/instructorServices";
+import { getMyEvents } from "../../services/Instructor/instructorServices";
 import type { Ievent } from "../../interterfaces/events";
 import "./allEvents.css";
 import webinarImage from "../../../assets/webinar_thumnail.png";

@@ -6,6 +6,7 @@ import { viewMyCourse } from "../../services/courseServices";
 import VideoPlayerUser from "../videoPlayer/videoPlayer";
 import { toast } from "react-toastify";
 import ConfirmModal from "../modal/modal";
+import { getCertificate } from "../../../services/user/userServices";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -101,6 +102,7 @@ const ViewMyCourse: React.FC = () => {
     setExpandedModule(expandedModule === index ? null : index);
   };
 
+
   const markAsCompleted = async (moduleTitle: string): Promise<void> => {
     if (completedModules.includes(moduleTitle)) return;
     try {
@@ -114,7 +116,7 @@ const ViewMyCourse: React.FC = () => {
   };
 
 
-  const handleCancelClick = (courseId : string | null) => {
+  const handleCancelClick = (courseId: string | null) => {
     setSelectedCourseId(courseId);
     setShowModal(true);
   };
@@ -147,6 +149,30 @@ const ViewMyCourse: React.FC = () => {
   const gotoQuiz = (myCourseId: string) => {
     navigate(`/user/quiz/${myCourseId}`);
   };
+
+
+  const [showCertificate, setShowCertificate] = useState(false);
+  const [certificateUrl, setCertificateUrl] = useState<string | null>(null);
+
+
+  const handleViewCertificate = async (id: string) => {
+    try {
+      const response = await getCertificate(id);
+      console.log(response);
+      
+      if (!response?.data.certificate?.filePath) return;
+
+      // Save the file name directly
+      setCertificateUrl(response.data.certificate?.filePath);
+      setShowCertificate(true);
+    } catch (error) {
+      console.error("Error showing certificate:", error);
+      toast.error("Unable to show certificate.");
+    }
+  };
+
+
+
 
   if (!course) return <p>Loading...</p>;
 
@@ -269,8 +295,39 @@ const ViewMyCourse: React.FC = () => {
                   🎯 Go to Quiz
                 </button>
               )}
+
+              {progressPercent === 100 && (
+                <button
+                  className="certificate-btn"
+                  onClick={() => handleViewCertificate(course._id)}
+                >
+                  🎓 View Certificate
+                </button>
+              )}
+
             </div>
           )}
+
+
+          {showCertificate && (
+            <div className="certificate-modal-overlay">
+              <div className="certificate-modal">
+                <button
+                  className="close-certificate"
+                  onClick={() => setShowCertificate(false)}
+                >
+                  ✖
+                </button>
+                <iframe
+                  src={`${API_URL}/assets/${certificateUrl}`}
+                  title="Course Certificate"
+                  className="certificate-frame"
+                />
+
+              </div>
+            </div>
+          )}
+
 
           {/* INSTRUCTOR TAB */}
           {activeTab === "instructor" && instructor && (

@@ -5,6 +5,7 @@ import { FavouritesModel, IFavourite } from "../models/favourites.js";
 import { IInstructor, InstructorModel } from "../models/instructor.js";
 import { KycModel } from "../models/kyc.js";
 import { IMyCourse, MyCourseModel } from "../models/myCourses.js";
+import { INotification, NotificationModel } from "../models/notification.js";
 import { IUser, UserModel } from "../models/user.js";
 
 
@@ -27,6 +28,8 @@ export interface IAdminRepository {
     verifyKyc(id: string): Promise<void | null>
 
     rejectKyc(id: string): Promise<void | null>
+
+    verifyKycNotification(id: string): Promise<INotification | null>
 
     getInstructorCourses(id: string): Promise<ICourse[] | null>
 
@@ -141,6 +144,12 @@ export class AdminRepository implements IAdminRepository {
         const update = await InstructorModel.findByIdAndUpdate(id, { KYCstatus: 'rejected' })
         const deleteKyc = await KycModel.findOneAndDelete({ instructorId: id })
         return
+    }
+
+    async verifyKycNotification(id: string): Promise<INotification | null>{
+        return await NotificationModel.create({recipientId : id , title : "KYC Approved",
+            message : "Your KYC has been approved"
+        })
     }
 
     async getInstructorCourses(id: string): Promise<ICourse[] | null> {

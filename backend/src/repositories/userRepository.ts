@@ -295,7 +295,15 @@ export class UserRepository
     return course;
   }
 
-
+    async addCertificate(userId: string , courseId : string , certificate : string) : Promise<IMyCourse>{
+      
+      console.log(courseId , userId , certificate);
+      
+      const path =  await MyCourseModel.findOneAndUpdate({userId  , courseId }, {certificate : certificate},{new : true}) 
+      console.log(path);
+      return path
+      
+    }  
 
   async getEvents(): Promise<IEvent[] | null> {
     return await EventModel.find()

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { addEvent } from "../../../services/Instructor/instructorServices";
+import { addEvent } from "../../services/Instructor/instructorServices";
 import type { Ievent } from "../../interterfaces/events";
 import "./createEvents.css";
 import { toast } from "react-toastify";
@@ -28,6 +28,9 @@ const EventForm: React.FC = () => {
     if (formData.title.trim().length < 3) {
       newErrors.title = "Title must be at least 3 characters long.";
     }
+    if (formData.title.trim().length > 10) {
+      newErrors.title = "Title characters is long.";
+    }
     if (formData.topic.trim().length < 3) {
       newErrors.topic = "Topic must be at least 3 characters long.";
     }
@@ -52,6 +55,8 @@ const EventForm: React.FC = () => {
     e.preventDefault();
 
     if (!validate()) return;
+
+
 
     const res = await addEvent(formData);
     if (!res) return
@@ -119,7 +124,7 @@ const EventForm: React.FC = () => {
             type="time"
             name="time"
             value={formData.time}
-            onChange={handleChange} 
+            onChange={handleChange}
           />
           {errors.time && <span className="error">{errors.time}</span>}
         </div>

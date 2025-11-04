@@ -9,6 +9,16 @@ import { InstructorRepository } from '../../repositories/instructorRepository.js
 import { UserRepository } from '../../repositories/userRepository.js';
 import razorpay from '../../utils/razorpay.js';
 import crypto from 'crypto'
+import fs from 'fs';
+import PDFDocument from 'pdfkit'
+
+import path from "path";
+import { fileURLToPath } from "url";
+import { generateCertificate } from '../../utils/certificate.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 
 export interface ICourseDetails extends ICourse {
@@ -168,7 +178,7 @@ export class UserCourseService {
 
         await this.userRepository.addMyCourse(userId, course);
 
-       const instructorId = course.instructorId as string
+        const instructorId = course.instructorId as string
 
         const ADMIN_COMMISSION_RATE = 0.2;
         const coursePrice = course.price ?? 0;
@@ -176,7 +186,7 @@ export class UserCourseService {
         const adminEarning = coursePrice * ADMIN_COMMISSION_RATE;
         const instructorEarning = coursePrice - adminEarning;
 
-        const adminEarningsUpdate = await this.adminRepository.updateEarnings(courseId ,coursePrice ,instructorId, 
+        const adminEarningsUpdate = await this.adminRepository.updateEarnings(courseId, coursePrice, instructorId,
           instructorEarning, adminEarning)
 
         return { success: true, message: "Payment verified and course added" };
@@ -271,6 +281,54 @@ export class UserCourseService {
 
     }
   }
+
+
+  async getCertificateRequest(userId: string, courseId: string) {
+    try {
+
+      const myCourse = await this.userRepository.findUserCourse(userId, courseId);
+
+      if (!myCourse) {
+        return { success: false, message: "Course not found for this user" };
+      }
+
+      let filePath = myCourse.certificate;
+
+      if (!filePath) {
+        const course = await this.userRepository.getCourse(courseId);
+        const user = await this.userRepository.findById(userId);
+
+        const totalModules = course?.modules?.length || 0;
+        const completedModules = myCourse?.progress?.completedModules?.length || 0;
+
+        if (completedModules < totalModules) {
+          return {
+            success: false,
+            message: "Course not completed yet, cannot generate certificate",
+          };
+        }
+
+        filePath = await generateCertificate(
+          user?.name || "Learner",
+          course?.title || "Course",
+          userId,
+          courseId
+        );
+        const fileName = path.basename(filePath);
+
+        await this.userRepository.addCertificate(userId, courseId, fileName);
+      }
+      filePath = path.basename(filePath);
+
+      return { filePath };
+
+    } catch (error) {
+      console.error(error);
+      return { success: false, message: "Error generating certificate" };
+    }
+  }
+
+
 
 
   async getInstructorsRequest(): Promise<IInstructor[] | null> {

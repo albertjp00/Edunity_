@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './courseDetails.css';
 import Navbar from '../../components/navbar/navbar';
-import instructorApi from '../../../api/instructorApi';
 import VideoPlayer from '../videoPlayer/videoPlayer';
+import { getCourseDetails } from '../../services/Instructor/instructorServices';
 
 // Define types for Module and Course
 interface Module {
@@ -34,7 +34,8 @@ const InstructorCourseDetails: React.FC = () => {
 
   const fetchCourse = async (): Promise<void> => {
     try {
-      const res = await instructorApi.get(`/instructor/course/${id}`);
+      const res = await getCourseDetails(id)
+      if(!res) return
       console.log(res.data.course);
       if (res.data.success) {
         setCourse(res.data.course.course as Course);

@@ -122,5 +122,21 @@ export class InstProfileController {
     }
 
 
+    getNotifications = async (req: InstAuthRequest, res: Response): Promise<void> => {
+        try {
+            const id = req.instructor?.id
+            console.log(id);
+            
+            const notifications = await this._profileService.getNotifications(id as string)
+            console.log(notifications);
+
+            
+            res.json({ success: true, notifications: notifications })
+        } catch (error) {
+            console.error(error)
+            res.status(500).json({ success: false, message: "Server error" })
+        }
+    }
+
 
 }

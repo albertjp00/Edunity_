@@ -158,6 +158,7 @@ const buyCourse = async (courseId: string) => {
     <div className="contain">
 
       <header className="course-header">
+        
         <h1>COURSE DETAILS</h1>
         <p>Home / Course</p>
       </header>

@@ -23,31 +23,36 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ userId }) => {
   const fetchNotifications = async () => {
     try {
       const res = await axios.get(`/api/notifications/${userId}`);
-      setNotifications(res.data);
+
+      // ✅ Ensure it's always an array
+      const data = Array.isArray(res.data)
+        ? res.data
+        : res.data?.notifications || [];
+
+      setNotifications(data);
     } catch (error) {
       console.error("Error fetching notifications:", error);
     }
   };
 
   useEffect(() => {
-    if (userId) {
-      fetchNotifications();
-    }
+    if (userId) fetchNotifications();
   }, [userId]);
 
-  // ✅ Mark one as read
+  // ✅ Mark notification as read
   const handleMarkAsRead = async (id: string) => {
     try {
-      await instructorApi.get(`/instructor/notifications/${id}`);
+      await instructorApi.patch(`/instructor/notifications/${id}/read`);
       setNotifications((prev) =>
         prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
       );
     } catch (error) {
-      console.error("Error marking as read:", error);
+      console.error("Error marking notification as read:", error);
     }
   };
 
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  // ✅ Count only unread ones
+  const unreadCount = notifications?.filter((n) => !n.isRead)?.length || 0;
 
   return (
     <div className="relative">

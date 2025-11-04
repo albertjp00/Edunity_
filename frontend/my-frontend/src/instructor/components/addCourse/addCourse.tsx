@@ -1,8 +1,8 @@
 import React, { useState, type ChangeEvent, type FormEvent } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import instructorApi from "../../../api/instructorApi";
 import "./addCourse.css";
+import { addCourse } from "../../services/Instructor/instructorServices";
 
 interface Module {
   title: string;
@@ -124,15 +124,9 @@ const validateForm = () => {
       });
 
           
-      const token = localStorage.getItem("instructor");
 
-      const res = await instructorApi.post("/instructor/course", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
+      const res = await addCourse(formData)
+      if(!res) return
       if (res.data.success) {
         toast.success("Course added successfully!");
         navigate("/instructor/home");

@@ -49,6 +49,8 @@ export interface IUserRepository {
 
   updateProgress(userId: string, courseId: string, moduleTitle: string): Promise<IMyCourse | null>
 
+  getCertificate(userId: string , courseId : string , certificate : string) : Promise<IMyCourse>
+
   getMyEvent(id: string): Promise<IMyEvent | null>
 
   getEvents(): Promise<IEvent[] | null>

@@ -13,6 +13,7 @@ interface Course {
   skills: string[];
   instructorName: string;
   instructorImage: string;
+  category:string
 }
 
 const ShowCourses: React.FC = () => {
@@ -69,44 +70,46 @@ const ShowCourses: React.FC = () => {
           ) : (
             courses.map((course) => (
               <div key={course._id} className="course-card">
-                <div className="course-thumbnail-wrapper">
-                  <img
-                    src={`http://localhost:5000/assets/${course.thumbnail}`}
-                    alt={course.title}
-                    className="course-thumbnail"
-                  />
-                  <span className="course-category">Development</span>
-                </div>
+  <div className="course-thumbnail-wrapper">
+    <img
+      src={`http://localhost:5000/assets/${course.thumbnail}`}
+      alt={course.title}
+      className="course-thumbnail"
+    />
+    <span className="course-category">{course.category || "web Development"}</span>
+  </div>
 
-                <div className="course-details">
-                  <h3 className="course-title">{course.title}</h3>
+  <div className="course-details">
+    <span className="price">₹{course.price}</span>
 
-                  <div className="course-meta">
-                    <span>📚 10 Lessons</span>
-                    <span>⏰ 19h 30m</span>
-                    <span>👨‍🎓 Students 20+</span>
-                  </div>
+    <h3 className="course-title">{course.title}</h3>
 
-                  <div className="course-footer">
-                    <div className="instructor">
-                      <img
-                        src={`http://localhost:5000/assets/${course.instructorImage}`}
-                        alt="instructor"
-                        className="instructor-img"
-                      />
-                      <span>{course.instructorName}</span>
-                    </div>
-                    <span className="price">₹{course.price}</span>
-                  </div>
+    <div className="course-meta">
+      <span>📚 Lesson 10</span>
+      <span>⏰ 6h</span>
+      <span>👨‍🎓 Students 20+</span>
+    </div>
 
-                  <button
-                    className="enroll-btn"
-                    onClick={() => selectCourse(course._id)}
-                  >
-                    Enroll →
-                  </button>
-                </div>
-              </div>
+    <div className="course-footer">
+      <div className="instructor">
+        <img
+          src={`http://localhost:5000/assets/${course.instructorImage}`}
+          alt="instructor"
+          className="instructor-img"
+        />
+        <span>{course.instructorName}</span>
+      </div>
+
+      <button
+        className="enroll-btn"
+        onClick={() => selectCourse(course._id)}
+      >
+        Enroll →
+      </button>
+    </div>
+  </div>
+</div>
+
             ))
           )}
         </div>

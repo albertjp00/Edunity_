@@ -2,6 +2,7 @@
   padding: 3rem 5%;
   background-color: #f9fafc;
   min-height: 100vh;
+  margin: 0 200px 0 200px;
 }
 
 .my-course-container h2 {
@@ -10,6 +11,7 @@
   color: #222;
   text-align: center;
   margin-bottom: 2rem;
+
 }
 
 .my-courseList {

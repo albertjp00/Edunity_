@@ -21,8 +21,9 @@ export interface IProgress {
 
 export interface IMyCourse extends Document {
   userId: string;
-  courseId: ICourse | mongoose.Types.ObjectId;
+  courseId: string;
   progress: IProgress;
+  certificate : string;
   createdAt: Date;
   quizScore : number
   amountPaid:number
@@ -42,6 +43,9 @@ const myCourseSchema: Schema<IMyCourse> = new Schema({
   },
   progress: {
     completedModules: [{ type: String }],
+  },
+  certificate:{
+    type:String,
   },
   createdAt: {
     type: Date,

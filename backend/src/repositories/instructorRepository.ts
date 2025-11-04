@@ -7,6 +7,7 @@ import { IMyCourse, MyCourseModel } from "../models/myCourses.js";
 import { IQuiz, QuizModel } from "../models/quiz.js";
 import { IUser, UserModel } from "../models/user.js";
 import { IEventResult, IPurchaseDetails } from "../interfaces/instructorInterfaces.js";
+import { INotification, NotificationModel } from "../models/notification.js";
 // import { IInsRepository } from "../interfaces/instructorInterfaces.js";
 
 
@@ -99,8 +100,12 @@ export class InstructorRepository implements IInsRepository {
         return await KycModel.create({ instructorId: id, idProof: idProof, addressProof: addressProof })
     }
 
-    async changePassword(id: string, password: string): Promise<IInstructor | null> {
 
+    async getNotifications(id:string):Promise<INotification[] | null>{
+        return await NotificationModel.find({recipientId : id})
+    }
+
+    async changePassword(id: string, password: string): Promise<IInstructor | null> {
         return await InstructorModel.findByIdAndUpdate(id, { password: password })
     }
 

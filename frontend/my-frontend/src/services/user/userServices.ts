@@ -43,3 +43,16 @@ export const toMessageInstructor = async(id:string)=>{
         
     }
 }
+
+
+export const getCertificate = async(courseId:string )=>{
+    try {
+        console.log(courseId);
+        
+        const res = await api.get(`/user/certificate/${courseId}`)
+      return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}

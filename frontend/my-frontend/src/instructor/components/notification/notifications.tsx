@@ -1,47 +1,74 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import "./notifications.css"; 
+import instructorApi from "../../../api/instructorApi";
+import InstructorNavbar from "../navbar/navbar";
 
-const Notifications = ({ userId }) => {
-    const [notifications, setNotifications] = useState([]);
+interface Notification {
+  _id: string;
+  title: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+  link?: string;
+}
 
-    useEffect(() => {
-        const fetchNotifications = async () => {
-            const res = await axios.get(`/api/notifications/${userId}`);
-            setNotifications(res.data);
-        };
-        fetchNotifications();
-    }, []);
+// interface NotificationBellProps {
+//   userId: string;
+// }
 
-    return (
-        <div className="max-w-3xl mx-auto mt-10">
-            <h2 className="text-2xl font-bold mb-5">All Notifications</h2>
-            {notifications.length === 0 ? (
-                <p>No notifications yet.</p>
-            ) : (
-                notifications.map((n) => (
-                    <div
-                        key={n._id}
-                        className={`p-4 mb-3 rounded-lg shadow-sm border ${n.isRead ? "bg-gray-100" : "bg-white"
-                            }`}
-                    >
-                        <h3 className="font-semibold">{n.title}</h3>
-                        <p className="text-gray-600">{n.message}</p>
-                        {n.link && (
-                            <a
-                                href={n.link}
-                                className="text-blue-600 text-sm hover:underline"
-                            >
-                                View
-                            </a>
-                        )}
-                        <p className="text-xs text-gray-400 mt-1">
-                            {new Date(n.createdAt).toLocaleString()}
-                        </p>
-                    </div>
-                ))
+
+
+const InstructorNotifications = () => {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const res = await instructorApi.get(`/instructor/notifications`);
+        console.log(res);
+        
+        setNotifications(res.data.notifications);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    };
+    fetchNotifications();
+  }, []);
+
+  return (
+    <>
+    <InstructorNavbar />
+    <div className="notifications-container">
+      <h2 className="notifications-title">All Notifications</h2>
+
+      {notifications.length === 0 ? (
+        <p className="notifications-empty">No notifications yet.</p>
+      ) : (
+        notifications.map((n) => (
+          <div
+            key={n._id}
+            className={`notification-card ${
+              n.isRead ? "true" : "false"
+            }`}
+          >
+            <h3 className="notification-title">{n.title}</h3>
+            <p className="notification-message">{n.message}</p>
+
+            {n.link && (
+              <a href={n.link} className="notification-link">
+                View
+              </a>
             )}
-        </div>
-    );
+
+            <p className="notification-date">
+              {new Date(n.createdAt).toLocaleString()}
+            </p>
+          </div>
+        ))
+      )}
+    </div>
+    </>
+  );
 };
 
-export default Notifications;
+export default InstructorNotifications;

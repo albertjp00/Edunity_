@@ -74,6 +74,7 @@ import EventDetails from './instructor/pages/events/eventDetails'
 import CoursePurchaseDetails from './instructor/pages/course/purchaseDetails'
 import Wallet from './user/components/profile/wallet'
 import InstructorAllEventList from './instructor/components/events/allEvents'
+import InstructorNotifications from './instructor/components/notification/notifications'
 // import PurchasesAdmin from './admin/pages/purchases/purchasesAdmin'
 
 function App() {
@@ -161,6 +162,8 @@ function App() {
 
 
             <Route path='/instructor/messages' element={<InstProtectedRoute><InstructorChat /></InstProtectedRoute>}></Route>
+
+            <Route path='/instructor/notifications' element={<InstProtectedRoute><InstructorNotifications /></InstProtectedRoute>}></Route>
 
               // {/* admin  */}
             <Route path='/admin/login' element={<LoginAdmin />} />
