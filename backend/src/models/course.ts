@@ -6,18 +6,29 @@ export interface IModule {
   content: string;
 }
 
+export interface IReview {
+  userId: string;
+  userName : string;
+  userImage : string;
+  rating: number;
+  comment: string;
+  createdAt?: Date;
+}
+
 export interface ICourse extends Document {
-    instructorId?: string;
-    title: string;
-    description?: string;
-    thumbnail?: string;
-    price?: number;
-    skills?: string[];
-    level?: string;
-    modules?: IModule[];
-    createdAt?: Date;
-    totalEnrolled?: number;
-    category:string;
+  instructorId?: string;
+  title: string;
+  description?: string;
+  thumbnail?: string;
+  price?: number;
+  skills?: string[];
+  level?: string;
+  modules?: IModule[];
+  createdAt?: Date;
+  totalEnrolled?: number;
+  category: string;
+  review: IReview[]
+  averageRating?: number
 }
 
 
@@ -56,15 +67,28 @@ const CourseSchema: Schema = new Schema<ICourse>({
     type: Date,
     default: Date.now,
   },
-  category:{
-    type:String,
+  category: {
+    type: String,
 
   },
-  
+
   totalEnrolled: {
     type: Number,
     default: 100,
   },
+
+  review: [
+    {
+      
+      userId: { type: String, required: true },
+      userName : {type :String},
+      userImage : {type : String},
+      rating: { type: Number, required: true, min: 1, max: 5 },
+      comment: { type: String, required: true },
+      createdAt: { type: Date, default: Date.now },
+    
+    }
+  ]
 });
 
-export const CourseModel =  mongoose.model<ICourse>("Course", CourseSchema);
+export const CourseModel = mongoose.model<ICourse>("Course", CourseSchema);

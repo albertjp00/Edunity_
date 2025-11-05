@@ -1,4 +1,4 @@
-import { ICourse } from "../models/course.js";
+import { ICourse, IReview } from "../models/course.js";
 import { IEvent } from "../models/events.js";
 import { IFavourite } from "../models/favourites.js";
 import { IInstructor } from "../models/instructor.js";
@@ -50,6 +50,8 @@ export interface IUserRepository {
   updateProgress(userId: string, courseId: string, moduleTitle: string): Promise<IMyCourse | null>
 
   getCertificate(userId: string , courseId : string , certificate : string) : Promise<IMyCourse>
+
+  addReview(userId: string,userName : string , userImage : string , courseId: string, rating: number, comment: string): Promise<IReview>
 
   getMyEvent(id: string): Promise<IMyEvent | null>
 

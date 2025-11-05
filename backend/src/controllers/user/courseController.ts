@@ -11,7 +11,7 @@ import { generateSignedUrl } from "../../utils/getSignedUrl";
 export class UserCourseController {
     private _courseService: UserCourseService;
 
-    constructor(courseService : UserCourseService) {
+    constructor(courseService: UserCourseService) {
         // const repo = new UserRepository();
         // this.courseService = new UserCourseService(repo);
 
@@ -260,12 +260,12 @@ export class UserCourseController {
         try {
             const id = req.user?.id!
             const myCourseId = req.params.id!
-            console.log('viewMyCourse', id , myCourseId);
+            console.log('viewMyCourse', id, myCourseId);
 
             const result = await this._courseService.viewMyCourseRequest(id, myCourseId)
-            // console.log('mycourses view', result);
+            console.log('mycourses view', result);
 
-            res.json({ success: true, course: result, instructor: result?.instructor, quiz: result?.quizExists , createdAt : result?.enrolledAt })
+            res.json({ success: true, course: result, instructor: result?.instructor, quiz: result?.quizExists, createdAt: result?.enrolledAt })
         } catch (error) {
             // console.log(error);
             next(error)
@@ -278,6 +278,8 @@ export class UserCourseController {
     refreshVideoUrl = async (req: AuthRequest, res: Response) => {
         try {
             const { key } = req.query
+            console.log('refresh url ',key);
+            
             if (!key) {
                 return res.status(400).json({ success: false, message: "Missing key" });
             }
@@ -296,7 +298,7 @@ export class UserCourseController {
         try {
             const userId = req.user?.id as string;
             const { courseId, moduleTitle } = req.body;
-            console.log('progress',req.body, courseId);
+            console.log('progress', req.body, courseId);
 
             if (!userId || !courseId || !moduleTitle) {
                 res.status(400).json({ success: false, message: "Missing required fields" });
@@ -315,23 +317,38 @@ export class UserCourseController {
     };
 
 
-    getCertificate = async (req : AuthRequest , res : Response ) =>{
+    getCertificate = async (req: AuthRequest, res: Response) => {
         try {
 
             const userId = req.user?.id
-            const {courseId} = req.params
+            const { courseId } = req.params
 
-            console.log(courseId );
-            
+            console.log(courseId);
 
-            const result  = await this._courseService.getCertificateRequest(userId as string , courseId as string)
+
+            const result = await this._courseService.getCertificateRequest(userId as string, courseId as string)
             console.log(result);
-            
-            res.json({success : true , certificate : result})
-            
+
+            res.json({ success: true, certificate: result })
+
         } catch (error) {
             console.log(error);
-            
+
+        }
+    }
+
+
+    addReview = async (req: AuthRequest, res: Response) => {
+        try {
+            const { courseId, rating, review } = req.body;
+            const userId = req.user?.id;
+
+            const result = await this._courseService.addReview(userId as string , courseId , rating , review )
+
+            res.json({success : true})
+        } catch (error) {
+            console.log(error);
+
         }
     }
 
@@ -448,7 +465,7 @@ export class UserCourseController {
 
             const result = await this._courseService.cancelCourseRequest(userId as string, courseId as string)
 
-            
+
             res.json({ success: true })
         } catch (error) {
             console.log(error);

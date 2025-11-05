@@ -4,9 +4,12 @@
   background-color: #f9fafc;
 }
 
+
+
 .course-header {
   text-align: center;
   margin-bottom: 40px;
+
 }
 
 .course-header h1 {
@@ -213,4 +216,113 @@
 .instructor-tab p {
   color: #555;
   font-size: 14px;
+}
+
+
+
+/* reviews  */
+/* ============================
+   📘 Add Review Section
+============================ */
+
+.add-review {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #f8f8ff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(106, 90, 249, 0.08);
+}
+
+.add-review h4 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: #2e2e48;
+  font-weight: 600;
+}
+
+
+
+.rating-input {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.rating-input .star {
+  font-size: 26px;
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.1s ease;
+}
+
+.rating-input .star:hover {
+  color: #ffcc00;
+  transform: scale(1.1);
+}
+
+.rating-input .filled {
+  color: #ffcc00;
+}
+
+/* 📝 Textarea Styling */
+.add-review textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 10px 12px;
+  border: 1px solid #d4d4f7;
+  border-radius: 8px;
+  resize: vertical;
+  font-size: 14px;
+  font-family: inherit;
+  color: #333;
+  outline: none;
+  transition: border 0.2s ease;
+}
+
+.add-review textarea:focus {
+  border-color: #6a5af9;
+  box-shadow: 0 0 4px rgba(106, 90, 249, 0.3);
+  color:white
+}
+
+/* 🚀 Submit Button */
+.submit-review-btn {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  background-color: #6a5af9;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submit-review-btn:hover {
+  background-color: #5848d6;
+  transform: translateY(-1px);
+}
+
+.submit-review-btn:disabled {
+  background-color: #b9b3f9;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
+.review-avatar{
+  max-width: 20px;
+  max-height: 20px;
+}
+
+.review-header{
+  display: flex;
+  
+}
+
+.date-rating{
+  display: flex;
+  gap: 4px;
 }

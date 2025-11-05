@@ -34,7 +34,10 @@ interface ICourse {
   price: string;
   thumbnail: string;
   modules: IModule[];
+  review: IReview[]
 }
+
+
 
 interface IMyCourse {
   _id: string;
@@ -44,6 +47,15 @@ interface IMyCourse {
     completedModules: string[];
   };
   enrolledAt: string;
+}
+
+interface IReview {
+  userId: string;
+  userName: string;
+  userImage?: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
 }
 
 const ViewMyCourse: React.FC = () => {
@@ -56,6 +68,7 @@ const ViewMyCourse: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("overview");
   const [showModal, setShowModal] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+  const [review, setReview] = useState<IReview[] | null>()
   const navigate = useNavigate();
 
   const [canCancel, setCanCancel] = useState<boolean>(false);
@@ -69,7 +82,7 @@ const ViewMyCourse: React.FC = () => {
       const res = await viewMyCourse(id);
       if (!res) return;
 
-      // console.log(res);
+      console.log(res);
 
       const fetchedMyCourse: IMyCourse = res.data.course;
       const fetchedInstructor: IInstructor = res.data.instructor;
@@ -77,6 +90,7 @@ const ViewMyCourse: React.FC = () => {
       setInstructor(fetchedInstructor);
       setCompletedModules(fetchedMyCourse.progress?.completedModules || []);
       setQuiz(res.data.quiz);
+      setReview(fetchedMyCourse.course?.review)
 
 
       const enrolledDate = new Date(fetchedMyCourse.enrolledAt);
@@ -159,7 +173,7 @@ const ViewMyCourse: React.FC = () => {
     try {
       const response = await getCertificate(id);
       console.log(response);
-      
+
       if (!response?.data.certificate?.filePath) return;
 
       // Save the file name directly
@@ -170,6 +184,42 @@ const ViewMyCourse: React.FC = () => {
       toast.error("Unable to show certificate.");
     }
   };
+
+
+  //reviews 
+
+  const [rating, setRating] = useState<number>(0);
+  const [reviewText, setReviewText] = useState<string>("");
+  // const [loadingReview, setLoadingReview] = useState<boolean>(false);
+
+
+  const handleSubmitReview = async () => {
+    if (rating === 0 || !reviewText.trim()) {
+      toast.error("Please provide both rating and review text.");
+      return;
+    }
+
+    try {
+      // setLoadingReview(true);
+      const res = await api.post("/user/review", {
+        courseId: course?._id,
+        rating,
+        review: reviewText,
+      });
+
+      if (res.data.success) {
+        toast.success("Review submitted successfully!");
+        setRating(0);
+        setReviewText("");
+      }
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      toast.error("Failed to submit review.");
+    } finally {
+      // setLoadingReview(false);
+    }
+  };
+
 
 
 
@@ -223,18 +273,106 @@ const ViewMyCourse: React.FC = () => {
 
           {/* OVERVIEW TAB */}
           {activeTab === "overview" && (
-            <div className="tab-content">
-              <h4>Course Description</h4>
-              <p>{course.description}</p>
+            <>
+              <div className="tab-content">
+                <h4>Course Description</h4>
+                <p>{course.description}</p>
 
-              <h4>What Will I Learn?</h4>
-              <p>
-                You’ll learn everything from frontend to backend development
-                including real-world projects and best practices to become a
-                professional web developer.
-              </p>
-            </div>
+                <h4>What Will I Learn?</h4>
+                <p>
+                  You’ll learn everything from frontend to backend development including
+                  real-world projects and best practices to become a professional web
+                  developer.
+                </p>
+              </div>
+
+              {/* REVIEWS TAB */}
+              {review && (
+                <div className="tab-content reviews-tab">
+                  <h4>Student Reviews</h4>
+
+                  {review && review.length > 0 ? (
+                    review.map((r, index) => (
+                      <div key={index} className="review-card">
+                        <div className="review-header">
+                          <img
+                            src={
+                              r.userImage
+                                ? `${API_URL}/assets/${r.userImage}`
+                                : "https://via.placeholder.com/50"
+                            }
+                            alt={r.userName}
+                            className="review-user-img"
+                          />
+                          <small className="review-date">
+                              {new Date(r.createdAt).toLocaleDateString()}
+                            </small>
+                          <div>
+                            <p className="review-user-name">{r.userName}</p>
+                            <div className="review-stars">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <span
+                                  key={star}
+                                  className={star <= r.rating ? "star filled" : "star"}
+                                >
+                                  ★
+                                </span>
+                              ))}
+                            </div>
+                            
+                          </div>
+                        </div>
+
+                        <p className="review-comment">"{r.comment}"</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No reviews yet for this course.</p>
+                  )}
+                </div>
+              )}
+
+
+              {progressPercent === 100 && (
+                <div className="review-section">
+                  <h4>Leave a Review</h4>
+                  {!showCertificate && (
+                    <>
+                      <label>Rating:</label>
+                      <div className="star-rating">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <span
+                            key={star}
+                            onClick={() => setRating(star)}
+                            className={star <= rating ? "star filled" : "star"}
+                          >
+                            ★
+                          </span>
+                        ))}
+                      </div>
+
+                      <textarea
+                        placeholder="Write your review..."
+                        value={reviewText}
+                        onChange={(e) => setReviewText(e.target.value)}
+                        className="review-textarea"
+                      />
+
+                      <button className="submit-review-btn" onClick={handleSubmitReview}>
+                        Submit Review
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+            </>
           )}
+
+
+
+
+
+
 
           {/* CURRICULUM TAB */}
           {activeTab === "curriculum" && (
@@ -267,7 +405,7 @@ const ViewMyCourse: React.FC = () => {
                         <div className="module-body">
                           <VideoPlayerUser
                             initialUrl={module.videoUrl}
-                            onComplete={() => markAsCompleted(module.title)} // ✅ called when video ends
+                            onComplete={() => markAsCompleted(module.title)}
                           />
 
                           <p>{module.content}</p>

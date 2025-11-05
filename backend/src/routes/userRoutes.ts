@@ -96,8 +96,10 @@ router.get('/wallet',authMiddleware , profileController.getWallet)
 router.get('/getCourses',authMiddleware, courseController.showCourses)
 router.get('/getAllCourses',authMiddleware, courseController.getAllCourses)
 router.get('/courseDetails',authMiddleware,courseController.courseDetails)
-router.get("/videos/refresh",authMiddleware, courseController.refreshVideoUrl); 
+router.get("/refresh",authMiddleware, courseController.refreshVideoUrl); 
 router.get('/certificate/:courseId',authMiddleware,courseController.getCertificate)
+router.post('/review',authMiddleware,courseController.addReview)
+
 
 router.get('/myCourses/:page',authMiddleware , courseController.myCourses)
 router.get('/getInstructors',authMiddleware , courseController.getInstructors)

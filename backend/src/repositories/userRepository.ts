@@ -1,5 +1,5 @@
 import mongoose, { Types } from 'mongoose';
-import { CourseModel, ICourse } from '../models/course';
+import { CourseModel, ICourse, IReview } from '../models/course';
 import { EventModel, IEvent } from '../models/events';
 import { FavouritesModel, IFavourite } from '../models/favourites';
 import { IMyCourse, MyCourseModel } from '../models/myCourses';
@@ -67,8 +67,8 @@ export class UserRepository
     return await this.model.findByIdAndUpdate(id, { password: password })
   }
 
-    async getWallet(userId: string):Promise<IWallet | null>{
-    return await WalletModel.findOne({userId : userId})
+  async getWallet(userId: string): Promise<IWallet | null> {
+    return await WalletModel.findOne({ userId: userId })
   }
 
   async getCourse(id: string): Promise<ICourse | null> {
@@ -137,7 +137,7 @@ export class UserRepository
       { $project: { _id: 0, uniqueSkills: 1 } }
     ])
 
-     
+
     return result[0]
   }
 
@@ -272,17 +272,17 @@ export class UserRepository
       userId: id,
     });
     console.log(data);
-    
+
     return data;
   }
 
- 
+
   async updateProgress(userId: string, myCourseId: string, moduleTitle: string): Promise<IMyCourse | null> {
     console.log(userId, myCourseId);
 
 
-    const myCourse = await MyCourseModel.findByIdAndUpdate(myCourseId,{cancelCourse:false})
-    console.log('course update progress',myCourse);
+    const myCourse = await MyCourseModel.findByIdAndUpdate(myCourseId, { cancelCourse: false })
+    console.log('course update progress', myCourse);
 
     const course = await MyCourseModel.findByIdAndUpdate(
       myCourseId,
@@ -295,15 +295,65 @@ export class UserRepository
     return course;
   }
 
-    async addCertificate(userId: string , courseId : string , certificate : string) : Promise<IMyCourse>{
-      
-      console.log(courseId , userId , certificate);
-      
-      const path =  await MyCourseModel.findOneAndUpdate({userId  , courseId }, {certificate : certificate},{new : true}) 
-      console.log(path);
+  async addCertificate(userId: string, courseId: string, certificate: string): Promise<IMyCourse | null> {
+    try {
+
+      console.log(courseId, userId, certificate);
+
+      const path = await MyCourseModel.findOneAndUpdate({ userId, courseId }, { certificate: certificate }, { new: true })
+      console.log(path)
       return path
-      
-    }  
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+  }
+
+
+
+  async addReview(userId: string,userName : string , userImage : string , courseId: string, rating: number, comment: string): Promise<IReview> {
+    try {
+      const course = await CourseModel.findById(courseId);
+
+      if (!course) {
+        throw new Error("Course not found");
+      }
+
+      // Check if user already reviewed
+      const existingReview = course.review.find(
+        (r) => r.userId.toString() === userId
+      );
+      if (existingReview) {
+        throw new Error("User has already reviewed this course");
+      }
+
+      // Create new review
+      const newReview: IReview = {
+        userId,
+        userName,
+        userImage,
+        rating,
+        comment,
+        createdAt: new Date(),
+      };
+
+      // Add review to course
+      course.review.push(newReview);
+
+      // Calculate new average rating
+      const total = course.review.reduce((sum, r) => sum + r.rating, 0);
+      course.averageRating = total / course.review.length;
+
+      await course.save();
+
+      return newReview;
+    } catch (error) {
+      console.error("Error adding review:", error);
+      throw new Error("Unable to add review");
+    }
+  }
+
+
 
   async getEvents(): Promise<IEvent[] | null> {
     return await EventModel.find()

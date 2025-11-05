@@ -33,6 +33,16 @@ interface Instructor {
   expertise?: string;
 }
 
+interface IReview {
+  userId : string;
+  userName: string;
+  userImage?: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
+
 interface RazorpayInstance {
   open: () => void;
 }
@@ -66,82 +76,114 @@ const CourseDetailsUser: React.FC = () => {
   const [instructor, setInstructor] = useState<Instructor | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
   const [activePayment, setActivePayment] = useState<string | null>(null);
+  const [reviews, setReviews] = useState<IReview[]>([]);
+  const [rating, setRating] = useState<number>(0);
+  const [comment, setComment] = useState<string>("");
+  const [loadingReview, setLoadingReview] = useState<boolean>(false);
+
 
   const navigate = useNavigate();
 
   const fetchCourse = async () => {
     try {
       const res = await api.get(`/user/courseDetails?id=${id}`);
+      console.log(res);
+      
       setCourse(res.data.course);
       setInstructor(res.data.course.instructor);
       setHasAccess(res.data.course.hasAccess);
+      setReviews(res.data.course.review || []);
+
     } catch (err) {
       console.error("Error fetching course:", err);
     }
   };
 
-const buyCourse = async (courseId: string) => {
-  // 1️⃣ Prevent duplicate clicks in the same tab
-  if (activePayment === courseId) {
-    toast.warning("Payment window already open for this course!");
-    return;
-  }
+  const buyCourse = async (courseId: string) => {
+    if (activePayment === courseId) {
+      toast.warning("Payment window already open for this course!");
+      return;
+    }
 
-  // 2️⃣ Prevent multiple tabs from triggering payment
-  const isPaymentInProgress = localStorage.getItem("payment_in_progress");
-  if (isPaymentInProgress === "true") {
-    toast.warning("Payment already in progress in another tab!");
-    return;
-  }
+    const isPaymentInProgress = localStorage.getItem("payment_in_progress");
+    if (isPaymentInProgress === "true") {
+      toast.warning("Payment already in progress in another tab!");
+      return;
+    }
 
-  // 3️⃣ Lock the payment process globally
-  localStorage.setItem("payment_in_progress", "true");
-  setActivePayment(courseId);
+    localStorage.setItem("payment_in_progress", "true");
+    setActivePayment(courseId);
 
-  try {
-    // 4️⃣ Fetch order details *after* locking
-    const { data } = await api.get(`/user/buyCourse/${courseId}`);
+    try {
+      const { data } = await api.get(`/user/buyCourse/${courseId}`);
 
-    const options: RazorpayOptions = {
-      key: data.key,
-      amount: data.amount,
-      currency: data.currency,
-      name: "Edunity",
-      description: "Course Purchase",
-      order_id: data.orderId,
-      handler: async function (response) {
-        try {
-          await api.post("/user/payment/verify", {
-            ...response,
-            courseId,
-          });
-          toast.success("Payment Successful! Course Unlocked.");
-          navigate("/user/myCourses");
-        } finally {
-          // 5️⃣ Always clear lock
-          setActivePayment(null);
-          localStorage.removeItem("payment_in_progress");
-        }
-      },
-      modal: {
-        ondismiss: function () {
-          // 6️⃣ Clear lock if user closes payment window
-          setActivePayment(null);
-          localStorage.removeItem("payment_in_progress");
+      const options: RazorpayOptions = {
+        key: data.key,
+        amount: data.amount,
+        currency: data.currency,
+        name: "Edunity",
+        description: "Course Purchase",
+        order_id: data.orderId,
+        handler: async function (response) {
+          try {
+            await api.post("/user/payment/verify", {
+              ...response,
+              courseId,
+            });
+            toast.success("Payment Successful! Course Unlocked.");
+            navigate("/user/myCourses");
+          } finally {
+            setActivePayment(null);
+            localStorage.removeItem("payment_in_progress");
+          }
         },
-      },
-      theme: { color: "#6a5af9" },
-    };
+        modal: {
+          ondismiss: function () {
+            setActivePayment(null);
+            localStorage.removeItem("payment_in_progress");
+          },
+        },
+        theme: { color: "#6a5af9" },
+      };
 
-    const rzp = new window.Razorpay(options);
-    rzp.open();
-  } catch (error) {
-    console.error("Payment error:", error);
-    toast.error("Payment failed. Try again.");
-    setActivePayment(null);
-    localStorage.removeItem("payment_in_progress");
-  }
-};
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error("Payment error:", error);
+      toast.error("Payment failed. Try again.");
+      setActivePayment(null);
+      localStorage.removeItem("payment_in_progress");
+    }
+  };
+
+
+  // const submitReview = async () => {
+  //   if (!hasAccess) {
+  //     toast.error("You must purchase the course before leaving a review!");
+  //     return;
+  //   }
+  //   if (rating === 0 || !comment.trim()) {
+  //     toast.warning("Please provide both a rating and comment.");
+  //     return;
+  //   }
+
+  //   try {
+  //     setLoadingReview(true);
+  //     const res = await api.post(`/user/course/${course?._id}/review`, {
+  //       rating,
+  //       comment,
+  //     });
+  //     toast.success("Review added!");
+  //     setReviews((prev) => [res.data.review, ...prev]);
+  //     setRating(0);
+  //     setComment("");
+  //   } catch (err) {
+  //     console.error(err);
+  //     toast.error("Failed to submit review.");
+  //   } finally {
+  //     setLoadingReview(false);
+  //   }
+  // };
 
 
 
@@ -158,7 +200,7 @@ const buyCourse = async (courseId: string) => {
     <div className="contain">
 
       <header className="course-header">
-        
+
         <h1>COURSE DETAILS</h1>
         <p>Home / Course</p>
       </header>
@@ -193,6 +235,13 @@ const buyCourse = async (courseId: string) => {
               onClick={() => setActiveTab("instructor")}
             >
               Instructor
+            </button>
+
+            <button
+              className={activeTab === "reviews" ? "active" : ""}
+              onClick={() => setActiveTab("reviews")}
+            >
+              Reviews
             </button>
           </div>
 
@@ -246,6 +295,71 @@ const buyCourse = async (courseId: string) => {
               </p>
             </div>
           )}
+
+          {activeTab === "reviews" && (
+            <div className="tab-content reviews-tab">
+              <h3>Student Reviews</h3>
+
+              {/* Review List */}
+              {reviews.length > 0 ? (
+                reviews.map((rev, idx) => (
+                  <div key={idx} className="review-item">
+                    <div className="review-header">
+                      <img
+                        src={`http://localhost:5000/assets/${rev.userImage || "default.png"}`}
+                        alt={rev.userName}
+                        className="review-avatar"
+                      />
+                      <div className="date-rating">
+                        <strong>{rev.userName}</strong>
+                        <p className="review-date">
+                          {new Date(rev.createdAt).toLocaleDateString()}
+                        </p>
+                        
+                      </div>
+                      
+                    </div>
+                    <p className="review-rating">⭐ {rev.rating}/5</p>
+                    <p className="review-comment">{rev.comment}</p>
+                  </div>
+                ))
+              ) : (
+                <p>No reviews yet.</p>
+              )}
+
+              {/* Add Review Form */}
+              {/* {hasAccess && (
+                <div className="add-review">
+                  <h4>Leave a Review</h4>
+                  <div className="rating-input">
+                    {[1, 2, 3, 4, 5].map((num) => ( 
+                      <span
+                        key={num}
+                        className={`star ${rating >= num ? "filled" : ""}`}
+                        onClick={() => setRating(num)}
+                      >
+                        ★
+                      </span>
+                    ))}
+                  </div>
+                  <textarea
+                    placeholder="Write your review..."
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                  ></textarea>
+                  <button
+                    onClick={submitReview}
+                    disabled={loadingReview}
+                    className="submit-review-btn"
+                  >
+                    {loadingReview ? "Submitting..." : "Submit Review"}
+                  </button>
+                </div>
+              )} */}
+            </div>
+          )}
+
+
         </div>
 
         {/* Right Sidebar */}

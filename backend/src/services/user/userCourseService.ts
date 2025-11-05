@@ -328,6 +328,28 @@ export class UserCourseService {
     }
   }
 
+  async addReview(userId: string, courseId: string, rating: number, review: string): Promise<boolean | null> {
+
+    try {
+
+      const user = await this.userRepository.findById(userId)
+      console.log(user);
+      if(user){
+        const userName = user.name
+        const userImage = user.profileImage || ''
+
+      
+      const update = await this.userRepository.addReview(userId,userName , userImage,  courseId, rating, review )
+      
+      }
+
+
+      return true
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+  }
 
 
 
