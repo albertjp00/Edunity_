@@ -30,7 +30,7 @@ interface ChatWindowProps {
   receiverId?: string;
   receiverName: string;
   receiverAvatar?: string;
-  onMessageSent?: (receiverId: string, message: string, file?: string) => void;
+  onMessageSent: (receiverId: string, message: string, file?: string) => void;
   unreadIncrease: (receiverId: string) => void;
   resetUnread: (receiverId: string) => void;
 }
@@ -59,8 +59,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     const fetchMessages = async () => {
       try {
         // const res = await api.get(`/user/messages/${userId}/${receiverId}`);
-        const res = await getMessages(userId , receiverId);
-        if(!res) return 
+        const res = await getMessages(userId, receiverId);
+        if (!res) return
         if (res.data.success) {
           const sorted = res.data.messages.sort(
             (a: Message, b: Message) =>
@@ -92,8 +92,14 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
     const handleReceive = (message: Message) => {
       if (message.senderId === userId) return;
+      console.log("received message----------", userId, receiverId);
 
       setMessages((prev) => [...prev, message]);
+
+      // Notify parent (UserChat) to update sidebar list
+      if (message.text || message.attachment) {
+        onMessageSent(message.senderId, message.text, message.attachment);
+      }
 
       // Increase unread if current chat not open
       if (message.senderId !== receiverId) {

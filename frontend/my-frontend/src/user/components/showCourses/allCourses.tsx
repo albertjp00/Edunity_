@@ -117,9 +117,18 @@ const AllCourses: React.FC = () => {
   };
 
   return (
+    <>
+    <div className="mycourses-banner">
+        <h1>ALL COURSES</h1>
+        <p className="breadcrumb">Home / Instructor</p>
+      </div>
+    
     <div className="course-page">
+      
+      
       {/* Left Side - Courses */}
       <div className="course-list">
+        
         {/* ✅ Search Input */}
         <form
           className="search-form"
@@ -313,6 +322,7 @@ const AllCourses: React.FC = () => {
         </ul>
       </aside>
     </div>
+    </>
   );
 };
 

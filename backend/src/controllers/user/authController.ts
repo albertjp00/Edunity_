@@ -6,6 +6,7 @@ import { AuthRequest } from "../../middleware/authMiddleware";
 import { OAuth2Client } from "google-auth-library";
 import { HttpStatus } from "../../enums/httpStatus.enums";
 import logger from "../../utils/logger";
+import { IAuthController } from "../../interfaces/userInterfaces";
 
 
 
@@ -22,7 +23,7 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || "");
 
 
 
-export class AuthController {
+export class AuthController implements IAuthController {
   private _authService: AuthService;
 
   constructor(authService: AuthService) {
@@ -107,7 +108,7 @@ export class AuthController {
     }
   };
 
-  logoutUser = async (req: Request, res: Response, next: NextFunction) => {
+  logoutUser = async (req: Request, res: Response, next: NextFunction):Promise<void> => {
     try {
       res.clearCookie("refreshToken", {
         httpOnly: true,
@@ -116,13 +117,15 @@ export class AuthController {
         path: "/", // must match the cookie path you set when issuing it
       });
 
-      return res.status(HttpStatus.OK).json({ success: true, message: "Logged out successfully" });
+      res.status(HttpStatus.OK).json({ success: true, message: "Logged out successfully" });
     } catch (err) {
       next(err)
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Logout failed" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Logout failed" });
 
     }
   };
+
+
 
   checkBlocked = async (req: AuthRequest, res: Response) => {
     try {

@@ -8,6 +8,7 @@ interface Module {
   title: string;
   video: File | null;
   content: string;
+  videoFile ?: File;
 }
 
 interface CourseForm {
@@ -68,39 +69,101 @@ const AddCourse: React.FC = () => {
     });
   };
 
-const validateForm = () => {
-  if (!form.title.trim() || !form.description.trim() || !form.price) {
-    toast.error("Please fill all course details.");
-    return false;
-  }
+// const validateCourseForm = (form: CourseForm): boolean => {
+//         const MAX_TITLE_LENGTH = 30;
+//         const MAX_DESCRIPTION_LENGTH = 1000;
+//         const MAX_CONTENT_LENGTH = 2000; 
+//         const MAX_PRICE = 1000;
+//         const MAX_FILE_SIZE_MB = 50;
 
-  if (!form.modules || form.modules.length === 0) {
-    toast.error("Please add at least one module.");
-    return false;
-  }
+//         if (!form.title.trim()) {
+//             toast.error("Course title is required");
+//             return false;
+//         }
+//         if (form.title.length > MAX_TITLE_LENGTH) {
+//             toast.error(`Title should not exceed ${MAX_TITLE_LENGTH} characters`);
+//             return false;
+//         }
 
-  for (let i = 0; i < form.modules.length; i++) {
-    const module = form.modules[i];
-    if (!module.title.trim() || !module.video) {
-      toast.error(`Module ${i + 1} must have a title and video file.`);
-      return false;
-    }
-  }
+//         if (!form.description.trim()) {
+//             toast.error("Description is required");
+//             return false;
+//         }
+//         if (form.description.length > MAX_DESCRIPTION_LENGTH) {
+//             toast.error(`Description should not exceed ${MAX_DESCRIPTION_LENGTH} characters`);
+//             return false;
+//         }
 
-  // Trim whitespace before submission
-  form.modules = form.modules.map((m) => ({
-    ...m,
-    title: m.title.trim(),
-  }));
+//         if (!form.price || isNaN(Number(form.price)) || Number(form.price) <= 0) {
+//             toast.error("Enter a valid price greater than 0");
+//             return false;
+//         }
+//         if (Number(form.price) > MAX_PRICE) {
+//             toast.error(`Price cannot exceed ₹${MAX_PRICE}`);
+//             return false;
+//         }
 
-  return true;
-};
+//         if (!form.category.trim()) {
+//             toast.error("Category is required");
+//             return false;
+//         }
 
+//         if (!form.level.trim()) {
+//             toast.error("Level is required");
+//             return false;
+//         }
+
+//         if (!form.skills.length) {
+//             toast.error("At least one skill is required");
+//             return false;
+//         }
+
+//         if (form.thumbnail instanceof File) {
+//             if (form.thumbnail.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+//                 toast.error(`Thumbnail size must be less than ${MAX_FILE_SIZE_MB}MB`);
+//                 return false;
+//             }
+//         }
+
+//         if (!form.modules.length) {
+//             toast.error("Add at least one module");
+//             return false;
+//         }
+
+//         for (let i = 0; i < form.modules.length; i++) {
+//             const mod = form.modules[i];
+
+//             if (!mod.title.trim()) {
+//                 toast.error(`Module ${i + 1} title is required`);
+//                 return false;
+//             }
+//             if (mod.title.length > MAX_TITLE_LENGTH) {
+//                 toast.error(`Module ${i + 1} title cannot exceed ${MAX_TITLE_LENGTH} characters`);
+//                 return false;
+//             }
+
+//             if (!mod.content.trim()) {
+//                 toast.error(`Module ${i + 1} content is required`);
+//                 return false;
+//             }
+//             if (mod.content.length > MAX_CONTENT_LENGTH) {
+//                 toast.error(`Module ${i + 1} content too long (max ${MAX_CONTENT_LENGTH} chars)`);
+//                 return false;
+//             }
+
+//             if (mod.videoFile && mod.videoFile.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+//                 toast.error(`Module ${i + 1} video exceeds ${MAX_FILE_SIZE_MB}MB`);
+//                 return false;
+//             }
+//         }
+
+//         return true; // ✅ Passed all validations
+//     };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) return;
+    // if (!validateCourseForm(form)) return;
 
     try {
       const formData = new FormData();
@@ -111,10 +174,12 @@ const validateForm = () => {
       formData.append("level", form.level);
       formData.append("category", form.category);
 
+
       if (form.thumbnail) {
         formData.append("thumbnail", form.thumbnail);
       }
 
+      
       form.modules.forEach((module, index) => {
         formData.append(`modules[${index}][title]`, module.title);
         formData.append(`modules[${index}][content]`, module.content);

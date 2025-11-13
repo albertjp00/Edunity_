@@ -15,15 +15,14 @@ const VideoPlayerUser: React.FC<VideoPlayerProps> = ({ initialUrl, onComplete })
   };
 
   useEffect(() => {
-    console.log("🎬 Refresh logic mounted for:", initialUrl);
-
-    const match = initialUrl.match(/amazonaws\.com\/(.+)$/);
-    const key = match ? match[1] : "";
+    
+    const keyWithParams = videoUrl.split(".amazonaws.com/")[1];
+  const key = keyWithParams.split("?")[0];
 
     const scheduleRefresh = async () => {
       console.log("⏱️ Triggering refresh...");
       try {
-        const res = await api.get(`/user/refresh?key=${encodeURIComponent(key)}`);
+        const res = await api.get(`/user/refresh?key=${key}`);
         if (res.data?.success && res.data?.url) {
           setVideoUrl(res.data.url);
           console.log("🔄 Video URL refreshed!");

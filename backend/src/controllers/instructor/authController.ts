@@ -1,3 +1,4 @@
+import { IInstAuthController } from "../../interfaces/instructorInterfaces.js";
 import { InstAuthRequest } from "../../middleware/authMiddleware.js";
 import { InstructorRepository } from "../../repositories/instructorRepository.js"
 import { InstAuthService } from "../../services/instructor/authService.js";
@@ -7,7 +8,7 @@ import { Request, Response } from 'express';
 
 
 
-export class InstAuthController {
+export class InstAuthController implements IInstAuthController {
   private _instAuthService: InstAuthService
 
   

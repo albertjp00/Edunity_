@@ -17,6 +17,7 @@ import { ProfileService } from "../services/user/profileService.js";
 import { UserEventService } from "../services/user/eventService.js";
 import { MessageService } from "../services/message/messageService.js";
 import { MessageRepository } from "../repositories/messageRepositories.js";
+import { profile } from "console";
 
 
 
@@ -91,6 +92,9 @@ router.get("/profile", authMiddleware, profileController.getProfile);
 router.patch("/profile",authMiddleware,upload.single("profileImage"),profileController.editProfile);
 router.put('/passwordChange',authMiddleware,profileController.changePassword)
 router.get('/wallet',authMiddleware , profileController.getWallet)
+router.get('/payment',authMiddleware,profileController.getPayment)
+router.get('/notifications',authMiddleware,profileController.notifications)
+router.put('/notificationsMarkRead',authMiddleware,profileController.notificationsMarkRead)
 
 
 router.get('/getCourses',authMiddleware, courseController.showCourses)

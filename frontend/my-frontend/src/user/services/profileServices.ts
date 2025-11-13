@@ -46,3 +46,15 @@ export const userPasswordChange = async(oldPassword:string , newPassword:string)
         // throw error.response ? error.response : error;
     }
 }
+
+
+
+export const getPaymentHistory = async()=>{
+    try {
+        const res = await api.get('/user/payment')
+        return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}

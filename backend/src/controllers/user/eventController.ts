@@ -6,16 +6,17 @@ import { InstructorRepository } from "../../repositories/instructorRepository";
 import { Server } from "http";
 import { log } from "console";
 import logger from "../../utils/logger";
+import { IUserEventController } from "../../interfaces/userInterfaces";
 
 
 
 
 
 
-export class UserEventController {
+export class UserEventController implements IUserEventController {
     private _userEventService: UserEventService;
 
-    constructor(userEventService : UserEventService) {
+    constructor(userEventService: UserEventService) {
         // const repo = new UserRepository()
         // const Irepo = new InstructorRepository()
         this._userEventService = userEventService
@@ -26,7 +27,7 @@ export class UserEventController {
         try {
             const result = await this._userEventService.getEventsRequest()
             console.log(result);
-            
+
 
             res.json({ success: true, events: result })
         } catch (error) {
@@ -55,13 +56,13 @@ export class UserEventController {
         try {
             const id = req.user?.id!
             const eventId = req.params.id
-            logger.info('enroll events ',id , eventId )
+            logger.info('enroll events ', id, eventId)
             if (!eventId) {
                 res.status(400).json({ success: false, message: "event Id missing" });
                 return;
             }
             const result = await this._userEventService.eventEnrollRequest(id, eventId)
-            console.log('enrolled event ',result)
+            console.log('enrolled event ', result)
 
             res.json({ success: true })
         } catch (error) {
@@ -70,25 +71,25 @@ export class UserEventController {
         }
     }
 
-    getMyEvents = async(req:AuthRequest , res : Response)=>{
+    getMyEvents = async (req: AuthRequest, res: Response) => {
         try {
             // logger.info('getting my eventss ')
             const userId = req.user?.id!
             console.log(userId);
-            
+
             const events = await this._userEventService.getMyEvents(userId)
-            logger.info('evetnssss',events)
+            logger.info('evetnssss', events)
             console.log(events);
-            
-            res.json({success : true , events : events})
+
+            res.json({ success: true, events: events })
         } catch (error) {
             console.log(error);
-            
+
         }
     }
 
 
-    joinUserEvent = async (req: AuthRequest, res: Response) => {
+    joinUserEvent = async (req: AuthRequest, res: Response): Promise<void | null> => {
         try {
             const userId = req.user?.id!
             const eventId = req.params.eventId!;
@@ -101,8 +102,10 @@ export class UserEventController {
             const result = await this._userEventService.joinUserEventRequest(eventId, userId);
 
             if (!result || !result.success) {
-                return res.status(400).json({ message: result?.message || "Failed to start event" });
+                res.status(400).json({ message: result?.message || "Failed to start event" });
+                return;
             }
+
 
             // console.log('result', result);
 
@@ -115,7 +118,7 @@ export class UserEventController {
             //     response.meetingLink = result.meetingLink;
             // }
 
-            res.json({result , userId}); 
+            res.json({ result, userId });
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: "Server error" });

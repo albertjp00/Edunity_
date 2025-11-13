@@ -57,6 +57,7 @@ const MyCourses: React.FC = () => {
 
   return (
     <div className="my-courses-page">
+
       <div className="mycourses-banner">
         <h1>MY COURSES</h1>
         <p className="breadcrumb">Home / Instructor</p>
@@ -91,28 +92,27 @@ const MyCourses: React.FC = () => {
                       alt={course.title}
                       className="course-image"
                     />
-                    <span className="course-category">
-                      {course.category || "Digital Marketing"}
-                    </span>
-                    <span className="course-price">
-                      ₹{course.price?.toFixed(2) || "Free"}
-                    </span>
+                    <div className="course-top-info">
+                      <span className="course-category">{course.category || "Digital Marketing"}</span>
+                      <span className="course-price">
+                        ₹{course.price?.toFixed(2) || "Free"}
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="course-content">
+                  <div className="course-body">
                     <h3 className="course-title">{course.title}</h3>
 
                     <div className="course-meta">
-                      <span>Lesson 10</span>
-                      <span>🕒 1h 30m</span>
-                      <span>👥 {course.totalEnrolled || 0} Students</span>
+                      <span>📘 Lesson 10</span>
+                      <span>⏱ 19h 30m</span>
+                      <span>👥 {course.totalEnrolled || 0}+ Students</span>
                     </div>
 
-                    <div className="course-footer">
-                      <button className="edit-btn">Edit →</button>
-                    </div>
+                    
                   </div>
                 </div>
+
               ))}
             </div>
 
@@ -130,9 +130,8 @@ const MyCourses: React.FC = () => {
                 {Array.from({ length: totalPages }).map((_, index) => (
                   <button
                     key={index}
-                    className={`page-number ${
-                      currentPage === index + 1 ? "active" : ""
-                    }`}
+                    className={`page-number ${currentPage === index + 1 ? "active" : ""
+                      }`}
                     onClick={() => handlePageChange(index + 1)}
                   >
                     {index + 1}

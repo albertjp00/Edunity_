@@ -10,9 +10,7 @@ import logger from "../../utils/logger";
 export class AdminController {
     private _adminService: AdminService
 
-    constructor(
-        adminService : AdminService
-    ) {
+    constructor(adminService : AdminService) { 
         this._adminService = adminService
 
     }

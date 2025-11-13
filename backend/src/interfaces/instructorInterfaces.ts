@@ -1,3 +1,4 @@
+import { InstAuthRequest } from "../middleware/authMiddleware.js";
 import { ICourse } from "../models/course.js";
 import { IEvent } from "../models/events.js";
 import { IInstructor } from "../models/instructor.js";
@@ -61,6 +62,64 @@ export interface IInsRepository {
 
 
 
+import { Request, Response } from "express";
+
+
+//authCOntroller
+export interface IInstAuthController {
+  login(req: Request, res: Response): Promise<void>;
+  register(req: Request, res: Response): Promise<void>;
+  resendOtp(req: Request, res: Response): Promise<void>;
+  verifyOtp(req: Request, res: Response): Promise<void>;
+
+  forgotPassword(req: Request, res: Response): Promise<void>;
+  verifyOtpForgotPass(req: Request, res: Response): Promise<void>;
+  resendOtpForgotPassword(req: Request, res: Response): Promise<void>;
+  resetPassword(req: Request, res: Response): Promise<void>;
+}
+
+
+
+//courseCOnttroller
+export interface IInstCourseController {
+  myCourses(req: InstAuthRequest, res: Response): Promise<void>;
+  courseDetails(req: InstAuthRequest, res: Response): Promise<void>;
+  refreshVideoUrl(req: Request, res: Response): Promise<void>;
+  purchaseDetails(req: InstAuthRequest, res: Response): Promise<void>;
+  editCourse(req: Request, res: Response): Promise<void>;
+  addCourse(req: InstAuthRequest, res: Response): Promise<void>;
+  addQuiz(req: InstAuthRequest, res: Response): Promise<void>;
+  getQuiz(req: Request, res: Response): Promise<void>;
+  editQuiz(req: Request, res: Response): Promise<void>;
+}
+
+
+
+
+
+export interface IEventController {
+  createEvents(req: InstAuthRequest, res: Response): Promise<void>;
+  getAllEvents(req: InstAuthRequest, res: Response): Promise<void>;
+  getEvent(req: InstAuthRequest, res: Response): Promise<void>;
+  editEvent(req: InstAuthRequest, res: Response): Promise<void>;
+  joinEvent(req: InstAuthRequest, res: Response): Promise<void>;
+  endEvent(req: InstAuthRequest, res: Response): Promise<void>;
+}
+
+
+//profileCOntroller
+
+
+export interface IInstProfileController {
+  getProfile(req: InstAuthRequest, res: Response): Promise<void>;
+  editProfile(req: InstAuthRequest, res: Response): Promise<void>;
+  changePassword(req: InstAuthRequest, res: Response): Promise<void>;
+  kycSubmit(req: InstAuthRequest, res: Response): Promise<void>;
+  getNotifications(req: InstAuthRequest, res: Response): Promise<void>;
+  getDashboardData(req: InstAuthRequest, res: Response): Promise<void>;
+  getEarnings(req: InstAuthRequest, res: Response): Promise<void>;
+  getWallet(req: InstAuthRequest, res: Response): Promise<void>;
+}
 
 
 

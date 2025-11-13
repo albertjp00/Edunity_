@@ -13,17 +13,19 @@ import { BaseRepository } from './baseRepository';
 import { IMyCourses, IUserRepository, WalletTransaction } from '../interfaces/userInterfaces';
 import { IWallet, WalletModel } from '../models/wallet';
 import { log } from 'winston';
+import { IPayment, PaymentModel } from '../models/payment';
+import { INotification, NotificationModel } from '../models/notification';
 
 
 
 
-export class UserRepository
-  extends BaseRepository<IUser>
-  implements IUserRepository {
+export class UserRepository extends BaseRepository<IUser>
+implements IUserRepository {
 
   constructor() {
     super(UserModel)
   }
+
 
   async create(user: Partial<IUser>): Promise<IUser> {
     const newUser = new this.model(user);
@@ -32,11 +34,11 @@ export class UserRepository
   }
 
 
-
   async googleLogIn(user: Partial<IUser>): Promise<IUser> {
     const newUser = new this.model(user);
     return await newUser.save();
   }
+
 
   async isBlocked(id: string): Promise<boolean> {
     const blocked = await this.model.findById(id)
@@ -69,6 +71,13 @@ export class UserRepository
 
   async getWallet(userId: string): Promise<IWallet | null> {
     return await WalletModel.findOne({ userId: userId })
+  }
+
+    async getPayment(userId: string): Promise<IPayment[] | null> {
+      const pay =  await PaymentModel.find({ userId: userId })
+      console.log("payyyy",pay);
+      return pay
+    
   }
 
   async getCourse(id: string): Promise<ICourse | null> {
@@ -250,6 +259,55 @@ export class UserRepository
     }
   }
 
+
+      async userPayment(userId : string , courseId : string , courseName : string , coursePrice : number): Promise<IPayment | null> {
+          try {
+              const payment = await PaymentModel.create({userId , courseId , amount : coursePrice , courseName})
+              console.log('added to payment');
+              
+              return payment
+          } catch (error) {
+              console.log(error);
+              return null
+          }
+      } 
+
+      
+
+      async sendNotification(userId : string , title : string , message : string ):Promise<INotification | null>{
+        try {
+          return await NotificationModel.create({recipientId : userId , title , message})
+        } catch (error) {
+          console.log(error);
+          return null
+          
+        }
+      }
+
+
+      async getNotifications(userId : string ):Promise<INotification[] | null>{
+        try {
+          return await NotificationModel.find({recipientId : userId}).sort({createdAt:-1})
+        } catch (error) {
+          console.log(error);
+          return null
+        }
+      }
+
+      async notificationsMarkRead(userId : string):Promise<INotification[] | null>{
+        try {
+          const update =  await NotificationModel.updateMany({ recipientId: userId, isRead: false },
+          { $set: { isRead: true } }
+          );
+
+          const updated = await NotificationModel.find({recipientId : userId }).sort({createdAt:-1})
+          return updated
+        } catch (error) {
+          console.log(error);
+          return null
+        }
+      }
+
   async findMyCourses(id: string, page: number): Promise<IMyCourses> {
 
     const limit = 3
@@ -295,7 +353,7 @@ export class UserRepository
     return course;
   }
 
-  async addCertificate(userId: string, courseId: string, certificate: string): Promise<IMyCourse | null> {
+  async getCertificate(userId: string, courseId: string, certificate: string): Promise<IMyCourse | null> {
     try {
 
       console.log(courseId, userId, certificate);
@@ -471,6 +529,8 @@ export class UserRepository
       });
     }
   }
+
+  
 
 
 }

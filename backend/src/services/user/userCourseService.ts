@@ -15,6 +15,7 @@ import PDFDocument from 'pdfkit'
 import path from "path";
 import { fileURLToPath } from "url";
 import { generateCertificate } from '../../utils/certificate.js';
+import { generateSignedUrl } from '../../utils/getSignedUrl.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -114,7 +115,6 @@ export class UserCourseService {
       }
 
       const instructor = await this.instructorRepository.findById(course.instructorId);
-
       return {
         ...(course.toObject?.() || course),
         instructor,
@@ -186,8 +186,24 @@ export class UserCourseService {
         const adminEarning = coursePrice * ADMIN_COMMISSION_RATE;
         const instructorEarning = coursePrice - adminEarning;
 
+        //adminEarnings
         const adminEarningsUpdate = await this.adminRepository.updateEarnings(courseId, coursePrice, instructorId,
           instructorEarning, adminEarning)
+
+        const wallet = await this.instructorRepository.addToWallet(userId, {
+        type: "credit",
+        amount: course.price,
+        courseId,
+        description: `Refund for canceled course: ${course.title}`,
+      });
+
+        const courseName = course.title
+        const payment = await this.userRepository.userPayment(userId, courseId, courseName, coursePrice)
+
+        //notification
+        const title = "Course Purchased"
+        const message = `You have successfully purchased the course "${course?.title}`
+        const notification = await this.userRepository.sendNotification(userId, title, message)
 
         return { success: true, message: "Payment verified and course added" };
       } else {
@@ -250,6 +266,31 @@ export class UserCourseService {
       const course = await this.userRepository.getCourse(myCourse.courseId.toString());
       if (!course) return null;
 
+
+      if (course.modules && course.modules.length > 0) {
+        for (const module of course.modules) {
+          const rawUrl = module.videoUrl;
+
+          if (rawUrl) {
+            // Extract key safely and remove query params
+            let key: string | undefined;
+
+            if (rawUrl.includes(".amazonaws.com/")) {
+              const parts = rawUrl.split(".amazonaws.com/");
+              key = parts[1]?.split("?")[0]; // safely access
+            } else {
+              key = rawUrl.split("?")[0]; // fallback for direct key
+            }
+            console.log("key", key);
+
+            if (key) {
+              module.videoUrl = await generateSignedUrl(key);
+            }
+          }
+        }
+      }
+
+
       const instructor = await this.instructorRepository.findById(course.instructorId as string);
       if (!instructor) return null;
 
@@ -268,6 +309,7 @@ export class UserCourseService {
       return null;
     }
   };
+
 
 
   async updateProgress(userId: string, myCourseId: string, moduleTitle: string) {
@@ -316,7 +358,7 @@ export class UserCourseService {
         );
         const fileName = path.basename(filePath);
 
-        await this.userRepository.addCertificate(userId, courseId, fileName);
+        await this.userRepository.getCertificate(userId, courseId, fileName);
       }
       filePath = path.basename(filePath);
 
@@ -334,13 +376,13 @@ export class UserCourseService {
 
       const user = await this.userRepository.findById(userId)
       console.log(user);
-      if(user){
+      if (user) {
         const userName = user.name
         const userImage = user.profileImage || ''
 
-      
-      const update = await this.userRepository.addReview(userId,userName , userImage,  courseId, rating, review )
-      
+
+        const update = await this.userRepository.addReview(userId, userName, userImage, courseId, rating, review)
+
       }
 
 

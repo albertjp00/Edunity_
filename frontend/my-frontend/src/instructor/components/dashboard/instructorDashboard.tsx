@@ -1,0 +1,69 @@
+import React, { useEffect, useState } from "react";
+import "./instructorDashboard.css";
+
+import EarningsChart from "./earningsChart";
+import RecentStudents from "./recentStudents";
+import StatsCard from "./statsCard";
+import CourseList from "./courseList";
+import instructorApi from "../../../api/instructorApi";
+import InstructorNavbar from "../navbar/navbar";
+
+interface Student {
+  name: string;
+  email: string;
+  course: string;
+  date: string;
+}
+
+interface Stats {
+  totalCourses: number;
+  totalStudents: number;
+  totalEarnings: number;
+  recentStudents: Student[];
+}
+
+const InstructorDashboard: React.FC = () => {
+  const [stats, setStats] = useState<Stats | null>(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await instructorApi.get("/instructor/dashboard");
+        console.log(res);
+        
+        setStats(res.data.dashboard);
+      } catch (err) {
+        console.error("Error fetching stats:", err);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  return (
+    <>
+      <InstructorNavbar />
+      <div className="instructor-dashboard">
+        <h2>Instructor Dashboard</h2>
+
+        {/* Stats Overview */}
+        <div className="stats-grid">
+          <StatsCard title="Total Courses" value={stats?.totalCourses || 0} />
+          <StatsCard title="Total Students" value={stats?.totalStudents || 0} />
+
+          
+        </div>
+
+        {/* Chart and Recent Students */}
+        <div className="dashboard-grid">
+          <EarningsChart />
+          <RecentStudents students={stats?.recentStudents || []} />
+        </div>
+
+        {/* Course List */}
+        <CourseList />
+      </div>
+    </>
+  );
+};
+
+export default InstructorDashboard;

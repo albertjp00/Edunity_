@@ -71,39 +71,58 @@ export class CourseService {
 
 
 
-fetchCourseDetails = async (courseId: string) => {
-  try {
-    console.log("service get course details", courseId);
 
-    const course = await this.instructorRepository.getCourseDetails(courseId);
-    if (!course) return null;
+  fetchCourseDetails = async (courseId: string) => {
+    try {
+      console.log("service get course details", courseId);
 
-    if (course.modules && course.modules.length > 0) {
-      for (const module of course.modules) {
-        if (module.videoUrl) {
-          const key = module.videoUrl.split(".amazonaws.com/")[1]; 
-          module.videoUrl = await generateSignedUrl(key as string);
+      const course = await this.instructorRepository.getCourseDetails(courseId);
+      if (!course) return null;
+
+      // Generate signed URLs for private videos
+      if (course.modules && course.modules.length > 0) {
+        for (const module of course.modules) {
+          const rawUrl = module.videoUrl;
+
+          if (rawUrl) {
+            // Extract key safely and remove query params
+            let key: string | undefined;
+
+            if (rawUrl.includes(".amazonaws.com/")) {
+              const parts = rawUrl.split(".amazonaws.com/");
+              key = parts[1]?.split("?")[0]; // safely access
+            } else {
+              key = rawUrl.split("?")[0]; // fallback for direct key
+            }
+            console.log("key", key);
+            
+            if (key) {
+              module.videoUrl = await generateSignedUrl(key);
+            }
+          }
         }
       }
+
+      console.log('course in service',course.modules);
+      
+      const quiz = await this.instructorRepository.getQuizByCourseId(courseId);
+      const quizExists = !!quiz;
+
+      return { course, quizExists };
+    } catch (error) {
+      console.error("❌ Error fetching course details:", error);
+      return null;
     }
-
-    const quiz = await this.instructorRepository.getQuizByCourseId(courseId);
-    const quizExists = !!quiz;
-
-    return { course, quizExists };
-  } catch (error) {
-    console.log("Error fetching course details:", error);
-    return null;
-  }
-};
+  };
 
 
 
-  getPurchaseDetails = async (id:string):Promise<IPurchaseDetails[] | null>=>{
+
+  getPurchaseDetails = async (id: string): Promise<IPurchaseDetails[] | null> => {
     try {
       const details = await this.instructorRepository.purchaseDetails(id)
-      
-      
+
+
       return details
     } catch (error) {
       console.log(error);
@@ -124,16 +143,16 @@ fetchCourseDetails = async (courseId: string) => {
   // }
 
 
-addCourseRequest = async (id: string, data: any) => {
-  try {
-    console.log("service add course data", data);
-    const createdCourse = await this.instructorRepository.addCourse(id, data);
-    return createdCourse;
-  } catch (error) {
-    console.error("Add Course Error:", error);
-    throw error;
-  }
-};
+  addCourseRequest = async (id: string, data: any) => {
+    try {
+      console.log("service add course data", data);
+      const createdCourse = await this.instructorRepository.addCourse(id, data);
+      return createdCourse;
+    } catch (error) {
+      console.error("Add Course Error:", error);
+      throw error;
+    }
+  };
 
 
 
@@ -171,9 +190,9 @@ addCourseRequest = async (id: string, data: any) => {
     }
   }
 
-  async updateQuiz (id: string, data: any){
+  async updateQuiz(id: string, data: any) {
     try {
-      const update = await this.instructorRepository.editQuiz(id , data)
+      const update = await this.instructorRepository.editQuiz(id, data)
       return update
     } catch (error) {
       console.log(error);

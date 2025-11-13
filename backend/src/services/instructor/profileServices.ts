@@ -1,4 +1,6 @@
+import { IEarnings } from "../../models/earnings.js";
 import { INotification } from "../../models/notification.js";
+import { IWallet } from "../../models/wallet.js";
 import { InstructorRepository } from "../../repositories/instructorRepository.js";
 import bcrypt from 'bcrypt'
 
@@ -78,6 +80,40 @@ export class InstructorProfileService {
     } catch (error) {
       console.log(error);
       return null
+    }
+  }
+
+  getDashboard = async(id : string):Promise<void>=>{
+    try {
+      const data = await this.instructorRepository.getDashboard(id)
+      
+      return data
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+  getEarnings = async(id : string):Promise<{ monthlyEarnings:{month:string , earnings: number }[] , totalEarnings:number }| null>=>{
+    try {
+      const monthlyEarnings = await this.instructorRepository.getMonthlyEarnings(id)
+      const totalEarnings = await this.instructorRepository.totalEarnings(id) ?? 0
+    
+      return {monthlyEarnings , totalEarnings}
+    } catch (error) {
+      console.log(error);
+      return null 
+    }
+  }
+
+  getWallet = async(id : string):Promise<IWallet | null>=>{
+    try {
+      const wallet = await this.instructorRepository.getWallet(id)
+    
+      return wallet
+    } catch (error) {
+      console.log(error); 
+      return null 
     }
   }
 

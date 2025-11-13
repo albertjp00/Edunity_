@@ -2,7 +2,8 @@
   padding: 3rem 5%;
   background-color: #f9fafc;
   min-height: 100vh;
-  margin: 0 200px 0 200px;
+  margin: 0 auto; /* Center container */
+  max-width: 1200px; /* Prevent overly wide screens */
 }
 
 .my-course-container h2 {
@@ -11,16 +12,16 @@
   color: #222;
   text-align: center;
   margin-bottom: 2rem;
-
 }
 
+/* ----------- Course List Grid ----------- */
 .my-courseList {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 in one row */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Flexible columns */
   gap: 2rem;
 }
 
-/* Course Card */
+/* ----------- Course Card ----------- */
 .course-card {
   background: #fff;
   border-radius: 10px;
@@ -44,7 +45,7 @@
   object-fit: cover;
 }
 
-/* Course details */
+/* ----------- Course Details ----------- */
 .course-details {
   padding: 1.2rem;
   flex: 1;
@@ -78,7 +79,7 @@
   margin-bottom: 0.3rem;
 }
 
-/* Optional progress bar */
+/* ----------- Progress Bar ----------- */
 .course-progress::before {
   content: "";
   display: block;
@@ -100,15 +101,14 @@
   transition: width 0.3s ease;
 }
 
-
-
+/* ----------- Pagination ----------- */
 .pagination-controls {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
   margin: 30px 0;
-  color : black
+  flex-wrap: wrap; /* Prevents overflow on mobile */
 }
 
 .pagination-controls button {
@@ -138,16 +138,79 @@
   cursor: not-allowed;
 }
 
+/* ----------- Responsive Design ----------- */
 
-/* Responsive Design */
+/* Medium screens (tablets) */
 @media (max-width: 1024px) {
+  .my-course-container {
+    margin: 0 50px;
+    padding: 2rem;
+  }
+
+  .course-thumbnail {
+    height: 160px;
+  }
+
   .my-courseList {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   }
 }
 
+/* Small screens (phones) */
 @media (max-width: 640px) {
+  .my-course-container {
+    margin: 0 20px;
+    padding: 1.5rem;
+  }
+
+  .my-course-container h2 {
+    font-size: 1.6rem;
+  }
+
+  .course-card {
+    flex-direction: column;
+  }
+
+  .course-thumbnail {
+    height: 140px;
+  }
+
+  .course-details {
+    padding: 1rem;
+  }
+
+  .course-title {
+    font-size: 1rem;
+  }
+
+  .course-description {
+    font-size: 0.85rem;
+    height: auto;
+  }
+
+  .pagination-controls {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .pagination-controls button {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+}
+
+/* Extra-small screens (very small phones) */
+@media (max-width: 400px) {
+  .my-course-container {
+    margin: 0 10px;
+    padding: 1rem;
+  }
+
   .my-courseList {
-    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+
+  .course-thumbnail {
+    height: 120px;
   }
 }

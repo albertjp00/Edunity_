@@ -108,8 +108,105 @@ const EditCourse: React.FC = () => {
 
 
 
+
+    const validateCourseForm = (form: CourseForm): boolean => {
+        const MAX_TITLE_LENGTH = 30;
+        const MAX_DESCRIPTION_LENGTH = 1000;
+        const MAX_CONTENT_LENGTH = 2000;
+        const MAX_PRICE = 1000;
+        const MAX_FILE_SIZE_MB = 50;
+
+        if (!form.title.trim()) {
+            toast.error("Course title is required");
+            return false;
+        }
+        if (form.title.length > MAX_TITLE_LENGTH) {
+            toast.error(`Title should not exceed ${MAX_TITLE_LENGTH} characters`);
+            return false;
+        }
+
+        if (!form.description.trim()) {
+            toast.error("Description is required");
+            return false;
+        }
+        if (form.description.length > MAX_DESCRIPTION_LENGTH) {
+            toast.error(`Description should not exceed ${MAX_DESCRIPTION_LENGTH} characters`);
+            return false;
+        }
+
+        if (!form.price || isNaN(Number(form.price)) || Number(form.price) <= 0) {
+            toast.error("Enter a valid price greater than 0");
+            return false;
+        }
+        if (Number(form.price) > MAX_PRICE) {
+            toast.error(`Price cannot exceed ₹${MAX_PRICE}`);
+            return false;
+        }
+
+        if (!form.category.trim()) {
+            toast.error("Category is required");
+            return false;
+        }
+
+        if (!form.level.trim()) {
+            toast.error("Level is required");
+            return false;
+        }
+
+        if (!form.skills.length) {
+            toast.error("At least one skill is required");
+            return false;
+        }
+
+        if (form.thumbnail instanceof File) {
+            if (form.thumbnail.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+                toast.error(`Thumbnail size must be less than ${MAX_FILE_SIZE_MB}MB`);
+                return false;
+            }
+        }
+
+        if (!form.modules.length) {
+            toast.error("Add at least one module");
+            return false;
+        }
+
+        for (let i = 0; i < form.modules.length; i++) {
+            const mod = form.modules[i];
+
+            if (!mod.title.trim()) {
+                toast.error(`Module ${i + 1} title is required`);
+                return false;
+            }
+            if (mod.title.length > MAX_TITLE_LENGTH) {
+                toast.error(`Module ${i + 1} title cannot exceed ${MAX_TITLE_LENGTH} characters`);
+                return false;
+            }
+
+            if (!mod.content.trim()) {
+                toast.error(`Module ${i + 1} content is required`);
+                return false;
+            }
+            if (mod.content.length > MAX_CONTENT_LENGTH) {
+                toast.error(`Module ${i + 1} content too long (max ${MAX_CONTENT_LENGTH} chars)`);
+                return false;
+            }
+
+            if (mod.videoFile && mod.videoFile.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+                toast.error(`Module ${i + 1} video exceeds ${MAX_FILE_SIZE_MB}MB`);
+                return false;
+            }
+        }
+
+        return true; // ✅ Passed all validations
+    };
+
+
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+
+        const isValid = validateCourseForm(form);
+        if (!isValid) return;
 
         try {
             const formData = new FormData();
@@ -214,17 +311,24 @@ const EditCourse: React.FC = () => {
                     <select
                         className="select-category"
                         name="category"
-                        value={form.category}
+                        value={form.category || ""}  // ensures controlled input
                         onChange={handleChange}
                         required
                     >
+                        {/* Default placeholder option */}
+                        <option value="" disabled>
+                            -- Select a Category --
+                        </option>
+
+                        {/* Category options */}
                         <option value="Web Development">Web Development</option>
                         <option value="Mobile Development">Mobile Development</option>
-                        <option value="Data Science">Data science</option>
+                        <option value="Data Science">Data Science</option>
                         <option value="Cyber Security">Cyber Security</option>
                         <option value="Design">Design</option>
                         <option value="Language">Language</option>
                     </select>
+
 
                     <label>Skills</label>
                     <div className="skills-checkbox-group">

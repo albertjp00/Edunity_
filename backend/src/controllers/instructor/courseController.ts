@@ -52,7 +52,7 @@ export class InstCourseController {
       const id = req.instructor?.id
       const courseId = req.params.id!
       const result = await this._courseService.fetchCourseDetails(courseId)
-      console.log("course", result);
+      console.log("course", result?.course.modules);
 
       res.json({ success: true, course: result, quiz: result?.quizExists })
     } catch (error) {
@@ -61,7 +61,7 @@ export class InstCourseController {
   }
 
 
-
+  
   refreshVideoUrl = async (req: Request, res: Response) => {
     try {
       const { key } = req.query; // frontend sends the key (filename)
@@ -188,7 +188,7 @@ export class InstCourseController {
 
       const files = Array.isArray(req.files) ? req.files : [];
 
-
+      
       const moduleIndexes = new Set(
         [
           ...Object.keys(req.body).map((k) => k.match(/modules\[(\d+)\]/)?.[1]),
@@ -253,7 +253,7 @@ export class InstCourseController {
 
 
 
-  addQuiz = async (req: AuthRequest, res: Response) => {
+  addQuiz = async (req: InstAuthRequest, res: Response) => {
     try {
       const { id } = req.params;
       const { title, questions } = req.body;

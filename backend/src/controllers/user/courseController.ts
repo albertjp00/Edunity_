@@ -7,8 +7,9 @@ import { AdminRepository } from "../../repositories/adminRepositories";
 import instructor from "../../routes/instructorRoutes";
 import { debounceCall } from "../../utils/debounce";
 import { generateSignedUrl } from "../../utils/getSignedUrl";
+import { IUserCourseController } from "../../interfaces/userInterfaces";
 
-export class UserCourseController {
+export class UserCourseController implements IUserCourseController{
     private _courseService: UserCourseService;
 
     constructor(courseService: UserCourseService) {
@@ -187,7 +188,8 @@ export class UserCourseController {
     };
 
 
-    verifyPayment = async (req: AuthRequest, res: Response, next: NextFunction) => {
+
+    verifyPayment = async (req: AuthRequest, res: Response, next: NextFunction):Promise<void> => {
         try {
             const { razorpay_order_id, razorpay_payment_id, razorpay_signature, courseId } = req.body;
             const userId = req.user?.id!;
@@ -205,10 +207,11 @@ export class UserCourseController {
                 );
             });
 
+
             if (result.success) {
-                return res.json(result);
+                res.json(result);
             } else {
-                return res.status(400).json(result);
+                res.status(400).json(result);
             }
 
         } catch (error) {
@@ -219,12 +222,7 @@ export class UserCourseController {
     };
 
 
-
-
-
-
-
-
+    
 
     myCourses = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
@@ -262,6 +260,7 @@ export class UserCourseController {
             const myCourseId = req.params.id!
             console.log('viewMyCourse', id, myCourseId);
 
+
             const result = await this._courseService.viewMyCourseRequest(id, myCourseId)
             console.log('mycourses view', result);
 
@@ -275,13 +274,15 @@ export class UserCourseController {
 
 
 
-    refreshVideoUrl = async (req: AuthRequest, res: Response) => {
+    refreshVideoUrl = async (req: AuthRequest, res: Response):Promise<void> => {
         try {
             const { key } = req.query
             console.log('refresh url ',key);
+
+            
             
             if (!key) {
-                return res.status(400).json({ success: false, message: "Missing key" });
+                res.status(400).json({ success: false, message: "Missing key" });
             }
 
             const signedUrl = await generateSignedUrl(key as string);

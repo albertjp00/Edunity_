@@ -6,6 +6,7 @@ import { kycRejectMail } from "../../utils/sendMail.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { PaginatedInstructors, PaginatedUsers } from "../../interfaces/adminInterfaces.js";
+import { IEarnings } from "../../models/earnings.js";
 
 interface adminLoginResult {
     success: boolean;
@@ -186,8 +187,13 @@ export class AdminService {
 
     getEarningsData = async ()=>{
         try {
-            const data = await this.adminRepository.getEarningsData()
-            return data
+            const earningsData = await this.adminRepository.getEarningsData()
+            const total = earningsData?.map((earning)=>{
+                return earning.adminEarnings}).reduce((acc,curr)=>acc+curr)
+
+            
+            
+            return {earningsData , total}
         } catch (error) {
             console.log(error);
             

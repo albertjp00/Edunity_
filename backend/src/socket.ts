@@ -10,6 +10,8 @@ interface Participant {
   role: "instructor" | "user";
 }
 
+
+
 const messageController = new MessageController()
 
 const eventParticipants: Record<string, Participant[]> = {};

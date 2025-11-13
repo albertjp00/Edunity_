@@ -6,77 +6,77 @@ import type { Ievent } from "../../interterfaces/events";
 
 //course services 
 
-export const  addCourse = async(formData : FormData) =>{
+export const addCourse = async (formData: FormData) => {
   try {
-    const res = await instructorApi.post('/instructor/course',{
-        formData })
-        return res
-  } catch (error) {
-    console.log(error);
-    
-  }
-}
-
-export const  getCourseDetails = async(id:string | undefined) =>{
-  try {
-    const res = await instructorApi.get(`/instructor/course/${id}`);
-        return res
-  } catch (error) {
-    console.log(error);
-    
-  }
-}
-
-
-//kycSubmit
-
-export const  kycSubmit = async(formData : FormData) =>{
-  try {
-    const res = await instructorApi.post('/instructor/kycSubmit',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      )
-        return res
-  } catch (error) {
-    console.log(error);
-    
-  }
-}
-
-
-
-
-
-
-export const addEvent = async(formData : Ievent )=>{
-  
-  
-    try {
-        const res = await instructorApi.post('/instructor/event',{
-        formData
+    const res = await instructorApi.post('/instructor/course', formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     })
     return res
-    } catch (error) {
-        console.log(error);
-    }
+  } catch (error) {
+    console.log(error);
+
+  }
+}
+
+export const getCourseDetails = async (id: string | undefined) => {
+  try {
+    const res = await instructorApi.get(`/instructor/course/${id}`);
+    return res
+  } catch (error) {
+    console.log(error);
+
+  }
+}
+
+ 
+//kycSubmit
+
+export const kycSubmit = async (formData: FormData) => {
+  try {
+    const res = await instructorApi.post('/instructor/kycSubmit',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    )
+    return res
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 
-export const getMyEventsHomePage = async()=>{
-    try {
-        const query  = ''
-        const page = 1
-        const res = await instructorApi.get(`/instructor/event`, {
-      params: { query , page },
+
+
+export const addEvent = async (formData: Ievent) => {
+
+
+  try {
+    const res = await instructorApi.post('/instructor/event', {
+      formData
     })
-        return res
-    } catch (error) {
-        console.log(error);
-    }
+    return res
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
+export const getMyEventsHomePage = async () => {
+  try {
+    const query = ''
+    const page = 1
+    const res = await instructorApi.get(`/instructor/event`, {
+      params: { query, page },
+    })
+    return res
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 

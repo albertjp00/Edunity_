@@ -1,9 +1,11 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface IModule {
   title: string;
-  videoUrl: string;
+  // videoUrl: string;
   content: string;
+  videoUrl?: string;
+  signedVideoUrl?: string; 
 }
 
 export interface IReview {
@@ -16,6 +18,7 @@ export interface IReview {
 }
 
 export interface ICourse extends Document {
+  _id: Types.ObjectId; 
   instructorId?: string;
   title: string;
   description?: string;

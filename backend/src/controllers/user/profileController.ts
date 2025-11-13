@@ -3,18 +3,19 @@ import { UserRepository } from '../../repositories/userRepository';
 import { ProfileService } from '../../services/user/profileService';
 import { AuthRequest } from '../../middleware/authMiddleware';
 import { HttpStatus } from '../../enums/httpStatus.enums';
+import { IProfileController } from '../../interfaces/userInterfaces';
 
-export class ProfileController {
+export class ProfileController implements IProfileController {
     private _profileService: ProfileService;
 
-    constructor(profileService : ProfileService) {
+    constructor(profileService: ProfileService) {
         // const repo = new UserRepository(); 
         this._profileService = profileService
     }
 
 
 
-    getProfile = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void> => {
+    getProfile = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id
 
@@ -39,7 +40,7 @@ export class ProfileController {
 
 
 
-    editProfile = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void> => {
+    editProfile = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             console.log('user profiel ', req.user?.id, req.file)
             const userId = req.user?.id; // Assuming `req.user` is set by auth middleware
@@ -59,7 +60,7 @@ export class ProfileController {
 
             if (updatedProfile) {
                 res.status(200).json({
-                    success:true,
+                    success: true,
                     message: 'Profile updated successfully',
                     profile: updatedProfile
                 });
@@ -74,13 +75,13 @@ export class ProfileController {
     };
 
 
-    changePassword = async (req: AuthRequest, res: Response, next : NextFunction): Promise<void> => {
+    changePassword = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             const id = req.user?.id;
             const { newPassword, oldPassword } = req.body;
 
             // console.log(newPassword);
-            
+
 
             if (!id) {
                 res.status(401).json({ success: false, message: "Unauthorized" })
@@ -89,7 +90,7 @@ export class ProfileController {
 
             const result = await this._profileService.passwordChange(id, newPassword, oldPassword)
             console.log(result);
-            
+
             if (result) {
                 res.json({ success: true, message: "Password updated successfully" })
             } else {
@@ -103,15 +104,56 @@ export class ProfileController {
     };
 
 
-      getWallet = async (req: AuthRequest, res: Response) => {
-    try {
-        const userId = req.user?.id
-        const wallet = await this._profileService.getWallet(userId as string)
-        res.json({success:true , wallet})
+    getWallet = async (req: AuthRequest, res: Response) => {
+        try {
+            const userId = req.user?.id
+            const wallet = await this._profileService.getWallet(userId as string)
+            res.json({ success: true, wallet })
 
-    } catch (error) {
-      console.log(error);
+        } catch (error) {
+            console.log(error);
 
+        }
     }
-  }
+
+    getPayment = async (req: AuthRequest, res: Response) => {
+        try {
+            const userId = req.user?.id
+            const payment = await this._profileService.getPayment(userId as string)
+            console.log(payment);
+
+            res.json({ success: true, payments: payment })
+
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+
+    notifications = async (req: AuthRequest, res: Response) => {
+        try {
+            const userId = req.user?.id
+            const notifications = await this._profileService.getNotifications(userId as string)
+
+            res.json({ success: true, notifications })
+
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+    notificationsMarkRead = async (req: AuthRequest, res: Response) => {
+        try {
+            const userId = req.user?.id
+            const notifications = await this._profileService.notificationsMarkRead(userId as string)
+
+            res.json({ success: true, notifications })
+
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
 }

@@ -71,3 +71,16 @@ export interface IInstructor {
   education?: string;
   blocked?:boolean
 }
+
+
+
+//profile 
+
+export interface IPayment {
+  _id: string;
+  amount: number;
+  paymentDate: string;
+  status: string;
+  courseId: string;
+  courseName : string
+}

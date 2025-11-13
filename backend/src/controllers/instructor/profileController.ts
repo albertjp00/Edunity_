@@ -14,7 +14,7 @@ export class InstProfileController {
 
 
 
-    getProfile = async (req: InstAuthRequest, res: Response): Promise<void> => {
+    getProfile = async (req: InstAuthRequest, res: Response) => {
         try {
             const userId = req.instructor?.id
             console.log('instructor get profile');
@@ -42,7 +42,7 @@ export class InstProfileController {
 
 
 
-    editProfile = async (req: InstAuthRequest, res: Response): Promise<void> => {
+    editProfile = async (req: InstAuthRequest, res: Response) => {
         try {
             console.log('user profile ', req.instructor?.id, req.file)
             const userId = req.instructor?.id; // Assuming `req.user` is set by auth middleware
@@ -76,7 +76,7 @@ export class InstProfileController {
     };
 
 
-    changePassword = async (req: InstAuthRequest, res: Response): Promise<void> => {
+    changePassword = async (req: InstAuthRequest, res: Response) => {
         try {
             const id = req.instructor?.id;
             const { newPassword, oldPassword } = req.body;
@@ -100,7 +100,7 @@ export class InstProfileController {
     };
 
 
-    kycSubmit = async (req: InstAuthRequest, res: Response): Promise<void> => {
+    kycSubmit = async (req: InstAuthRequest, res: Response) => {
         try {
             const id = req.instructor?.id
 
@@ -122,7 +122,7 @@ export class InstProfileController {
     }
 
 
-    getNotifications = async (req: InstAuthRequest, res: Response): Promise<void> => {
+    getNotifications = async (req: InstAuthRequest, res: Response) =>{
         try {
             const id = req.instructor?.id
             console.log(id);
@@ -135,6 +135,45 @@ export class InstProfileController {
         } catch (error) {
             console.error(error)
             res.status(500).json({ success: false, message: "Server error" })
+        }
+    }
+
+
+        getDashboardData = async(req : InstAuthRequest , res : Response) =>{
+        try {
+            const instructorId = req.instructor?.id
+            const result = await this._profileService.getDashboard(instructorId as string)
+            console.log("dashboard",result);
+            
+            res.json({success : true , dashboard : result})
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
+     getEarnings = async(req : InstAuthRequest , res : Response) =>{
+        try {
+            const instructorId = req.instructor?.id
+            const result = await this._profileService.getEarnings(instructorId as string)
+            console.log("earnings",result);
+            
+
+            res.json({success : true , earnings : result})
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
+    getWallet = async (req:InstAuthRequest , res : Response)=>{
+        try {
+            const id = req.instructor?.id
+            const wallet = await this._profileService.getWallet(id as string)
+            res.json({success : true  , wallet})
+        } catch (error) {
+            console.log(error);
+            
         }
     }
 

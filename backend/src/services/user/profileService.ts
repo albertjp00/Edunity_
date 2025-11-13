@@ -1,3 +1,5 @@
+import { INotification } from '../../models/notification.js';
+import { IPayment } from '../../models/payment.js';
 import { IWallet } from '../../models/wallet.js';
 import { UserRepository } from '../../repositories/userRepository.js';
 import bcrypt from 'bcrypt'
@@ -32,6 +34,8 @@ export class ProfileService {
       throw new Error('Failed to get profile');
     }
   }
+
+  
 
   async editProfileRequest(userId: string, updateData: Partial<any>) {
     try {
@@ -78,4 +82,37 @@ export class ProfileService {
       return null
     }
   }
+
+  async getPayment (userId : string ):Promise<IPayment[] | null>{
+    try {
+      const pay = await this.userRepository.getPayment(userId)
+      if(!pay) return null
+      return pay 
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+  }
+
+  async getNotifications (userId : string ):Promise<INotification[] | null>{
+    try {
+      const noti = await this.userRepository.getNotifications(userId)
+      return noti
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+  }
+
+  async notificationsMarkRead (userId : string ):Promise<INotification[] | null>{
+    try {
+      const noti = await this.userRepository.notificationsMarkRead(userId)
+      return noti
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+  }
+
+
 }

@@ -70,6 +70,7 @@ const UserMyCourses: React.FC = () => {
   return (
     <div className="my-course-container">
       <h2 className="course-header">My Courses</h2>
+      
 
       {courses.length === 0 ? (
         <p>No courses yet.</p>

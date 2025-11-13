@@ -80,6 +80,9 @@ instructor.post('/kycSubmit' ,instAuthMiddleware ,
   profileController.kycSubmit
 );
 
+instructor.get('/dashboard',instAuthMiddleware,profileController.getDashboardData)
+instructor.get('/earnings',instAuthMiddleware,profileController.getEarnings)
+
 instructor.get('/notifications',instAuthMiddleware,profileController.getNotifications)
 
 instructor.post('/forgotPassword',authController.forgotPassword)  
@@ -87,10 +90,12 @@ instructor.post('/otpVerify',authController.verifyOtpForgotPass)
 instructor.post('/resendOtpForgotPass',authController.resendOtpForgotPassword)
 instructor.put('/resetPassword',authController.resetPassword)
 
+instructor.get('/wallet',instAuthMiddleware,profileController.getWallet)
+
+
 instructor.get('/getCourse',instAuthMiddleware,courseController.myCourses)
 instructor.get('/course/:id', instAuthMiddleware, courseController.courseDetails);
 instructor.get("/videos/refresh",instAuthMiddleware, courseController.refreshVideoUrl);
-
 
 instructor.patch('/course/:id', instAuthMiddleware,upload.any(), courseController.editCourse);
 

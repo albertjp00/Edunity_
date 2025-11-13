@@ -152,8 +152,6 @@ const getInstructorToMessage = async (id: string) => {
   };
 
 
-  
-
 
   const handleUnreadIncrease = (senderId: string) => {
     setInstructors((prev) =>
@@ -164,6 +162,7 @@ const getInstructorToMessage = async (id: string) => {
       )
     );
   };
+
 
   const resetUnread = (receiverId: string) => {
     setInstructors((prev) =>
@@ -217,6 +216,39 @@ const getInstructorToMessage = async (id: string) => {
       socket.off("userStopTyping", handleStopTyping);
     };
   }, []);
+
+
+  useEffect(() => {
+  const handleReceiveMessage = ({
+    senderId,
+    messageText,
+    attachment,
+  }: {
+    senderId: string;
+    messageText?: string;
+    attachment?: string;
+  }) => {
+    console.log("📩 Message received from:", senderId);
+
+    // ✅ If the currently selected chat is NOT the sender, increase unread count
+    if (!selected || selected.id !== senderId) {
+      handleUnreadIncrease(senderId);
+    } else {
+      // If user is chatting with the sender, reset unread count
+      resetUnread(senderId);
+    }
+
+    // ✅ Update the last message & bring the instructor to top
+    handleMessageSent(senderId, messageText, attachment);
+  };
+
+  socket.on("receiveMessage", handleReceiveMessage);
+
+  return () => {
+    socket.off("receiveMessage", handleReceiveMessage);
+  };
+}, [selected]);
+
 
 
 
@@ -277,7 +309,7 @@ const getInstructorToMessage = async (id: string) => {
               receiverId={selected.id}
               receiverName={selected.name}
               receiverAvatar={selected.avatar || profileImage}
-              onMessageSent={() => handleMessageSent}
+              onMessageSent={handleMessageSent}
               unreadIncrease={handleUnreadIncrease}
               resetUnread={resetUnread}
             />

@@ -11,15 +11,21 @@ export const s3 = new S3Client({
   },
 });
 
-  export const uploadToS3 = async (fileBuffer: Buffer, fileName: string, mimeType: string) => {
-    const command = new PutObjectCommand({
-      Bucket: process.env.AWS_BUCKET_NAME!,
-      Key: `${fileName}`,
-      Body: fileBuffer,
-      ContentType: mimeType,
-
-    });
+export const uploadToS3 = async (
+  fileBuffer: Buffer,
+  fileName: string,
+  mimeType: string
+) => {
+  const command = new PutObjectCommand({
+    Bucket: process.env.AWS_BUCKET_NAME!,
+    Key: fileName,
+    Body: fileBuffer,
+    ContentType: mimeType,
+    ACL: "private", // 🔒 make it private
+  });
 
   await s3.send(command);
-  return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
+
+  // Instead of returning a public URL, just return the key
+  return fileName;
 };

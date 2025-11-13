@@ -190,3 +190,175 @@
     gap: 20px;
   }
 }
+
+
+
+/* --------------------------
+   Payment History - userProfile.css
+   -------------------------- */
+
+/* Section title */
+.payment-history-title {
+  margin-top: 30px;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #222;
+}
+
+/* Container */
+.payment-history-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 6px 18px rgba(20, 20, 30, 0.04);
+  overflow-x: auto;
+  margin-bottom: 24px;
+}
+
+/* Table base */
+.payment-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 620px; /* allow horizontal scroll on small screens */
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+/* Table header */
+.payment-table thead th {
+  text-align: left;
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  letter-spacing: 0.2px;
+  color: #444;
+  background: #fafafa;
+  border-bottom: 1px solid #eee;
+}
+
+/* Table body cells */
+.payment-table tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f1f1;
+  vertical-align: middle;
+}
+
+/* Last row border fix */
+.payment-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Course name styling (keeps long names tidy) */
+.payment-table tbody td:first-child {
+  max-width: 260px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Amount column */
+.payment-table tbody td:nth-child(2) {
+  font-weight: 600;
+}
+
+/* Status small badge */
+.status {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 0.2px;
+}
+
+/* Status colors */
+.status.success {
+  color: #166534; /* dark green text */
+  background: rgba(16,185,129,0.08); /* subtle green bg */
+}
+
+.status.failed {
+  color: #b91c1c; /* red text */
+  background: rgba(239,68,68,0.06);
+}
+
+.status.pending {
+  color: #92400e; /* amber/dark orange */
+  background: rgba(245,158,11,0.06);
+}
+
+/* Date column alignment */
+.payment-table tbody td:last-child {
+  white-space: nowrap;
+  color: #666;
+}
+
+/* Empty / loading states */
+.payment-history-box p {
+  margin: 12px 0;
+  color: #666;
+  text-align: center;
+}
+
+/* ---------- Responsive: card-style on narrow screens ---------- */
+@media (max-width: 720px) {
+  .payment-table {
+    display: block;
+  }
+
+  .payment-table thead {
+    display: none;
+  }
+
+  .payment-table tbody {
+    display: block;
+  }
+
+  .payment-table tbody tr {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px 12px;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    background: #fff;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(15, 15, 20, 0.02);
+    border: 1px solid #f4f4f6;
+  }
+
+  .payment-table tbody td {
+    display: block;
+    padding: 0;
+    border-bottom: none;
+  }
+
+  .payment-table tbody td:first-child {
+    font-weight: 600;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  .payment-table tbody td:nth-child(2) {
+    justify-self: start;
+    font-weight: 600;
+  }
+
+  .payment-table tbody td:nth-child(3) {
+    justify-self: end;
+  }
+
+  .payment-table tbody td:last-child {
+    justify-self: end;
+    color: #666;
+    font-size: 0.9rem;
+  }
+}
+
+/* Small tweak to ensure horizontal scroll doesn't break layout */
+.profile-right .payment-history-box {
+  -webkit-overflow-scrolling: touch;
+}

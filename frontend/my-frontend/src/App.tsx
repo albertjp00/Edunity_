@@ -75,6 +75,10 @@ import CoursePurchaseDetails from './instructor/pages/course/purchaseDetails'
 import Wallet from './user/components/profile/wallet'
 import InstructorAllEventList from './instructor/components/events/allEvents'
 import InstructorNotifications from './instructor/components/notification/notifications'
+import AllPayments from './user/components/payments/payments'
+import UserNotifications from './user/components/notifications/notifications'
+import InstructorDashboard from './instructor/components/dashboard/instructorDashboard'
+import UserWallet from './instructor/components/profile/wallet'
 // import PurchasesAdmin from './admin/pages/purchases/purchasesAdmin'
 
 function App() {
@@ -100,8 +104,9 @@ function App() {
             <Route path='/user/editProfile' element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
             <Route path='/user/changePassword' element={<ProtectedRoute><UserPasswordChange /></ProtectedRoute>} />
             <Route path='/user/wallet' element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
-
+            <Route path='/user/allPayments' element={<ProtectedRoute><AllPayments /></ProtectedRoute>} />
             {/* <Route path='/user/purchaseHistory' element={<PurchaseHistory />} /> */}
+            <Route path='/user/notifications' element={<ProtectedRoute><UserNotifications /></ProtectedRoute>} />
 
             <Route path='/user/resetPassword' element={<UserResetPassword />} />
 
@@ -136,6 +141,9 @@ function App() {
             <Route path='/instructor/otpVerify' element={<InstructorVerifyOtp />} />
             <Route path='/instructor/resetPassword' element={<InstructorResetPassword />} />
 
+            <Route path='/instructor/dashboard' element={<InstProtectedRoute><InstructorDashboard /></InstProtectedRoute>} />
+            <Route path='/instructor/wallet' element={<InstProtectedRoute><UserWallet /></InstProtectedRoute>} />
+
             <Route path='/instructor/home' element={<InstProtectedRoute><InstructorHome /></InstProtectedRoute>} />
             <Route path='/instructor/profile' element={<InstProtectedRoute><ProfilePage /></InstProtectedRoute>} />
             <Route path='/instructor/editProfile' element={<InstProtectedRoute><InstructoreditProfilePage /></InstProtectedRoute>} />
@@ -164,6 +172,9 @@ function App() {
             <Route path='/instructor/messages' element={<InstProtectedRoute><InstructorChat /></InstProtectedRoute>}></Route>
 
             <Route path='/instructor/notifications' element={<InstProtectedRoute><InstructorNotifications /></InstProtectedRoute>}></Route>
+
+
+
 
               // {/* admin  */}
             <Route path='/admin/login' element={<LoginAdmin />} />

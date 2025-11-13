@@ -405,7 +405,7 @@ const ViewMyCourse: React.FC = () => {
                         <div className="module-body">
                           <VideoPlayerUser
                             initialUrl={module.videoUrl}
-                            onComplete={() => markAsCompleted(module.title)}
+                            onComplete={() => markAsCompleted(module.title)} 
                           />
 
                           <p>{module.content}</p>

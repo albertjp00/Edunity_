@@ -77,9 +77,9 @@ const CourseDetailsUser: React.FC = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [activePayment, setActivePayment] = useState<string | null>(null);
   const [reviews, setReviews] = useState<IReview[]>([]);
-  const [rating, setRating] = useState<number>(0);
-  const [comment, setComment] = useState<string>("");
-  const [loadingReview, setLoadingReview] = useState<boolean>(false);
+  // const [rating, setRating] = useState<number>(0);
+  // const [comment, setComment] = useState<string>("");
+  // const [loadingReview, setLoadingReview] = useState<boolean>(false);
 
 
   const navigate = useNavigate();

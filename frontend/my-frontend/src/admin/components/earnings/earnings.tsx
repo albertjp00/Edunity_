@@ -9,11 +9,15 @@ interface IEarning {
   instructorEarnings: number;
   totalEarnings: number;
   lastUpdated: string;
+  
 }
 
+
+
 const AdminEarnings: React.FC = () => {
-  const [earnings, setEarnings] = useState<IEarning[]>([]);
+  const [earnings, setEarnings] = useState<IEarning[]>();
   const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState<number>();
 
 
   useEffect(() => {
@@ -22,7 +26,8 @@ const AdminEarnings: React.FC = () => {
         const res = await getEarnings();
         console.log(res);
         if (res.data.success) {
-          setEarnings(res.data.earnings);
+          setEarnings(res.data.earnings.earningsData);
+          setTotal(res.data.earnings.total)
         }
       } catch (error) {
         console.error("Error fetching earnings:", error);
@@ -51,7 +56,7 @@ const AdminEarnings: React.FC = () => {
       <div className="summary-card">
         <h2>
           Total Admin Earnings : 
-          <span className="highlight">₹{earnings.map((item)=>item.adminEarnings).reduce((acc,curr) => acc+ curr)}</span>
+          <span className="highlight">₹{total?.toFixed(2)}</span>
         </h2>
       </div>
 
@@ -63,18 +68,16 @@ const AdminEarnings: React.FC = () => {
               <th>Course Price</th>
               <th>Admin Share</th>
               <th>Instructor Share</th>
-              <th>Course Price</th>
               <th>Date</th>
             </tr>
           </thead>
           <tbody>
-            {earnings.map((item: IEarning, index: number) => (
+            {earnings?.map((item: IEarning, index: number) => (
               <tr key={item._id}>
                 <td>{index + 1}</td>
                 <td>₹{item.coursePrice}</td>
                 <td className="text-green">₹{item.adminEarnings}</td>
                 <td className="text-blue">₹{item.instructorEarnings}</td>
-                <td>₹{item.coursePrice}</td>
                 <td>{new Date(item.lastUpdated).toLocaleDateString()}</td>
               </tr>
             ))}

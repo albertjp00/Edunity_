@@ -14,7 +14,7 @@ const InstructorNavbar = () => {
   // const storedInstructor = localStorage.getItem("instructor");
   // const instructor = storedInstructor
 
-  const gotoNotifications = ()=>{
+  const gotoNotifications = () => {
     navigate('/instructor/notifications')
   }
 
@@ -26,7 +26,7 @@ const InstructorNavbar = () => {
   //     setInstructor(res.data.data._id)
   //   } catch (error) {
   //     console.log(error);
-      
+
   //   }
   // }
   // instructorData()
@@ -58,10 +58,10 @@ const InstructorNavbar = () => {
             </div>
           )} */}
 
-          <div className="notification-img" onClick={gotoNotifications}>
-            <img src={notificationImg} alt="" className="noti-img"/>
-          </div>
 
+          <div className="notification-img" onClick={gotoNotifications}>
+            <img src={notificationImg} alt="" className="noti-img" />
+          </div>
           <p className="add-course" onClick={addCourse}>Create Course</p>
           <p className="add-course" onClick={addEvent}>Create Event</p>
 

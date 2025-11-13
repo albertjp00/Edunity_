@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import profilePic from './../../../assets/profilePic.png';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './profile.css'
 import instructorApi from '../../../api/instructorApi';
 import Navbar from '../../components/navbar/navbar';
@@ -27,9 +27,9 @@ interface ICourse {
 
 const InstructorProfile: React.FC = () => {
   const [user, setUser] = useState<IUser>({});
-  const [courses, setCourses] = useState<ICourse[]>([]);
+  // const [courses, setCourses] = useState<ICourse[]>([]);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const getProfile = async () => {
     try {
@@ -46,16 +46,16 @@ const InstructorProfile: React.FC = () => {
         `/instructor/getCourse`
       );
       if (res.data.success) {
-        setCourses(res.data.course);
+        // setCourses(res.data.course.slice(0,4));
       }
     } catch (error) {
       console.error('Error fetching courses:', error);
     }
   };
 
-  const courseDetails = (id: string) => {
-    navigate(`/instructor/courseDetails/${id}`);
-  };
+  // const courseDetails = (id: string) => {
+  //   navigate(`/instructor/courseDetails/${id}`);
+  // };
 
   useEffect(() => {
     getProfile();
@@ -140,8 +140,29 @@ const InstructorProfile: React.FC = () => {
             <p>{user.work}</p>
           </div>
 
-          <div className="enrolled-courses">
+
+          <div className="dashboard-section">
+            <h3>Your Instructor Dashboard</h3>
+            <p>View your earnings, courses, and analytics in one place.</p>
+            <Link to="/instructor/dashboard">
+              <button className="dashboard-btn">Go to Dashboard</button>
+            </Link>
+
+
+          </div>
+
+          <div className="dashboard-section">
+            <h3>Your Wallet</h3>
+            <Link to="/instructor/wallet">
+              <button className="dashboard-btn">Wallet</button>
+            </Link>
+
+
+          </div>
+
+          {/* <div className="enrolled-courses">
             <h3>Courses You Teach</h3>
+            
             {courses.length === 0 ? (
               <p>No courses yet.</p>
             ) : (
@@ -165,7 +186,7 @@ const InstructorProfile: React.FC = () => {
                 </div>
               ))
             )}
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

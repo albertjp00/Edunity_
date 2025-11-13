@@ -11,6 +11,7 @@ export interface IEarnings extends Document{
     instructorEarnings : number;
     adminEarnings : number;
     lastUpdated : Date;
+    
 }
 
 
@@ -19,7 +20,7 @@ const EarningSchema : Schema = new Schema<IEarnings>({
   courseId: {
     type: String,
     required: true,
-  },
+  }, 
   instructorId: {
     type: String,
     ref: "Instructor",
