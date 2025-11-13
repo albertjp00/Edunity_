@@ -272,7 +272,7 @@ export class UserCourseService {
           const rawUrl = module.videoUrl;
 
           if (rawUrl) {
-            // Extract key safely and remove query params
+            
             let key: string | undefined;
 
             if (rawUrl.includes(".amazonaws.com/")) {
