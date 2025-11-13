@@ -190,12 +190,12 @@ export class UserCourseService {
         const adminEarningsUpdate = await this.adminRepository.updateEarnings(courseId, coursePrice, instructorId,
           instructorEarning, adminEarning)
 
-        const wallet = await this.instructorRepository.addToWallet(userId, {
-        type: "credit",
-        amount: course.price,
-        courseId,
-        description: `Refund for canceled course: ${course.title}`,
-      });
+      //   const wallet = await this.instructorRepository.addToWallet(instructorId, {
+      //   type: "credit",
+      //   amount: instructorEarning,
+      //   courseId,
+      //   description: `Earnings of course: ${course.title}`,
+      // });
 
         const courseName = course.title
         const payment = await this.userRepository.userPayment(userId, courseId, courseName, coursePrice)

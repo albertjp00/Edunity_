@@ -10,6 +10,7 @@ import { IEventResult, IPurchaseDetails } from "../interfaces/instructorInterfac
 import { INotification, NotificationModel } from "../models/notification.js";
 import { EarningModel, IEarnings } from "../models/earnings.js";
 import { IWallet, WalletModel } from "../models/wallet.js";
+import { WalletTransaction } from "../interfaces/userInterfaces.js";
 // import { IInsRepository } from "../interfaces/instructorInterfaces.js";
 
 
@@ -479,22 +480,22 @@ export class InstructorRepository implements IInsRepository {
   }
 
 
-async addToWallet(id: string, transaction: WalletTransaction): Promise<void> {
-    const wallet = await WalletModel.findOne({ userId });
+// async addToWallet(id: string, transaction: WalletTransaction): Promise<void> {
+//     const wallet = await WalletModel.findOne({ instructorId:id });
 
-    if (wallet) {
-      wallet.transactions.push({ ...transaction, createdAt: new Date() });
-      if (transaction.type === "credit") wallet.balance += transaction.amount;
-      else wallet.balance -= transaction.amount;
-      await wallet.save();
-    } else {
-      await WalletModel.create({
-        userId,
-        balance: transaction.type === "credit" ? transaction.amount : -transaction.amount,
-        transactions: [{ ...transaction, createdAt: new Date() }],
-      });
-    }
-  }
+//     if (wallet) {
+//       wallet.transactions.push({ ...transaction, createdAt: new Date() });
+//       if (transaction.type === "credit") wallet.balance += transaction.amount;
+//       else wallet.balance -= transaction.amount;
+//       await wallet.save();
+//     } else {
+//       await WalletModel.create({
+//         instructorId : id,
+//         balance: transaction.type === "credit" ? transaction.amount : -transaction.amount,
+//         transactions: [{ ...transaction, createdAt: new Date() }],
+//       });
+//     }
+//   }
 
 
 
