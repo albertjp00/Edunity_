@@ -291,6 +291,7 @@ export class UserCourseService {
       }
 
 
+      
       const instructor = await this.instructorRepository.findById(course.instructorId as string);
       if (!instructor) return null;
 
