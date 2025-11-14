@@ -20,7 +20,7 @@ import { INotification, NotificationModel } from '../models/notification';
 
 
 export class UserRepository extends BaseRepository<IUser>
-implements IUserRepository {
+  implements IUserRepository {
 
   constructor() {
     super(UserModel)
@@ -73,11 +73,11 @@ implements IUserRepository {
     return await WalletModel.findOne({ userId: userId })
   }
 
-    async getPayment(userId: string): Promise<IPayment[] | null> {
-      const pay =  await PaymentModel.find({ userId: userId })
-      console.log("payyyy",pay);
-      return pay
-    
+  async getPayment(userId: string): Promise<IPayment[] | null> {
+    const pay = await PaymentModel.find({ userId: userId })
+    console.log("payyyy", pay);
+    return pay
+
   }
 
   async getCourse(id: string): Promise<ICourse | null> {
@@ -260,53 +260,53 @@ implements IUserRepository {
   }
 
 
-      async userPayment(userId : string , courseId : string , courseName : string , coursePrice : number): Promise<IPayment | null> {
-          try {
-              const payment = await PaymentModel.create({userId , courseId , amount : coursePrice , courseName})
-              console.log('added to payment');
-              
-              return payment
-          } catch (error) {
-              console.log(error);
-              return null
-          }
-      } 
+  async userPayment(userId: string, courseId: string, courseName: string, coursePrice: number): Promise<IPayment | null> {
+    try {
+      const payment = await PaymentModel.create({ userId, courseId, amount: coursePrice, courseName })
+      console.log('added to payment');
 
-      
-
-      async sendNotification(userId : string , title : string , message : string ):Promise<INotification | null>{
-        try {
-          return await NotificationModel.create({recipientId : userId , title , message})
-        } catch (error) {
-          console.log(error);
-          return null
-          
-        }
-      }
+      return payment
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+  }
 
 
-      async getNotifications(userId : string ):Promise<INotification[] | null>{
-        try {
-          return await NotificationModel.find({recipientId : userId}).sort({createdAt:-1})
-        } catch (error) {
-          console.log(error);
-          return null
-        }
-      }
 
-      async notificationsMarkRead(userId : string):Promise<INotification[] | null>{
-        try {
-          const update =  await NotificationModel.updateMany({ recipientId: userId, isRead: false },
-          { $set: { isRead: true } }
-          );
+  async sendNotification(userId: string, title: string, message: string): Promise<INotification | null> {
+    try {
+      return await NotificationModel.create({ recipientId: userId, title, message })
+    } catch (error) {
+      console.log(error);
+      return null
 
-          const updated = await NotificationModel.find({recipientId : userId }).sort({createdAt:-1})
-          return updated
-        } catch (error) {
-          console.log(error);
-          return null
-        }
-      }
+    }
+  }
+
+
+  async getNotifications(userId: string): Promise<INotification[] | null> {
+    try {
+      return await NotificationModel.find({ recipientId: userId }).sort({ createdAt: -1 })
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+  }
+
+  async notificationsMarkRead(userId: string): Promise<INotification[] | null> {
+    try {
+      const update = await NotificationModel.updateMany({ recipientId: userId, isRead: false },
+        { $set: { isRead: true } }
+      );
+
+      const updated = await NotificationModel.find({ recipientId: userId }).sort({ createdAt: -1 })
+      return updated
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+  }
 
   async findMyCourses(id: string, page: number): Promise<IMyCourses> {
 
@@ -335,22 +335,26 @@ implements IUserRepository {
   }
 
 
-  async updateProgress(userId: string, myCourseId: string, moduleTitle: string): Promise<IMyCourse | null> {
-    console.log(userId, myCourseId);
+  async updateProgress(userId: string, courseId: string, moduleTitle: string): Promise<IMyCourse | null> {
+    try {
+      console.log(userId, courseId);
 
-
-    const myCourse = await MyCourseModel.findByIdAndUpdate(myCourseId, { cancelCourse: false })
-    console.log('course update progress', myCourse);
-
-    const course = await MyCourseModel.findByIdAndUpdate(
-      myCourseId,
-      { $addToSet: { "progress.completedModules": moduleTitle } },
+    const course = await MyCourseModel.findOneAndUpdate(
+      { userId, courseId},
+      {
+        $set: { cancelCourse: false },
+        $addToSet: { "progress.completedModules": moduleTitle }
+      },
       { new: true }
     );
-    console.log(course);
 
-
+    console.log("course update progress", course);
     return course;
+    } catch (error) {
+      console.log(error);
+      return null
+      
+    }
   }
 
   async getCertificate(userId: string, courseId: string, certificate: string): Promise<IMyCourse | null> {
@@ -369,7 +373,7 @@ implements IUserRepository {
 
 
 
-  async addReview(userId: string,userName : string , userImage : string , courseId: string, rating: number, comment: string): Promise<IReview> {
+  async addReview(userId: string, userName: string, userImage: string, courseId: string, rating: number, comment: string): Promise<IReview> {
     try {
       const course = await CourseModel.findById(courseId);
 
@@ -530,7 +534,7 @@ implements IUserRepository {
     }
   }
 
-  
+
 
 
 }

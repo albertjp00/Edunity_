@@ -63,8 +63,9 @@ const InstructorProfile: React.FC = () => {
   }, []);
 
   return (
-    <div className="profile">
+      <>
       <Navbar />
+
       <div className="profile-container1">
         {/* LEFT */}
         <div className="profile-left">
@@ -189,7 +190,7 @@ const InstructorProfile: React.FC = () => {
           </div> */}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

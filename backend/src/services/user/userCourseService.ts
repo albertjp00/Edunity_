@@ -291,7 +291,7 @@ export class UserCourseService {
       }
 
 
-      
+
       const instructor = await this.instructorRepository.findById(course.instructorId as string);
       if (!instructor) return null;
 
@@ -313,10 +313,10 @@ export class UserCourseService {
 
 
 
-  async updateProgress(userId: string, myCourseId: string, moduleTitle: string) {
+  async updateProgress(userId: string, courseId: string, moduleTitle: string) {
 
     try {
-      const update = await this.userRepository.updateProgress(userId, myCourseId, moduleTitle)
+      const update = await this.userRepository.updateProgress(userId, courseId, moduleTitle)
 
       return update
     } catch (error) {
