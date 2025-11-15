@@ -262,7 +262,7 @@ export class UserCourseService {
       // console.log('service my course details',myCourse);
       const enrolledAt = myCourse.createdAt
 
-      const myCourse = await this.userRepository.findUserCourse(userId, courseId);
+      // const myCourse = await this.userRepository.findUserCourse(userId, courseId);
 
       const course = await this.userRepository.getCourse(myCourse.courseId.toString());
       if (!course) return null;

@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { userRegister } from "../../services/authServices";
 import { toast } from "react-toastify";
 import authImage from '../../../assets/authImage.png'
+import { AxiosError } from "axios";
 
 
 interface RegisterForm {
@@ -80,15 +81,20 @@ const Register = () => {
 
         toast.error(res?.data.message)
       }
-    } catch (error : any) {
-      console.error(error);
+    } catch (error: unknown) {
+  console.error(error);
 
-      const errMsg =
-        error.response?.data?.message || error.message || "Registration failed";
+  let errMsg = "Registration failed";
 
-      toast.error(errMsg, { autoClose: 1500 });
-      setMessage(errMsg);
-    }
+  if (error instanceof AxiosError) {
+    errMsg = error.response?.data?.message || error.message || errMsg;
+  } else if (error instanceof Error) {
+    errMsg = error.message;
+  }
+
+  toast.error(errMsg, { autoClose: 1500 });
+  setMessage(errMsg);
+}
   };
 
 

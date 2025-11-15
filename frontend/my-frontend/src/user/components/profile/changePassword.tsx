@@ -3,6 +3,7 @@ import './changePassword.css';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../api/userApi';
+import { AxiosError } from 'axios';
 // import { userPasswordChange } from '../../services/profileServices';
 
 
@@ -67,10 +68,13 @@ const UserPasswordChange: React.FC = () => {
       } else {
         toast.error(response?.data.message);
       }
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.response?.data?.message || 'Something went wrong');
-    }
+    } catch (error: unknown) {
+  if (error instanceof AxiosError) {
+    toast.error(error.response?.data?.message || 'Something went wrong');
+  } else {
+    toast.error('Something went wrong');
+  }
+}
   };
 
   return (
