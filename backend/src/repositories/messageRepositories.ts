@@ -1,9 +1,9 @@
 
-import { ILastMessage, IMessagedInstructor } from "../interfaces/instructorInterfaces.js";
-import { IMessagedUser } from "../interfaces/userInterfaces.js";
-import { IInstructor, InstructorModel } from "../models/instructor.js";
-import { IMessage, MessageModel } from "../models/message.js";
-import { IUser, UserModel } from "../models/user.js";
+import { ILastMessage, IMessagedInstructor } from "../interfaces/instructorInterfaces";
+import { IMessagedUser } from "../interfaces/userInterfaces";
+import { IInstructor, InstructorModel } from "../models/instructor";
+import { IMessage, MessageModel } from "../models/message";
+import { IUser, UserModel } from "../models/user";
 
 
 

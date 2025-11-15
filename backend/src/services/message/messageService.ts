@@ -1,7 +1,7 @@
-import { ILastMessage, IMessagedInstructor } from "../../interfaces/instructorInterfaces.js";
-import { IInstructor } from "../../models/instructor.js";
-import { IMessage } from "../../models/message.js";
-import { MessageRepository } from "../../repositories/messageRepositories.js";
+import { ILastMessage, IMessagedInstructor } from "../../interfaces/instructorInterfaces";
+import { IInstructor } from "../../models/instructor";
+import { IMessage } from "../../models/message";
+import { MessageRepository } from "../../repositories/messageRepositories";
 
 
 

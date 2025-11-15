@@ -1,7 +1,7 @@
-import { IEarnings } from "../../models/earnings.js";
-import { INotification } from "../../models/notification.js";
-import { IWallet } from "../../models/wallet.js";
-import { InstructorRepository } from "../../repositories/instructorRepository.js";
+import { IEarnings } from "../../models/earnings";
+import { INotification } from "../../models/notification";
+import { IWallet } from "../../models/wallet";
+import { InstructorRepository } from "../../repositories/instructorRepository";
 import bcrypt from 'bcrypt'
 
 

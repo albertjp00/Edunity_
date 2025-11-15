@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { HttpStatus } from "../enums/httpStatus.enums.js";
-import logger from "../utils/logger.js";
+import { HttpStatus } from "../enums/httpStatus.enums";
+import logger from "../utils/logger";
 
 interface CustomError extends Error {
   statusCode?: number;

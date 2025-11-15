@@ -1,12 +1,12 @@
-import { IInstructor } from "../../models/instructor.js";
-import { IUser } from "../../models/user.js";
-import { IAdminRepository } from "../../repositories/adminRepositories.js";
-import { UserRepository } from "../../repositories/userRepository.js";
-import { kycRejectMail } from "../../utils/sendMail.js";
+import { IInstructor } from "../../models/instructor";
+import { IUser } from "../../models/user";
+import { IAdminRepository } from "../../repositories/adminRepositories";
+import { UserRepository } from "../../repositories/userRepository";
+import { kycRejectMail } from "../../utils/sendMail";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { PaginatedInstructors, PaginatedUsers } from "../../interfaces/adminInterfaces.js";
-import { IEarnings } from "../../models/earnings.js";
+import { PaginatedInstructors, PaginatedUsers } from "../../interfaces/adminInterfaces";
+import { IEarnings } from "../../models/earnings";
 
 interface adminLoginResult {
     success: boolean;

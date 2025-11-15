@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { MessageService } from "../../services/message/messageService.js";
-import { MessageRepository } from "../../repositories/messageRepositories.js";
-import { AuthRequest, InstAuthRequest } from "../../middleware/authMiddleware.js";
+import { MessageService } from "../../services/message/messageService";
+import { MessageRepository } from "../../repositories/messageRepositories";
+import { AuthRequest, InstAuthRequest } from "../../middleware/authMiddleware";
 import { log } from "winston";
-import logger from "../../utils/logger.js";
+import logger from "../../utils/logger";
 
 export class MessageController {
   private messageService: MessageService;

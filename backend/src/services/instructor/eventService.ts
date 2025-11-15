@@ -1,8 +1,8 @@
 import { Server } from "http";
-import { IEventResult, IMyEventInterface } from "../../interfaces/instructorInterfaces.js";
-import { IEvent } from "../../models/events.js";
+import { IEventResult, IMyEventInterface } from "../../interfaces/instructorInterfaces";
+import { IEvent } from "../../models/events";
 import { NextFunction } from "express";
-import { IInsRepository } from "../../repositories/instructorRepository.js";
+import { IInsRepository } from "../../repositories/instructorRepository";
 
 
 

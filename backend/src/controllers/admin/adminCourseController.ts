@@ -1,14 +1,14 @@
 import { Response, Request } from "express";
 import { AdminRepository, IAdminRepository } from "../../repositories/adminRepositories";
-import { IKyc } from "../../models/kyc.js";
+import { IKyc } from "../../models/kyc";
 import { AdminInstructorService } from "../../services/admin/instructorServices";
 import { InstructorRepository } from "../../repositories/instructorRepository";
 import { AdminCourseService } from "../../services/admin/courseServices";
 import { ICourse } from "../../models/course";
 import { UserRepository } from "../../repositories/userRepository";
-import { AdminAuthRequest } from "../../middleware/authMiddleware";
 import { IUserRepository } from "../../interfaces/userInterfaces";
 import { IInsRepository } from "../../interfaces/instructorInterfaces";
+import { AdminAuthRequest } from "../../middleware/authMiddleware";
 
 
 

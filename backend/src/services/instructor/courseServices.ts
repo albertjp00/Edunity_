@@ -1,8 +1,8 @@
-import { IPurchaseDetails } from "../../interfaces/instructorInterfaces.js";
-import { ICourse } from "../../models/course.js";
-import { IInsRepository, InstructorRepository, ISkills } from "../../repositories/instructorRepository.js";
-import { generateSignedUrl } from "../../utils/getSignedUrl.js";
-import { uploadToS3 } from "../../utils/s3Upload.js";
+import { IPurchaseDetails } from "../../interfaces/instructorInterfaces";
+import { ICourse } from "../../models/course";
+import { IInsRepository, InstructorRepository, ISkills } from "../../repositories/instructorRepository";
+import { generateSignedUrl } from "../../utils/getSignedUrl";
+import { uploadToS3 } from "../../utils/s3Upload";
 import fs from 'fs'
 
 

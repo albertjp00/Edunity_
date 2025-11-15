@@ -1,5 +1,5 @@
-import { IInstructor } from "../models/instructor.js";
-import { IUser } from "../models/user.js";
+import { IInstructor } from "../models/instructor";
+import { IUser } from "../models/user";
 
 
 export interface PaginatedUsers {

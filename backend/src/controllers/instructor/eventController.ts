@@ -1,7 +1,7 @@
 import { Response } from "express"
-import { InstAuthRequest } from "../../middleware/authMiddleware.js"
-import { InstructorRepository } from "../../repositories/instructorRepository.js"
-import { InstEventService } from "../../services/instructor/eventService.js"
+import { InstAuthRequest } from "../../middleware/authMiddleware"
+import { InstructorRepository } from "../../repositories/instructorRepository"
+import { InstEventService } from "../../services/instructor/eventService"
 import { Server } from "http"
 
 

@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { UserModel } from "../models/user.js";
-import { InstructorModel } from "../models/instructor.js";
+import { UserModel } from "../models/user";
+import { InstructorModel } from "../models/instructor";
 import { Socket } from "socket.io";
 
 dotenv.config();

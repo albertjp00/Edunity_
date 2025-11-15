@@ -1,7 +1,7 @@
-import { INotification } from '../../models/notification.js';
-import { IPayment } from '../../models/payment.js';
-import { IWallet } from '../../models/wallet.js';
-import { UserRepository } from '../../repositories/userRepository.js';
+import { INotification } from '../../models/notification';
+import { IPayment } from '../../models/payment';
+import { IWallet } from '../../models/wallet';
+import { UserRepository } from '../../repositories/userRepository';
 import bcrypt from 'bcrypt'
 
 export class ProfileService {

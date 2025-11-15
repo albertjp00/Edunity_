@@ -1,16 +1,16 @@
-import { ICourse, IReview } from "../models/course.js";
-import { IEvent } from "../models/events.js";
-import { IFavourite } from "../models/favourites.js";
-import { IInstructor } from "../models/instructor.js";
-import { IMessage } from "../models/message.js";
-import { IMyCourse } from "../models/myCourses.js";
-import { IMyEvent } from "../models/myEvents.js";
-import { INotification } from "../models/notification.js";
-import { IPayment } from "../models/payment.js";
-import { IUser } from "../models/user.js";
-import { IWallet } from "../models/wallet.js";
-import { ISkills } from "../repositories/instructorRepository.js";
-import { UserRepository } from "../repositories/userRepository.js";
+import { ICourse, IReview } from "../models/course";
+import { IEvent } from "../models/events";
+import { IFavourite } from "../models/favourites";
+import { IInstructor } from "../models/instructor";
+import { IMessage } from "../models/message";
+import { IMyCourse } from "../models/myCourses";
+import { IMyEvent } from "../models/myEvents";
+import { INotification } from "../models/notification";
+import { IPayment } from "../models/payment";
+import { IUser } from "../models/user";
+import { IWallet } from "../models/wallet";
+import { ISkills } from "../repositories/instructorRepository";
+import { UserRepository } from "../repositories/userRepository";
 
 export interface IUserRepository {
   findByEmail(email: string): Promise<IUser | null>;

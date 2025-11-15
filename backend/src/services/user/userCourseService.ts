@@ -1,21 +1,21 @@
-import { IMyCourses } from '../../interfaces/userInterfaces.js';
-import { ICourse } from '../../models/course.js';
-import { IFavourite } from '../../models/favourites.js';
-import { IInstructor } from '../../models/instructor.js';
-import { IMyCourse, IProgress } from '../../models/myCourses.js';
-import { IUser } from '../../models/user.js';
-import { AdminRepository } from '../../repositories/adminRepositories.js';
-import { InstructorRepository } from '../../repositories/instructorRepository.js';
-import { UserRepository } from '../../repositories/userRepository.js';
-import razorpay from '../../utils/razorpay.js';
+import { IMyCourses } from '../../interfaces/userInterfaces';
+import { ICourse } from '../../models/course';
+import { IFavourite } from '../../models/favourites';
+import { IInstructor } from '../../models/instructor';
+import { IMyCourse, IProgress } from '../../models/myCourses';
+import { IUser } from '../../models/user';
+import { AdminRepository } from '../../repositories/adminRepositories';
+import { InstructorRepository } from '../../repositories/instructorRepository';
+import { UserRepository } from '../../repositories/userRepository';
+import razorpay from '../../utils/razorpay';
 import crypto from 'crypto'
 import fs from 'fs';
 import PDFDocument from 'pdfkit'
 
 import path from "path";
 import { fileURLToPath } from "url";
-import { generateCertificate } from '../../utils/certificate.js';
-import { generateSignedUrl } from '../../utils/getSignedUrl.js';
+import { generateCertificate } from '../../utils/certificate';
+import { generateSignedUrl } from '../../utils/getSignedUrl';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

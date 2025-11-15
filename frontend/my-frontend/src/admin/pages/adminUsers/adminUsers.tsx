@@ -49,10 +49,21 @@ const UsersAdmin: React.FC = () => {
     }
   };
 
+  // const debounce = (func, delay) => {
+  //   let timer;
+  //   return function (…args) {
+  //     clearTimeout(timer);
+  //     timer = setTimeout(() => {
+  //       func.apply(this, args);
+  //     }, delay);
+  //   }
+  // }
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setCurrentPage(1);
-    loadUsers(1, searchTerm);
+
+    // const debounceSearch = debounce(loadUsers(1, searchTerm) , 200);
   };
 
 
@@ -90,7 +101,7 @@ const UsersAdmin: React.FC = () => {
     }
   };
 
-  
+
   useEffect(() => {
     loadUsers(currentPage, searchTerm);
   }, [currentPage]);
@@ -168,17 +179,17 @@ const UsersAdmin: React.FC = () => {
           ⬅ Prev
         </button>
 
-{totalPages > 0 &&
-  [...Array(totalPages)].map((_, index) => (
-    <button
-      key={index}
-      onClick={() => handlePageChange(index + 1)}
-      className={currentPage === index + 1 ? "active" : ""}
-    >
-      {index + 1}
-    </button>
-  ))
-}
+        {totalPages > 0 &&
+          [...Array(totalPages)].map((_, index) => (
+            <button
+              key={index}
+              onClick={() => handlePageChange(index + 1)}
+              className={currentPage === index + 1 ? "active" : ""}
+            >
+              {index + 1}
+            </button>
+          ))
+        }
 
 
 

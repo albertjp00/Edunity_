@@ -1,12 +1,12 @@
-import { ICount, IUserOverview, PaginatedInstructors, PaginatedUsers, PurchaseResult } from "../interfaces/adminInterfaces.js";
-import { CourseModel, ICourse } from "../models/course.js";
-import { EarningModel, IEarnings } from "../models/earnings.js";
-import { FavouritesModel, IFavourite } from "../models/favourites.js";
-import { IInstructor, InstructorModel } from "../models/instructor.js";
-import { KycModel } from "../models/kyc.js";
-import { IMyCourse, MyCourseModel } from "../models/myCourses.js";
-import { INotification, NotificationModel } from "../models/notification.js";
-import { IUser, UserModel } from "../models/user.js";
+import { ICount, IUserOverview, PaginatedInstructors, PaginatedUsers, PurchaseResult } from "../interfaces/adminInterfaces";
+import { CourseModel, ICourse } from "../models/course";
+import { EarningModel, IEarnings } from "../models/earnings";
+import { FavouritesModel, IFavourite } from "../models/favourites";
+import { IInstructor, InstructorModel } from "../models/instructor";
+import { KycModel } from "../models/kyc";
+import { IMyCourse, MyCourseModel } from "../models/myCourses";
+import { INotification, NotificationModel } from "../models/notification";
+import { IUser, UserModel } from "../models/user";
 
 
 

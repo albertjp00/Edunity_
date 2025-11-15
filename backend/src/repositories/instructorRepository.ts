@@ -1,17 +1,17 @@
 import { Types } from "mongoose";
-import { CourseModel, ICourse } from "../models/course.js";
-import { EventModel, IEvent } from "../models/events.js";
-import { IInstructor, InstructorModel } from "../models/instructor.js";
-import { IKyc, KycModel } from "../models/kyc.js";
-import { IMyCourse, MyCourseModel } from "../models/myCourses.js";
-import { IQuiz, QuizModel } from "../models/quiz.js";
-import { IUser, UserModel } from "../models/user.js";
-import { IEventResult, IPurchaseDetails } from "../interfaces/instructorInterfaces.js";
-import { INotification, NotificationModel } from "../models/notification.js";
-import { EarningModel, IEarnings } from "../models/earnings.js";
-import { IWallet, WalletModel } from "../models/wallet.js";
-import { WalletTransaction } from "../interfaces/userInterfaces.js";
-// import { IInsRepository } from "../interfaces/instructorInterfaces.js";
+import { CourseModel, ICourse } from "../models/course";
+import { EventModel, IEvent } from "../models/events";
+import { IInstructor, InstructorModel } from "../models/instructor";
+import { IKyc, KycModel } from "../models/kyc";
+import { IMyCourse, MyCourseModel } from "../models/myCourses";
+import { IQuiz, QuizModel } from "../models/quiz";
+import { IUser, UserModel } from "../models/user";
+import { IEventResult, IPurchaseDetails } from "../interfaces/instructorInterfaces";
+import { INotification, NotificationModel } from "../models/notification";
+import { EarningModel, IEarnings } from "../models/earnings";
+import { IWallet, WalletModel } from "../models/wallet";
+import { WalletTransaction } from "../interfaces/userInterfaces";
+// import { IInsRepository } from "../interfaces/instructorInterfaces";
 
 
 export interface ISkills {

@@ -1,11 +1,11 @@
-import { InstAuthRequest } from "../middleware/authMiddleware.js";
-import { ICourse } from "../models/course.js";
-import { IEvent } from "../models/events.js";
-import { IInstructor } from "../models/instructor.js";
-import { IKyc } from "../models/kyc.js";
-import { IMessage } from "../models/message.js";
-import { IQuiz } from "../models/quiz.js";
-import { ISkills } from "../repositories/instructorRepository.js";
+import { InstAuthRequest } from "../middleware/authMiddleware";
+import { ICourse } from "../models/course";
+import { IEvent } from "../models/events";
+import { IInstructor } from "../models/instructor";
+import { IKyc } from "../models/kyc";
+import { IMessage } from "../models/message";
+import { IQuiz } from "../models/quiz";
+import { ISkills } from "../repositories/instructorRepository";
 
 
 export interface IInsRepository {

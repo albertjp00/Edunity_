@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import { CourseService } from "../../services/instructor/courseServices.js";
-import { InstructorRepository } from "../../repositories/instructorRepository.js";
-import { AuthRequest, InstAuthRequest } from "../../middleware/authMiddleware.js";
-import instructor from "../../routes/instructorRoutes.js";
-import logger from "../../utils/logger.js";
-import { uploadToS3 } from "../../utils/s3Upload.js";
+import { CourseService } from "../../services/instructor/courseServices";
+import { InstructorRepository } from "../../repositories/instructorRepository";
+import { AuthRequest, InstAuthRequest } from "../../middleware/authMiddleware";
+import instructor from "../../routes/instructorRoutes";
+import logger from "../../utils/logger";
+import { uploadToS3 } from "../../utils/s3Upload";
 import fs from 'fs'
-import { generateSignedUrl } from "../../utils/getSignedUrl.js";
+import { generateSignedUrl } from "../../utils/getSignedUrl";
 
 interface MulterFiles {
   [fieldname: string]: Express.Multer.File[];
@@ -188,7 +188,7 @@ export class InstCourseController {
 
       const files = Array.isArray(req.files) ? req.files : [];
 
-      
+
       const moduleIndexes = new Set(
         [
           ...Object.keys(req.body).map((k) => k.match(/modules\[(\d+)\]/)?.[1]),

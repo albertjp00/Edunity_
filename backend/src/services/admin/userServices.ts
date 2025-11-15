@@ -1,8 +1,9 @@
-import { ICourse } from "../../models/course.js";
-import { IMyCourse } from "../../models/myCourses.js";
-import { IUser } from "../../models/user.js";
-import { IAdminRepository } from "../../repositories/adminRepositories.js";
-import { IUserRepository, UserRepository } from "../../repositories/userRepository.js";
+import { IMyCourses, IUserRepository } from "../../interfaces/userInterfaces";
+import { ICourse } from "../../models/course";
+import { IMyCourse } from "../../models/myCourses";
+import { IUser } from "../../models/user";
+import { IAdminRepository } from "../../repositories/adminRepositories";
+import {  UserRepository } from "../../repositories/userRepository";
 
 
 
@@ -18,13 +19,13 @@ export class AdminUserService{
         } catch (error) {
             console.log(error); 
             return null
-            
         }
     }
 
-    getUsersCoursesRequest = async(id:string):Promise<IMyCourse[] | null>=>{
+    getUsersCoursesRequest = async(id:string):Promise<IMyCourses | null>=>{
         try {
-            const result = await this.userRepository.findMyCourses(id)
+        const page = 1
+            const result = await this.userRepository.findMyCourses(id , page)
             return result
         } catch (error) {
             console.log(error); 

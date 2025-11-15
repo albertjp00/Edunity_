@@ -1,8 +1,8 @@
 import { Server } from "http";
-import { IEvent } from "../../models/events.js";
-import { IMyEvent } from "../../models/myEvents.js";
-import { InstructorRepository } from "../../repositories/instructorRepository.js";
-import { UserRepository } from "../../repositories/userRepository.js";
+import { IEvent } from "../../models/events";
+import { IMyEvent } from "../../models/myEvents";
+import { InstructorRepository } from "../../repositories/instructorRepository";
+import { UserRepository } from "../../repositories/userRepository";
 
 
 export class NotFoundError extends Error {

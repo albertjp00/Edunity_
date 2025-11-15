@@ -1,22 +1,22 @@
 import express from "express";
 import multer from "multer";
-import { AuthController } from "../controllers/user/authController.js";
-import { authMiddleware } from "../middleware/authMiddleware.js";
-import { ProfileController } from "../controllers/user/profileController.js";
+import { AuthController } from "../controllers/user/authController";
+import { authMiddleware } from "../middleware/authMiddleware";
+import { ProfileController } from "../controllers/user/profileController";
 import path from "path";
-import { UserCourseController } from "../controllers/user/courseController.js";
-import { UserEventController } from "../controllers/user/eventController.js";
-import { MessageController } from "../controllers/messaage/messageController.js";
-import { UserRepository } from "../repositories/userRepository.js";
-import { AuthService } from "../services/user/authService.js";
-import { CourseRepository } from "../repositories/courserRepository.js";
-import { UserCourseService } from "../services/user/userCourseService.js";
-import { InstructorRepository } from "../repositories/instructorRepository.js";
-import { AdminRepository } from "../repositories/adminRepositories.js";
-import { ProfileService } from "../services/user/profileService.js";
-import { UserEventService } from "../services/user/eventService.js";
-import { MessageService } from "../services/message/messageService.js";
-import { MessageRepository } from "../repositories/messageRepositories.js";
+import { UserCourseController } from "../controllers/user/courseController";
+import { UserEventController } from "../controllers/user/eventController";
+import { MessageController } from "../controllers/messaage/messageController";
+import { UserRepository } from "../repositories/userRepository";
+import { AuthService } from "../services/user/authService";
+import { CourseRepository } from "../repositories/courserRepository";
+import { UserCourseService } from "../services/user/userCourseService";
+import { InstructorRepository } from "../repositories/instructorRepository";
+import { AdminRepository } from "../repositories/adminRepositories";
+import { ProfileService } from "../services/user/profileService";
+import { UserEventService } from "../services/user/eventService";
+import { MessageService } from "../services/message/messageService";
+import { MessageRepository } from "../repositories/messageRepositories";
 import { profile } from "console";
 
 

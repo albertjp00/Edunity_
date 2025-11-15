@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { AuthRequest, InstAuthRequest } from '../../middleware/authMiddleware.js';
-import { InstructorRepository } from '../../repositories/instructorRepository.js';
-import { InstructorProfileService } from '../../services/instructor/profileServices.js';
+import { AuthRequest, InstAuthRequest } from '../../middleware/authMiddleware';
+import { InstructorRepository } from '../../repositories/instructorRepository';
+import { InstructorProfileService } from '../../services/instructor/profileServices';
 import { loadavg } from 'os';
 
 export class InstProfileController {

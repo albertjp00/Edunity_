@@ -1,7 +1,7 @@
-import { ICourse } from "../../models/course.js";
-import { IInstructor } from "../../models/instructor.js";
-import { IAdminRepository } from "../../repositories/adminRepositories.js";
-import { IInsRepository, InstructorRepository } from "../../repositories/instructorRepository.js";
+import { ICourse } from "../../models/course";
+import { IInstructor } from "../../models/instructor";
+import { IAdminRepository } from "../../repositories/adminRepositories";
+import { IInsRepository, InstructorRepository } from "../../repositories/instructorRepository";
 
 
 
