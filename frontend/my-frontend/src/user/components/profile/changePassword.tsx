@@ -3,7 +3,7 @@ import './changePassword.css';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../api/userApi';
-import { userPasswordChange } from '../../services/profileServices';
+// import { userPasswordChange } from '../../services/profileServices';
 
 
 

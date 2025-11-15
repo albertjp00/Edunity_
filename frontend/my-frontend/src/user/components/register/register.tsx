@@ -1,8 +1,8 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import axios from "axios";
+// import axios from "axios";
 import './register.css'
 import { useNavigate } from 'react-router-dom'
-import api from "../../../api/userApi";
+// import api from "../../../api/userApi";
 import { userRegister } from "../../services/authServices";
 import { toast } from "react-toastify";
 import authImage from '../../../assets/authImage.png'
@@ -80,7 +80,7 @@ const Register = () => {
 
         toast.error(res?.data.message)
       }
-    } catch (error: any) {
+    } catch (error : any) {
       console.error(error);
 
       const errMsg =

@@ -188,7 +188,6 @@ export class InstCourseController {
 
       const files = Array.isArray(req.files) ? req.files : [];
 
-
       const moduleIndexes = new Set(
         [
           ...Object.keys(req.body).map((k) => k.match(/modules\[(\d+)\]/)?.[1]),

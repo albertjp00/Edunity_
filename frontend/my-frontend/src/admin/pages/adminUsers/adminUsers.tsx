@@ -101,7 +101,7 @@ const UsersAdmin: React.FC = () => {
     }
   };
 
-
+  
   useEffect(() => {
     loadUsers(currentPage, searchTerm);
   }, [currentPage]);

@@ -73,11 +73,19 @@ export class UserRepository extends BaseRepository<IUser>
     return await WalletModel.findOne({ userId: userId })
   }
 
+<<<<<<< HEAD
   async getPayment(userId: string): Promise<IPayment[] | null> {
     const pay = await PaymentModel.find({ userId: userId })
     console.log("payyyy", pay);
     return pay
 
+=======
+    async getPayment(userId: string): Promise<IPayment[] | null> {
+      const pay =  await PaymentModel.find({ userId: userId })
+      console.log("payyyy",pay);
+      return pay
+    
+>>>>>>> a73c7653cfbd9c3e5e0c28d1e38275d9bb2ce760
   }
 
   async getCourse(id: string): Promise<ICourse | null> {
@@ -260,6 +268,7 @@ export class UserRepository extends BaseRepository<IUser>
   }
 
 
+<<<<<<< HEAD
   async userPayment(userId: string, courseId: string, courseName: string, coursePrice: number): Promise<IPayment | null> {
     try {
       const payment = await PaymentModel.create({ userId, courseId, amount: coursePrice, courseName })
@@ -270,10 +279,71 @@ export class UserRepository extends BaseRepository<IUser>
       console.log(error);
       return null
     }
+=======
+      async userPayment(userId : string , courseId : string , courseName : string , coursePrice : number): Promise<IPayment | null> {
+          try {
+              const payment = await PaymentModel.create({userId , courseId , amount : coursePrice , courseName})
+              console.log('added to payment');
+              
+              return payment
+          } catch (error) {
+              console.log(error);
+              return null
+          }
+      } 
+
+      
+
+      async sendNotification(userId : string , title : string , message : string ):Promise<INotification | null>{
+        try {
+          return await NotificationModel.create({recipientId : userId , title , message})
+        } catch (error) {
+          console.log(error);
+          return null
+          
+        }
+      }
+
+
+      async getNotifications(userId : string ):Promise<INotification[] | null>{
+        try {
+          return await NotificationModel.find({recipientId : userId}).sort({createdAt:-1})
+        } catch (error) {
+          console.log(error);
+          return null
+        }
+      }
+
+      async notificationsMarkRead(userId : string):Promise<INotification[] | null>{
+        try {
+          const update =  await NotificationModel.updateMany({ recipientId: userId, isRead: false },
+          { $set: { isRead: true } }
+          );
+
+          const updated = await NotificationModel.find({recipientId : userId }).sort({createdAt:-1})
+          return updated
+        } catch (error) {
+          console.log(error);
+          return null
+        }
+      }
+
+  async findMyCourses(id: string, page: number): Promise<IMyCourses> {
+
+    const limit = 3
+    const count = await MyCourseModel.countDocuments({ userId: id })
+    const totalPages = Math.ceil(count / limit)
+
+    const skip = (page - 1) * limit
+    const myCourses = await MyCourseModel.find({ userId: id }).sort({ createdAt: -1 }).skip(skip).limit(limit)
+
+    return { myCourses, totalCount: count, totalPages: totalPages, currentPage: page }
+>>>>>>> a73c7653cfbd9c3e5e0c28d1e38275d9bb2ce760
   }
 
 
 
+<<<<<<< HEAD
   async sendNotification(userId: string, title: string, message: string): Promise<INotification | null> {
     try {
       return await NotificationModel.create({ recipientId: userId, title, message })
@@ -322,6 +392,8 @@ export class UserRepository extends BaseRepository<IUser>
 
 
 
+=======
+>>>>>>> a73c7653cfbd9c3e5e0c28d1e38275d9bb2ce760
 
 
   async viewMyCourse(id: string, myCourseId: string): Promise<IMyCourse | null> {
@@ -335,6 +407,7 @@ export class UserRepository extends BaseRepository<IUser>
   }
 
 
+<<<<<<< HEAD
   async updateProgress(userId: string, courseId: string, moduleTitle: string): Promise<IMyCourse | null> {
     try {
       console.log(userId, courseId);
@@ -355,6 +428,24 @@ export class UserRepository extends BaseRepository<IUser>
       return null
       
     }
+=======
+  async updateProgress(userId: string, myCourseId: string, moduleTitle: string): Promise<IMyCourse | null> {
+    console.log(userId, myCourseId);
+
+
+    const myCourse = await MyCourseModel.findByIdAndUpdate(myCourseId, { cancelCourse: false })
+    console.log('course update progress', myCourse);
+
+    const course = await MyCourseModel.findByIdAndUpdate(
+      myCourseId,
+      { $addToSet: { "progress.completedModules": moduleTitle } },
+      { new: true }
+    );
+    console.log(course);
+
+
+    return course;
+>>>>>>> a73c7653cfbd9c3e5e0c28d1e38275d9bb2ce760
   }
 
   async getCertificate(userId: string, courseId: string, certificate: string): Promise<IMyCourse | null> {
@@ -373,7 +464,11 @@ export class UserRepository extends BaseRepository<IUser>
 
 
 
+<<<<<<< HEAD
   async addReview(userId: string, userName: string, userImage: string, courseId: string, rating: number, comment: string): Promise<IReview> {
+=======
+  async addReview(userId: string,userName : string , userImage : string , courseId: string, rating: number, comment: string): Promise<IReview> {
+>>>>>>> a73c7653cfbd9c3e5e0c28d1e38275d9bb2ce760
     try {
       const course = await CourseModel.findById(courseId);
 
@@ -514,6 +609,27 @@ export class UserRepository extends BaseRepository<IUser>
 
   async decreaseCourseEnrollment(courseId: string) {
     return await CourseModel.updateOne({ _id: courseId }, { $inc: { totalEnrolled: -1 } });
+<<<<<<< HEAD
+  }
+
+
+  async addTransaction(userId: string, transaction: WalletTransaction): Promise<void> {
+    const wallet = await WalletModel.findOne({ userId });
+
+    if (wallet) {
+      wallet.transactions.push({ ...transaction, createdAt: new Date() });
+      if (transaction.type === "credit") wallet.balance += transaction.amount;
+      else wallet.balance -= transaction.amount;
+      await wallet.save();
+    } else {
+      await WalletModel.create({
+        userId,
+        balance: transaction.type === "credit" ? transaction.amount : -transaction.amount,
+        transactions: [{ ...transaction, createdAt: new Date() }],
+      });
+    }
+=======
+>>>>>>> a73c7653cfbd9c3e5e0c28d1e38275d9bb2ce760
   }
 
 
@@ -534,6 +650,7 @@ export class UserRepository extends BaseRepository<IUser>
     }
   }
 
+  
 
 
 
