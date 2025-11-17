@@ -1,5 +1,7 @@
 import { Server } from "socket.io";
 import { MessageController } from "./controllers/messaage/messageController.js";
+import { MessageRepository } from "./repositories/messageRepositories.js";
+import { MessageService } from "./services/message/messageService.js";
 // import { socketAuthMiddleware } from "./middleware/authMiddleware.js";
 
 
@@ -12,7 +14,9 @@ interface Participant {
 
 
 
-const messageController = new MessageController()
+const messageRepo = new MessageRepository()
+const messageService = new MessageService(messageRepo)
+const messageController = new MessageController(messageService)
 
 const eventParticipants: Record<string, Participant[]> = {};
 

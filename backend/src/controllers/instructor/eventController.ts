@@ -1,8 +1,6 @@
 import { Response } from "express"
 import { InstAuthRequest } from "../../middleware/authMiddleware"
-import { InstructorRepository } from "../../repositories/instructorRepository"
 import { InstEventService } from "../../services/instructor/eventService"
-import { Server } from "http"
 
 
 
@@ -22,7 +20,7 @@ export class EventController {
             console.log("event creation", data);
 
 
-            const result = await this._eventService.createEventRequest(id as string, data)
+            await this._eventService.createEventRequest(id as string, data)
             res.json({ success: true })
         } catch (error) {
             console.log(error);
@@ -106,7 +104,7 @@ export class EventController {
                 return;
             }
             console.log(data, id);
-            const result = await this._eventService.updateEventRequest(id, data)
+            await this._eventService.updateEventRequest(id, data)
 
             res.json({ success: true })
 

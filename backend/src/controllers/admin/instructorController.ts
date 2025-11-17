@@ -1,17 +1,12 @@
 import { Response , Request } from "express";
-import { AdminRepository, IAdminRepository } from "../../repositories/adminRepositories";
-import { IKyc } from "../../models/kyc.js";
+
 import { AdminInstructorService } from "../../services/admin/instructorServices";
-import { IInsRepository, InstructorRepository } from "../../repositories/instructorRepository";
 
 export class AdminInstructorController {
-    private _instructorService: AdminInstructorService
+    private _adminInstructorService: AdminInstructorService
 
-    constructor(
-        repo : IAdminRepository,
-        Irepo : IInsRepository
-    ){
-                this._instructorService = new AdminInstructorService(repo,Irepo)
+    constructor(adminInstructorService : AdminInstructorService){
+            this._adminInstructorService = adminInstructorService
     }
     
 
@@ -20,7 +15,7 @@ export class AdminInstructorController {
             const id = req.params.id!
             console.log('get instructorssssss ',id);
             
-            const result = await this._instructorService.getInstructorsRequest(id)
+            const result = await this._adminInstructorService.getInstructorsRequest(id)
             res.json({success:true , instructor:result})
         } catch (error) {
             console.log(error);
@@ -33,7 +28,7 @@ export class AdminInstructorController {
             const id = req.params.id!
             console.log('get instructor courses ',id);
             
-            const result = await this._instructorService.getInstructorsCoursesRequest(id)
+            const result = await this._adminInstructorService.getInstructorsCoursesRequest(id)
             console.log(result);
             
             res.json({success:true , courses:result})

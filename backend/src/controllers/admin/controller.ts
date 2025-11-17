@@ -1,11 +1,7 @@
 import { Response, Request } from "express";
-import { AdminRepository, IAdminRepository } from "../../repositories/adminRepositories";
 import { AdminService } from "../../services/admin/adminServices";
-import { IKyc } from "../../models/kyc";
-import { UserRepository } from "../../repositories/userRepository";
 import { AdminAuthRequest } from "../../middleware/authMiddleware";
-import { IUserRepository } from "../../interfaces/userInterfaces";
-import logger from "../../utils/logger";
+
 
 export class AdminController {
     private _adminService: AdminService
@@ -36,7 +32,7 @@ export class AdminController {
     getUsers = async (req: Request, res: Response) => {
         try {
             const { search, page } = req.query;
-            let limit = 4
+            // let limit = 4
 
             const data = await this._adminService.getUsers(
                 String(search),
@@ -58,7 +54,11 @@ export class AdminController {
 
 
             const result = await this._adminService.blockUnblockUser(id)
+            if(result){
             res.json({ success: true })
+            }else{
+                res.json({success:false})
+            }
         } catch (error) {
             console.log(error);
             return null
@@ -71,7 +71,12 @@ export class AdminController {
 
             const id = req.params.id!
             const result = await this._adminService.unblockUser(id)
+            
+            if(result){
             res.json({ success: true })
+            }else{
+                res.json({success:false})
+            }
         } catch (error) {
             console.log(error);
             return null
@@ -110,9 +115,13 @@ export class AdminController {
             const id = req.params.id!
             console.log('kyc verify ', id);
 
-            const data = await this._adminService.verifyKyc(id)
+            const result = await this._adminService.verifyKyc(id)
 
+            if(result){
             res.json({ success: true })
+            }else{
+                res.json({success:false})
+            }
         } catch (error) {
             console.log(error);
 
@@ -124,9 +133,10 @@ export class AdminController {
             const reason = req.body.reason
             console.log('kyc verify ', id, req.body);
 
-            const data = await this._adminService.rejectKyc(id, reason)
-
+            await this._adminService.rejectKyc(id, reason)
+            
             res.json({ success: true })
+            
         } catch (error) {
             console.log(error);
 

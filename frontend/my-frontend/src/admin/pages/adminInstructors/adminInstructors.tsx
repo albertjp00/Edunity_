@@ -1,7 +1,8 @@
-import React, { useEffect, useState, type ChangeEvent } from 'react';
+import React, { useEffect, useState} from 'react';
 import './adminInstructors.css';
 import { Link } from 'react-router-dom';
 import adminApi from '../../../api/adminApi';
+import AdminList from '../../components/usersInstructorList/usersList';
 
 interface Instructor {
   _id: string;
@@ -12,12 +13,12 @@ interface Instructor {
 }
 
 interface InstructorsResponse {
-data:{
+  data: {
     instructors: Instructor[];
-  totalPages: number;
-  currentPage: number;
-  totalInstructors: number;
-}
+    totalPages: number;
+    currentPage: number;
+    totalInstructors: number;
+  }
 }
 
 
@@ -25,9 +26,9 @@ const InstructorsAdmin: React.FC = () => {
   const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
-  const [searchTerm , setSearchTerm] = useState<string>('')
+  const [searchTerm, setSearchTerm] = useState<string>('')
 
-  const getInstructors = async (currentPage: number , search : string=''): Promise<void> => {
+  const getInstructors = async (currentPage: number, search: string = ''): Promise<void> => {
     try {
       const response = await adminApi.get<InstructorsResponse>(`/admin/getInstructors?page=${currentPage}&search=${search}`);
       console.log(response);
@@ -41,15 +42,15 @@ const InstructorsAdmin: React.FC = () => {
   };
 
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setPage(1);
-    getInstructors(1, searchTerm);
-  };
+  // const handleSearch = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setPage(1);
+  //   getInstructors(1, searchTerm);
+  // };
 
 
   useEffect(() => {
-    getInstructors(page , searchTerm);
+    getInstructors(page, searchTerm);
   }, [page]);
 
   const handlePrev = () => {
@@ -62,79 +63,31 @@ const InstructorsAdmin: React.FC = () => {
 
   return (
     <div className="instructor-list">
-      <h2>Instructors List</h2>
+      <AdminList
+        title="Instructors"
+        data={instructors}
+        columns={[
+          { label: "Name", render: (i) => <Link to={`/admin/instructors/${i._id}`}>{i.name}</Link> },
+          { label: "Email", render: (i) => i.email },
+          { label: "Picture", render: (i) => i.profileImage && <img src={`http://localhost:5000/assets/${i.profileImage}`} width={40} /> },
+          {
+            label: "KYC", render: (i) => {
+              if (i.KYCstatus === "notApplied") return <span>No KYC Submitted</span>;
+              if (i.KYCstatus === "verified") return <button className="btn-verified">Verified</button>;
+              if (i.KYCstatus === "pending") return <Link to={`/admin/viewKyc/${i._id}`}><button>Verify</button></Link>;
+              if (i.KYCstatus === "rejected") return <span>Rejected</span>;
+            }
+          },
+        ]}
+        page={page}
+        totalPages={pages}
+        onPrev={handlePrev}
+        onNext={handleNext}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        onSearchSubmit={() => getInstructors(1, searchTerm)}
+      />
 
-            <form onSubmit={handleSearch}>
-              <input
-                type="text"
-                name="search"
-                placeholder="🔍 Search by name or email"
-                value={searchTerm}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-                className="search-box"
-              />
-              <button type="submit">Search</button>
-            </form>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Picture</th>
-            <th>KYC</th>
-          </tr>
-        </thead>
-        <tbody>
-          {instructors.map((user) => (
-            <tr key={user._id}>
-              {/* ✅ Clicking name goes to details page */}
-              <td>
-                <Link to={`/admin/instructors/${user._id}`} className="instructor-link">
-                  {user.name}
-                </Link>
-              </td>
-              <td>{user.email}</td>
-              <td>
-                {user.profileImage && (
-                  <img
-                    src={`http://localhost:5000/assets/${user.profileImage}`}
-                    alt={user.name}
-                    width="40"
-                    height="40"
-                  />
-                )}
-              </td>
-              <td>
-                {user.KYCstatus === 'notApplied' ? (
-                  <span className="no-kyc">No KYC Submitted</span>
-                ) : user.KYCstatus === 'verified' ? (
-                  <button className="btn-verified">Verified</button>
-                ) : user.KYCstatus === 'pending' ? (
-                  <Link to={`/admin/viewKyc/${user._id}`}>
-                    <button className="verify-btn">Verify</button>
-                  </Link>
-                ) : user.KYCstatus === 'rejected' ? (
-                  <span className="kyc-rejected">Rejected</span>
-                ) : null}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* Pagination Controls */}
-      <div className="pagination">
-        <button onClick={handlePrev} disabled={page === 1}>
-          Prev
-        </button>
-        <span>
-          Page {page} of {pages}
-        </span>
-        <button onClick={handleNext} disabled={page === pages}>
-          Next
-        </button>
-      </div>
     </div>
   );
 };

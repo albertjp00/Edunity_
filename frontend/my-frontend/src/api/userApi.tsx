@@ -1,22 +1,17 @@
 import axios, { type AxiosInstance } from "axios";
 import { toast } from "react-toastify";
 
+const api_url = import.meta.env.VITE_API_URL
+
+// const ngrok_api_url = import.meta.env.VITE_NGROK_API_URL
 
 const api: AxiosInstance = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: api_url,
   headers: {
     "Content-Type": "application/json",
   },
   withCredentials: true,
 });
-
-// const api: AxiosInstance = axios.create({
-//   baseURL: "https://alejandra-windowless-arielle.ngrok-free.dev",
-//   headers: {
-//     "Content-Type": "application/json",
-//   },
-//   withCredentials: true,
-// });
 
 
 
@@ -34,7 +29,7 @@ api.interceptors.request.use((config) => {
 const refreshAccessToken = async () => {
   try {
     const res = await axios.post(
-      "http://localhost:5000/user/refresh-token",
+      `${api_url}/user/refresh-token`,
       {},
       { withCredentials: true } 
     );

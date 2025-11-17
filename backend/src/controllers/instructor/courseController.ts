@@ -1,23 +1,24 @@
 import { Request, Response } from "express";
 import { CourseService } from "../../services/instructor/courseServices";
-import { InstructorRepository } from "../../repositories/instructorRepository";
-import { AuthRequest, InstAuthRequest } from "../../middleware/authMiddleware";
-import instructor from "../../routes/instructorRoutes";
+
+import { InstAuthRequest } from "../../middleware/authMiddleware";
+
 import logger from "../../utils/logger";
 import { uploadToS3 } from "../../utils/s3Upload";
 import fs from 'fs'
 import { generateSignedUrl } from "../../utils/getSignedUrl";
+import { IModule } from "../../models/course";
 
-interface MulterFiles {
-  [fieldname: string]: Express.Multer.File[];
-}
+// interface MulterFiles {
+//   [fieldname: string]: Express.Multer.File[];
+// }
 
 
 
 export class InstCourseController {
   private _courseService: CourseService;
 
-  constructor(courseService : CourseService) {
+  constructor(courseService: CourseService) {
     // const repo = new InstructorRepository();
     this._courseService = courseService
   }
@@ -49,7 +50,7 @@ export class InstCourseController {
 
   courseDetails = async (req: InstAuthRequest, res: Response) => {
     try {
-      const id = req.instructor?.id
+      // const id = req.instructor?.id
       const courseId = req.params.id!
       const result = await this._courseService.fetchCourseDetails(courseId)
       console.log("course", result?.course.modules);
@@ -61,7 +62,7 @@ export class InstCourseController {
   }
 
 
-  
+
   refreshVideoUrl = async (req: Request, res: Response) => {
     try {
       const { key } = req.query; // frontend sends the key (filename)
@@ -114,11 +115,11 @@ export class InstCourseController {
           ? JSON.parse(req.body.modules || "[]")
           : req.body.modules || [];
 
-      const updatedModules: any[] = [];
+      const updatedModules: IModule[] = [];
       for (let index = 0; index < modules.length; index++) {
         const mod = modules[index];
         const videoFile = files.find(
-          (f: any) => f.fieldname === `modules[${index}][video]`
+          (f) => f.fieldname === `modules[${index}][video]`
         );
 
         let videoUrl = mod.videoUrl || "";
@@ -136,7 +137,7 @@ export class InstCourseController {
         });
       }
 
-      const thumbnailFile = files.find((f: any) => f.fieldname === "thumbnail");
+      const thumbnailFile = files.find((f) => f.fieldname === "thumbnail");
 
       const data = {
         title: req.body.title,
@@ -195,7 +196,7 @@ export class InstCourseController {
         ].filter(Boolean)
       );
 
-      const modules: any[] = [];
+      const modules = [];
 
 
       for (const index of moduleIndexes) {
@@ -269,10 +270,15 @@ export class InstCourseController {
 
 
       res.json({ success: true });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error adding quiz:", error);
-      res.status(500).json({ success: false, message: error.message });
+
+      const message =
+        error instanceof Error ? error.message : "Something went wrong";
+
+      res.status(500).json({ success: false, message });
     }
+
   };
 
 
@@ -291,7 +297,7 @@ export class InstCourseController {
         return;
       }
       res.json({ success: true, quiz });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error fetching quiz:", error);
     }
   }
@@ -304,10 +310,10 @@ export class InstCourseController {
       const data = req.body
       console.log("quizId", quizId, req.body);
 
-      const quiz = await this._courseService.updateQuiz(quizId as string, data)
+      await this._courseService.updateQuiz(quizId as string, data)
 
       res.json({ success: true });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error fetching quiz:", error);
     }
   }

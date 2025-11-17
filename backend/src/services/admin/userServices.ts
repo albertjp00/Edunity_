@@ -8,7 +8,8 @@ import {  UserRepository } from "../../repositories/userRepository";
 
 
 export class AdminUserService{
-    constructor(private adminRepository : IAdminRepository,
+    constructor(
+        private adminRepository : IAdminRepository,
         private userRepository: IUserRepository
     ){}
 

@@ -1,8 +1,6 @@
-import { Request, Response } from 'express';
-import { AuthRequest, InstAuthRequest } from '../../middleware/authMiddleware';
-import { InstructorRepository } from '../../repositories/instructorRepository';
+import { Response } from 'express';
+import {  InstAuthRequest } from '../../middleware/authMiddleware';
 import { InstructorProfileService } from '../../services/instructor/profileServices';
-import { loadavg } from 'os';
 
 export class InstProfileController {
     private _profileService: InstructorProfileService;
@@ -46,7 +44,7 @@ export class InstProfileController {
         try {
             console.log('user profile ', req.instructor?.id, req.file)
             const userId = req.instructor?.id; // Assuming `req.user` is set by auth middleware
-            const updateData = req.body;
+            // const updateData = req.body;
 
 
             const data = { ...req.body }

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import profilePic from './../../../assets/profilePic.png';
 import { useParams, useNavigate } from 'react-router-dom';
 import './instructorDetails.css';
-import adminApi from '../../../api/adminApi';
 import type { ICourse, IInstructor } from '../../adminInterfaces';
 import { getCourses, getProfile } from '../../services/adminServices';
 

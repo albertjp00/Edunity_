@@ -1,6 +1,5 @@
 import { IInstAuthController } from "../../interfaces/instructorInterfaces";
-import { InstAuthRequest } from "../../middleware/authMiddleware";
-import { InstructorRepository } from "../../repositories/instructorRepository"
+
 import { InstAuthService } from "../../services/instructor/authService";
 import { Request, Response } from 'express';
 

@@ -9,6 +9,8 @@ import { InstructorRepository } from '../repositories/instructorRepository'
 import { UserRepository } from '../repositories/userRepository'
 import { AdminService } from '../services/admin/adminServices'
 import { AdminCourseService } from '../services/admin/courseServices'
+import { AdminInstructorService } from '../services/admin/instructorServices'
+import { AdminUserService } from '../services/admin/userServices'
 
 const admin = express.Router()
 
@@ -16,28 +18,26 @@ const admin = express.Router()
 // const dashboardController = new AdminController()
 const adminRepo = new AdminRepository()
 const userRepo = new UserRepository()
+const instructorRepo = new InstructorRepository()
+
 const adminService = new AdminService(adminRepo , userRepo)
 const dashboardController = new AdminController(adminService)
 
 
-// const instructorController = new AdminInstructorController()
-const instructorController = new AdminInstructorController(
-    new AdminRepository(),
-    new InstructorRepository()
-)
 
-// const userController = new AdminUserController()
-const userController = new AdminUserController(
-    new AdminRepository(),
-    new UserRepository()
-)
+const adminInstructorService = new AdminInstructorService(adminRepo , instructorRepo)
+const instructorController = new AdminInstructorController(adminInstructorService)
 
 
 
-// const courseController = new AdminCourseController()
-const instRepo = new InstructorRepository()
-const adminCourseService = new AdminCourseService(adminRepo ,  instRepo , userRepo)
+const adminUserService = new AdminUserService(adminRepo , userRepo)
+const userController = new AdminUserController(adminUserService)
+
+
+
+const adminCourseService = new AdminCourseService(adminRepo ,  instructorRepo , userRepo)
 const courseController = new AdminCourseController(adminCourseService);
+
 
 admin.post('/login',dashboardController.adminLogin)
 

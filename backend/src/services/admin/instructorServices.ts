@@ -6,7 +6,8 @@ import { IInsRepository, InstructorRepository } from "../../repositories/instruc
 
 
 export class AdminInstructorService{
-    constructor(private adminRepository : IAdminRepository,
+    constructor(
+        private adminRepository : IAdminRepository,
         private instructorRepository: IInsRepository
     ){}
 

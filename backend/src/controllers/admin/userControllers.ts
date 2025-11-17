@@ -1,19 +1,13 @@
 import { Response , Request } from "express";
-import { AdminRepository, IAdminRepository } from "../../repositories/adminRepositories";
-import { IKyc } from "../../models/kyc.js";
-import { AdminInstructorService } from "../../services/admin/instructorServices";
-import {  UserRepository } from "../../repositories/userRepository";
 import { AdminUserService } from "../../services/admin/userServices";
-import { IUserRepository } from "../../interfaces/userInterfaces";
 
 export class AdminUserController {
     private _userService: AdminUserService
 
     constructor(
-        repo:IAdminRepository,
-        Urepo:IUserRepository
-    ){
-        this._userService = new AdminUserService(repo,Urepo)
+        adminUserService : AdminUserService
+        ){
+        this._userService = adminUserService
     }
 
     getUser = async(req:Request , res:Response):Promise<void>=>{

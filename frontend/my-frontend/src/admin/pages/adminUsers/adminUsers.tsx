@@ -1,10 +1,11 @@
-import React, { useEffect, useState, type ChangeEvent } from "react";
+import React, { useEffect, useState } from "react";
 import "./adminUsers.css";
 import { toast } from "react-toastify";
 import profilePic from "../../../assets/profilePic.png";
 import { getUsers, blockUser, unblockUser } from "../../../services/admin/adminService";
 import { Link } from "react-router-dom";
 import ConfirmModal from "../../components/adminUsers/modal";
+import AdminList from "../../components/usersInstructorList/usersList";
 
 interface User {
   _id: string;
@@ -49,22 +50,7 @@ const UsersAdmin: React.FC = () => {
     }
   };
 
-  // const debounce = (func, delay) => {
-  //   let timer;
-  //   return function (…args) {
-  //     clearTimeout(timer);
-  //     timer = setTimeout(() => {
-  //       func.apply(this, args);
-  //     }, delay);
-  //   }
-  // }
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setCurrentPage(1);
-
-    // const debounceSearch = debounce(loadUsers(1, searchTerm) , 200);
-  };
 
 
   const handleBlock = (userId: string): void => {
@@ -106,100 +92,37 @@ const UsersAdmin: React.FC = () => {
     loadUsers(currentPage, searchTerm);
   }, [currentPage]);
 
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      loadUsers(page, searchTerm);
-    }
-  };
+  // const handlePageChange = (page: number) => {
+  //   if (page >= 1 && page <= totalPages) {
+  //     loadUsers(page, searchTerm);
+  //   }
+  // };
 
   return (
     <div className="user-list">
-      <h2>👥 Users Management</h2>
+      <AdminList
+  title="Users Management"
+  data={users}
+  
+  columns={[
+    { label: "Name", render: (u) => <Link to={`/admin/user/${u._id}`}>{u.name}</Link> },
+    { label: "Email", render: (u) => u.email },
+    { label: "Picture", render: (u) => <img src={u.profileImage ? `http://localhost:5000/assets/${u.profileImage}` : profilePic} width={40} /> },
+    { label: "Status", render: (u) =>
+        u.blocked ?
+          <button onClick={() => handleUnblock(u._id)}>Unblock</button> :
+          <button onClick={() => handleBlock(u._id)}>Block</button>
+    },
+  ]}
+  page={currentPage}
+  totalPages={totalPages}
+  onPrev={() => setCurrentPage((p) => p - 1)}
+  onNext={() => setCurrentPage((p) => p + 1)}
+  searchTerm={searchTerm}
+  onSearchChange={setSearchTerm}
+  onSearchSubmit={() => loadUsers(1, searchTerm)}
+/>
 
-      <form onSubmit={handleSearch}>
-        <input
-          type="text"
-          name="search"
-          placeholder="🔍 Search by name or email"
-          value={searchTerm}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-          className="search-box"
-        />
-        <button type="submit">Search</button>
-      </form>
-
-      <table className="styled-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Picture</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user._id}>
-              <td>
-                <Link to={`/admin/user/${user._id}`} className="user-link">
-                  {user.name}
-                </Link>
-              </td>
-              <td>{user.email}</td>
-              <td>
-                <img
-                  src={
-                    user.profileImage
-                      ? `http://localhost:5000/assets/${user.profileImage}`
-                      : profilePic
-                  }
-                  alt={user.name}
-                  className="profile-pic"
-                />
-              </td>
-              <td>
-                {user.blocked ? (
-                  <button className="btn-unblock" onClick={() => handleUnblock(user._id)}>
-                    Unblock
-                  </button>
-                ) : (
-                  <button className="btn-block" onClick={() => handleBlock(user._id)}>
-                    Block
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* Pagination Controls */}
-      <div className="pagination">
-        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-          ⬅ Prev
-        </button>
-
-        {totalPages > 0 &&
-          [...Array(totalPages)].map((_, index) => (
-            <button
-              key={index}
-              onClick={() => handlePageChange(index + 1)}
-              className={currentPage === index + 1 ? "active" : ""}
-            >
-              {index + 1}
-            </button>
-          ))
-        }
-
-
-
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-        >
-          Next ➡
-        </button>
-      </div>
 
       <ConfirmModal
         isOpen={showModal}

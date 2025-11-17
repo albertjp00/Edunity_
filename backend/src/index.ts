@@ -6,14 +6,14 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import path from "path";
-import { connectDB } from "./utils/db.js";
-import userRoutes from "./routes/userRoutes.js";
-import instructorRoutes from "./routes/instructorRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
-import messageRoutes from "./routes/messageRoutes.js";
-import { setupSocket } from "./socket.js"; 
-import { errorHandler } from "./middleware/errorMiddleware.js";
-// import { socketAuthMiddleware } from "./middleware/authMiddleware.js";
+import { connectDB } from "./utils/db";
+import userRoutes from "./routes/userRoutes";
+import instructorRoutes from "./routes/instructorRoutes";
+import adminRoutes from "./routes/adminRoutes";
+import messageRoutes from "./routes/messageRoutes";
+import { setupSocket } from "./socket"; 
+import { errorHandler } from "./middleware/errorMiddleware";
+// import { socketAuthMiddleware } from "./middleware/authMiddleware";
 
 dotenv.config();
 
@@ -50,6 +50,7 @@ const io = new Server(server, {
     credentials: true,
   },
 });
+
 
 
 setupSocket(io); // ✅ attach all socket handlers
