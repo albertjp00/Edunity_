@@ -8,8 +8,9 @@ import instructor from "../../routes/instructorRoutes";
 import { debounceCall } from "../../utils/debounce";
 import { generateSignedUrl } from "../../utils/getSignedUrl";
 import { IUserCourseController } from "../../interfaces/userInterfaces";
+import { HttpStatus } from "../../enums/httpStatus.enums";
 
-export class UserCourseController implements IUserCourseController{
+export class UserCourseController implements IUserCourseController{ 
     private _courseService: UserCourseService;
 
     constructor(courseService: UserCourseService) {
@@ -32,7 +33,7 @@ export class UserCourseController implements IUserCourseController{
 
             const data = await this._courseService.getCourses(page, limit);
 
-            res.json({
+            res.status(HttpStatus.OK).json({
                 success: true,
                 course: data.courses,
                 skills: data.skills,
@@ -42,7 +43,7 @@ export class UserCourseController implements IUserCourseController{
         } catch (error) {
             // console.error(error);
             next(error)
-            res.status(500).json({ success: false, message: "Failed to get courses" });
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to get courses" });
         }
     };
 
@@ -132,7 +133,7 @@ export class UserCourseController implements IUserCourseController{
             // console.log("course", result);
 
 
-            res.json({ success: true, course: result })
+            res.status(HttpStatus.OK).json({ success: true, course: result })
         } catch (error) {
             // console.log(error);
             next(error)
@@ -171,7 +172,7 @@ export class UserCourseController implements IUserCourseController{
                 return await this._courseService.buyCourseRequest(userId, courseId);
             });
 
-            res.json({
+            res.status(HttpStatus.OK).json({
                 success: true,
                 orderId: order.id,
                 amount: order.amount,
@@ -209,7 +210,7 @@ export class UserCourseController implements IUserCourseController{
 
 
             if (result.success) {
-                res.json(result);
+                res.status(HttpStatus.OK).json(result);
             } else {
                 res.status(400).json(result);
             }
@@ -239,7 +240,7 @@ export class UserCourseController implements IUserCourseController{
 
             const { populatedCourses, result: paginationData } = result;
 
-            res.json({
+            res.status(HttpStatus.OK).json({
                 success: true,
                 courses: populatedCourses,
                 totalCount: paginationData?.totalCount,
@@ -264,7 +265,7 @@ export class UserCourseController implements IUserCourseController{
             const result = await this._courseService.viewMyCourseRequest(id, myCourseId)
             console.log('mycourses view', result);
 
-            res.json({ success: true, course: result, instructor: result?.instructor, quiz: result?.quizExists, createdAt: result?.enrolledAt })
+            res.status(HttpStatus.OK).json({ success: true, course: result, instructor: result?.instructor, quiz: result?.quizExists, createdAt: result?.enrolledAt })
         } catch (error) {
             // console.log(error);
             next(error)
@@ -286,7 +287,7 @@ export class UserCourseController implements IUserCourseController{
             }
 
             const signedUrl = await generateSignedUrl(key as string);
-            res.json({ success: true, url: signedUrl });
+            res.status(HttpStatus.OK).json({ success: true, url: signedUrl });
         } catch (error) {
             console.error("Error refreshing video URL:", error);
             res.status(500).json({ success: false, message: "Error generating URL" });
@@ -310,7 +311,7 @@ export class UserCourseController implements IUserCourseController{
             const result = await this._courseService.updateProgress(userId, courseId, moduleTitle);
             console.log('progress updated ', result);
 
-            res.json({ success: true, progress: result });
+            res.status(HttpStatus.OK).json({ success: true, progress: result });
         } catch (error) {
             next(error)
             res.status(500).json({ success: false, message: "Internal server error" });
@@ -330,7 +331,7 @@ export class UserCourseController implements IUserCourseController{
             const result = await this._courseService.getCertificateRequest(userId as string, courseId as string)
             console.log(result);
 
-            res.json({ success: true, certificate: result })
+            res.status(HttpStatus.OK).json({ success: true, certificate: result })
 
         } catch (error) {
             console.log(error);
@@ -346,7 +347,7 @@ export class UserCourseController implements IUserCourseController{
 
             const result = await this._courseService.addReview(userId as string , courseId , rating , review )
 
-            res.json({success : true})
+            res.status(HttpStatus.OK).json({success : true})
         } catch (error) {
             console.log(error);
 
@@ -359,7 +360,7 @@ export class UserCourseController implements IUserCourseController{
         try {
             const instructor = await this._courseService.getInstructorsRequest()
 
-            res.json({ success: true, instructors: instructor });
+            res.status(HttpStatus.OK).json({ success: true, instructors: instructor });
         } catch (error) {
             // console.error("Error updating progress:", error);
             next(error)
@@ -380,7 +381,7 @@ export class UserCourseController implements IUserCourseController{
                 res.json({ success: false, message: "Course already exists in favourites" });
             }
 
-            res.json(result);
+            res.status(HttpStatus.OK).json(result);
         } catch (error) {
             // console.log(error);
             next(error)
@@ -394,7 +395,7 @@ export class UserCourseController implements IUserCourseController{
             const data = await this._courseService.getFavourites(userId)
             // console.log(data);
 
-            res.json({ success: true, favourites: data })
+            res.status(HttpStatus.OK).json({ success: true, favourites: data })
 
         } catch (error) {
             // console.log(error);
@@ -427,7 +428,7 @@ export class UserCourseController implements IUserCourseController{
 
 
             const quiz = await this._courseService.getQuiz(courseId as string)
-            res.json({ success: true, quiz })
+            res.status(HttpStatus.OK).json({ success: true, quiz })
         } catch (error) {
             // console.log(error);
             next(error)
@@ -450,7 +451,7 @@ export class UserCourseController implements IUserCourseController{
             const data = await this._courseService.submitQuiz(userId, courseId as string, quizId as string, answers)
             // console.log('submitted ', data);
 
-            res.json({ success: true, data })
+            res.status(HttpStatus.OK).json({ success: true, data })
         } catch (error) {
             // console.log(error);
             next(error)
@@ -467,7 +468,7 @@ export class UserCourseController implements IUserCourseController{
             const result = await this._courseService.cancelCourseRequest(userId as string, courseId as string)
 
 
-            res.json({ success: true })
+            res.status(HttpStatus.OK).json({ success: true })
         } catch (error) {
             console.log(error);
 

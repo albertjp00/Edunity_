@@ -30,7 +30,8 @@ export interface ICourse extends Document {
   createdAt?: Date;
   totalEnrolled?: number;
   category: string;
-  review: IReview[]
+  review: IReview[];
+  onPurchase:boolean;
   averageRating?: number
 }
 
@@ -78,6 +79,11 @@ const CourseSchema: Schema = new Schema<ICourse>({
   totalEnrolled: {
     type: Number,
     default: 100,
+  },
+
+  onPurchase:{
+    type : Boolean,
+    default : false
   },
 
   review: [

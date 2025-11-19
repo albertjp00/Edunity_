@@ -1,8 +1,7 @@
-import React, { useEffect, useState, type ChangeEvent } from "react";
+import React, { useEffect, useState} from "react";
 import './adminCourse.css'
-import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
 import { getAdminCourses } from "../../services/adminServices";
+import useDebounce from "../debounce/debounce";
 
 interface Course {
   _id: string;
@@ -16,15 +15,17 @@ interface Course {
 
 const CoursesAdmin: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [searchQuery , setSearchQuery] = useState<string>('')
   const coursesPerPage = 5;
 
-  const loadCourses = async (page: number): Promise<void> => {
+  
+
+  const loadCourses = async (page: number , search : string): Promise<void> => {
     try {
-      const { data } = await getAdminCourses(page, coursesPerPage); 
+      const { data } = await getAdminCourses(page, search, coursesPerPage); 
       if (!data) return;
 
       setCourses(data.courses);
@@ -35,9 +36,20 @@ const CoursesAdmin: React.FC = () => {
     }
   };
 
+  const debouncedSearchTerm = useDebounce(searchQuery , 500)
+
   useEffect(() => {
-    loadCourses(currentPage);
-  }, [currentPage]);
+    loadCourses(currentPage,debouncedSearchTerm);
+  }, [currentPage,debouncedSearchTerm]);
+
+
+  useEffect(()=>{
+    if(currentPage == 1){
+      loadCourses(1 , debouncedSearchTerm)
+    }else{
+      setCurrentPage(1)
+    }
+  },[debouncedSearchTerm])
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -45,12 +57,10 @@ const CoursesAdmin: React.FC = () => {
     }
   };
 
-  // Apply search on current page only (or handle search on backend if needed)
-  const filteredCourses = courses.filter(
-    (course) =>
-      course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      course.instructorName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+
+
+
+
 
   return (
     <div className="course-list">
@@ -60,10 +70,8 @@ const CoursesAdmin: React.FC = () => {
         type="text"
         name="search"
         placeholder="🔍 Search by title or instructor"
-        value={searchTerm}
-        onChange={(e: ChangeEvent<HTMLInputElement>) =>
-          setSearchTerm(e.target.value)
-        }
+        value={searchQuery}
+        onChange={(e) =>setSearchQuery(e.target.value)}
         className="search-box"
       />
 
@@ -78,8 +86,8 @@ const CoursesAdmin: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredCourses.length > 0 ? (
-            filteredCourses.map((course) => (
+          {courses.length > 0 ? (
+            courses.map((course) => (
               <tr key={course._id}>
                 <td>
                   <img

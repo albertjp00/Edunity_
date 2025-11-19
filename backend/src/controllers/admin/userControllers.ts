@@ -1,5 +1,6 @@
 import { Response , Request } from "express";
 import { AdminUserService } from "../../services/admin/userServices";
+import { HttpStatus } from "../../enums/httpStatus.enums";
 
 export class AdminUserController {
     private _userService: AdminUserService
@@ -16,7 +17,7 @@ export class AdminUserController {
             console.log('get user ',id);
             
             const result = await this._userService.getUserRequest(id)
-            res.json({success:true , user:result})
+            res.status(HttpStatus.OK).json({success:true , user:result})
         } catch (error) {
             console.log(error);
         }
@@ -30,7 +31,7 @@ export class AdminUserController {
             const result = await this._userService.getUsersCoursesRequest(id)
             console.log(result);
             
-            res.json({success:true , courses:result})
+            res.status(HttpStatus.OK).json({success:true , courses:result})
         } catch (error) {
             console.log(error);
             

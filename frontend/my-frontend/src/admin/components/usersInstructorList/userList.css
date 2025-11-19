@@ -1,6 +1,6 @@
 .admin-list {
   width: 100%;
-  max-width: 900px;
+  max-width: 1400px;
   margin: 20px;
   background: #fff;
   padding: 20px;
@@ -20,10 +20,16 @@
   justify-content: center;
   gap: 10px;
   margin-bottom: 15px;
+  
+}
+
+.form-search{
+  display: flex;
+  align-items: start;
 }
 
 .search-box {
-  width: 240px;
+  width: 440px;
   padding: 8px 12px;
   border-radius: 8px;
   border: 1px solid #aaa;
@@ -42,6 +48,7 @@
   cursor: pointer;
   border: none;
   transition: 0.2s;
+  max-height: 45px;
 }
 
 .admin-list form button:hover {

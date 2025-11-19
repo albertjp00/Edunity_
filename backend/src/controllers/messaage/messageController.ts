@@ -4,6 +4,7 @@ import { MessageRepository } from "../../repositories/messageRepositories";
 import { AuthRequest, InstAuthRequest } from "../../middleware/authMiddleware";
 import { log } from "winston";
 import logger from "../../utils/logger";
+import { HttpStatus } from "../../enums/httpStatus.enums";
 
 export class MessageController {
   private messageService: MessageService;
@@ -22,7 +23,7 @@ export class MessageController {
       const userId = req.user?.id
       const instructor = await this.messageService.getInstructor(instructorId as string , userId as string)
       console.log('get instructor to message ',instructor);
-      res.json({success:true , instructor : instructor})
+      res.status(HttpStatus.OK).json({success:true , instructor : instructor})
       
     } catch (error) {
       console.log(error);
@@ -36,10 +37,10 @@ getInstructortoMessage = async (req: AuthRequest, res: Response) => {
     const { id } = req.params;
     const instructor = await this.messageService.getInstructorToMessage(id as string);
     if (!instructor) {
-      return res.status(404).json({ success: false, message: "Instructor not found" });
+      return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: "Instructor not found" });
     }
 
-    res.json({
+    res.status(HttpStatus.OK).json({
       success: true,
       instructor: {
         id: instructor._id,
@@ -49,7 +50,7 @@ getInstructortoMessage = async (req: AuthRequest, res: Response) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Failed to fetch instructor" });
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to fetch instructor" });
   }
 };
 
@@ -60,7 +61,7 @@ getInstructortoMessage = async (req: AuthRequest, res: Response) => {
       const userId = req.user?.id!
       const result = await this.messageService.getInstructors(userId) 
       console.log('get instructors ', result);
-      res.json({ data: result , userId })
+      res.status(HttpStatus.OK).json({ data: result , userId })
 
     } catch (error) {
       console.log(error);
@@ -77,7 +78,7 @@ getInstructortoMessage = async (req: AuthRequest, res: Response) => {
       
        const result = await this.messageService.getUnreadMessages(userId , instructorId as string)
        console.log("count -------------------",result)
-       res.json({success:true ,  message: result})
+       res.status(HttpStatus.OK).json({success:true ,  message: result})
     } catch (error) {
       console.log(error);
       
@@ -130,7 +131,7 @@ getInstructortoMessage = async (req: AuthRequest, res: Response) => {
 
 
 
-      res.json({ success: true, messages });
+      res.status(HttpStatus.OK).json({ success: true, messages });
     } catch (error) {
       console.error(error);
       res.status(500).json({ success: false, error: "Failed to fetch chat history" });
@@ -164,7 +165,7 @@ getInstructortoMessage = async (req: AuthRequest, res: Response) => {
 
       console.log(result);
 
-      res.json({ success: true, students: result  , instructorId })
+      res.status(HttpStatus.OK).json({ success: true, students: result  , instructorId })
 
     } catch (error) {
       console.log(error);
@@ -188,7 +189,7 @@ getInstructortoMessage = async (req: AuthRequest, res: Response) => {
       // console.log('messages ',messages);
       
 
-      res.json({success:true , messages : messages  , instructorId})
+      res.status(HttpStatus.OK).json({success:true , messages : messages  , instructorId})
     } catch (error) {
       console.log(error);
 
@@ -218,7 +219,7 @@ getInstructortoMessage = async (req: AuthRequest, res: Response) => {
       
       
 
-      res.json({ success: true, message });
+      res.status(HttpStatus.OK).json({ success: true, message });
     } catch (error) {
       console.error(error);
       res.status(500).json({ success: false, error: "Failed to send message" });

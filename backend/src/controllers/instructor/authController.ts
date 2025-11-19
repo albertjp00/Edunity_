@@ -1,3 +1,4 @@
+import { HttpStatus } from "../../enums/httpStatus.enums";
 import { IInstAuthController } from "../../interfaces/instructorInterfaces";
 
 import { InstAuthService } from "../../services/instructor/authService";
@@ -23,7 +24,7 @@ export class InstAuthController implements IInstAuthController {
       const response = await this._instAuthService.instructorLogin(email, password);
 
       if (response.success) {
-        res.status(200).json({
+        res.status(HttpStatus.OK).json({
           success: true,
           message: response.message,
           instructor: response.instructor,
@@ -31,7 +32,7 @@ export class InstAuthController implements IInstAuthController {
           refreshToken: response.refreshToken
         });
       } else {
-        res.status(response.statusCode || 401).json({
+        res.status(response.statusCode || HttpStatus.UNAUTHORIZED).json({
           success: false,
           message: response.message
         });
@@ -54,16 +55,16 @@ export class InstAuthController implements IInstAuthController {
       const result = await this._instAuthService.instructorRegister(name, email, password);
 
       if (result.success) {
-        res.status(200).json(result); // OK
+        res.status(HttpStatus.OK).json(result); // OK
       } else {
         console.log('result', result);
 
-        res.status(400).json(result); // Failure
+        res.status(HttpStatus.BAD_REQUEST).json(result); // Failure
       }
     } catch (error: any) {
       console.error("Register error:", error);
       res
-        .status(400)
+        .status(HttpStatus.BAD_REQUEST)
         .json({ success: false, message: error.message || "Registration failed" });
     }
   };
@@ -80,7 +81,7 @@ export class InstAuthController implements IInstAuthController {
 
       await this._instAuthService.resendOtpRequest(email);
 
-      res.status(200).json({ success: true, message: "OTP resent successfully" });
+      res.status(HttpStatus.OK).json({ success: true, message: "OTP resent successfully" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ success: false, message: "Failed to resend OTP" });
@@ -94,9 +95,9 @@ export class InstAuthController implements IInstAuthController {
       console.log(result);
 
       if (result.success) {
-        res.status(200).json({ success: true });
+        res.status(HttpStatus.OK).json({ success: true });
       } else {
-        res.status(400).json({ success: false, message: result.message });
+        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: result.message });
       }
     } catch (error) {
       console.log(error);
@@ -119,11 +120,11 @@ export class InstAuthController implements IInstAuthController {
       const result = await this._instAuthService.forgotPassword(email);
 
       if (!result.success) {
-        res.status(400).json({ message: result.message });
+        res.status(HttpStatus.BAD_REQUEST).json({ message: result.message });
         return;
       }
 
-      res.status(200).json({ success: true, message: "OTP sent successfully" });
+      res.status(HttpStatus.OK).json({ success: true, message: "OTP sent successfully" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal server error" });
@@ -140,11 +141,11 @@ export class InstAuthController implements IInstAuthController {
       console.log('verification ', result.success);
 
       if (!result.success) {
-        res.status(400).json({ success: false, message: result.message });
+        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: result.message });
 
       }
 
-      res.status(200).json({ success: true, message: "OTP verified successfully" });
+      res.status(HttpStatus.OK).json({ success: true, message: "OTP verified successfully" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal server error" });
@@ -158,16 +159,16 @@ export class InstAuthController implements IInstAuthController {
 
 
       if (!email) {
-        res.status(400).json({ success: false, message: "Email is required" });
+        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: "Email is required" });
         return;
       }
 
       await this._instAuthService.forgotPassword(email);
 
-      res.status(200).json({ success: true, message: "OTP resent successfully" });
+      res.status(HttpStatus.OK).json({ success: true, message: "OTP resent successfully" });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, message: "Failed to resend OTP" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to resend OTP" });
     }
   };
 
@@ -189,11 +190,11 @@ export class InstAuthController implements IInstAuthController {
       );
 
       if (!result.success) {
-        res.status(400).json({ success: false, message: result.message });
+        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: result.message });
         return;
       }
 
-      res.json({ success: true, message: "Password changed successfully" });
+      res.status(HttpStatus.OK).json({ success: true, message: "Password changed successfully" });
     } catch (error) {
       console.error(error);
       res.json({ success: false, message: "Internal server error" });

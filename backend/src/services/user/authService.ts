@@ -78,7 +78,7 @@ export class AuthService {
             }
 
             const accessToken = jwt.sign({ id: user._id }, secret, { expiresIn: "3h" });
-            const refreshToken = jwt.sign({ id: user._id }, refresh, { expiresIn: "7d" });
+            const refreshToken = jwt.sign({ id: user._id }, refresh, { expiresIn: "1d" });
 
             return {
                 success: true,

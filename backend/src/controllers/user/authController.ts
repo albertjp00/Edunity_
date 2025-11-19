@@ -12,7 +12,7 @@ import { IAuthController } from "../../interfaces/userInterfaces";
 
 const SECRET_KEY = process.env.SECRET_KEY || "access_secret";
 const REFRESH_KEY = process.env.REFRESH_KEY || "refresh_secret";
-const REFRESH_TIME = process.env.REFRESH_TIME 
+// const REFRESH_TIME = process.env.REFRESH_TIME 
 
 
 
@@ -61,9 +61,9 @@ export class AuthController implements IAuthController {
           accessToken: result.accessToken,
         });
       } else {
-        let status = 401;
-        if (result.message === "Your account is blocked") status = 403;
-        if (result.message === "User not found") status = 404;
+        let status = HttpStatus.UNAUTHORIZED;
+        if (result.message === "Your account is blocked") status = HttpStatus.FORBIDDEN;
+        if (result.message === "User not found") status = HttpStatus.NOT_FOUND;
 
         res.status(HttpStatus.UNAUTHORIZED).json({ message: result.message });
       }
@@ -78,7 +78,7 @@ export class AuthController implements IAuthController {
 
   refreshToken = (req: Request, res: Response, next: NextFunction): void => {
     try {
-      logger.info('refresh token ', req.cookies);
+      logger.info('refresh token ');
       const token = req.cookies.refreshToken;
       logger.info('refresh token ', token);
 
@@ -96,8 +96,10 @@ export class AuthController implements IAuthController {
         if (!process.env.ACCESS_SECRET) throw new Error("ACCESS_SECRET not set");
         if (!process.env.REFRESH_TIME) throw new Error("REFRESH_TIME not set");
 
+        const refresh = parseInt(process.env.REFRESH_TIME!,10)
+
         const newAccessToken = jwt.sign({ id: user.id }, SECRET_KEY, {
-          expiresIn: '15m',
+          expiresIn: refresh,
         });
 
         res.json({ accessToken: newAccessToken });
@@ -107,6 +109,8 @@ export class AuthController implements IAuthController {
       next(error)
     }
   };
+
+
 
   logoutUser = async (req: Request, res: Response, next: NextFunction):Promise<void> => {
     try {

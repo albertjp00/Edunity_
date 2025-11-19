@@ -7,6 +7,7 @@ import { Server } from "http";
 import { log } from "console";
 import logger from "../../utils/logger";
 import { IUserEventController } from "../../interfaces/userInterfaces";
+import { HttpStatus } from "../../enums/httpStatus.enums";
 
 
 
@@ -29,7 +30,7 @@ export class UserEventController implements IUserEventController {
             console.log(result);
 
 
-            res.json({ success: true, events: result })
+            res.status(HttpStatus.OK).json({ success: true, events: result })
         } catch (error) {
             console.log(error);
             next(error)
@@ -43,7 +44,7 @@ export class UserEventController implements IUserEventController {
             const result = await this._userEventService.getEventDetailsRequest(id)
             // console.log(enrolled ,result); 
 
-            res.json({ success: true, event: result, enrolled: enrolled })
+            res.status(HttpStatus.OK).json({ success: true, event: result, enrolled: enrolled })
         } catch (error) {
             // console.log(error);
             next(error)
@@ -64,7 +65,7 @@ export class UserEventController implements IUserEventController {
             const result = await this._userEventService.eventEnrollRequest(id, eventId)
             console.log('enrolled event ', result)
 
-            res.json({ success: true })
+            res.status(HttpStatus.OK).json({ success: true })
         } catch (error) {
             // console.log(error);
             next(error)
@@ -81,7 +82,7 @@ export class UserEventController implements IUserEventController {
             logger.info('evetnssss', events)
             console.log(events);
 
-            res.json({ success: true, events: events })
+            res.status(HttpStatus.OK).json({ success: true, events: events })
         } catch (error) {
             console.log(error);
 
@@ -118,7 +119,7 @@ export class UserEventController implements IUserEventController {
             //     response.meetingLink = result.meetingLink;
             // }
 
-            res.json({ result, userId });
+            res.status(HttpStatus.OK).json({ result, userId });
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: "Server error" });

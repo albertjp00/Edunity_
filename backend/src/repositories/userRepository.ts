@@ -85,6 +85,11 @@ export class UserRepository extends BaseRepository<IUser>
     return await CourseModel.findById(id)
   }
 
+
+  async onPurchase(id: string): Promise<ICourse | null> {
+    return await CourseModel.findByIdAndUpdate(id, { onPurcahse: true })
+  }
+
   async buyCourse(id: string): Promise<ICourse | null> {
     return await CourseModel.findByIdAndUpdate(id, { $inc: { totalEnrolled: 1 } })
   }
@@ -161,9 +166,13 @@ export class UserRepository extends BaseRepository<IUser>
     ];
 
     // ✅ Sort before pagination
-    if (sortOption && Object.keys(sortOption).length > 0) {
+    if (sortOption && typeof sortOption === "object" && Object.keys(sortOption).length > 0) {
       pipeline.push({ $sort: sortOption });
+    } else {
+      // fallback default sort
+      pipeline.push({ $sort: { createdAt: -1 } });
     }
+
 
     // ✅ Pagination after sorting
     pipeline.push(
@@ -339,21 +348,21 @@ export class UserRepository extends BaseRepository<IUser>
     try {
       console.log(userId, courseId);
 
-    const course = await MyCourseModel.findOneAndUpdate(
-      { userId, courseId},
-      {
-        $set: { cancelCourse: false },
-        $addToSet: { "progress.completedModules": moduleTitle }
-      },
-      { new: true }
-    );
+      const course = await MyCourseModel.findOneAndUpdate(
+        { userId, courseId },
+        {
+          $set: { cancelCourse: false },
+          $addToSet: { "progress.completedModules": moduleTitle }
+        },
+        { new: true }
+      );
 
-    console.log("course update progress", course);
-    return course;
+      console.log("course update progress", course);
+      return course;
     } catch (error) {
       console.log(error);
       return null
-      
+
     }
   }
 
@@ -552,7 +561,7 @@ export class UserRepository extends BaseRepository<IUser>
     }
   }
 
-  
+
 
 
 

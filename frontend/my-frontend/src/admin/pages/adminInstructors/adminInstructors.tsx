@@ -3,6 +3,7 @@ import './adminInstructors.css';
 import { Link } from 'react-router-dom';
 import adminApi from '../../../api/adminApi';
 import AdminList from '../../components/usersInstructorList/usersList';
+import useDebounce from '../../components/debounce/debounce';
 
 interface Instructor {
   _id: string;
@@ -27,6 +28,8 @@ const InstructorsAdmin: React.FC = () => {
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState<string>('')
+
+  const debouncedSearchTerm = useDebounce(searchTerm , 500)
 
   const getInstructors = async (currentPage: number, search: string = ''): Promise<void> => {
     try {
@@ -60,6 +63,16 @@ const InstructorsAdmin: React.FC = () => {
   const handleNext = () => {
     if (page < pages) setPage((prev) => prev + 1);
   };
+
+
+  useEffect(()=>{
+
+    if(page === 1){
+      getInstructors(1 , debouncedSearchTerm)
+    }else{
+      setPage(1)
+    }
+  },[debouncedSearchTerm])
 
   return (
     <div className="instructor-list">

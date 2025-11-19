@@ -3,7 +3,7 @@ import { ICourse } from "../../models/course";
 import { IInstructor } from "../../models/instructor";
 import { IAdminRepository } from "../../repositories/adminRepositories";
 import { IInsRepository, InstructorRepository } from "../../repositories/instructorRepository";
-import {  UserRepository } from "../../repositories/userRepository";
+import { UserRepository } from "../../repositories/userRepository";
 
 
 
@@ -25,11 +25,20 @@ export class AdminCourseService {
         }
     }
 
-    getCoursesRequest = async (page: number, limit: number) => {
+    getCoursesRequest = async (page: number, search: string, limit: number) => {
         try {
             const skip = (page - 1) * limit;
 
-            const courses = await this.userRepository.getCourses(page, limit);
+            const query:any = {}
+
+            if (search) {
+                query.$or = [
+                    { title: { $regex: search, $options: "i" } },
+                    { instructorName: { $regex: search, $options: "i" } }
+                ];
+            }
+
+            const courses = await this.userRepository.getAllCourses(query, skip, limit, { createdAt: -1 });
             const totalCourses = await this.userRepository.countCourses();
 
 
@@ -54,13 +63,13 @@ export class AdminCourseService {
         }
     };
 
-    getPurchaseDetails = async (search:string , page:number)=>{
+    getPurchaseDetails = async (search: string, page: number) => {
         try {
-            const data = await this.adminRepository.getPurchases(search , page)
+            const data = await this.adminRepository.getPurchases(search, page)
             return data
         } catch (error) {
             console.log(error);
-            
+
         }
     }
 

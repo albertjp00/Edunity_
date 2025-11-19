@@ -1,6 +1,7 @@
 import { Response , Request } from "express";
 
 import { AdminInstructorService } from "../../services/admin/instructorServices";
+import { HttpStatus } from "../../enums/httpStatus.enums";
 
 export class AdminInstructorController {
     private _adminInstructorService: AdminInstructorService
@@ -16,7 +17,7 @@ export class AdminInstructorController {
             console.log('get instructorssssss ',id);
             
             const result = await this._adminInstructorService.getInstructorsRequest(id)
-            res.json({success:true , instructor:result})
+            res.status(HttpStatus.OK).json({success:true , instructor:result})
         } catch (error) {
             console.log(error);
             
@@ -31,7 +32,7 @@ export class AdminInstructorController {
             const result = await this._adminInstructorService.getInstructorsCoursesRequest(id)
             console.log(result);
             
-            res.json({success:true , courses:result})
+            res.status(HttpStatus.OK).json({success:true , courses:result})
         } catch (error) {
             console.log(error);
             

@@ -150,6 +150,8 @@ export class UserCourseService {
 
       const order = await razorpay.orders.create(options);
 
+      const onPurchase = await this.userRepository.onPurchase(courseId)
+
       return order;
 
     } catch (error) {

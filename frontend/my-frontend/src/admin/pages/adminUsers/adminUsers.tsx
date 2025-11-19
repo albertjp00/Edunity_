@@ -6,6 +6,7 @@ import { getUsers, blockUser, unblockUser } from "../../../services/admin/adminS
 import { Link } from "react-router-dom";
 import ConfirmModal from "../../components/adminUsers/modal";
 import AdminList from "../../components/usersInstructorList/usersList";
+import useDebounce from "../../components/debounce/debounce";
 
 interface User {
   _id: string;
@@ -18,6 +19,8 @@ interface User {
 const UsersAdmin: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const debouncedSearchTerm = useDebounce(searchTerm, 500); 
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -92,14 +95,22 @@ const UsersAdmin: React.FC = () => {
     loadUsers(currentPage, searchTerm);
   }, [currentPage]);
 
-  // const handlePageChange = (page: number) => {
-  //   if (page >= 1 && page <= totalPages) {
-  //     loadUsers(page, searchTerm);
-  //   }
-  // };
+
+  useEffect(() => {
+
+    if (currentPage === 1) {
+      loadUsers(1, debouncedSearchTerm);
+    } else {
+      // If not on page 1, reset to page 1 to trigger the search in the other useEffect
+      setCurrentPage(1);
+    }
+  }, [debouncedSearchTerm]);
+
+
 
   return (
     <div className="user-list">
+    
       <AdminList
   title="Users Management"
   data={users}
@@ -121,6 +132,7 @@ const UsersAdmin: React.FC = () => {
   searchTerm={searchTerm}
   onSearchChange={setSearchTerm}
   onSearchSubmit={() => loadUsers(1, searchTerm)}
+  
 />
 
 

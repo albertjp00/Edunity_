@@ -35,10 +35,11 @@ const AdminList = <T extends { _id: string }>({
 }: AdminListProps<T>) => {
   return (
     <div className="admin-list">
+      
       <h2>{title}</h2>
 
       {/* Search */}
-      <form
+      <form  className="form-search"
         onSubmit={(e) => {
           e.preventDefault();
           onSearchSubmit();
@@ -51,7 +52,7 @@ const AdminList = <T extends { _id: string }>({
           onChange={(e) => onSearchChange(e.target.value)}
           className="search-box"
         />
-        <button type="submit">Search</button>
+        {/* <button type="submit">Search</button> */}
       </form>
 
       {/* Table */}

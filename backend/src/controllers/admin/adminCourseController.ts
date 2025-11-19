@@ -1,6 +1,7 @@
 import { Response, Request } from "express";
 import { AdminCourseService } from "../../services/admin/courseServices";
 import { AdminAuthRequest } from "../../middleware/authMiddleware";
+import { HttpStatus } from "../../enums/httpStatus.enums";
 
 
 
@@ -21,14 +22,11 @@ export class AdminCourseController {
         try {
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 6;
-
-            const data = await this._courseService.getCoursesRequest(page, limit);
+            const search = req.query.search
+            console.log(search);
+            
+            const data = await this._courseService.getCoursesRequest(page,search as string , limit);
             console.log(data)
-            const message = "Hello World"
-            console.log(message)
-
-
-
             res.json({
                 success: true,
                 courses: data.courses,
@@ -37,7 +35,7 @@ export class AdminCourseController {
             });
         } catch (error) {
             console.error(error);
-            res.status(500).json({ success: false, message: "Failed to get courses" });
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to get courses" });
         }
     };
 
@@ -59,7 +57,7 @@ export class AdminCourseController {
             });
         } catch (error) {
             console.error(error);
-            res.status(500).json({ success: false, message: "Failed to get course details" });
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to get course details" });
         }
     };
 
@@ -78,7 +76,7 @@ export class AdminCourseController {
 
             res.json({ success: true, purchases: data });
         } catch (err) {
-            // res.status(500).json({ success: false, message: err.message });
+            // res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: err.message });
             console.log(err);
 
         }

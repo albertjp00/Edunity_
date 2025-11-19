@@ -152,6 +152,22 @@ export interface IUserEventController {
 }
 
 
+//DTO
+export interface UserDTO {
+  id: string;
+  name: string;
+  email: string;
+  bio?: string | undefined;
+  image?: string  | undefined;
+  gender?: string | undefined;
+  dob?: string | undefined;
+  location? : string | undefined;
+  phone? : string | undefined;
+  createdAt: string;
+}
+
+
+
 
 export interface IMessagedUser {
     instructor : IUser;

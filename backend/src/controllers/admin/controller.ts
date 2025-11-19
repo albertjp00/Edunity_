@@ -1,6 +1,7 @@
 import { Response, Request } from "express";
 import { AdminService } from "../../services/admin/adminServices";
 import { AdminAuthRequest } from "../../middleware/authMiddleware";
+import { HttpStatus } from "../../enums/httpStatus.enums";
 
 
 export class AdminController {
@@ -19,7 +20,7 @@ export class AdminController {
 
             const result = await this._adminService.loginRequest(email, password)
             if (result?.success) {
-                res.json({ success: true, message: result.message, token: result.token })
+                res.status(HttpStatus.OK).json({ success: true, message: result.message, token: result.token })
             } else {
                 res.json({ success: false, message: result?.message })
             }
@@ -39,7 +40,7 @@ export class AdminController {
                 Number(page),
             );
 
-            res.status(200).json(data);
+            res.status(HttpStatus.OK).json(data);
         } catch (error) {
             res.status(500).json({ message: "Error fetching users", error });
         }
@@ -55,7 +56,7 @@ export class AdminController {
 
             const result = await this._adminService.blockUnblockUser(id)
             if(result){
-            res.json({ success: true })
+            res.status(HttpStatus.OK).json({ success: true })
             }else{
                 res.json({success:false})
             }
@@ -73,7 +74,7 @@ export class AdminController {
             const result = await this._adminService.unblockUser(id)
             
             if(result){
-            res.json({ success: true })
+            res.status(HttpStatus.OK).json({ success: true })
             }else{
                 res.json({success:false})
             }
@@ -91,7 +92,7 @@ export class AdminController {
             const data = await this._adminService.getInstructors(page as string, search as string)
             // console.log(data);
 
-            res.json({ success: true, data })
+            res.status(HttpStatus.OK).json({ success: true, data })
         } catch (error) {
             console.log(error);
         }
@@ -104,7 +105,7 @@ export class AdminController {
 
             const data = await this._adminService.getKycDetails(id)
 
-            res.json({ success: true, data: data })
+            res.status(HttpStatus.OK).json({ success: true, data: data })
         } catch (error) {
             console.log(error);
         }
@@ -118,7 +119,7 @@ export class AdminController {
             const result = await this._adminService.verifyKyc(id)
 
             if(result){
-            res.json({ success: true })
+            res.status(HttpStatus.OK).json({ success: true })
             }else{
                 res.json({success:false})
             }
@@ -135,7 +136,7 @@ export class AdminController {
 
             await this._adminService.rejectKyc(id, reason)
             
-            res.json({ success: true })
+            res.status(HttpStatus.OK).json({ success: true })
             
         } catch (error) {
             console.log(error);
@@ -152,7 +153,7 @@ export class AdminController {
             console.log(result);
 
 
-            res.json({ success: true, stats: result })
+            res.status(HttpStatus.OK).json({ success: true, stats: result })
         } catch (error) {
             console.log(error);
 
@@ -167,7 +168,7 @@ export class AdminController {
             console.log('overview',result);
 
 
-            res.status(200).json({
+            res.status(HttpStatus.OK).json({
                 success: true,
                 data: result,
             });
@@ -186,7 +187,7 @@ export class AdminController {
             const result = await this._adminService.getEarningsData()
             console.log(result);
             
-            res.json({success:true , earnings : result})
+            res.status(HttpStatus.OK).json({success:true , earnings : result})
         } catch (error) {
             console.log(error);
         }

@@ -25,11 +25,12 @@ export class ProfileController implements IProfileController {
             }
             const profile = await this._profileService.getProfile(userId);
             // console.log(profile);
+            
 
             if (profile) {
-                res.status(200).json({ data: profile });
+                res.status(HttpStatus.OK).json({ data: profile });
             } else {
-                res.status(404).json({ error: 'Profile not found' });
+                res.status(HttpStatus.NOT_FOUND).json({ error: 'Profile not found' });
             }
         } catch (error) {
             // console.error('Get profile error:', error);
@@ -52,20 +53,20 @@ export class ProfileController implements IProfileController {
             data.profileImage = file
 
             if (!userId) {
-                res.status(401).json({ error: 'Unauthorized' });
+                res.status(HttpStatus.UNAUTHORIZED).json({ error: 'Unauthorized' });
                 return;
             }
 
             const updatedProfile = await this._profileService.editProfileRequest(userId, data);
 
             if (updatedProfile) {
-                res.status(200).json({
+                res.status(HttpStatus.OK).json({
                     success: true,
                     message: 'Profile updated successfully',
                     profile: updatedProfile
                 });
             } else {
-                res.status(404).json({ error: 'Profile not found' });
+                res.status(HttpStatus.NOT_FOUND).json({ error: 'Profile not found' });
             }
         } catch (error) {
             // console.error('Update profile error:', error);
@@ -84,7 +85,7 @@ export class ProfileController implements IProfileController {
 
 
             if (!id) {
-                res.status(401).json({ success: false, message: "Unauthorized" })
+                res.status(HttpStatus.UNAUTHORIZED).json({ success: false, message: "Unauthorized" })
                 return;
             }
 
@@ -92,9 +93,9 @@ export class ProfileController implements IProfileController {
             console.log(result);
 
             if (result) {
-                res.json({ success: true, message: "Password updated successfully" })
+                res.status(HttpStatus.OK).json({ success: true, message: "Password updated successfully" })
             } else {
-                res.status(400).json({ success: false, message: "Old password is incorrect" })
+                res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: "Old password is incorrect" })
             }
         } catch (error) {
             // console.error(error);
@@ -108,7 +109,7 @@ export class ProfileController implements IProfileController {
         try {
             const userId = req.user?.id
             const wallet = await this._profileService.getWallet(userId as string)
-            res.json({ success: true, wallet })
+            res.status(HttpStatus.OK).json({ success: true, wallet })
 
         } catch (error) {
             console.log(error);
@@ -122,7 +123,7 @@ export class ProfileController implements IProfileController {
             const payment = await this._profileService.getPayment(userId as string)
             console.log(payment);
 
-            res.json({ success: true, payments: payment })
+            res.status(HttpStatus.OK).json({ success: true, payments: payment })
 
         } catch (error) {
             console.log(error);
@@ -136,7 +137,7 @@ export class ProfileController implements IProfileController {
             const userId = req.user?.id
             const notifications = await this._profileService.getNotifications(userId as string)
 
-            res.json({ success: true, notifications })
+            res.status(HttpStatus.OK).json({ success: true, notifications })
 
         } catch (error) {
             console.log(error);
@@ -149,7 +150,7 @@ export class ProfileController implements IProfileController {
             const userId = req.user?.id
             const notifications = await this._profileService.notificationsMarkRead(userId as string)
 
-            res.json({ success: true, notifications })
+            res.status(HttpStatus.OK).json({ success: true, notifications })
 
         } catch (error) {
             console.log(error);

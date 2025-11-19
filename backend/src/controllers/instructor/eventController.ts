@@ -1,6 +1,7 @@
 import { Response } from "express"
 import { InstAuthRequest } from "../../middleware/authMiddleware"
 import { InstEventService } from "../../services/instructor/eventService"
+import { HttpStatus } from "../../enums/httpStatus.enums"
 
 
 
@@ -21,7 +22,7 @@ export class EventController {
 
 
             await this._eventService.createEventRequest(id as string, data)
-            res.json({ success: true })
+            res.status(HttpStatus.OK).json({ success: true })
         } catch (error) {
             console.log(error);
 
@@ -50,7 +51,7 @@ export class EventController {
 
             const result = await this._eventService.getMyEventsRequest(id as string, search, page);
 
-            res.json({
+            res.status(HttpStatus.OK).json({
                 success: true,
                 events: result?.events || [],
                 totalPages: result?.totalPages || 1,
@@ -72,7 +73,7 @@ export class EventController {
             const result = await this._eventService.getEventRequest(id)
             // console.log(result);
 
-            res.json({ success: true, event: result })
+            res.status(HttpStatus.OK).json({ success: true, event: result })
         } catch (error) {
             console.log(error);
 
@@ -106,7 +107,7 @@ export class EventController {
             console.log(data, id);
             await this._eventService.updateEventRequest(id, data)
 
-            res.json({ success: true })
+            res.status(HttpStatus.OK).json({ success: true })
 
         } catch (error) {
             console.log(error);
@@ -124,18 +125,18 @@ export class EventController {
 
 
             if (!instructorId) {
-                return res.status(401).json({ message: "Unauthorized" });
+                return res.status(HttpStatus.UNAUTHORIZED).json({ message: "Unauthorized" });
             }
 
             const result = await this._eventService.joinEventRequest(eventId, instructorId);
 
             if (!result || !result.success) {
-                return res.status(400).json({ message: result?.message || "Failed to start event" });
+                return res.status(HttpStatus.BAD_REQUEST).json({ message: result?.message || "Failed to start event" });
             }
 
 
 
-            res.json({
+            res.status(HttpStatus.OK).json({
                 success: true,
                 message: result.message,
                 meetingLink: result.meetingLink,
@@ -143,7 +144,7 @@ export class EventController {
             });
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: "Server error" });
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Server error" });
         }
     };
 
@@ -163,7 +164,7 @@ export class EventController {
                 return res.status(400).json({ message: result?.message || "Failed to end event" });
             }
 
-            res.json({
+            res.status(HttpStatus.OK).json({
                 success: true,
                 message: result.message,
             });

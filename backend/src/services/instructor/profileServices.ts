@@ -1,3 +1,4 @@
+import { mapInstructorToDTO } from "../../mapper/instructor.mapper";
 import { IEarnings } from "../../models/earnings";
 import { INotification } from "../../models/notification";
 import { IWallet } from "../../models/wallet";
@@ -21,8 +22,9 @@ export class InstructorProfileService {
 
       const { password, ...userWithoutPassword } = user.toObject();
       //   console.log(userWithoutPassword);
+      const dto = mapInstructorToDTO(user)
 
-      return userWithoutPassword;
+      return dto;
     } catch (error) {
       console.error('ProfileService.getProfile error:', error);
       throw new Error('Failed to get profile');

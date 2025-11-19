@@ -27,6 +27,7 @@ const AdminHome: React.FC = () => {
 
         <div className="a">
           <Routes>
+            
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="users" element={<UsersAdmin />} />
             <Route path="instructors" element={<InstructorsAdmin />} />

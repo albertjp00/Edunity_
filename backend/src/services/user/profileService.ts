@@ -1,3 +1,4 @@
+import { mapUserToDTO } from '../../mapper/user.mapper';
 import { INotification } from '../../models/notification';
 import { IPayment } from '../../models/payment';
 import { IWallet } from '../../models/wallet';
@@ -25,10 +26,10 @@ export class ProfileService {
       const user = await this.userRepository.findById(userId);
       if (!user) return null;
 
-      const { password, ...userWithoutPassword } = user.toObject();
+      const dto = mapUserToDTO(user)
       //   console.log(userWithoutPassword);
 
-      return userWithoutPassword;
+      return dto
     } catch (error) {
       console.error('ProfileService.getProfile error:', error);
       throw new Error('Failed to get profile');
@@ -44,8 +45,8 @@ export class ProfileService {
       const updatedUser = await this.userRepository.updateProfile(userId, updateData);
       if (!updatedUser) return null;
 
-      const { password, ...userWithoutPassword } = updatedUser.toObject();
-      return userWithoutPassword;
+      const dto = mapUserToDTO(updatedUser)
+      return dto
     } catch (error) {
       console.error('ProfileService.updateProfile error:', error);
       throw new Error('Failed to update profile');

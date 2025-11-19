@@ -8,6 +8,7 @@ import { uploadToS3 } from "../../utils/s3Upload";
 import fs from 'fs'
 import { generateSignedUrl } from "../../utils/getSignedUrl";
 import { IModule } from "../../models/course";
+import { HttpStatus } from "../../enums/httpStatus.enums";
 
 // interface MulterFiles {
 //   [fieldname: string]: Express.Multer.File[];
@@ -34,7 +35,7 @@ export class InstCourseController {
 
       const data = await this._courseService.fetchCourses(id as string, page, limit);
 
-      res.json({
+      res.status(HttpStatus.OK).json({
         success: true,
         course: data.courses,
         skills: data.skills,
@@ -55,7 +56,7 @@ export class InstCourseController {
       const result = await this._courseService.fetchCourseDetails(courseId)
       console.log("course", result?.course.modules);
 
-      res.json({ success: true, course: result, quiz: result?.quizExists })
+      res.status(HttpStatus.OK).json({ success: true, course: result, quiz: result?.quizExists })
     } catch (error) {
       console.log(error);
     }
@@ -71,10 +72,10 @@ export class InstCourseController {
       }
 
       const signedUrl = await generateSignedUrl(key as string);
-      res.json({ success: true, url: signedUrl });
+      res.status(HttpStatus.OK).json({ success: true, url: signedUrl });
     } catch (error) {
       console.error("Error refreshing video URL:", error);
-      res.status(500).json({ success: false, message: "Error generating URL" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Error generating URL" });
     }
   };
 
@@ -91,10 +92,10 @@ export class InstCourseController {
         return res.status(404).json({ success: false, message: "No purchases found" });
       }
 
-      res.json({ success: true, details: data });
+      res.status(HttpStatus.OK).json({ success: true, details: data });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, message: "Server error" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
     }
   };
 
@@ -159,10 +160,10 @@ export class InstCourseController {
         return;
       }
 
-      res.status(200).json({ success: true, course: result });
+      res.status(HttpStatus.OK).json({ success: true, course: result });
     } catch (error) {
       console.error("❌ Error editing course:", error);
-      res.status(500).json({ success: false, message: "Internal Server Error" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal Server Error" });
     }
   };
 
@@ -239,7 +240,7 @@ export class InstCourseController {
       // ✅ Save course data to DB (no need to re-upload videos in service)
       const result = await this._courseService.addCourseRequest(id as string, data);
 
-      res.json({ success: !!result, course: result });
+      res.status(HttpStatus.OK).json({ success: !!result, course: result });
     } catch (error) {
       console.error("❌ Error adding course:", error);
       res.status(500).json({ success: false, message: "Error adding course" });
@@ -261,7 +262,7 @@ export class InstCourseController {
 
 
       if (!id || !title || !questions) {
-        res.status(400).json({ success: false, message: "Missing required fields" });
+        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: "Missing required fields" });
         return;
       }
 
@@ -269,14 +270,14 @@ export class InstCourseController {
       console.log(quiz);
 
 
-      res.json({ success: true });
+      res.status(HttpStatus.OK).json({ success: true });
     } catch (error) {
       console.error("Error adding quiz:", error);
 
       const message =
         error instanceof Error ? error.message : "Something went wrong";
 
-      res.status(500).json({ success: false, message });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message });
     }
 
   };
@@ -296,7 +297,7 @@ export class InstCourseController {
         res.json({ success: false, message: "Quiz not found" });
         return;
       }
-      res.json({ success: true, quiz });
+      res.status(HttpStatus.OK).json({ success: true, quiz });
     } catch (error) {
       console.error("Error fetching quiz:", error);
     }
@@ -312,7 +313,7 @@ export class InstCourseController {
 
       await this._courseService.updateQuiz(quizId as string, data)
 
-      res.json({ success: true });
+      res.status(HttpStatus.OK).json({ success: true });
     } catch (error) {
       console.error("Error fetching quiz:", error);
     }

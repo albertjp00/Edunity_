@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import {  InstAuthRequest } from '../../middleware/authMiddleware';
 import { InstructorProfileService } from '../../services/instructor/profileServices';
+import { HttpStatus } from '../../enums/httpStatus.enums';
 
 export class InstProfileController {
     private _profileService: InstructorProfileService;
@@ -19,7 +20,7 @@ export class InstProfileController {
 
 
             if (!userId) {
-                res.status(401).json({ error: 'Unauthorized' });
+                res.status(HttpStatus.UNAUTHORIZED).json({ error: 'Unauthorized' });
                 return;
             }
 
@@ -28,7 +29,7 @@ export class InstProfileController {
 
 
             if (profile) {
-                res.status(200).json({ data: profile });
+                res.status(HttpStatus.OK).json({ data: profile });
             } else {
                 res.status(404).json({ error: 'Profile not found' });
             }
@@ -60,12 +61,12 @@ export class InstProfileController {
             const updatedProfile = await this._profileService.editProfileRequest(userId, data);
 
             if (updatedProfile) {
-                res.status(200).json({
+                res.status(HttpStatus.OK).json({
                     success: true, message: 'Profile updated successfully',
                     profile: updatedProfile
                 })
             } else {
-                res.status(404).json({ error: 'Profile not found' })
+                res.status(HttpStatus.NOT_FOUND).json({ error: 'Profile not found' })
             }
         } catch (error) {
             console.error('Update profile error:', error);
@@ -87,13 +88,13 @@ export class InstProfileController {
             const result = await this._profileService.passwordChange(id, newPassword, oldPassword);
 
             if (result) {
-                res.json({ success: true, message: "Password updated successfully" });
+                res.status(HttpStatus.OK).json({ success: true, message: "Password updated successfully" });
             } else {
-                res.status(403).json({ success: false, message: "Old password is incorrect" });
+                res.status(HttpStatus.FORBIDDEN).json({ success: false, message: "Old password is incorrect" });
             }
         } catch (error) {
             console.error(error);
-            res.status(500).json({ success: false, message: "Server error" });
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
         }
     };
 
@@ -112,7 +113,7 @@ export class InstProfileController {
 
             const result = await this._profileService.kycSubmit(id,idProofFile.filename,addressProofFile.filename)
 
-            res.json({ success: true, data: result })
+            res.status(HttpStatus.OK).json({ success: true, data: result })
         } catch (error) {
             console.error(error)
             res.status(500).json({ success: false, message: "Server error" })
@@ -129,7 +130,7 @@ export class InstProfileController {
             console.log(notifications);
 
             
-            res.json({ success: true, notifications: notifications })
+            res.status(HttpStatus.OK).json({ success: true, notifications: notifications })
         } catch (error) {
             console.error(error)
             res.status(500).json({ success: false, message: "Server error" })
@@ -143,7 +144,7 @@ export class InstProfileController {
             const result = await this._profileService.getDashboard(instructorId as string)
             console.log("dashboard",result);
             
-            res.json({success : true , dashboard : result})
+            res.status(HttpStatus.OK).json({success : true , dashboard : result})
         } catch (error) {
             console.log(error);
         }
@@ -157,7 +158,7 @@ export class InstProfileController {
             console.log("earnings",result);
             
 
-            res.json({success : true , earnings : result})
+            res.status(HttpStatus.OK).json({success : true , earnings : result})
         } catch (error) {
             console.log(error);
         }
@@ -168,7 +169,7 @@ export class InstProfileController {
         try {
             const id = req.instructor?.id
             const wallet = await this._profileService.getWallet(id as string)
-            res.json({success : true  , wallet})
+            res.status(HttpStatus.OK).json({success : true  , wallet})
         } catch (error) {
             console.log(error);
             
