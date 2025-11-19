@@ -115,6 +115,8 @@ router.get('/FavouritesCourseDetails/:id',authMiddleware,courseController.favCou
 
 router.get('/buyCourse/:id',authMiddleware , courseController.buyCourse)
 router.post('/payment/verify',authMiddleware , courseController.verifyPayment)
+router.get('/cancelPayment/:courseId',authMiddleware , courseController.cancelPayment)
+
 
 
 router.get('/viewMyCourse/:id',authMiddleware , courseController.viewMyCourse)

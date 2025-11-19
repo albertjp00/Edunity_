@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 import "./meetingRoom.css";
 
-const SOCKET_URL = "http://localhost:5000";
+const SOCKET_URL = import.meta.env.VITE_API_URL;
 const socket = io(SOCKET_URL, { autoConnect: true });
 
 interface MeetingRoomProps {

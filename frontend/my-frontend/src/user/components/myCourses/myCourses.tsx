@@ -3,7 +3,6 @@ import "./myCourses.css";
 import { useNavigate } from "react-router-dom";
 import { getMyCourses } from "../../services/courseServices";
 
-const API_URL = import.meta.env.VITE_API_URL || "";
 
 interface IModule {
   title: string;
@@ -100,7 +99,7 @@ const UserMyCourses: React.FC = () => {
                 >
                   {thumbnail && (
                     <img
-                      src={`${API_URL}/assets/${thumbnail}`}
+                      src={`${import.meta.env.VITE_API_URL}/assets/${thumbnail}`}
                       alt="Thumbnail"
                       className="course-thumbnail"
                     />

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { getUserInstructors } from "../../services/instructorServices";
 import "./instructors.css";
 import type { IInstructor } from "../../interfaces";
-const API_URL = import.meta.env.VITE_API_URL
 
 
 const Instructors: React.FC = () => {
@@ -52,7 +51,7 @@ const Instructors: React.FC = () => {
             <div key={index} className="instructor-card">
               <div className="instructor-img-wrapper">
                 <img
-                  src={`${API_URL}/assets/${instructor.profileImage}`}
+                  src={`${import.meta.env.VITE_API_URL}/assets/${instructor.profileImage}`}
                   alt={instructor.name}
                   className="instructor-img"
                 />

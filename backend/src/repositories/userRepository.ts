@@ -86,8 +86,12 @@ export class UserRepository extends BaseRepository<IUser>
   }
 
 
-  async onPurchase(id: string): Promise<ICourse | null> {
-    return await CourseModel.findByIdAndUpdate(id, { onPurcahse: true })
+  async onPurchase(id: string , value : boolean): Promise<ICourse | null> {
+    return await CourseModel.findByIdAndUpdate(id, { onPurchase: value },{new : true})
+  }
+
+    async cancelPurchase(id: string): Promise<ICourse | null> {
+    return await CourseModel.findByIdAndUpdate(id, { onPurchase: false },{new : true})
   }
 
   async buyCourse(id: string): Promise<ICourse | null> {

@@ -82,7 +82,7 @@ const InstructorsAdmin: React.FC = () => {
         columns={[
           { label: "Name", render: (i) => <Link to={`/admin/instructors/${i._id}`}>{i.name}</Link> },
           { label: "Email", render: (i) => i.email },
-          { label: "Picture", render: (i) => i.profileImage && <img src={`http://localhost:5000/assets/${i.profileImage}`} width={40} /> },
+          { label: "Picture", render: (i) => i.profileImage && <img src={`${import.meta.env.VITE_API_URL}/assets/${i.profileImage}`} width={40} /> },
           {
             label: "KYC", render: (i) => {
               if (i.KYCstatus === "notApplied") return <span>No KYC Submitted</span>;

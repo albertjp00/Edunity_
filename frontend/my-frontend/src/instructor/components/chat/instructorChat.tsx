@@ -40,7 +40,7 @@ const InstructorChat: React.FC = () => {
             id: item.instructor._id,
             name: item.instructor.name,
             avatar: item.instructor.avatar
-              ? `http://localhost:5000/assets/${item.instructor.avatar}`
+              ? `${import.meta.env.VITE_API_URL}/assets/${item.instructor.avatar}`
               : profileImage,
             hasAttachment: !!item.lastMessage.attachment,
             lastMessage: item.lastMessage.text

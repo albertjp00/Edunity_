@@ -2,13 +2,10 @@ import React  from 'react'
 import './navbar.css'
 import { useNavigate } from 'react-router-dom'
 
-interface AdminNavbarProps {
-  toggleSidebar: () => void
-}
 
-const AdminNavbar = ({ }) => {
+const AdminNavbar = () => {
   const navigate = useNavigate()
-  const profileImage: string = ''
+  // const profileImage: string = ''
 
   const handleLogout = () => {
     localStorage.removeItem('admin')

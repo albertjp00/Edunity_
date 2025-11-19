@@ -114,7 +114,7 @@ const CourseDetailsAdmin: React.FC = () => {
         <h2>Instructor</h2>
         {instructor?.profileImage && (
           <img
-            src={`http://localhost:5000/assets/${instructor.profileImage}`}
+            src={`${import.meta.env.VITE_API_URL}/assets/${instructor.profileImage}`}
             alt={instructor.name}
           />
         )}

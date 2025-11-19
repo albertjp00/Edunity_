@@ -118,7 +118,7 @@ const UsersAdmin: React.FC = () => {
   columns={[
     { label: "Name", render: (u) => <Link to={`/admin/user/${u._id}`}>{u.name}</Link> },
     { label: "Email", render: (u) => u.email },
-    { label: "Picture", render: (u) => <img src={u.profileImage ? `http://localhost:5000/assets/${u.profileImage}` : profilePic} width={40} /> },
+    { label: "Picture", render: (u) => <img src={u.profileImage ? `${import.meta.env.VITE_API_URL}/assets/${u.profileImage}` : profilePic} width={40} /> },
     { label: "Status", render: (u) =>
         u.blocked ?
           <button onClick={() => handleUnblock(u._id)}>Unblock</button> :

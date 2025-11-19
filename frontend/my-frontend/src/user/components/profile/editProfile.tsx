@@ -129,7 +129,7 @@ const EditProfile = () => {
                         selectedFile
                             ? URL.createObjectURL(selectedFile)
                             : data.profileImage
-                                ? `http://localhost:5000/assets/${data.profileImage}`
+                                ? `${import.meta.env.VITE_API_URL}/assets/${data.profileImage}`
                                 : profilePic
                     }
                     alt="Profile"

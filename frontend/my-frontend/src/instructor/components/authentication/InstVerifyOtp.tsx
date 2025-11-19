@@ -3,6 +3,7 @@ import './instVerifyotp.css'
 import { useNavigate } from "react-router-dom";
 import api from "../../../api/userApi";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const InstructorVerifyOtp : React.FC = () => {
   const [otp, setOtp] = useState('');
@@ -31,11 +32,16 @@ const InstructorVerifyOtp : React.FC = () => {
         navigate('/instructor/login')
       }
       // You can redirect to login/home here
-    } catch (err: any) {
-      console.log(err);
+    } catch (err) {
+  console.log(err);
 
-      toast.error(err.response?.data?.message || "OTP verification failed");
-    }
+  if (axios.isAxiosError(err)) {
+    toast.error(err.response?.data?.message || "OTP verification failed");
+  } else {
+    toast.error("Something went wrong");
+  }
+}
+
   };
 
   const resendOtp = async () => {

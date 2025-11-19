@@ -74,7 +74,7 @@ const InstructorProfile: React.FC = () => {
               <img
                 src={
                   user.profileImage
-                    ? `http://localhost:5000/assets/${user.profileImage}`
+                    ? `${import.meta.env.VITE_API_URL}/assets/${user.profileImage}`
                     : profilePic
                 }
                 alt="Profile"
@@ -174,7 +174,7 @@ const InstructorProfile: React.FC = () => {
                   onClick={() => courseDetails(course._id)}
                 >
                   <img
-                    src={`http://localhost:5000/assets/${course.thumbnail}`}
+                    src={`${import.meta.env.VITE_API_URL}/assets/${course.thumbnail}`}
                     alt={course.title}
                     className="course-thumb-mini"
                   />

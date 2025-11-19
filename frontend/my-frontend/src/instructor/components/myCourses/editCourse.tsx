@@ -415,7 +415,7 @@ const EditCourse: React.FC = () => {
                             />
                             {/* {module.videoUrl && !module.videoFile && (
                                 <video width="100%" controls style={{ marginTop: '10px' }}>
-                                    <source src={`http://localhost:5000${module.videoUrl}`} type="video/mp4" />
+                                    <source src={`${import.meta.env.VITE_API_URL}${module.videoUrl}`} type="video/mp4" />
                                     Your browser does not support the video tag.
                                 </video>
                             )} */}

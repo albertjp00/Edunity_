@@ -5,6 +5,7 @@ import api from "../../../api/userApi";
 import { toast } from "react-toastify";
 import buyNowImage from '../../../assets/buyCourse.png'
 import VideoPlayerUser from "../videoPlayer/videoPlayer";
+import { paymentCancel } from "../../services/courseServices";
 
 interface Module {
   title: string;
@@ -115,46 +116,61 @@ const CourseDetailsUser: React.FC = () => {
     setActivePayment(courseId);
 
     try {
-      const { data } = await api.get(`/user/buyCourse/${courseId}`);
+  const { data } = await api.get(`/user/buyCourse/${courseId}`);
 
-      const options: RazorpayOptions = {
-        key: data.key,
-        amount: data.amount,
-        currency: data.currency,
-        name: "Edunity",
-        description: "Course Purchase",
-        order_id: data.orderId,
-        handler: async function (response) {
-          try {
-            await api.post("/user/payment/verify", {
-              ...response,
-              courseId,
-            });
-            toast.success("Payment Successful! Course Unlocked.");
-            navigate("/user/myCourses");
-          } finally {
-            setActivePayment(null);
-            localStorage.removeItem("payment_in_progress");
-          }
-        },
-        modal: {
-          ondismiss: function () {
-            setActivePayment(null);
-            localStorage.removeItem("payment_in_progress");
-          },
-        },
-        theme: { color: "#6a5af9" },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (error) {
-      console.error("Payment error:", error);
-      toast.error("Payment failed. Try again.");
-      setActivePayment(null);
-      localStorage.removeItem("payment_in_progress");
-    }
+  const options: RazorpayOptions = {
+    key: data.key,
+    amount: data.amount,
+    currency: data.currency,
+    name: "Edunity",
+    description: "Course Purchase",
+    order_id: data.orderId,
+    handler: async function (response) {
+      try {
+        await api.post("/user/payment/verify", {
+          ...response,
+          courseId,
+        });
+        toast.success("Payment Successful! Course Unlocked.");
+        navigate("/user/myCourses");
+      } finally {
+        setActivePayment(null);
+        localStorage.removeItem("payment_in_progress");
+      }
+    },
+    modal: {
+      ondismiss: async function () {
+        try {
+          await paymentCancel(courseId);
+        } finally {
+          setActivePayment(null);
+          localStorage.removeItem("payment_in_progress");
+        }
+      },
+    },
+    theme: { color: "#6a5af9" },
   };
+
+  const rzp = new window.Razorpay(options);
+
+  // ALWAYS WORKS — best place for cleanup + cancel call
+  // rzp.on("modal.closed", async () => {
+  //   try {
+  //     await paymentCancel(courseId);
+  //   } finally {
+  //     setActivePayment(null);
+  //     localStorage.removeItem("payment_in_progress");
+  //   }
+  // });
+
+  rzp.open();
+} catch (error) {
+  console.error("Payment error:", error);
+  toast.error("Payment failed. Try again.");
+  setActivePayment(null);
+  localStorage.removeItem("payment_in_progress");
+}
+  }
 
 
   // const submitReview = async () => {
@@ -208,7 +224,7 @@ const CourseDetailsUser: React.FC = () => {
       <div className="course-content">
         <div className="course-left">
           <img
-            src={`http://localhost:5000/assets/${course.thumbnail}`}
+            src={`${import.meta.env.VITE_API_URL}/assets/${course.thumbnail}`}
             alt="Course Thumbnail"
             className="course-banner"
           />
@@ -284,7 +300,7 @@ const CourseDetailsUser: React.FC = () => {
           {activeTab === "instructor" && instructor && (
             <div className="tab-content instructor-tab">
               <img
-                src={`http://localhost:5000/assets/${instructor.profileImage}`}
+                src={`${import.meta.env.VITE_API_URL}/assets/${instructor.profileImage}`}
                 alt={instructor.name}
                 className="instructor-photo"
               />
@@ -306,7 +322,7 @@ const CourseDetailsUser: React.FC = () => {
                   <div key={idx} className="review-item">
                     <div className="review-header">
                       <img
-                        src={`http://localhost:5000/assets/${rev.userImage || "default.png"}`}
+                        src={`${import.meta.env.VITE_API_URL}/assets/${rev.userImage || "default.png"}`}
                         alt={rev.userName}
                         className="review-avatar"
                       />

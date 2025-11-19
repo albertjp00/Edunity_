@@ -5,6 +5,7 @@ import api from "../../../api/userApi";
 // import "./forgotPassMail.css";
 import { toast } from "react-toastify";
 import publicApi from "../../../api/publicApi";
+import axios from "axios";
 
 interface LocationState {
   email: string;
@@ -53,10 +54,10 @@ const OtpVerificationInstructor: React.FC = () => {
           navigate("/instructor/login");
         }
       }
-    } catch (error:any) {
+    } catch (error) {
       console.error(error);
-      if (error.response) {
-      toast.error(error.response.data.message || "Invalid OTP. Try again.");
+      if (axios.isAxiosError(error)) {
+      toast.error(error.response?.data.message || "Invalid OTP. Try again.");
     } else {
       toast.error("Network error, please try again later");
     }

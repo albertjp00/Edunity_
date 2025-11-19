@@ -57,7 +57,7 @@ export const userVerifyOtp = async(email:string , otp:string)=>{
 
 // export const googleLogin = async(email:string , otp:string)=>{
 //     try {
-//         const res = await api..post("http://localhost:5000/api/auth/google", {
+//         const res = await api..post(`${import.meta.env.VITE_API_URL}/api/auth/google`, {
 //         token: credentialResponse.credential,
 //       }, { withCredentials: true });
 

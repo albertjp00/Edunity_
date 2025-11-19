@@ -126,7 +126,7 @@ const fetchPayments = async () => {
             <img
               src={
                 user.profileImage
-                  ? `http://localhost:5000/assets/${user.profileImage}`
+                  ? `${import.meta.env.VITE_API_URL}/assets/${user.profileImage}`
                   : profilePic
               }
               alt="Profile"
@@ -195,7 +195,7 @@ const fetchPayments = async () => {
                 onClick={() => gotoCourse(enrolled.course._id ?? "")}
               >
                 <img
-                  src={`http://localhost:5000/assets/${enrolled.course.thumbnail}`}
+                  src={`${import.meta.env.VITE_API_URL}/assets/${enrolled.course.thumbnail}`}
                   alt={enrolled.course.title}
                   className="course-thumb-mini"
                 />

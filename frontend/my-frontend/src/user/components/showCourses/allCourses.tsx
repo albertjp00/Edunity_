@@ -154,7 +154,7 @@ const AllCourses: React.FC = () => {
             <div key={course._id} className="course-card">
   <div className="course-thumbnail-wrapper">
     <img
-      src={`http://localhost:5000/assets/${course.thumbnail}`}
+      src={`${import.meta.env.VITE_API_URL}/assets/${course.thumbnail}`}
       alt={course.title}
       className="course-thumbnail"
     />
@@ -175,7 +175,7 @@ const AllCourses: React.FC = () => {
     <div className="course-footer">
       <div className="instructor">
         <img
-          src={`http://localhost:5000/assets/${course.instructorImage}`}
+          src={`${import.meta.env.VITE_API_URL}/assets/${course.instructorImage}`}
           alt="instructor"
           className="instructor-img"
         />

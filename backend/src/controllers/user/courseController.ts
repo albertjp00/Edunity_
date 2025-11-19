@@ -184,7 +184,13 @@ export class UserCourseController implements IUserCourseController{
         } catch (error) {
             // console.error("Error in buyCourse:", error);
             next(error)
-            res.status(500).json({ success: false, message: "Payment initiation failed" });
+        //     if (error.message) {
+        //     res.status(400).json({
+        //         success: false,
+        //         message: error.message,  
+        //     });
+        // }
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Payment initiation failed" });
         }
     };
 
@@ -221,6 +227,20 @@ export class UserCourseController implements IUserCourseController{
             res.status(500).json({ success: false, message: "Payment verification failed" });
         }
     };
+
+    cancelPayment = async (req : AuthRequest , res :Response):Promise<void>=>{
+        try {
+            const {courseId} = req.params
+            console.log("course cancel payment",courseId);
+            
+            const result = await this._courseService.cancelPayment(courseId as string)
+            res.status(HttpStatus.OK).json({ success: true });
+
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
 
 
     

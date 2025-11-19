@@ -1,10 +1,10 @@
 import React from "react";
 
-const recentStudents = [
-  { name: "Aarav Mehta", course: "React Basics" },
-  { name: "Priya Sharma", course: "Node.js Mastery" },
-  { name: "John Doe", course: "UI Design" },
-];
+// const recentStudents = [
+//   { name: "Aarav Mehta", course: "React Basics" },
+//   { name: "Priya Sharma", course: "Node.js Mastery" },
+//   { name: "John Doe", course: "UI Design" },
+// ];
 
 interface Student {
   name: string;

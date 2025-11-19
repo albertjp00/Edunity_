@@ -40,3 +40,12 @@ export const getAllCourses = async (page: number, limit: number) => {
 };
 
 
+
+export const paymentCancel = async (courseId : string)=>{
+  try {
+    await api.get(`/user/cancelPayment/${courseId}`)
+  } catch (error) {
+    console.log(error);
+    
+  }
+}

@@ -140,6 +140,9 @@ export class UserCourseService {
       if (!course) {
         throw new Error("Course not found");
       }
+      if(course.onPurchase){
+        throw new Error("Payment already initiated for this course.") 
+      }
 
       const options = {
         amount: course.price! * 100,
@@ -150,7 +153,7 @@ export class UserCourseService {
 
       const order = await razorpay.orders.create(options);
 
-      const onPurchase = await this.userRepository.onPurchase(courseId)
+      const onPurchase = await this.userRepository.onPurchase(courseId , true)
 
       return order;
 
@@ -159,6 +162,15 @@ export class UserCourseService {
       throw error;
     }
   };
+
+    cancelPayment  = async (courseId : string ):Promise<void>=>{
+    try {
+      const result = await this.userRepository.cancelPurchase(courseId)
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
 
 
 
@@ -206,6 +218,7 @@ export class UserCourseService {
         const title = "Course Purchased"
         const message = `You have successfully purchased the course "${course?.title}`
         const notification = await this.userRepository.sendNotification(userId, title, message)
+        const onPurchase = await this.userRepository.onPurchase(courseId , false)
 
         return { success: true, message: "Payment verified and course added" };
       } else {
@@ -218,6 +231,7 @@ export class UserCourseService {
     }
 
   }
+
 
 
 

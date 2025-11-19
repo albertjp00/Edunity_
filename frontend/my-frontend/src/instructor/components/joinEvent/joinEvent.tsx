@@ -12,7 +12,7 @@ interface VideoCallProps {
   isInstructor: boolean;
 }
 
-const socket: Socket = io("http://localhost:5000");
+const socket: Socket = io(import.meta.env.VITE_API_URL);
 
 const VideoCall: React.FC<VideoCallProps> = ({ eventId, userId, isInstructor }) => {
   const localVideo = useRef<HTMLVideoElement | null>(null);

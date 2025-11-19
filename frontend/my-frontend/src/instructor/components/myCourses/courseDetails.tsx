@@ -111,7 +111,7 @@ const InstructorCourseDetails: React.FC = () => {
 
         {course.thumbnail && (
           <img
-            src={`http://localhost:5000/assets/${course.thumbnail}`}
+            src={`${import.meta.env.VITE_API_URL}/assets/${course.thumbnail}`}
             alt="Course Thumbnail"
             className="detail-thumbnail"
           />

@@ -93,7 +93,7 @@ const CoursesAdmin: React.FC = () => {
                   <img
                     src={
                       course.thumbnail
-                        ? `http://localhost:5000/assets/${course.thumbnail}`
+                        ? `${import.meta.env.VITE_API_URL}/assets/${course.thumbnail}`
                         : "https://via.placeholder.com/80x50"
                     }
                     alt={course.title}

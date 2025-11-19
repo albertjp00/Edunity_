@@ -2,8 +2,8 @@ import React, { useState, type FormEvent, type ChangeEvent } from 'react';
 // import './resetPassword.css';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
-import api from '../../../api/userApi';
 import publicApi from '../../../api/publicApi';
+import axios from 'axios';
 
 
 interface LocationState {
@@ -69,10 +69,16 @@ const InstructorResetPassword: React.FC = () => {
       } else {
         toast.error(response?.data.message);
       }
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.response?.data?.message || 'Something went wrong'); 
-    }
+    } catch (err) {
+  console.log(err);
+
+  if (axios.isAxiosError(err)) {
+    toast.error(err.response?.data?.message || "OTP verification failed");
+  } else {
+    toast.error("Something went wrong");
+  }
+}
+
   };
 
   return (

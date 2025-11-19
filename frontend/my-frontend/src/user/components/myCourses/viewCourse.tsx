@@ -8,7 +8,6 @@ import { toast } from "react-toastify";
 import ConfirmModal from "../modal/modal";
 import { getCertificate } from "../../../services/user/userServices";
 
-const API_URL = import.meta.env.VITE_API_URL;
 
 interface IInstructor {
   _id: string;
@@ -241,7 +240,7 @@ const ViewMyCourse: React.FC = () => {
         {/* LEFT SIDE */}
         <div className="course-main">
           <img
-            src={`${API_URL}/assets/${course.thumbnail}`}
+            src={`${import.meta.env.VITE_API_URL}/assets/${course.thumbnail}`}
             alt="Course Thumbnail"
             className="course-banner"
           />
@@ -298,7 +297,7 @@ const ViewMyCourse: React.FC = () => {
                           <img
                             src={
                               r.userImage
-                                ? `${API_URL}/assets/${r.userImage}`
+                                ? `${import.meta.env.VITE_API_URL}/assets/${r.userImage}`
                                 : "https://via.placeholder.com/50"
                             }
                             alt={r.userName}
@@ -457,7 +456,7 @@ const ViewMyCourse: React.FC = () => {
                   ✖
                 </button>
                 <iframe
-                  src={`${API_URL}/assets/${certificateUrl}`}
+                  src={`${import.meta.env.VITE_API_URL}/assets/${certificateUrl}`}
                   title="Course Certificate"
                   className="certificate-frame"
                 />
@@ -473,7 +472,7 @@ const ViewMyCourse: React.FC = () => {
               <img
                 src={
                   instructor.profileImage
-                    ? `${API_URL}/assets/${instructor.profileImage}`
+                    ? `${import.meta.env.VITE_API_URL}/assets/${instructor.profileImage}`
                     : "https://via.placeholder.com/100"
                 }
                 alt="Instructor"
@@ -501,7 +500,7 @@ const ViewMyCourse: React.FC = () => {
         <div className="course-sidebar">
           <div className="sidebar-card">
             <img
-              src={`${API_URL}/assets/${course.thumbnail}`}
+              src={`${import.meta.env.VITE_API_URL}/assets/${course.thumbnail}`}
               alt="Course"
               className="sidebar-thumbnail"
             />

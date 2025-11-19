@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import "./quiz.css";
 import instructorApi from "../../../api/instructorApi";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 interface Option {
   text: string;
@@ -38,8 +39,10 @@ const Quiz: React.FC = () => {
       } else {
         setError(res.data.message || "Failed to load quiz");
       }
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Server error while fetching quiz");
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        setError(err?.response?.data?.message || "Server error while fetching quiz");
+      }
     } finally {
       setLoading(false);
     }
@@ -51,6 +54,7 @@ const Quiz: React.FC = () => {
 
   const handleUpdate = (
     field: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     value: any,
     qIndex?: number,
     optIndex?: number
@@ -79,9 +83,9 @@ const Quiz: React.FC = () => {
     if (!quiz) return;
 
     const newQuestion: Question = {
-      // ⚡ Do NOT send _id, let Mongo generate it
+      
       question: "",
-      options: [{ text: "" }, { text: "" }, { text: "" }, { text: "" }], // Always 4 options
+      options: [{ text: "" }, { text: "" }, { text: "" }, { text: "" }],
       correctAnswer: "",
       points: 1,
     };
@@ -145,114 +149,114 @@ const Quiz: React.FC = () => {
   if (!quiz) return <p>No quiz found</p>;
 
   return (
-        <div className="quiz-container">
-            <div className="quiz-header">
-                {isEditing ? (
-                    <input
+    <div className="quiz-container">
+      <div className="quiz-header">
+        {isEditing ? (
+          <input
+            type="text"
+            value={quiz.title}
+            onChange={(e) => handleUpdate("title", e.target.value)}
+          />
+        ) : (
+          <h2>{quiz.title}</h2>
+        )}
+
+        <button onClick={() => (isEditing ? saveQuiz() : setIsEditing(true))}>
+          {isEditing ? "Save" : "Edit Quiz"}
+        </button>
+      </div>
+
+      <div className="questions">
+        {quiz.questions.map((q, idx) => (
+          <div key={q._id} className="question-card">
+            {isEditing ? (
+              <>
+                {/* Question input */}
+                <input
+                  type="text"
+                  value={q.question}
+                  placeholder={`Question ${idx + 1}`}
+                  onChange={(e) => handleUpdate("question", e.target.value, idx)}
+                />
+
+                {/* Points input */}
+                <input
+                  type="number"
+                  value={q.points}
+                  onChange={(e) => handleUpdate("points", e.target.value, idx)}
+                />
+
+                {/* Options (Always 4) */}
+                <ul>
+                  {q.options.map((opt, i) => (
+                    <li key={i}>
+                      <input
                         type="text"
-                        value={quiz.title}
-                        onChange={(e) => handleUpdate("title", e.target.value)}
-                    />
-                ) : (
-                    <h2>{quiz.title}</h2>
-                )}
+                        value={opt.text}
+                        placeholder={`Option ${i + 1}`}
+                        onChange={(e) =>
+                          handleUpdate("option", e.target.value, idx, i)
+                        }
+                      />
+                    </li>
+                  ))}
+                </ul>
 
-                <button onClick={() => (isEditing ? saveQuiz() : setIsEditing(true))}>
-                    {isEditing ? "Save" : "Edit Quiz"}
-                </button>
-            </div>
-
-            <div className="questions">
-                {quiz.questions.map((q, idx) => (
-                    <div key={q._id} className="question-card">
-                        {isEditing ? (
-                            <>
-                                {/* Question input */}
-                                <input
-                                    type="text"
-                                    value={q.question}
-                                    placeholder={`Question ${idx + 1}`}
-                                    onChange={(e) => handleUpdate("question", e.target.value, idx)}
-                                />
-
-                                {/* Points input */}
-                                <input
-                                    type="number"
-                                    value={q.points}
-                                    onChange={(e) => handleUpdate("points", e.target.value, idx)}
-                                />
-
-                                {/* Options (Always 4) */}
-                                <ul>
-                                    {q.options.map((opt, i) => (
-                                        <li key={i}>
-                                            <input
-                                                type="text"
-                                                value={opt.text}
-                                                placeholder={`Option ${i + 1}`}
-                                                onChange={(e) =>
-                                                    handleUpdate("option", e.target.value, idx, i)
-                                                }
-                                            />
-                                        </li>
-                                    ))}
-                                </ul>
-
-                                {/* Correct Answer (required) */}
-                                <div>
-                                    <label>Correct Answer: </label>
-                                    <select
-                                        value={q.correctAnswer}
-                                        onChange={(e) =>
-                                            handleUpdate("correctAnswer", e.target.value, idx)
-                                        }
-                                        required
-                                    >
-                                        <option value="" disabled>
-                                            -- Select Correct Answer --
-                                        </option>
-                                        {q.options.map((opt, i) => (
-                                            <option key={i} value={opt.text}>
-                                                {opt.text}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                <h4>{q.question}</h4>
-                                <p>Points: {q.points}</p>
-                                <ul>
-                                    {q.options.map((opt, i) => (
-                                        <li key={i}>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    name={`q-${q._id}`}
-                                                    value={opt.text}
-                                                    disabled
-                                                    checked={q.correctAnswer === opt.text}
-                                                />
-                                                {opt.text}
-                                            </label>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </>
-                        )}
-                    </div>
-                ))}
-            </div>
-
-
-            {isEditing && (
-                <button onClick={addQuestion} className="add-question-btn">
-                    ➕ Add Question
-                </button>
+                {/* Correct Answer (required) */}
+                <div>
+                  <label>Correct Answer: </label>
+                  <select
+                    value={q.correctAnswer}
+                    onChange={(e) =>
+                      handleUpdate("correctAnswer", e.target.value, idx)
+                    }
+                    required
+                  >
+                    <option value="" disabled>
+                      -- Select Correct Answer --
+                    </option>
+                    {q.options.map((opt, i) => (
+                      <option key={i} value={opt.text}>
+                        {opt.text}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </>
+            ) : (
+              <>
+                <h4>{q.question}</h4>
+                <p>Points: {q.points}</p>
+                <ul>
+                  {q.options.map((opt, i) => (
+                    <li key={i}>
+                      <label>
+                        <input
+                          type="radio"
+                          name={`q-${q._id}`}
+                          value={opt.text}
+                          disabled
+                          checked={q.correctAnswer === opt.text}
+                        />
+                        {opt.text}
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              </>
             )}
-        </div>
-    );
+          </div>
+        ))}
+      </div>
+
+
+      {isEditing && (
+        <button onClick={addQuestion} className="add-question-btn">
+          ➕ Add Question
+        </button>
+      )}
+    </div>
+  );
 };
 
 export default Quiz;

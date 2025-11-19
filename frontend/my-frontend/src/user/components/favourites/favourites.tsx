@@ -23,7 +23,7 @@ interface Favourite {
   createdAt: string;
 }
 
-const API_URL = import.meta.env.VITE_API_URL
+// const API_URL = import.meta.env.VITE_API_URL
 
 const Favourites = () => {
   const [favourites, setFavourites] = useState<Favourite[]>([]) // 👈 store as array
@@ -65,7 +65,7 @@ const Favourites = () => {
             <div key={fav._id} className="favourite-card" onClick={()=>gotoDetails(fav.course._id)}>
               {fav.course.thumbnail && (
                 <img
-                  src={`${API_URL}/assets/${fav.course.thumbnail}`}
+                  src={`${import.meta.env.VITE_API_URL}/assets/${fav.course.thumbnail}`}
                   alt={fav.course.title}
                   className="thumbnail"
                 />

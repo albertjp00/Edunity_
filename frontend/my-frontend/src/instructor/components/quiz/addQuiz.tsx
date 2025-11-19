@@ -3,6 +3,7 @@ import api from "../../../api/instructorApi";
 import "./addQuiz.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 interface QuestionForm {
   id: string;
@@ -29,7 +30,7 @@ const AddQuiz: React.FC<AddQuizProps> = ({
   courseId: initialCourseId = "",
   onSuccess,
 }) => {
-  const [courseId, setCourseId] = useState<string>(initialCourseId);
+  const [courseId] = useState<string>(initialCourseId);
   const [title, setTitle] = useState<string>("");
   const [questions, setQuestions] = useState<QuestionForm[]>([
     emptyQuestion(),
@@ -111,11 +112,13 @@ const AddQuiz: React.FC<AddQuizProps> = ({
       } else {
         setError(res?.data?.message || "Failed to create quiz.");
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setError(
-        err?.response?.data?.message || "Server error while creating quiz."
-      );
+      if (axios.isAxiosError(err)) {
+        setError(
+          err?.response?.data?.message || "Server error while creating quiz."
+        );
+      }
     } finally {
       setSubmitting(false);
     }

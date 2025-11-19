@@ -82,7 +82,7 @@ const VerifyKYC: React.FC = () => {
         <strong>ID Proof:</strong>
       </p>
       <a
-        href={`http://localhost:5000/assets/${kyc.idProof}`}
+        href={`${import.meta.env.VITE_API_URL}/assets/${kyc.idProof}`}
         target="_blank"
         rel="noopener noreferrer"
         className="kyc-link"
@@ -94,7 +94,7 @@ const VerifyKYC: React.FC = () => {
         <strong>Address Proof:</strong>
       </p>
       <a
-        href={`http://localhost:5000/assets/${kyc.addressProof}`}
+        href={`${import.meta.env.VITE_API_URL}/assets/${kyc.addressProof}`}
         target="_blank"
         rel="noopener noreferrer"
         className="kyc-link"
