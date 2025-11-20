@@ -1,16 +1,23 @@
 import { NextFunction, RequestHandler, Response } from "express";
 import { AuthRequest } from "../../middleware/authMiddleware";
-import { UserRepository } from "../../repositories/userRepository";
 import { UserCourseService } from "../../services/user/userCourseService";
-import { InstructorRepository } from "../../repositories/instructorRepository";
-import { AdminRepository } from "../../repositories/adminRepositories";
-import instructor from "../../routes/instructorRoutes";
 import { debounceCall } from "../../utils/debounce";
 import { generateSignedUrl } from "../../utils/getSignedUrl";
-import { IUserCourseController } from "../../interfaces/userInterfaces";
+import {
+    IUserCourseFavouriteController, IUserCoursePaymentController, IUserCourseQuizController,
+    IUserCourseReadController, IUserCourseReviewController,
+    IUserMyCourseController
+} from "../../interfaces/userInterfaces";
 import { HttpStatus } from "../../enums/httpStatus.enums";
 
-export class UserCourseController implements IUserCourseController{ 
+export class UserCourseController
+    implements
+    IUserCourseReadController,
+    IUserCoursePaymentController,
+    IUserMyCourseController,
+    IUserCourseReviewController,
+    IUserCourseFavouriteController,
+    IUserCourseQuizController {
     private _courseService: UserCourseService;
 
     constructor(courseService: UserCourseService) {
@@ -27,7 +34,8 @@ export class UserCourseController implements IUserCourseController{
     showCourses = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             console.log("get Courses user");
-
+            const fron = process.env.FRONTEND_URL
+            console.log(fron);
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 6;
 
@@ -184,19 +192,19 @@ export class UserCourseController implements IUserCourseController{
         } catch (error) {
             // console.error("Error in buyCourse:", error);
             next(error)
-        //     if (error.message) {
-        //     res.status(400).json({
-        //         success: false,
-        //         message: error.message,  
-        //     });
-        // }
+            //     if (error.message) {
+            //     res.status(400).json({
+            //         success: false,
+            //         message: error.message,  
+            //     });
+            // }
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Payment initiation failed" });
         }
     };
 
 
 
-    verifyPayment = async (req: AuthRequest, res: Response, next: NextFunction):Promise<void> => {
+    verifyPayment = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { razorpay_order_id, razorpay_payment_id, razorpay_signature, courseId } = req.body;
             const userId = req.user?.id!;
@@ -228,22 +236,22 @@ export class UserCourseController implements IUserCourseController{
         }
     };
 
-    cancelPayment = async (req : AuthRequest , res :Response):Promise<void>=>{
+    cancelPayment = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
-            const {courseId} = req.params
-            console.log("course cancel payment",courseId);
-            
+            const { courseId } = req.params
+            console.log("course cancel payment", courseId);
+
             const result = await this._courseService.cancelPayment(courseId as string)
             res.status(HttpStatus.OK).json({ success: true });
 
         } catch (error) {
             console.log(error);
-            
+
         }
     }
 
 
-    
+
 
     myCourses = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
@@ -295,13 +303,13 @@ export class UserCourseController implements IUserCourseController{
 
 
 
-    refreshVideoUrl = async (req: AuthRequest, res: Response):Promise<void> => {
+    refreshVideoUrl = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
             const { key } = req.query
-            console.log('refresh url ',key);
+            console.log('refresh url ', key);
 
-            
-            
+
+
             if (!key) {
                 res.status(400).json({ success: false, message: "Missing key" });
             }
@@ -365,9 +373,9 @@ export class UserCourseController implements IUserCourseController{
             const { courseId, rating, review } = req.body;
             const userId = req.user?.id;
 
-            const result = await this._courseService.addReview(userId as string , courseId , rating , review )
+            const result = await this._courseService.addReview(userId as string, courseId, rating, review)
 
-            res.status(HttpStatus.OK).json({success : true})
+            res.status(HttpStatus.OK).json({ success: true })
         } catch (error) {
             console.log(error);
 

@@ -3,9 +3,15 @@ import { UserRepository } from '../../repositories/userRepository';
 import { ProfileService } from '../../services/user/profileService';
 import { AuthRequest } from '../../middleware/authMiddleware';
 import { HttpStatus } from '../../enums/httpStatus.enums';
-import { IProfileController } from '../../interfaces/userInterfaces';
+import { INotificationController, IPasswordController, IPaymentController, IProfileReadController, IProfileWriteController, IWalletController } from '../../interfaces/userInterfaces';
 
-export class ProfileController implements IProfileController {
+export class ProfileController implements 
+        IProfileReadController,
+        IProfileWriteController,
+        IPasswordController,
+        IWalletController,
+        IPaymentController,
+        INotificationController {
     private _profileService: ProfileService;
 
     constructor(profileService: ProfileService) {

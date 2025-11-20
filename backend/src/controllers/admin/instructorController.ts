@@ -1,9 +1,9 @@
 import { Response , Request } from "express";
-
 import { AdminInstructorService } from "../../services/admin/instructorServices";
 import { HttpStatus } from "../../enums/httpStatus.enums";
+import { IAdminInstructorsController } from "../../interfaces/adminInterfaces";
 
-export class AdminInstructorController {
+export class AdminInstructorController implements IAdminInstructorsController {
     private _adminInstructorService: AdminInstructorService
 
     constructor(adminInstructorService : AdminInstructorService){

@@ -86,15 +86,24 @@ import { AuthRequest } from "../middleware/authMiddleware.js";
 
 
 //authController
-export interface IAuthController {
+export interface IAuthBasicController {
   login(req: Request, res: Response, next: NextFunction): Promise<void>;
-  refreshToken(req: Request, res: Response, next: NextFunction): void;
   logoutUser(req: Request, res: Response, next: NextFunction): Promise<void>;
+  refreshToken(req: Request, res: Response, next: NextFunction): void;
   checkBlocked(req: AuthRequest, res: Response): Promise<void>;
+}
+
+export interface IAuthRegisterController {
   register(req: Request, res: Response, next: NextFunction): Promise<void>;
   resendOtp(req: Request, res: Response, next: NextFunction): Promise<void>;
   verifyOtp(req: Request, res: Response, next: NextFunction): Promise<void>;
+}
+
+export interface IAuthGoogleController {
   googleSignIn(req: Request, res: Response, next: NextFunction): Promise<void>;
+}
+
+export interface IAuthForgotPasswordController {
   forgotPassword(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
   verifyOtpForgotPass(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
   resendOtpForgotPassword(req: Request, res: Response, next: NextFunction): Promise<void>;
@@ -103,53 +112,91 @@ export interface IAuthController {
 
 
 
-//profileController
-export interface IProfileController {
+
+//profileController interfaces
+export interface IProfileReadController {
   getProfile(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+}
+
+export interface IProfileWriteController {
   editProfile(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+}
+
+export interface IPasswordController {
   changePassword(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
-  getWallet(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
-  getPayment(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
-  notifications(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
-  notificationsMarkRead(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+}
+
+export interface IWalletController {
+  getWallet(req: AuthRequest, res: Response): Promise<void>;
+}
+
+export interface IPaymentController {
+  getPayment(req: AuthRequest, res: Response): Promise<void>;
+}
+
+export interface INotificationController {
+  notifications(req: AuthRequest, res: Response): Promise<void>;
+  notificationsMarkRead(req: AuthRequest, res: Response): Promise<void>;
 }
 
 
-//courseController
 
-
-export interface IUserCourseController {
+//courseController interfaces
+export interface IUserCourseReadController {
   showCourses(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
   getAllCourses(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
   courseDetails(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+  getInstructors(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+}
+
+export interface IUserCoursePaymentController {
   buyCourse(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
   verifyPayment(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+  cancelCourse(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+}
+
+export interface IUserMyCourseController {
   myCourses(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
   viewMyCourse(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
   refreshVideoUrl(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
   updateProgress(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
   getCertificate(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+}
+
+export interface IUserCourseReviewController {
   addReview(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
-  getInstructors(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+}
+
+export interface IUserCourseFavouriteController {
   addtoFavourites(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
   getFavourites(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
   favCourseDetails(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+}
+
+export interface IUserCourseQuizController {
   getQuiz(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
   submitQuiz(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
-  cancelCourse(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
 }
 
 
 
 
-//eventController
-export interface IUserEventController {
+//eventController interfaces
+export interface IUserEventReadController {
   getEvents(req: AuthRequest, res: Response, next: NextFunction): Promise<void | null>;
   getEventDetails(req: AuthRequest, res: Response, next: NextFunction): Promise<void | null>;
+}
+
+export interface IUserEventEnrollmentController {
   enrollEvent(req: AuthRequest, res: Response, next: NextFunction): Promise<void | null>;
   getMyEvents(req: AuthRequest, res: Response): Promise<void | null>;
+}
+
+export interface IUserEventJoinController {
   joinUserEvent(req: AuthRequest, res: Response): Promise<void | null>;
 }
+
+
 
 
 //DTO

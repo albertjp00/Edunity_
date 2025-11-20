@@ -1,8 +1,9 @@
 import { Response , Request } from "express";
 import { AdminUserService } from "../../services/admin/userServices";
 import { HttpStatus } from "../../enums/httpStatus.enums";
+import { IAdminUsersController } from "../../interfaces/adminInterfaces";
 
-export class AdminUserController {
+export class AdminUserController implements IAdminUsersController {
     private _userService: AdminUserService
 
     constructor(

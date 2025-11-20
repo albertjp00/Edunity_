@@ -6,7 +6,8 @@ import { AuthRequest } from "../../middleware/authMiddleware";
 import { OAuth2Client } from "google-auth-library";
 import { HttpStatus } from "../../enums/httpStatus.enums";
 import logger from "../../utils/logger";
-import { IAuthController } from "../../interfaces/userInterfaces";
+import { IAuthBasicController, IAuthForgotPasswordController,
+   IAuthGoogleController, IAuthRegisterController } from "../../interfaces/userInterfaces";
 
 
 
@@ -14,16 +15,16 @@ const SECRET_KEY = process.env.SECRET_KEY || "access_secret";
 const REFRESH_KEY = process.env.REFRESH_KEY || "refresh_secret";
 // const REFRESH_TIME = process.env.REFRESH_TIME 
 
-
-
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || "");
 
 
-
-
-
-
-export class AuthController implements IAuthController {
+export class AuthController 
+  implements
+    IAuthBasicController,
+    IAuthRegisterController,
+    IAuthGoogleController,
+    IAuthForgotPasswordController
+ {
   private _authService: AuthService;
 
   constructor(authService: AuthService) {

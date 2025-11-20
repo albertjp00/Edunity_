@@ -1,12 +1,18 @@
 import { Response } from 'express';
-import {  InstAuthRequest } from '../../middleware/authMiddleware';
+import { InstAuthRequest } from '../../middleware/authMiddleware';
 import { InstructorProfileService } from '../../services/instructor/profileServices';
 import { HttpStatus } from '../../enums/httpStatus.enums';
+import { IInstFinancialController, IInstKYCController,
+     IInstProfileReadController, IInstProfileUpdateController } from '../../interfaces/instructorInterfaces';
 
-export class InstProfileController {
+export class InstProfileController implements
+    IInstProfileReadController,
+    IInstProfileUpdateController,
+    IInstFinancialController,
+    IInstKYCController {
     private _profileService: InstructorProfileService;
 
-    constructor(instProfileService : InstructorProfileService) {
+    constructor(instProfileService: InstructorProfileService) {
         // const repo = new InstructorRepository();
         this._profileService = instProfileService
     }
@@ -111,7 +117,7 @@ export class InstProfileController {
                 return
             }
 
-            const result = await this._profileService.kycSubmit(id,idProofFile.filename,addressProofFile.filename)
+            const result = await this._profileService.kycSubmit(id, idProofFile.filename, addressProofFile.filename)
 
             res.status(HttpStatus.OK).json({ success: true, data: result })
         } catch (error) {
@@ -121,15 +127,15 @@ export class InstProfileController {
     }
 
 
-    getNotifications = async (req: InstAuthRequest, res: Response) =>{
+    getNotifications = async (req: InstAuthRequest, res: Response) => {
         try {
             const id = req.instructor?.id
             console.log(id);
-            
+
             const notifications = await this._profileService.getNotifications(id as string)
             console.log(notifications);
 
-            
+
             res.status(HttpStatus.OK).json({ success: true, notifications: notifications })
         } catch (error) {
             console.error(error)
@@ -138,41 +144,41 @@ export class InstProfileController {
     }
 
 
-        getDashboardData = async(req : InstAuthRequest , res : Response) =>{
+    getDashboardData = async (req: InstAuthRequest, res: Response) => {
         try {
             const instructorId = req.instructor?.id
             const result = await this._profileService.getDashboard(instructorId as string)
-            console.log("dashboard",result);
-            
-            res.status(HttpStatus.OK).json({success : true , dashboard : result})
+            console.log("dashboard", result);
+
+            res.status(HttpStatus.OK).json({ success: true, dashboard: result })
         } catch (error) {
             console.log(error);
         }
     }
 
 
-     getEarnings = async(req : InstAuthRequest , res : Response) =>{
+    getEarnings = async (req: InstAuthRequest, res: Response) => {
         try {
             const instructorId = req.instructor?.id
             const result = await this._profileService.getEarnings(instructorId as string)
-            console.log("earnings",result);
-            
+            console.log("earnings", result);
 
-            res.status(HttpStatus.OK).json({success : true , earnings : result})
+
+            res.status(HttpStatus.OK).json({ success: true, earnings: result })
         } catch (error) {
             console.log(error);
         }
     }
 
 
-    getWallet = async (req:InstAuthRequest , res : Response)=>{
+    getWallet = async (req: InstAuthRequest, res: Response) => {
         try {
             const id = req.instructor?.id
             const wallet = await this._profileService.getWallet(id as string)
-            res.status(HttpStatus.OK).json({success : true  , wallet})
+            res.status(HttpStatus.OK).json({ success: true, wallet })
         } catch (error) {
             console.log(error);
-            
+
         }
     }
 

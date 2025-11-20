@@ -2,12 +2,18 @@ import { Response, Request } from "express";
 import { AdminService } from "../../services/admin/adminServices";
 import { AdminAuthRequest } from "../../middleware/authMiddleware";
 import { HttpStatus } from "../../enums/httpStatus.enums";
+import { IAdminAuthController, IAdminDashboardController, IAdminInstructorController, IAdminKycController, IAdminUserManagementController } from "../../interfaces/adminInterfaces";
 
 
-export class AdminController {
+export class AdminController implements
+    IAdminAuthController,
+    IAdminUserManagementController,
+    IAdminInstructorController,
+    IAdminKycController,
+    IAdminDashboardController {
     private _adminService: AdminService
 
-    constructor(adminService : AdminService) { 
+    constructor(adminService: AdminService) {
         this._adminService = adminService
 
     }
@@ -55,14 +61,14 @@ export class AdminController {
 
 
             const result = await this._adminService.blockUnblockUser(id)
-            if(result){
-            res.status(HttpStatus.OK).json({ success: true })
-            }else{
-                res.json({success:false})
+            if (result) {
+                res.status(HttpStatus.OK).json({ success: true })
+            } else {
+                res.json({ success: false })
             }
         } catch (error) {
             console.log(error);
-            return null
+        
         }
     }
 
@@ -72,15 +78,15 @@ export class AdminController {
 
             const id = req.params.id!
             const result = await this._adminService.unblockUser(id)
-            
-            if(result){
-            res.status(HttpStatus.OK).json({ success: true })
-            }else{
-                res.json({success:false})
+
+            if (result) {
+                res.status(HttpStatus.OK).json({ success: true })
+            } else {
+                res.json({ success: false })
             }
         } catch (error) {
             console.log(error);
-            return null
+        
         }
     }
 
@@ -118,10 +124,10 @@ export class AdminController {
 
             const result = await this._adminService.verifyKyc(id)
 
-            if(result){
-            res.status(HttpStatus.OK).json({ success: true })
-            }else{
-                res.json({success:false})
+            if (result) {
+                res.status(HttpStatus.OK).json({ success: true })
+            } else {
+                res.json({ success: false })
             }
         } catch (error) {
             console.log(error);
@@ -135,9 +141,9 @@ export class AdminController {
             console.log('kyc verify ', id, req.body);
 
             await this._adminService.rejectKyc(id, reason)
-            
+
             res.status(HttpStatus.OK).json({ success: true })
-            
+
         } catch (error) {
             console.log(error);
 
@@ -165,7 +171,7 @@ export class AdminController {
     getUserOverview = async (req: Request, res: Response) => {
         try {
             const result = await this._adminService.getUserOverview();
-            console.log('overview',result);
+            console.log('overview', result);
 
 
             res.status(HttpStatus.OK).json({
@@ -182,12 +188,12 @@ export class AdminController {
     };
 
 
-    getEarnings = async (req : AdminAuthRequest , res : Response)=>{
+    getEarnings = async (req: AdminAuthRequest, res: Response) => {
         try {
             const result = await this._adminService.getEarningsData()
             console.log(result);
-            
-            res.status(HttpStatus.OK).json({success:true , earnings : result})
+
+            res.status(HttpStatus.OK).json({ success: true, earnings: result })
         } catch (error) {
             console.log(error);
         }

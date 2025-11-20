@@ -2,15 +2,18 @@ import { Response, Request } from "express";
 import { AdminCourseService } from "../../services/admin/courseServices";
 import { AdminAuthRequest } from "../../middleware/authMiddleware";
 import { HttpStatus } from "../../enums/httpStatus.enums";
+import { IAdminCourseReadController, IAdminPurchaseController } from "../../interfaces/adminInterfaces";
 
 
 
 
-export class AdminCourseController {
+export class AdminCourseController implements
+    IAdminCourseReadController,
+    IAdminPurchaseController {
     private _courseService: AdminCourseService
 
     //pass the dependencies from outside the class(DI)
-    constructor(adminCourseService : AdminCourseService 
+    constructor(adminCourseService: AdminCourseService
     ) {
         this._courseService = adminCourseService
     }
@@ -24,8 +27,8 @@ export class AdminCourseController {
             const limit = parseInt(req.query.limit as string) || 6;
             const search = req.query.search
             console.log(search);
-            
-            const data = await this._courseService.getCoursesRequest(page,search as string , limit);
+
+            const data = await this._courseService.getCoursesRequest(page, search as string, limit);
             console.log(data)
             res.json({
                 success: true,

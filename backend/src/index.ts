@@ -25,9 +25,13 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(express.json());
 
+
+
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    // origin: 'https://spoke-indices-questions-announcement.trycloudflare.com',
+    origin:"http://localhost:5173",
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -45,10 +49,16 @@ app.use(errorHandler)
 
 // ✅ Initialize socket.io
 const io = new Server(server, {
+  
   cors: {
-    origin: process.env.FRONTEND_URL,
+    origin: [
+    "http://localhost:5173",
+    // process.env.FROTEND_URL,
+    //  'https://spoke-indices-questions-announcement.trycloudflare.com'
+  ],
     credentials: true,
   },
+  
 });
 
 

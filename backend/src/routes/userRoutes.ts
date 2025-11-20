@@ -143,7 +143,7 @@ router.get("/messagedInstructors",authMiddleware,messageController.getMessagedIn
 router.get("/getUnreadMessages/:instructorId",authMiddleware,messageController.getUnreadMessages)
 
 
-router.get("/instructor/:id", authMiddleware, messageController.getInstructortoMessage);
+router.get("/instructor/:id", authMiddleware, messageController.getInstructorToMessage);
 
 
 router.delete('/cancelCourse/:id',authMiddleware,courseController.cancelCourse);

@@ -2,11 +2,15 @@ import { Response } from "express"
 import { InstAuthRequest } from "../../middleware/authMiddleware"
 import { InstEventService } from "../../services/instructor/eventService"
 import { HttpStatus } from "../../enums/httpStatus.enums"
+import { IEventManageController, IEventParticipationController, IEventReadController } from "../../interfaces/instructorInterfaces"
 
 
 
 
-export class EventController {
+export class EventController implements
+    IEventManageController,
+    IEventReadController,
+    IEventParticipationController {
     private _eventService: InstEventService
 
     constructor(eventService: InstEventService) {
@@ -125,13 +129,15 @@ export class EventController {
 
 
             if (!instructorId) {
-                return res.status(HttpStatus.UNAUTHORIZED).json({ message: "Unauthorized" });
+                res.status(HttpStatus.UNAUTHORIZED).json({ message: "Unauthorized" });
+                return
             }
 
             const result = await this._eventService.joinEventRequest(eventId, instructorId);
 
             if (!result || !result.success) {
-                return res.status(HttpStatus.BAD_REQUEST).json({ message: result?.message || "Failed to start event" });
+                res.status(HttpStatus.BAD_REQUEST).json({ message: result?.message || "Failed to start event" });
+                return
             }
 
 
@@ -155,13 +161,15 @@ export class EventController {
             const eventId = req.params.eventId!
 
             if (!instructorId) {
-                return res.status(401).json({ message: "Unauthorized" });
+                res.status(401).json({ message: "Unauthorized" });
+                return
             }
 
             const result = await this._eventService.endEventRequest(eventId, instructorId);
 
             if (!result || !result.success) {
-                return res.status(400).json({ message: result?.message || "Failed to end event" });
+                res.status(400).json({ message: result?.message || "Failed to end event" });
+                return
             }
 
             res.status(HttpStatus.OK).json({

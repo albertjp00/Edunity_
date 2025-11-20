@@ -6,7 +6,7 @@ import { InstructorRepository } from "../../repositories/instructorRepository";
 import { Server } from "http";
 import { log } from "console";
 import logger from "../../utils/logger";
-import { IUserEventController } from "../../interfaces/userInterfaces";
+import {  IUserEventEnrollmentController, IUserEventJoinController, IUserEventReadController } from "../../interfaces/userInterfaces";
 import { HttpStatus } from "../../enums/httpStatus.enums";
 
 
@@ -14,7 +14,10 @@ import { HttpStatus } from "../../enums/httpStatus.enums";
 
 
 
-export class UserEventController implements IUserEventController {
+export class UserEventController implements
+    IUserEventReadController,
+    IUserEventEnrollmentController,
+    IUserEventJoinController {
     private _userEventService: UserEventService;
 
     constructor(userEventService: UserEventService) {

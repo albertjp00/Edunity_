@@ -1,5 +1,6 @@
 import { HttpStatus } from "../../enums/httpStatus.enums";
-import { IInstAuthController } from "../../interfaces/instructorInterfaces";
+import {  IInstLoginController, IInstPasswordResetController,
+   IInstRegisterController } from "../../interfaces/instructorInterfaces";
 
 import { InstAuthService } from "../../services/instructor/authService";
 import { Request, Response } from 'express';
@@ -8,7 +9,10 @@ import { Request, Response } from 'express';
 
 
 
-export class InstAuthController implements IInstAuthController {
+export class InstAuthController implements
+    IInstLoginController,
+    IInstRegisterController,
+    IInstPasswordResetController {
   private _instAuthService: InstAuthService
 
   

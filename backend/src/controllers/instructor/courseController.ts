@@ -9,6 +9,7 @@ import fs from 'fs'
 import { generateSignedUrl } from "../../utils/getSignedUrl";
 import { IModule } from "../../models/course";
 import { HttpStatus } from "../../enums/httpStatus.enums";
+import { IInstCourseManageController, IInstCourseViewController, IInstQuizController } from "../../interfaces/instructorInterfaces";
 
 // interface MulterFiles {
 //   [fieldname: string]: Express.Multer.File[];
@@ -16,7 +17,10 @@ import { HttpStatus } from "../../enums/httpStatus.enums";
 
 
 
-export class InstCourseController {
+export class InstCourseController implements
+    IInstCourseViewController,
+    IInstCourseManageController,
+    IInstQuizController {
   private _courseService: CourseService;
 
   constructor(courseService: CourseService) {
@@ -68,7 +72,8 @@ export class InstCourseController {
     try {
       const { key } = req.query; // frontend sends the key (filename)
       if (!key) {
-        return res.status(400).json({ success: false, message: "Missing key" });
+        res.status(400).json({ success: false, message: "Missing key" });
+        return
       }
 
       const signedUrl = await generateSignedUrl(key as string);
@@ -89,7 +94,8 @@ export class InstCourseController {
       console.log(data);
 
       if (!data) {
-        return res.status(404).json({ success: false, message: "No purchases found" });
+        res.status(404).json({ success: false, message: "No purchases found" });
+        return
       }
 
       res.status(HttpStatus.OK).json({ success: true, details: data });
