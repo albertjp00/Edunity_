@@ -4,22 +4,22 @@ import { IUser } from "../models/user";
 
 
 
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
 
 
 // Admin Course Read Operations 
 
 export interface IAdminCourseReadController {
-  getCourses(req: Request, res: Response): Promise<void>;
-  getCourseDetails(req: Request, res: Response): Promise<void>;
+  getCourses(req: Request, res: Response,next: NextFunction): Promise<void>;
+  getCourseDetails(req: Request, res: Response,next: NextFunction): Promise<void>;
 }
 
 
 //Admin Purchase Operations
 
 export interface IAdminPurchaseController {
-  getAllPurchases(req: AdminAuthRequest, res: Response): Promise<void>;
+  getAllPurchases(req: AdminAuthRequest, res: Response,next: NextFunction): Promise<void>;
 }
 
 
@@ -30,37 +30,37 @@ export interface IAdminPurchaseController {
 //controller.ts
 //  AUTH INTERFACE
 export interface IAdminAuthController {
-  adminLogin(req: AdminAuthRequest, res: Response): Promise<void>;
+  adminLogin(req: AdminAuthRequest, res: Response,next: NextFunction): Promise<void>;
 }
 
 
 //  USER MANAGEMENT INTERFACE
 export interface IAdminUserManagementController {
-  getUsers(req: Request, res: Response): Promise<void>;
-  blockUnblock(req: Request, res: Response): Promise<void>;
-  unblockUser(req: Request, res: Response): Promise<void>;
+  getUsers(req: Request, res: Response,next: NextFunction): Promise<void>;
+  blockUnblock(req: Request, res: Response,next: NextFunction): Promise<void>;
+  unblockUser(req: Request, res: Response,next: NextFunction): Promise<void>;
 }
 
 
 //  INSTRUCTOR MANAGEMENT INTERFACE
 export interface IAdminInstructorController {
-  getInstructors(req: Request, res: Response): Promise<void>;
+  getInstructors(req: Request, res: Response,next: NextFunction): Promise<void>;
 }
 
 
 //  KYC MANAGEMENT INTERFACE
 export interface IAdminKycController {
-  getKyc(req: Request, res: Response): Promise<void>;
-  verifyKyc(req: Request, res: Response): Promise<void>;
-  rejectKyc(req: AdminAuthRequest, res: Response): Promise<void>;
+  getKyc(req: Request, res: Response,next: NextFunction): Promise<void>;
+  verifyKyc(req: Request, res: Response,next: NextFunction): Promise<void>;
+  rejectKyc(req: AdminAuthRequest, res: Response,next: NextFunction): Promise<void>;
 }
 
 
 //  DASHBOARD / ANALYTICS INTERFACE
 export interface IAdminDashboardController {
-  dashboardStats(req: AdminAuthRequest, res: Response): Promise<void>;
-  getUserOverview(req: Request, res: Response): Promise<void>;
-  getEarnings(req: AdminAuthRequest, res: Response): Promise<void>;
+  dashboardStats(req: AdminAuthRequest, res: Response,next: NextFunction): Promise<void>;
+  getUserOverview(req: Request, res: Response,next: NextFunction): Promise<void>;
+  getEarnings(req: AdminAuthRequest, res: Response,next: NextFunction): Promise<void>;
 }
 
 
@@ -69,16 +69,16 @@ export interface IAdminDashboardController {
 //instructorControleller Admin
 
 export interface IAdminInstructorsController{
-  getInstructors(req : Request , res : Response):Promise<void>
-  getInstructorsCourses(req : Request , res : Response):Promise<void>
+  getInstructors(req : Request , res : Response,next: NextFunction):Promise<void>
+  getInstructorsCourses(req : Request , res : Response,next: NextFunction):Promise<void>
 }
 
 
 
 
 export interface IAdminUsersController{
-  getUser(req : Request , res : Response):Promise<void>
-  getUserCourses(req : Request , res : Response):Promise<void>
+  getUser(req : Request , res : Response,next: NextFunction):Promise<void>
+  getUserCourses(req : Request , res : Response,next: NextFunction):Promise<void>
 }
 
 

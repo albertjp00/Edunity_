@@ -1,4 +1,4 @@
-import { Response, Request } from "express";
+import { Response, Request, NextFunction } from "express";
 import { AdminService } from "../../services/admin/adminServices";
 import { AdminAuthRequest } from "../../middleware/authMiddleware";
 import { HttpStatus } from "../../enums/httpStatus.enums";
@@ -19,7 +19,7 @@ export class AdminController implements
     }
 
 
-    adminLogin = async (req: AdminAuthRequest, res: Response) => {
+    adminLogin = async (req: AdminAuthRequest, res: Response,next: NextFunction) => {
         try {
             const { email, password } = req.body
             console.log(email);

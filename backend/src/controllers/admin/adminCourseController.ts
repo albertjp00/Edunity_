@@ -1,4 +1,4 @@
-import { Response, Request } from "express";
+import { Response, Request, NextFunction } from "express";
 import { AdminCourseService } from "../../services/admin/courseServices";
 import { AdminAuthRequest } from "../../middleware/authMiddleware";
 import { HttpStatus } from "../../enums/httpStatus.enums";
@@ -21,7 +21,7 @@ export class AdminCourseController implements
 
 
 
-    getCourses = async (req: Request, res: Response) => {
+    getCourses = async (req: Request, res: Response ,next: NextFunction) => {
         try {
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 6;
@@ -37,13 +37,15 @@ export class AdminCourseController implements
                 currentPage: data.currentPage,
             });
         } catch (error) {
+            next(error)
             console.error(error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to get courses" });
+            
         }
     };
 
 
-    getCourseDetails = async (req: Request, res: Response) => {
+    getCourseDetails = async (req: Request, res: Response,next: NextFunction) => {
         try {
             const id = req.params.id!
             console.log('course details');
@@ -59,6 +61,7 @@ export class AdminCourseController implements
                 enrolledUsers: data?.enrolledUsers,
             });
         } catch (error) {
+            next(error)
             console.error(error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to get course details" });
         }
@@ -66,7 +69,7 @@ export class AdminCourseController implements
 
 
 
-    getAllPurchases = async (req: AdminAuthRequest, res: Response) => {
+    getAllPurchases = async (req: AdminAuthRequest, res: Response,next: NextFunction) => {
         try {
 
 
@@ -79,6 +82,7 @@ export class AdminCourseController implements
 
             res.json({ success: true, purchases: data });
         } catch (err) {
+            next(err)
             // res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: err.message });
             console.log(err);
 
