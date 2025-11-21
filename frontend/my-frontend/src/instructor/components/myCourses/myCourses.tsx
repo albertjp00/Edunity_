@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./myCourses.css";
 import { useNavigate } from "react-router-dom";
-import instructorApi from "../../../api/instructorApi";
+import { getCourses } from "../../services/Instructor/instructorServices";
 
 interface Course {
   _id: string;
@@ -24,9 +24,12 @@ const MyCourses: React.FC = () => {
 
   const fetchCourses = async () => {
     try {
-      const res = await instructorApi.get(`/instructor/getCourse`);
+      const res = await getCourses('',1)
+      if(!res) return
       if (res.data.success) {
-        setCourses(res.data.course);
+        const c = res.data.course
+        const course = c.slice(0,4)
+        setCourses(course);
       }
     } catch (err) {
       console.error("Error fetching courses:", err);
@@ -38,7 +41,7 @@ const MyCourses: React.FC = () => {
   };
 
   const addCourse = () => {
-    navigate("/instructor/addCourse");
+    navigate("/instructor/allCourses");
   };
 
   useEffect(() => {
@@ -59,6 +62,7 @@ const MyCourses: React.FC = () => {
     <div className="my-courses-page">
 
       <div className="mycourses-banner">
+        
         <h1>MY COURSES</h1>
         <p className="breadcrumb">Home / Instructor</p>
       </div>
@@ -71,7 +75,7 @@ const MyCourses: React.FC = () => {
           </div>
 
           <button className="create-course-btn" onClick={addCourse}>
-            Create Course
+            All Courses →
           </button>
         </div>
 

@@ -37,7 +37,7 @@ export interface IInsRepository {
 
   addCourse(id: string, data: Partial<ICourse>): Promise<ICourse | null>
 
-  getCourses(id: string, skip: number, limit: number): Promise<ICourse[] | null>
+  getCourses(id: string, search : string , skip: number, limit: number): Promise<ICourse[] | null>
 
   getCourseDetails(courseId: string): Promise<ICourse | null>
 
@@ -124,8 +124,13 @@ export class InstructorRepository implements IInsRepository {
   }
 
 
-  async getCourses(id: string, skip: number, limit: number): Promise<ICourse[]> {
-    const courses = await CourseModel.find({ instructorId: id }).skip(skip).limit(limit);
+  async getCourses(id: string, search : string , skip: number, limit: number): Promise<ICourse[]> {
+    const filter: any = { instructorId: id };
+
+  if (search && search.trim() !== "") {
+    filter.title = { $regex: search, $options: "i" };
+  }
+    const courses = await CourseModel.find(filter).skip(skip).limit(limit);
     // console.log(courses);
     return courses || [];
   }

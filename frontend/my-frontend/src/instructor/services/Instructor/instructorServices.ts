@@ -6,6 +6,20 @@ import type { Ievent } from "../../interterfaces/events";
 
 //course services 
 
+export const getCourses = async (query : string , page : number) => {
+  try {
+    const res = await instructorApi.post(`/instructor/getCourse`,
+      { query, page },
+    )
+    
+    return res
+  } catch (error) {
+    console.log(error);
+
+  }
+}
+
+
 export const addCourse = async (formData: FormData) => {
   try {
     const res = await instructorApi.post('/instructor/course', formData, {

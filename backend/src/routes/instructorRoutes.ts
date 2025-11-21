@@ -93,7 +93,7 @@ instructor.put('/resetPassword',authController.resetPassword)
 instructor.get('/wallet',instAuthMiddleware,profileController.getWallet)
 
 
-instructor.get('/getCourse',instAuthMiddleware,courseController.myCourses)
+instructor.post('/getCourse',instAuthMiddleware,courseController.myCourses)
 instructor.get('/course/:id', instAuthMiddleware, courseController.courseDetails);
 instructor.get("/videos/refresh",instAuthMiddleware, courseController.refreshVideoUrl);
 

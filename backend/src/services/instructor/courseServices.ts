@@ -43,21 +43,22 @@ interface CourseDetails {
 export class CourseService {
   constructor(private instructorRepository: IInsRepository) { }
 
-  fetchCourses = async (id: string, page: number, limit: number): Promise<CourseResult> => {
+  fetchCourses = async (id: string, search : string , page: number, limit: number): Promise<CourseResult> => {
     try {
       const skip = (page - 1) * limit;
 
       const [courses, totalItems, skills] = await Promise.all([
-        this.instructorRepository.getCourses(id, skip, limit),
+        this.instructorRepository.getCourses(id, search, skip, limit),
         this.instructorRepository.countCourses(),
         this.instructorRepository.findSkills()
       ]);
       const instructor = await this.instructorRepository.findById(id)
+      const l = courses?.length
 
       return {
         courses,
         skills,
-        totalPages: Math.ceil(totalItems / limit),
+        totalPages: Math.ceil(totalItems / l!) -1,
         currentPage: page,
         totalItems,
         instructor

@@ -18,9 +18,9 @@ import { IInstCourseManageController, IInstCourseViewController, IInstQuizContro
 
 
 export class InstCourseController implements
-    IInstCourseViewController,
-    IInstCourseManageController,
-    IInstQuizController {
+  IInstCourseViewController,
+  IInstCourseManageController,
+  IInstQuizController {
   private _courseService: CourseService;
 
   constructor(courseService: CourseService) {
@@ -31,13 +31,19 @@ export class InstCourseController implements
   myCourses = async (req: InstAuthRequest, res: Response) => {
     try {
       const id = req.instructor?.id
-      logger.info("get Courses instructor");
+      const search = (req.body.query as string) || "";
+      const page = parseInt(req.body.page as string) || 1;
+      // logger.info("get Courses instructor",search , page);
 
+      console.log("get Courses instructor",search , page);
 
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
+      // const page = parseInt(req.query.page as string) || 1;
+      // const limit = parseInt(req.query.limit as string) || 10;
 
-      const data = await this._courseService.fetchCourses(id as string, page, limit);
+      const limit = 4
+      const data = await this._courseService.fetchCourses(id as string, search , page, limit);
+      // console.log(data);
+      
 
       res.status(HttpStatus.OK).json({
         success: true,
