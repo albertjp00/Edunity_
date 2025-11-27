@@ -38,7 +38,7 @@ export class AdminCourseService {
                 ];
             }
 
-            const courses = await this.userRepository.getAllCourses(query, skip, limit, { createdAt: -1 });
+            const courses = await this.userRepository.getAllCourses(query, skip, limit, { createdAt: -1 }) || [];
             const totalCourses = await this.userRepository.countCourses();
 
 

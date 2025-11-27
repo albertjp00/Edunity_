@@ -1,3 +1,4 @@
+import { IInstructorProfileService } from "../../interfacesServices.ts/instructorServiceInterface";
 import { mapInstructorToDTO } from "../../mapper/instructor.mapper";
 import { IEarnings } from "../../models/earnings";
 import { INotification } from "../../models/notification";
@@ -7,7 +8,7 @@ import bcrypt from 'bcrypt'
 
 
 
-export class InstructorProfileService {
+export class InstructorProfileService implements IInstructorProfileService {
   private instructorRepository: InstructorRepository
 
   constructor(instructorRepository: InstructorRepository) {

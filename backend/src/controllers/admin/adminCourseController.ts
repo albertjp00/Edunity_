@@ -1,8 +1,8 @@
 import { Response, Request, NextFunction } from "express";
-import { AdminCourseService } from "../../services/admin/courseServices";
 import { AdminAuthRequest } from "../../middleware/authMiddleware";
 import { HttpStatus } from "../../enums/httpStatus.enums";
-import { IAdminCourseReadController, IAdminPurchaseController } from "../../interfaces/adminInterfaces";
+import { IAdminCourseReadController, IAdminCourseService, IAdminPurchaseController } from "../../interfaces/adminInterfaces";
+import { AdminCourseService } from "../../services/admin/courseServices";
 
 
 
@@ -10,10 +10,10 @@ import { IAdminCourseReadController, IAdminPurchaseController } from "../../inte
 export class AdminCourseController implements
     IAdminCourseReadController,
     IAdminPurchaseController {
-    private _courseService: AdminCourseService
+    private _courseService: IAdminCourseService
 
     //pass the dependencies from outside the class(DI)
-    constructor(adminCourseService: AdminCourseService
+    constructor(adminCourseService: IAdminCourseService
     ) {
         this._courseService = adminCourseService
     }

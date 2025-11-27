@@ -62,28 +62,28 @@ export interface IInsRepository {
 
 
 
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
 
 //authCOntroller
 
 export interface IInstLoginController {
-  login(req: Request, res: Response): Promise<void>;
+  login(req: Request, res: Response,next: NextFunction): Promise<void>;
 }
 
 
 export interface IInstRegisterController {
-  register(req: Request, res: Response): Promise<void>;
-  resendOtp(req: Request, res: Response): Promise<void>;
-  verifyOtp(req: Request, res: Response): Promise<void>;
+  register(req: Request, res: Response,next: NextFunction): Promise<void>;
+  resendOtp(req: Request, res: Response,next: NextFunction): Promise<void>;
+  verifyOtp(req: Request, res: Response,next:NextFunction): Promise<void>;
 }
 
 
 export interface IInstPasswordResetController {
-  forgotPassword(req: Request, res: Response): Promise<void>;
-  verifyOtpForgotPass(req: Request, res: Response): Promise<void>;
-  resendOtpForgotPassword(req: Request, res: Response): Promise<void>;
-  resetPassword(req: Request, res: Response): Promise<void>;
+  forgotPassword(req: Request, res: Response,next: NextFunction): Promise<void>;
+  verifyOtpForgotPass(req: Request, res: Response,next: NextFunction): Promise<void>;
+  resendOtpForgotPassword(req: Request, res: Response,next: NextFunction): Promise<void>;
+  resetPassword(req: Request, res: Response,next: NextFunction): Promise<void>;
 }
 
 
@@ -92,23 +92,23 @@ export interface IInstPasswordResetController {
 //courseCOnttroller
 // Instructor Course View Interfaces 
 export interface IInstCourseViewController {
-  myCourses(req: InstAuthRequest, res: Response): Promise<void>;
-  courseDetails(req: InstAuthRequest, res: Response): Promise<void>;
-  purchaseDetails(req: InstAuthRequest, res: Response): Promise<void>;
+  myCourses(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
+  courseDetails(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
+  purchaseDetails(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
 }
 
 //  Course Management Interfaces 
 export interface IInstCourseManageController {
-  addCourse(req: InstAuthRequest, res: Response): Promise<void>;
-  editCourse(req: Request, res: Response): Promise<void>;
-  refreshVideoUrl(req: Request, res: Response): Promise<void>;
+  addCourse(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
+  editCourse(req: Request, res: Response,next: NextFunction): Promise<void>;
+  refreshVideoUrl(req: Request, res: Response,next: NextFunction): Promise<void>;
 }
 
 // Quiz Management Interfaces
 export interface IInstQuizController {
-  addQuiz(req: InstAuthRequest, res: Response): Promise<void>;
-  getQuiz(req: Request, res: Response): Promise<void>;
-  editQuiz(req: Request, res: Response): Promise<void>;
+  addQuiz(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
+  getQuiz(req: Request, res: Response,next: NextFunction): Promise<void>;
+  editQuiz(req: Request, res: Response,next: NextFunction): Promise<void>;
 }
 
 
@@ -120,20 +120,20 @@ export interface IInstQuizController {
 //eventInstructorController
 //  Event Creation & Management 
 export interface IEventManageController {
-  createEvents(req: InstAuthRequest, res: Response): Promise<void>;
-  editEvent(req: InstAuthRequest, res: Response): Promise<void>;
-  endEvent(req: InstAuthRequest, res: Response): Promise<void>;
+  createEvents(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
+  editEvent(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
+  endEvent(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
 }
 
 //  Event Retrieval
 export interface IEventReadController {
-  getAllEvents(req: InstAuthRequest, res: Response): Promise<void>;
-  getEvent(req: InstAuthRequest, res: Response): Promise<void>;
+  getAllEvents(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
+  getEvent(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
 }
 
 //  Event Participation 
 export interface IEventParticipationController {
-  joinEvent(req: InstAuthRequest, res: Response): Promise<void>;
+  joinEvent(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
 }
 
 
@@ -141,29 +141,29 @@ export interface IEventParticipationController {
 //profileCOntroller
 //  Profile Read Operations 
 export interface IInstProfileReadController {
-  getProfile(req: InstAuthRequest, res: Response): Promise<void>;
-  getDashboardData(req: InstAuthRequest, res: Response): Promise<void>;
-  getNotifications(req: InstAuthRequest, res: Response): Promise<void>;
+  getProfile(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
+  getDashboardData(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
+  getNotifications(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
 }
 
 
 // Profile Update Operations
 export interface IInstProfileUpdateController {
-  editProfile(req: InstAuthRequest, res: Response): Promise<void>;
-  changePassword(req: InstAuthRequest, res: Response): Promise<void>;
+  editProfile(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
+  changePassword(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
 }
 
 
 // Financial Operations 
 export interface IInstFinancialController {
-  getEarnings(req: InstAuthRequest, res: Response): Promise<void>;
-  getWallet(req: InstAuthRequest, res: Response): Promise<void>;
+  getEarnings(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
+  getWallet(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
 }
 
 
 //  KYC Operations 
 export interface IInstKYCController {
-  kycSubmit(req: InstAuthRequest, res: Response): Promise<void>;
+  kycSubmit(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
 }
 
 

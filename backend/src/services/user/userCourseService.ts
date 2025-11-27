@@ -16,6 +16,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { generateCertificate } from '../../utils/certificate';
 import { generateSignedUrl } from '../../utils/getSignedUrl';
+import { IUserCourseService } from '../../interfacesServices.ts/userServiceInterfaces';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,7 +39,7 @@ export interface IviewCourse {
 }
 
 
-export class UserCourseService {
+export class UserCourseService implements IUserCourseService {
   private userRepository: UserRepository;
   private instructorRepository: InstructorRepository;
   private adminRepository: AdminRepository;
@@ -144,12 +145,15 @@ export class UserCourseService {
         throw new Error("Payment already initiated for this course.") 
       }
 
+      
+
       const options = {
         amount: course.price! * 100,
         currency: "INR",
         receipt: `receipt_${Date.now()}`,
         notes: { userId, courseId },
       };
+
 
       const order = await razorpay.orders.create(options);
 
@@ -569,15 +573,13 @@ export class UserCourseService {
 
 
   async cancelCourseRequest(userId: string, courseId: string): Promise<void> {
-    // 1️⃣ Verify enrollment
     const enrollment = await this.userRepository.findUserCourse(userId, courseId);
     if (!enrollment) throw new Error("User not enrolled in this course");
 
-    // 2️⃣ Get course details
     const course = await this.userRepository.getCourse(courseId);
     if (!course) throw new Error("Course not found");
 
-    // 3️⃣ Refund only if paid
+    // Refund only if paid
     if (course.price && course.price > 0) {
       await this.userRepository.addTransaction(userId, {
         type: "credit",
@@ -587,10 +589,9 @@ export class UserCourseService {
       });
     }
 
-    // 4️⃣ Remove course from user's enrolled list
     await this.userRepository.removeUserCourse(userId, courseId);
 
-    // 5️⃣ Decrease total enrolled count
+    // Decrease total enrolled count
     await this.userRepository.decreaseCourseEnrollment(courseId);
   }
 

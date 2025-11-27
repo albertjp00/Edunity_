@@ -1,6 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { AuthService } from "../../services/user/authService";
-import { UserRepository } from "../../repositories/userRepository";
 import jwt from "jsonwebtoken";
 import { AuthRequest } from "../../middleware/authMiddleware";
 import { OAuth2Client } from "google-auth-library";
@@ -8,12 +6,14 @@ import { HttpStatus } from "../../enums/httpStatus.enums";
 import logger from "../../utils/logger";
 import { IAuthBasicController, IAuthForgotPasswordController,
    IAuthGoogleController, IAuthRegisterController } from "../../interfaces/userInterfaces";
+import { IUserAuthService } from "../../interfacesServices.ts/userServiceInterfaces";
+// import { AuthService } from "../../services/user/authService";
 
 
 
 const SECRET_KEY = process.env.SECRET_KEY || "access_secret";
 const REFRESH_KEY = process.env.REFRESH_KEY || "refresh_secret";
-// const REFRESH_TIME = process.env.REFRESH_TIME 
+// const REFRESH_TIME = process.env.REFRESH_TIME
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || "");
 
@@ -25,9 +25,9 @@ export class AuthController
     IAuthGoogleController,
     IAuthForgotPasswordController
  {
-  private _authService: AuthService;
+  private _authService: IUserAuthService;
 
-  constructor(authService: AuthService) {
+  constructor(authService: IUserAuthService) {
     // const repo = new UserRepository();
     this._authService = authService
   }

@@ -81,7 +81,6 @@ export class UserRepository extends BaseRepository<IUser>
   }
 
   async getCourse(id: string): Promise<ICourse | null> {
-
     return await CourseModel.findById(id)
   }
 

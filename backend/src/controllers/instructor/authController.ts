@@ -3,7 +3,7 @@ import {  IInstLoginController, IInstPasswordResetController,
    IInstRegisterController } from "../../interfaces/instructorInterfaces";
 
 import { InstAuthService } from "../../services/instructor/authService";
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 
 
@@ -22,7 +22,7 @@ export class InstAuthController implements
   }
 
 
-  login = async (req: Request, res: Response): Promise<void> => {
+  login = async (req: Request, res: Response,next: NextFunction): Promise<void> => {
     try {
       const { email, password } = req.body;
       const response = await this._instAuthService.instructorLogin(email, password);
@@ -47,11 +47,12 @@ export class InstAuthController implements
         success: false,
         message: "Server error"
       });
+      next(error)
     }
   };
 
 
-  register = async (req: Request, res: Response) => {
+  register = async (req: Request, res: Response,next: NextFunction) => {
     try {
       const { name, email, password } = req.body;
       console.log('inst register', name, email);
@@ -70,11 +71,12 @@ export class InstAuthController implements
       res
         .status(HttpStatus.BAD_REQUEST)
         .json({ success: false, message: error.message || "Registration failed" });
+        next(error)
     }
   };
 
 
-  resendOtp = async (req: Request, res: Response) => {
+  resendOtp = async (req: Request, res: Response,next: NextFunction) => {
     try {
       const { email } = req.body;
 
@@ -89,10 +91,11 @@ export class InstAuthController implements
     } catch (error) {
       console.error(error);
       res.status(500).json({ success: false, message: "Failed to resend OTP" });
+      next(error)
     }
   };
 
-  verifyOtp = async (req: Request, res: Response) => {
+  verifyOtp = async (req: Request, res: Response,next: NextFunction) => {
     try {
       const { otp, email } = req.body;
       const result = await this._instAuthService.verifyOtpRequest(otp, email);
@@ -105,6 +108,7 @@ export class InstAuthController implements
       }
     } catch (error) {
       console.log(error);
+      next(error)
     }
   };
 
@@ -114,7 +118,7 @@ export class InstAuthController implements
 
   // reset password 
 
-  forgotPassword = async (req: Request, res: Response) => {
+  forgotPassword = async (req: Request, res: Response,next: NextFunction) => {
     try {
 
       const { email } = req.body;
@@ -132,10 +136,11 @@ export class InstAuthController implements
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal server error" });
+      next(error)
     }
   };
 
-  verifyOtpForgotPass = async (req: Request, res: Response) => {
+  verifyOtpForgotPass = async (req: Request, res: Response,next: NextFunction) => {
     try {
       console.log('verify password');
 
@@ -153,10 +158,11 @@ export class InstAuthController implements
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal server error" });
+      next(error)
     }
   };
 
-  resendOtpForgotPassword = async (req: Request, res: Response) => {
+  resendOtpForgotPassword = async (req: Request, res: Response,next: NextFunction) => {
     try {
       const { email } = req.body;
       console.log('resend', email);
@@ -173,10 +179,11 @@ export class InstAuthController implements
     } catch (error) {
       console.error(error);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to resend OTP" });
+      next(error)
     }
   };
 
-  resetPassword = async (req: Request, res: Response) => {
+  resetPassword = async (req: Request, res: Response,next: NextFunction) => {
     try {
       const { email, newPassword } = req.body;
       console.log('reset pass ', email, newPassword);
@@ -202,6 +209,7 @@ export class InstAuthController implements
     } catch (error) {
       console.error(error);
       res.json({ success: false, message: "Internal server error" });
+      next(error)
     }
   };
 

@@ -15,6 +15,7 @@ export interface IUser extends Document {
   blocked: boolean;
   createdAt: Date;
   googleId : string;
+  courseCount : number;
 }
 
 const UserSchema: Schema = new Schema<IUser>({
@@ -78,6 +79,10 @@ const UserSchema: Schema = new Schema<IUser>({
 
   googleId : {
     type:String
+  },
+
+  courseCount :{
+    type : Number,
   }
 });
 

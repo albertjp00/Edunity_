@@ -58,6 +58,9 @@ export interface IAdminRepository {
 
 }
 
+
+
+
 export class AdminRepository implements IAdminRepository {
 
     async findByEmail(email: string, password: string): Promise<IUser | null> {

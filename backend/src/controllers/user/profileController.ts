@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
-import { UserRepository } from '../../repositories/userRepository';
-import { ProfileService } from '../../services/user/profileService';
 import { AuthRequest } from '../../middleware/authMiddleware';
 import { HttpStatus } from '../../enums/httpStatus.enums';
 import { INotificationController, IPasswordController, IPaymentController, IProfileReadController, IProfileWriteController, IWalletController } from '../../interfaces/userInterfaces';
+import { IUserProfileService } from '../../interfacesServices.ts/userServiceInterfaces';
+// import { ProfileService } from '../../services/user/profileService';
+
 
 export class ProfileController implements 
         IProfileReadController,
@@ -12,9 +13,9 @@ export class ProfileController implements
         IWalletController,
         IPaymentController,
         INotificationController {
-    private _profileService: ProfileService;
+    private _profileService: IUserProfileService;
 
-    constructor(profileService: ProfileService) {
+    constructor(profileService: IUserProfileService) { 
         // const repo = new UserRepository(); 
         this._profileService = profileService
     }

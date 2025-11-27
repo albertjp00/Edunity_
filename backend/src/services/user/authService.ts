@@ -7,6 +7,7 @@ import { sendOtp } from "../../utils/sendMail";
 import { OAuth2Client } from "google-auth-library";
 import { IUser } from "../../models/user";
 import { googleLoginResult, IUserRepository } from "../../interfaces/userInterfaces";
+import { IUserAuthService } from "../../interfacesServices.ts/userServiceInterfaces";
 
 dotenv.config();
 
@@ -55,7 +56,7 @@ interface Iforgot {
 }
 
 // Main Auth Service
-export class AuthService {
+export class AuthService implements IUserAuthService {
     constructor(private userRepository: IUserRepository) { }    
 
 

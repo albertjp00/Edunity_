@@ -3,6 +3,7 @@ import { IEvent } from "../../models/events";
 import { IMyEvent } from "../../models/myEvents";
 import { InstructorRepository } from "../../repositories/instructorRepository";
 import { UserRepository } from "../../repositories/userRepository";
+import { IUserEventService } from "../../interfacesServices.ts/userServiceInterfaces";
 
 
 export class NotFoundError extends Error {
@@ -28,7 +29,7 @@ export class EventFullError extends Error {
 
 
 
-export class UserEventService {
+export class UserEventService implements IUserEventService {
 
     private userRepository: UserRepository;
     private instructorRepository: InstructorRepository;

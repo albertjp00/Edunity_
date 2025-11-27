@@ -1,25 +1,27 @@
-import { Response } from 'express';
+import { NextFunction, Response } from 'express';
 import { InstAuthRequest } from '../../middleware/authMiddleware';
-import { InstructorProfileService } from '../../services/instructor/profileServices';
 import { HttpStatus } from '../../enums/httpStatus.enums';
 import { IInstFinancialController, IInstKYCController,
      IInstProfileReadController, IInstProfileUpdateController } from '../../interfaces/instructorInterfaces';
+import { IInstructorProfileService } from '../../interfacesServices.ts/instructorServiceInterface';
+// import { InstructorProfileService } from '../../services/instructor/profileServices';
+
 
 export class InstProfileController implements
     IInstProfileReadController,
     IInstProfileUpdateController,
     IInstFinancialController,
     IInstKYCController {
-    private _profileService: InstructorProfileService;
+    private _profileService: IInstructorProfileService;
 
-    constructor(instProfileService: InstructorProfileService) {
+    constructor(instProfileService: IInstructorProfileService) {
         // const repo = new InstructorRepository();
         this._profileService = instProfileService
     }
 
 
 
-    getProfile = async (req: InstAuthRequest, res: Response) => {
+    getProfile = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
         try {
             const userId = req.instructor?.id
             console.log('instructor get profile');
@@ -42,12 +44,13 @@ export class InstProfileController implements
         } catch (error) {
             console.error('Get profile error:', error);
             res.status(500).json({ error: 'Internal server error' });
+            next(error)
         }
     };
 
 
 
-    editProfile = async (req: InstAuthRequest, res: Response) => {
+    editProfile = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
         try {
             console.log('user profile ', req.instructor?.id, req.file)
             const userId = req.instructor?.id; // Assuming `req.user` is set by auth middleware
@@ -77,11 +80,12 @@ export class InstProfileController implements
         } catch (error) {
             console.error('Update profile error:', error);
             res.status(500).json({ error: 'Internal server error' });
+            next(error)
         }
     };
 
 
-    changePassword = async (req: InstAuthRequest, res: Response) => {
+    changePassword = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
         try {
             const id = req.instructor?.id;
             const { newPassword, oldPassword } = req.body;
@@ -101,11 +105,12 @@ export class InstProfileController implements
         } catch (error) {
             console.error(error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
+            next(error)
         }
     };
 
 
-    kycSubmit = async (req: InstAuthRequest, res: Response) => {
+    kycSubmit = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
         try {
             const id = req.instructor?.id
 
@@ -123,11 +128,12 @@ export class InstProfileController implements
         } catch (error) {
             console.error(error)
             res.status(500).json({ success: false, message: "Server error" })
+            next(error)
         }
     }
 
 
-    getNotifications = async (req: InstAuthRequest, res: Response) => {
+    getNotifications = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
         try {
             const id = req.instructor?.id
             console.log(id);
@@ -140,11 +146,12 @@ export class InstProfileController implements
         } catch (error) {
             console.error(error)
             res.status(500).json({ success: false, message: "Server error" })
+            next(error)
         }
     }
 
 
-    getDashboardData = async (req: InstAuthRequest, res: Response) => {
+    getDashboardData = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
         try {
             const instructorId = req.instructor?.id
             const result = await this._profileService.getDashboard(instructorId as string)
@@ -153,11 +160,12 @@ export class InstProfileController implements
             res.status(HttpStatus.OK).json({ success: true, dashboard: result })
         } catch (error) {
             console.log(error);
+            next(error)
         }
     }
 
 
-    getEarnings = async (req: InstAuthRequest, res: Response) => {
+    getEarnings = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
         try {
             const instructorId = req.instructor?.id
             const result = await this._profileService.getEarnings(instructorId as string)
@@ -167,17 +175,19 @@ export class InstProfileController implements
             res.status(HttpStatus.OK).json({ success: true, earnings: result })
         } catch (error) {
             console.log(error);
+            next(error)
         }
     }
 
 
-    getWallet = async (req: InstAuthRequest, res: Response) => {
+    getWallet = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
         try {
             const id = req.instructor?.id
             const wallet = await this._profileService.getWallet(id as string)
             res.status(HttpStatus.OK).json({ success: true, wallet })
         } catch (error) {
             console.log(error);
+            next(error)
 
         }
     }

@@ -15,7 +15,9 @@ import { setupSocket } from "./socket";
 import { errorHandler } from "./middleware/errorMiddleware";
 // import { socketAuthMiddleware } from "./middleware/authMiddleware";
 
+
 dotenv.config();
+
 
 const app = express();
 const server = http.createServer(app);

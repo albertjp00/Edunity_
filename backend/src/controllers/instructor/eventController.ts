@@ -1,8 +1,9 @@
-import { Response } from "express"
+import { NextFunction, Response } from "express"
 import { InstAuthRequest } from "../../middleware/authMiddleware"
-import { InstEventService } from "../../services/instructor/eventService"
 import { HttpStatus } from "../../enums/httpStatus.enums"
 import { IEventManageController, IEventParticipationController, IEventReadController } from "../../interfaces/instructorInterfaces"
+import { IInstEventService } from "../../interfacesServices.ts/instructorServiceInterface"
+// import { InstEventService } from "../../services/instructor/eventService"
 
 
 
@@ -11,14 +12,14 @@ export class EventController implements
     IEventManageController,
     IEventReadController,
     IEventParticipationController {
-    private _eventService: InstEventService
+    private _eventService: IInstEventService
 
-    constructor(eventService: InstEventService) {
+    constructor(eventService: IInstEventService) {
         // const repo = new InstructorRepository()
         this._eventService = eventService
     }
 
-    createEvents = async (req: InstAuthRequest, res: Response) => {
+    createEvents = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
         try {
             const id = req.instructor?.id
             const data = { ...req.body.formData }
@@ -29,11 +30,11 @@ export class EventController implements
             res.status(HttpStatus.OK).json({ success: true })
         } catch (error) {
             console.log(error);
-
+            next(error)
         }
     }
 
-    // getMyEvents = async (req: InstAuthRequest, res: Response) => {
+    // getMyEvents = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
     //     try {
     //         const id = req.instructor?.id
     //         const result = await this._eventService.getMyEventsRequest(id as string)
@@ -47,7 +48,7 @@ export class EventController implements
     // }
 
 
-    getAllEvents = async (req: InstAuthRequest, res: Response) => {
+    getAllEvents = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
         try {
             const search = (req.query.query as string) || "";
             const page = (req.query.page as string) || "1";
@@ -64,11 +65,12 @@ export class EventController implements
         } catch (error) {
             console.log(error);
             res.status(500).json({ success: false, message: "Server error" });
+            next(error)
         }
     };
 
 
-    getEvent = async (req: InstAuthRequest, res: Response) => {
+    getEvent = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
         try {
             const id = req.params.id!
             console.log("getEvent");
@@ -80,11 +82,11 @@ export class EventController implements
             res.status(HttpStatus.OK).json({ success: true, event: result })
         } catch (error) {
             console.log(error);
-
+            next(error)
         }
     }
 
-    editEvent = async (req: InstAuthRequest, res: Response) => {
+    editEvent = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
         try {
             const id = req.params.id!
             const data = req.body
@@ -115,13 +117,14 @@ export class EventController implements
 
         } catch (error) {
             console.log(error);
+            next(error)
 
         }
     }
 
 
 
-    joinEvent = async (req: InstAuthRequest, res: Response) => {
+    joinEvent = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
         try {
             const instructorId = req.instructor?.id;
             const eventId = req.params.eventId!
@@ -151,11 +154,12 @@ export class EventController implements
         } catch (error) {
             console.error(error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Server error" });
+            next(error)
         }
     };
 
 
-    endEvent = async (req: InstAuthRequest, res: Response) => {
+    endEvent = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
         try {
             const instructorId = req.instructor?.id;
             const eventId = req.params.eventId!
@@ -179,6 +183,7 @@ export class EventController implements
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: "Server error" });
+            next(error)
         }
     };
 

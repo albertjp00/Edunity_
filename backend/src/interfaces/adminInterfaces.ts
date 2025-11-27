@@ -1,4 +1,5 @@
 import { AdminAuthRequest } from "../middleware/authMiddleware";
+import { ICourse } from "../models/course";
 import { IInstructor } from "../models/instructor";
 import { IUser } from "../models/user";
 
@@ -10,19 +11,19 @@ import { NextFunction, Request, Response } from "express";
 
 // Admin Course Read Operations 
 
-export interface IAdminCourseReadController {
+
+
+
+export interface  IAdminCourseReadController {
   getCourses(req: Request, res: Response,next: NextFunction): Promise<void>;
   getCourseDetails(req: Request, res: Response,next: NextFunction): Promise<void>;
 }
 
 
 //Admin Purchase Operations
-
 export interface IAdminPurchaseController {
   getAllPurchases(req: AdminAuthRequest, res: Response,next: NextFunction): Promise<void>;
 }
-
-
 
 
 
@@ -36,6 +37,8 @@ export interface IAdminAuthController {
 
 //  USER MANAGEMENT INTERFACE
 export interface IAdminUserManagementController {
+  getUser(req : Request , res : Response,next: NextFunction):Promise<void>
+  getUserCourses(req : Request , res : Response,next: NextFunction):Promise<void>
   getUsers(req: Request, res: Response,next: NextFunction): Promise<void>;
   blockUnblock(req: Request, res: Response,next: NextFunction): Promise<void>;
   unblockUser(req: Request, res: Response,next: NextFunction): Promise<void>;
@@ -65,23 +68,51 @@ export interface IAdminDashboardController {
 
 
 
-
 //instructorControleller Admin
 
 export interface IAdminInstructorsController{
+  getInstructor(req: Request, res: Response,next: NextFunction):Promise<void>
   getInstructors(req : Request , res : Response,next: NextFunction):Promise<void>
   getInstructorsCourses(req : Request , res : Response,next: NextFunction):Promise<void>
 }
 
-
-
-
 export interface IAdminUsersController{
-  getUser(req : Request , res : Response,next: NextFunction):Promise<void>
-  getUserCourses(req : Request , res : Response,next: NextFunction):Promise<void>
+
 }
 
 
+
+
+
+// ------------AdminServicess interfaces-------------------
+
+
+export interface IAdminCourseService {
+    getInstructorsRequest(id: string): Promise<IInstructor | null>;
+
+    getCoursesRequest(
+        page: number,
+        search: string,
+        limit: number
+    ): Promise<{
+        courses: ICourse[] | null;
+        totalPages: number;
+        currentPage: number;
+    }>;
+
+    getCourseDetailsRequest(courseId: string): Promise<any>;
+
+    getPurchaseDetails(search: string, page: number): Promise<any>;
+}
+
+
+
+export interface IAdminAuthService {
+  loginRequest(
+    email: string,
+    password: string
+  ): Promise<{ success: boolean; message: string; token?: string }>;
+}
 
 
 

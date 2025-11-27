@@ -1,5 +1,4 @@
 import express from 'express'
-import { AdminController } from '../controllers/admin/controller'
 import { AdminInstructorController } from '../controllers/admin/instructorController'
 import { AdminUserController } from '../controllers/admin/userControllers'
 import { AdminCourseController } from '../controllers/admin/adminCourseController'
@@ -11,6 +10,8 @@ import { AdminService } from '../services/admin/adminServices'
 import { AdminCourseService } from '../services/admin/courseServices'
 import { AdminInstructorService } from '../services/admin/instructorServices'
 import { AdminUserService } from '../services/admin/userServices'
+import { AdminAuthController } from '../controllers/admin/authController'
+import { AdminDashboardController } from '../controllers/admin/controller'
 
 const admin = express.Router()
 
@@ -20,8 +21,12 @@ const adminRepo = new AdminRepository()
 const userRepo = new UserRepository()
 const instructorRepo = new InstructorRepository()
 
+
 const adminService = new AdminService(adminRepo , userRepo)
-const dashboardController = new AdminController(adminService)
+const authController = new AdminAuthController(adminService)
+
+
+const dashboardController = new AdminDashboardController(adminService)
 
 
 
@@ -34,33 +39,34 @@ const adminUserService = new AdminUserService(adminRepo , userRepo)
 const userController = new AdminUserController(adminUserService)
 
 
-
 const adminCourseService = new AdminCourseService(adminRepo ,  instructorRepo , userRepo)
 const courseController = new AdminCourseController(adminCourseService);
 
 
-admin.post('/login',dashboardController.adminLogin)
+admin.post('/login',authController.adminLogin)
 
-admin.get('/getUsers',adminAuthMiddleware,dashboardController.getUsers)
+admin.get('/getUsers',adminAuthMiddleware,userController.getUsers)
 
 
-admin.put('/blockUser/:id',adminAuthMiddleware ,dashboardController.blockUnblock)
+admin.put('/blockUser/:id',adminAuthMiddleware ,userController.blockUnblock)
 
 // admin.put('/unblockUsers/:id',dashboardController.unblockUser)
 
 
-admin.get('/getInstructors', adminAuthMiddleware ,dashboardController.getInstructors)
+admin.get('/getInstructors', adminAuthMiddleware ,instructorController.getInstructor)
 
-admin.get('/getKyc/:id' , adminAuthMiddleware ,dashboardController.getKyc)
+admin.get('/getKyc/:id' , adminAuthMiddleware ,instructorController.getKyc)
 
-admin.put('/verifyKyc/:id' , adminAuthMiddleware, dashboardController.verifyKyc)
+admin.put('/verifyKyc/:id' , adminAuthMiddleware, instructorController.verifyKyc)
 
-admin.put('/rejectKyc/:id' , adminAuthMiddleware, dashboardController.rejectKyc)
+admin.put('/rejectKyc/:id' , adminAuthMiddleware, instructorController.rejectKyc)
 
 admin.get('/instructors/:id', adminAuthMiddleware,instructorController.getInstructors)
+
 admin.get('/instructorsCourses/:id', adminAuthMiddleware,instructorController.getInstructorsCourses)
 
 admin.get('/user/:id',userController.getUser)
+
 admin.get('/userCourses/:id', adminAuthMiddleware,userController.getUserCourses)
 
 

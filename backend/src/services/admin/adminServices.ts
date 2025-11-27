@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { PaginatedInstructors, PaginatedUsers } from "../../interfaces/adminInterfaces";
 import { IEarnings } from "../../models/earnings";
+import { IAdminService } from "../../interfacesServices.ts/adminServiceInterfaces";
 
 interface adminLoginResult {
     success: boolean;
@@ -17,7 +18,7 @@ const secret: string = process.env.SECRET_KEY || '';
 
 
 
-export class AdminService {
+export class AdminService implements IAdminService {
     constructor(private adminRepository: IAdminRepository, private userRepository: UserRepository) { }
 
     loginRequest = async (email: string, password: string): Promise<adminLoginResult | null> => {
@@ -78,52 +79,7 @@ export class AdminService {
         }
     }
 
-    getInstructors = async (page: string, search: string): Promise<PaginatedInstructors | null> => {
-        try {
-            const result = await this.adminRepository.findInstructors(page, search)
-            return result
-        } catch (error) {
-            console.log(error);
-            return null
-        }
-    }
 
-    getKycDetails = async (id: string): Promise<void | null> => {
-        try {
-            const result = await this.adminRepository.getKycDetails(id)
-            return result
-        } catch (error) {
-            console.log(error);
-
-        }
-    }
-
-    verifyKyc = async (id: string): Promise<void | null> => {
-        try {
-            const result = await this.adminRepository.verifyKyc(id)
-            if(result){
-                const notification = await this.adminRepository.verifyKycNotification(id)
-            }
-            return result
-        } catch (error) {
-            console.log(error);
-
-        }
-    }
-
-    rejectKyc = async (id: string, reason: string): Promise<void | null> => {
-        try {
-
-            const result = await this.adminRepository.rejectKyc(id)
-            let defaultEmail = 'albertjpaul@gmail.com'
-
-            await kycRejectMail(defaultEmail, reason)
-            return result
-        } catch (error) {
-            console.log(error);
-
-        }
-    }
 
 
     getStats = async () => {

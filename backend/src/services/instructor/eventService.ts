@@ -3,10 +3,11 @@ import { IEventResult, IMyEventInterface } from "../../interfaces/instructorInte
 import { IEvent } from "../../models/events";
 import { NextFunction } from "express";
 import { IInsRepository } from "../../repositories/instructorRepository";
+import { IInstEventService } from "../../interfacesServices.ts/instructorServiceInterface";
 
 
 
-export class InstEventService {
+export class InstEventService  implements IInstEventService{
     constructor(private InstructorRepository: IInsRepository) { }
 
     createEventRequest = async (id: string, data: any): Promise<IEvent | null> => {

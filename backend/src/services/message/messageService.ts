@@ -1,4 +1,5 @@
 import { ILastMessage, IMessagedInstructor } from "../../interfaces/instructorInterfaces";
+import { IMessageService } from "../../interfacesServices.ts/messageServiceInterface";
 import { IInstructor } from "../../models/instructor";
 import { IMessage } from "../../models/message";
 import { MessageRepository } from "../../repositories/messageRepositories";
@@ -6,7 +7,7 @@ import { MessageRepository } from "../../repositories/messageRepositories";
 
 
 
-export class MessageService {
+export class MessageService implements IMessageService{
     private messageRepository: MessageRepository;
 
     

@@ -1,27 +1,29 @@
-import { NextFunction, Request, Response } from "express";
-import { MessageService } from "../../services/message/messageService";
+import { NextFunction, Response } from "express";
 import { AuthRequest, InstAuthRequest } from "../../middleware/authMiddleware";
 import { HttpStatus } from "../../enums/httpStatus.enums";
 import {
   BaseMessageController, InstructorMessageController, MessageReadController,
   UserMessageController
 } from "../../interfaces/messageInterfaces";
+import { IMessageService } from "../../interfacesServices.ts/messageServiceInterface";
+// import { MessageService } from "../../services/message/messageService";
+
 
 export class MessageController implements
   BaseMessageController,
   UserMessageController,
   InstructorMessageController,
   MessageReadController {
-  private messageService: MessageService;
+  private messageService: IMessageService;
 
-  constructor(messageService: MessageService) {
+  constructor(messageService: IMessageService) {
 
     // const repo = new MessageRepository(); 
     this.messageService = messageService
 
   }
 
-  getInstructor = async (req: AuthRequest, res: Response) => {
+  getInstructor = async (req: AuthRequest, res: Response,next: NextFunction) => {
     try {
       const { instructorId } = req.params
       console.log("get instructor to message");
@@ -32,12 +34,13 @@ export class MessageController implements
 
     } catch (error) {
       console.log(error);
+      next(error)
     }
   }
 
 
   // controller
-  getInstructorToMessage = async(req: AuthRequest, res: Response) => {
+  getInstructorToMessage = async(req: AuthRequest, res: Response,next: NextFunction) => {
     try {
       const { id } = req.params;
       const instructor = await this.messageService.getInstructorToMessage(id as string);
@@ -57,12 +60,13 @@ export class MessageController implements
     } catch (error) {
       console.error(error);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to fetch instructor" });
+      next(error)
     }
   };
 
 
 
-  getMessagedInstructors = async (req: AuthRequest, res: Response) => {
+  getMessagedInstructors = async (req: AuthRequest, res: Response,next: NextFunction) => {
     try {
       const userId = req.user?.id!
       const result = await this.messageService.getInstructors(userId)
@@ -71,12 +75,13 @@ export class MessageController implements
 
     } catch (error) {
       console.log(error);
+      next(error)
     }
   }
 
 
 
-  getUnreadMessages = async (req: AuthRequest, res: Response) => {
+  getUnreadMessages = async (req: AuthRequest, res: Response,next: NextFunction) => {
     try {
       const userId = req.user?.id!
       const { instructorId } = req.params!
@@ -87,12 +92,12 @@ export class MessageController implements
       res.status(HttpStatus.OK).json({ success: true, message: result })
     } catch (error) {
       console.log(error);
-
+      next(error)
     }
   }
 
 
-  sendMessage = async (req: AuthRequest, res: Response) => {
+  sendMessage = async (req: AuthRequest, res: Response,next: NextFunction) => {
     try {
       const { receiverId, text = '' } = req.body;
       const userId = req.user?.id as string;
@@ -113,12 +118,13 @@ export class MessageController implements
     } catch (error) {
       console.error(error);
       res.status(500).json({ success: false, error: "Failed to send message" });
+      next(error)
     }
   };
 
 
 
-  getChatHistory = async (req: AuthRequest, res: Response) => {
+  getChatHistory = async (req: AuthRequest, res: Response,next: NextFunction) => {
     try {
       const { receiverId } = req.params;
       console.log("get message receiver id", receiverId);
@@ -141,6 +147,7 @@ export class MessageController implements
     } catch (error) {
       console.error(error);
       res.status(500).json({ success: false, error: "Failed to fetch chat history" });
+      next(error)
     }
   };
 
@@ -161,7 +168,7 @@ export class MessageController implements
 
   // Instructor side -------------------------------
 
-  getMessagedStudents = async (req: InstAuthRequest, res: Response) => {
+  getMessagedStudents = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
     try {
       const instructorId = req.instructor?.id
 
@@ -175,13 +182,14 @@ export class MessageController implements
 
     } catch (error) {
       console.log(error);
+      next(error)
 
     }
   }
 
 
 
-  getMessages = async (req: InstAuthRequest, res: Response) => {
+  getMessages = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
     try {
       const { receiverId } = req.params;
       console.log("get message receiver id", receiverId);
@@ -198,12 +206,13 @@ export class MessageController implements
       res.status(HttpStatus.OK).json({ success: true, messages: messages, instructorId })
     } catch (error) {
       console.log(error);
+      next(error)
 
     }
   }
 
 
-  sendInstructorMessage = async (req: InstAuthRequest, res: Response) => {
+  sendInstructorMessage = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
     try {
 
       const { text } = req.body;
@@ -229,6 +238,7 @@ export class MessageController implements
     } catch (error) {
       console.error(error);
       res.status(500).json({ success: false, error: "Failed to send message" });
+      next(error)
     }
   };
 

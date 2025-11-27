@@ -1,6 +1,8 @@
+
+import dotenv from "dotenv";
+dotenv.config();
 import { NextFunction, RequestHandler, Response } from "express";
 import { AuthRequest } from "../../middleware/authMiddleware";
-import { UserCourseService } from "../../services/user/userCourseService";
 import { debounceCall } from "../../utils/debounce";
 import { generateSignedUrl } from "../../utils/getSignedUrl";
 import {
@@ -9,6 +11,10 @@ import {
     IUserMyCourseController
 } from "../../interfaces/userInterfaces";
 import { HttpStatus } from "../../enums/httpStatus.enums";
+import { IUserCourseService } from "../../interfacesServices.ts/userServiceInterfaces";
+// import { UserCourseService } from "../../services/user/userCourseService";
+
+
 
 export class UserCourseController
     implements
@@ -18,9 +24,9 @@ export class UserCourseController
     IUserCourseReviewController,
     IUserCourseFavouriteController,
     IUserCourseQuizController {
-    private _courseService: UserCourseService;
+    private _courseService: IUserCourseService;
 
-    constructor(courseService: UserCourseService) {
+    constructor(courseService: IUserCourseService) {
         // const repo = new UserRepository();
         // this.courseService = new UserCourseService(repo);
 
@@ -34,8 +40,9 @@ export class UserCourseController
     showCourses = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             console.log("get Courses user");
-            const fron = process.env.FRONTEND_URL
-            console.log(fron);
+            const fron = parseInt(process.env.REFRESH_TIME!,10)
+            console.log("time",fron);
+
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 6;
 

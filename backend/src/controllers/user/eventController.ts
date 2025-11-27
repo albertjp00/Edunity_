@@ -1,13 +1,15 @@
 import { AuthRequest } from "../../middleware/authMiddleware";
 import { UserRepository } from "../../repositories/userRepository";
 import { NextFunction, Response } from "express"
-import { EventFullError, NotFoundError, NotLiveError, UserEventService } from "../../services/user/eventService";
 import { InstructorRepository } from "../../repositories/instructorRepository";
 import { Server } from "http";
 import { log } from "console";
 import logger from "../../utils/logger";
 import {  IUserEventEnrollmentController, IUserEventJoinController, IUserEventReadController } from "../../interfaces/userInterfaces";
 import { HttpStatus } from "../../enums/httpStatus.enums";
+
+import { IUserEventService } from "../../interfacesServices.ts/userServiceInterfaces";
+// import { UserEventService } from "../../services/user/eventService";
 
 
 
@@ -18,9 +20,9 @@ export class UserEventController implements
     IUserEventReadController,
     IUserEventEnrollmentController,
     IUserEventJoinController {
-    private _userEventService: UserEventService;
+    private _userEventService: IUserEventService;
 
-    constructor(userEventService: UserEventService) {
+    constructor(userEventService: IUserEventService) {
         // const repo = new UserRepository()
         // const Irepo = new InstructorRepository()
         this._userEventService = userEventService

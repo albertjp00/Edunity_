@@ -1,4 +1,5 @@
 import { IPurchaseDetails } from "../../interfaces/instructorInterfaces";
+import { IInstCourseService } from "../../interfacesServices.ts/instructorServiceInterface";
 import { ICourse } from "../../models/course";
 import { IInsRepository, InstructorRepository, ISkills } from "../../repositories/instructorRepository";
 import { generateSignedUrl } from "../../utils/getSignedUrl";
@@ -40,7 +41,7 @@ interface CourseDetails {
   course: ICourse | null;
 }
 
-export class CourseService {
+export class CourseService implements IInstCourseService {
   constructor(private instructorRepository: IInsRepository) { }
 
   fetchCourses = async (id: string, search : string , page: number, limit: number): Promise<CourseResult> => {

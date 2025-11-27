@@ -1,3 +1,4 @@
+import { IUserProfileService } from '../../interfacesServices.ts/userServiceInterfaces';
 import { mapUserToDTO } from '../../mapper/user.mapper';
 import { INotification } from '../../models/notification';
 import { IPayment } from '../../models/payment';
@@ -5,7 +6,7 @@ import { IWallet } from '../../models/wallet';
 import { UserRepository } from '../../repositories/userRepository';
 import bcrypt from 'bcrypt'
 
-export class ProfileService {
+export class ProfileService implements IUserProfileService {
   private userRepository: UserRepository;
 
   constructor(userRepository: UserRepository) {
