@@ -15,7 +15,6 @@ export const getCourses = async (query : string , page : number) => {
     return res
   } catch (error) {
     console.log(error);
-
   }
 }
 

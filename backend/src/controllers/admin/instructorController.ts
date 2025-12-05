@@ -1,15 +1,17 @@
 import { Response, Request, NextFunction } from "express";
-import { AdminInstructorService } from "../../services/admin/instructorServices";
 import { HttpStatus } from "../../enums/httpStatus.enums";
-import { IAdminInstructorController, IAdminInstructorsController, IAdminKycController } from "../../interfaces/adminInterfaces";
+import { IAdminInstructorController, IAdminInstructorsController, IAdminInstructorService, IAdminKycController } from "../../interfaces/adminInterfaces";
 import { AdminAuthRequest } from "../../middleware/authMiddleware";
+import { mapCourseDetailsToDTO, mapInstructorToAdminDTO } from "../../mapper/admin.mapper";
+// import { AdminInstructorService } from "../../services/admin/instructorServices";
+
 
 export class AdminInstructorController implements
     IAdminInstructorController,
     IAdminKycController {
-    private _adminInstructorService: AdminInstructorService
+    private _adminInstructorService: IAdminInstructorService
 
-    constructor(adminInstructorService: AdminInstructorService) {
+    constructor(adminInstructorService: IAdminInstructorService) {
         this._adminInstructorService = adminInstructorService
     }
 
@@ -23,8 +25,18 @@ export class AdminInstructorController implements
 
             const data = await this._adminInstructorService.getInstructors(page as string, search as string)
             // console.log(data);
+            console.log('dtoooooooooooo',data);
+            if(!data) return
+             const mapped = {
+            instructors: data.instructors.map(mapInstructorToAdminDTO),
+            totalPages: data.totalPages,
+            currentPage: data.currentPage,
+            totalInstructors: data.totalInstructors
+        };
+        console.log('dto result ----------',mapped);
+        
 
-            res.status(HttpStatus.OK).json({ success: true, data })
+            res.status(HttpStatus.OK).json({ success: true, mapped })
         } catch (error) {
             console.log(error);
             next(error)
@@ -37,8 +49,10 @@ export class AdminInstructorController implements
             console.log('kyc detauls ', id);
 
             const data = await this._adminInstructorService.getKycDetails(id)
+            // data: mapKycToDTO(data)
 
-            res.status(HttpStatus.OK).json({ success: true, data: data })
+
+            res.status(HttpStatus.OK).json({ success: true, data:data  })
         } catch (error) {
             console.log(error);
             next(error)
@@ -100,8 +114,8 @@ export class AdminInstructorController implements
             console.log('get instructor courses ', id);
 
             const result = await this._adminInstructorService.getInstructorsCoursesRequest(id)
-            console.log(result);
-
+            // const mapped = mapCourseDetailsToDTO(result)
+            
             res.status(HttpStatus.OK).json({ success: true, courses: result })
         } catch (error) {
             console.log(error);

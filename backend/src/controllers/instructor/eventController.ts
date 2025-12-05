@@ -3,6 +3,9 @@ import { InstAuthRequest } from "../../middleware/authMiddleware"
 import { HttpStatus } from "../../enums/httpStatus.enums"
 import { IEventManageController, IEventParticipationController, IEventReadController } from "../../interfaces/instructorInterfaces"
 import { IInstEventService } from "../../interfacesServices.ts/instructorServiceInterface"
+import { mapEventToDTO } from "../../mapper/instructor.mapper"
+import { IEvent } from "../../models/events"
+import { IEventDTO } from "../../dto/instructorDTO"
 // import { InstEventService } from "../../services/instructor/eventService"
 
 
@@ -23,7 +26,7 @@ export class EventController implements
         try {
             const id = req.instructor?.id
             const data = { ...req.body.formData }
-            console.log("event creation", data);
+            // console.log("event creation", data);
 
 
             await this._eventService.createEventRequest(id as string, data)
@@ -56,9 +59,15 @@ export class EventController implements
 
             const result = await this._eventService.getMyEventsRequest(id as string, search, page);
 
+            // console.log("dto -- -", result);
+            const mappedEvents = result?.events?.map((event: IEvent) =>
+                mapEventToDTO(event)
+            ) || [];
+
+
             res.status(HttpStatus.OK).json({
                 success: true,
-                events: result?.events || [],
+                events: mappedEvents,
                 totalPages: result?.totalPages || 1,
                 currentPage: result?.currentPage || parseInt(page),
             });
@@ -73,11 +82,12 @@ export class EventController implements
     getEvent = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
         try {
             const id = req.params.id!
-            console.log("getEvent");
+            // console.log("getEvent");
 
-            console.log(id);
+            // console.log(id);
             const result = await this._eventService.getEventRequest(id)
-            // console.log(result);
+            console.log('dto -- result',result);
+            const event = mapEventToDTO(result)
 
             res.status(HttpStatus.OK).json({ success: true, event: result })
         } catch (error) {
@@ -98,7 +108,6 @@ export class EventController implements
                 });
                 return;
             }
-
             const eventDate = new Date(data.date);
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -110,7 +119,7 @@ export class EventController implements
                 });
                 return;
             }
-            console.log(data, id);
+            // console.log(data, id);
             await this._eventService.updateEventRequest(id, data)
 
             res.status(HttpStatus.OK).json({ success: true })

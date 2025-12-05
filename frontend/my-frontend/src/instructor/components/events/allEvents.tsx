@@ -86,7 +86,7 @@ setTotalPages(totalPagesData);
       ) : (
         <div className="events-grid">
           {events.map((event) => (
-            <div key={event._id} className="event-tile">
+            <div key={event.id} className="event-tile">
               <div className="tile-image-wrapper">
                 <img
                   src={webinarImage}
@@ -94,14 +94,14 @@ setTotalPages(totalPagesData);
                   className="tile-thumbnail"
                 />
                 <span className="tile-instructor">{event.instructorName}</span>
-                <span className="tile-edit" onClick={() => gotoEdit(event._id!)}>
+                <span className="tile-edit" onClick={() => gotoEdit(event.id!)}>
                   Edit
                 </span>
               </div>
 
               <div
                 className="tile-content"
-                onClick={() => EventDetails(event._id!)}
+                onClick={() => EventDetails(event.id!)}
               >
                 <h3 className="tile-title">{event.title}</h3>
                 <p className="tile-desc">{event.description}</p>

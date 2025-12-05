@@ -5,6 +5,7 @@ import { getCourses } from "../../services/Instructor/instructorServices";
 
 interface Course {
   _id: string;
+  id:string;
   title: string;
   description?: string;
   thumbnail?: string;
@@ -26,6 +27,8 @@ const MyCourses: React.FC = () => {
     try {
       const res = await getCourses('',1)
       if(!res) return
+      console.log(res);
+      
       if (res.data.success) {
         const c = res.data.course
         const course = c.slice(0,4)
@@ -88,7 +91,7 @@ const MyCourses: React.FC = () => {
                 <div
                   key={course._id}
                   className="course-card"
-                  onClick={() => selectCourse(course._id)}
+                  onClick={() => selectCourse(course.id)}
                 >
                   <div className="course-image-container">
                     <img

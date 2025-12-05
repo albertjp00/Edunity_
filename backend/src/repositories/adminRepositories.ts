@@ -22,6 +22,8 @@ export interface IAdminRepository {
 
     unblockUser(id: string): Promise<boolean | null>
 
+    findUserCourses(id: string, page: number): Promise<ICourse[] | null>
+
     findInstructors(page: string, search: string): Promise<PaginatedInstructors | null>
 
     getKycDetails(id: string): Promise<void | null>
@@ -53,8 +55,7 @@ export interface IAdminRepository {
     getTotalEnrolled(): Promise<number | null>
     getUserOverview(oneYearAgo: Date): Promise<IUserOverview[]>
 
-    getEarningsData():Promise<IEarnings[] | null>
-
+    getEarningsData(): Promise<IEarnings[] | null>
 
 }
 
@@ -112,6 +113,28 @@ export class AdminRepository implements IAdminRepository {
 
 
     }
+
+    async findUserCourses(userId: string, page: number): Promise<ICourse[] | null> {
+        try {
+            const myCourses = await MyCourseModel.find({ userId });
+
+            const courseIds = myCourses.map((c) => c.courseId);
+
+
+            const courses = await CourseModel.find(
+                { _id: { $in: courseIds } },
+                { _id: 1, title: 1, thumbnail: 1 }
+            );
+
+            return courses;
+        } catch (error) {
+            console.log(error);
+            return null
+        }
+    }
+
+
+
     async findInstructors(page: string, search: string): Promise<PaginatedInstructors | null> {
         const limit = 4;
         const skip = (Number(page) - 1) * limit;
@@ -150,9 +173,10 @@ export class AdminRepository implements IAdminRepository {
         return
     }
 
-    async verifyKycNotification(id: string): Promise<INotification | null>{
-        return await NotificationModel.create({recipientId : id , title : "KYC Approved",
-            message : "Your KYC has been approved"
+    async verifyKycNotification(id: string): Promise<INotification | null> {
+        return await NotificationModel.create({
+            recipientId: id, title: "KYC Approved",
+            message: "Your KYC has been approved"
         })
     }
 
@@ -196,7 +220,7 @@ export class AdminRepository implements IAdminRepository {
             totalEnrolled: enrolledUsers.length,
         };
     }
-    
+
 
     async getPurchases(search: string = "", page: number = 1): Promise<PurchaseResult | null> {
         try {
@@ -299,8 +323,8 @@ export class AdminRepository implements IAdminRepository {
     }
 
 
-    async updateEarnings(courseId: string, coursePrice: 
-        number,instructorId : string , instructorEarning: number, 
+    async updateEarnings(courseId: string, coursePrice:
+        number, instructorId: string, instructorEarning: number,
         adminEarning: number): Promise<void> {
         try {
 
@@ -363,7 +387,7 @@ export class AdminRepository implements IAdminRepository {
         }
     }
 
-    async getEarningsData():Promise<IEarnings[] | null>{
+    async getEarningsData(): Promise<IEarnings[] | null> {
         try {
             const earnings = await EarningModel.find()
             return earnings

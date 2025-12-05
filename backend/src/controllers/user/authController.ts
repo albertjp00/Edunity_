@@ -7,6 +7,7 @@ import logger from "../../utils/logger";
 import { IAuthBasicController, IAuthForgotPasswordController,
    IAuthGoogleController, IAuthRegisterController } from "../../interfaces/userInterfaces";
 import { IUserAuthService } from "../../interfacesServices.ts/userServiceInterfaces";
+import { LoginMapper } from "../../mapper/user.mapper";
 // import { AuthService } from "../../services/user/authService";
 
 
@@ -48,6 +49,10 @@ export class AuthController
 
       const result = await this._authService.loginRequest(email, password);
 
+      console.log('dto ---',result);
+      const loginMapped = LoginMapper(result)
+    
+
       if (result.success) {
         res.cookie("refreshToken", result.refreshToken, {
           httpOnly: true,
@@ -56,10 +61,11 @@ export class AuthController
           maxAge: 24 * 60 * 60 * 1000, // 1 day
         });
 
+        
+
         res.status(HttpStatus.OK).json({
-          message: result.message,
-          user: result.user,
-          accessToken: result.accessToken,
+          message: loginMapped.message,
+          accessToken: loginMapped.accessToken,
         });
       } else {
         let status = HttpStatus.UNAUTHORIZED;

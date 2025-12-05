@@ -1,160 +1,139 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import adminApi from "../../../api/adminApi";
 import "./courseDetails.css";
-
-interface IInstructor {
-  _id: string;
-  name: string;
-  email: string;
-  expertise?: string;
-  bio?: string;
-  profileImage?: string;
-  work?: string;
-  education?: string;
-}
-
-interface EnrolledUser {
-  _id: string;
-  name: string;
-  email: string;
-}
+import { viewCourseDetails } from "../../services/adminServices";
 
 interface Module {
   title: string;
-  videoUrl: string;
-  content: string;
+  videoUrl?: string;
+  content?: string;
 }
 
 interface Course {
   _id: string;
   title: string;
-  description?: string;
-  price?: number;
+  description: string;
+  price: number;
+  level: string;
   thumbnail?: string;
   skills?: string[];
-  level?: string;
-  modules?: Module[];
-  createdAt?: string;
+  modules: Module[];
+  category?: string;
   totalEnrolled?: number;
 }
 
-const CourseDetailsAdmin: React.FC = () => {
+interface Instructor {
+  name: string;
+  email: string;
+  expertise?: string;
+  bio?: string;
+  education?: string;
+  work?: string;
+  profileImage?: string;
+}
+
+const AdminCourseDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-
   const [course, setCourse] = useState<Course | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [instructor, setInstructor] = useState<Instructor | null>(null);
 
-  const [instructor, setInstructor] = useState<IInstructor | null>(null);
-  const [enrolledUsers, setEnrolledUsers] = useState<EnrolledUser[]>([]);
+  const fetchCourse = async () => {
+    try {
+      const res = await viewCourseDetails(id);
+      if (!res) return;
+
+      const courseData = res.data.course;
+      const instructorData = res.data.instructor;
+
+      setCourse(courseData);
+      setInstructor(instructorData);
+    } catch (err) {
+      console.error("Error fetching course:", err);
+    }
+  };
 
   useEffect(() => {
-    const fetchCourse = async () => {
-      try {
-        const res = await adminApi.get(`admin/courseDetails/${id}`); // only course info
-        setCourse(res.data.course);
-      } catch (err) {
-        console.error("Error fetching course details:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchInstructor = async () => {
-      try {
-        const res = await adminApi.get(`admin/course/instructor/${id}`);
-        setInstructor(res.data.instructor);
-      } catch (err) {
-        console.error("Error fetching instructor:", err);
-      }
-    };
-
-    const fetchEnrolledUsers = async () => {
-      try {
-        const res = await adminApi.get(`admin/course/enrolledUsers/${id}`);
-        setEnrolledUsers(res.data.users);
-      } catch (err) {
-        console.error("Error fetching enrolled users:", err);
-      }
-    };
-
     fetchCourse();
-    fetchInstructor();
-    fetchEnrolledUsers();
-  }, [id]);
+  }, []);
 
-  if (loading) return <p>Loading...</p>;
-  if (!course) return <p>No course found</p>;
+  if (!course) return <p>Loading...</p>;
 
   return (
-    <div className="course-details-container">
-      <h1>{course.title}</h1>
-      <p>{course.description}</p>
-      <p>
-        <strong>Price:</strong> ${course.price}
-      </p>
-      <p>
-        <strong>Level:</strong> {course.level || "Not specified"}
-      </p>
-      <p>
-        <strong>Skills:</strong>{" "}
-        {course.skills?.length ? course.skills.join(", ") : "N/A"}
-      </p>
+    <div className="details">
+      <div className="course-detail-page">
 
-      {course.thumbnail && (
-        <img
-          src={course.thumbnail}
-          alt={course.title}
-          className="course-thumbnail"
-        />
-      )}
+        {/* Title */}
+        <h2 className="course-title">{course.title}</h2>
 
-      {/* Instructor */}
-      <div className="instructor-card">
-        <h2>Instructor</h2>
-        {instructor?.profileImage && (
+        {/* Thumbnail */}
+        {course.thumbnail && (
           <img
-            src={`${import.meta.env.VITE_API_URL}/assets/${instructor.profileImage}`}
-            alt={instructor.name}
+            src={`${import.meta.env.VITE_API_URL}/assets/${course.thumbnail}`}
+            alt="Course Thumbnail"
+            className="detail-thumbnail"
           />
         )}
-        <p>
-          <strong>Name:</strong> {instructor?.name}
-        </p>
-        <p>
-          <strong>Email:</strong> {instructor?.email}
-        </p>
-        <p>
-          <strong>Expertise:</strong> {instructor?.expertise || "N/A"}
-        </p>
-        <p>
-          <strong>Bio:</strong> {instructor?.bio || "N/A"}
-        </p>
-        <p>
-          <strong>Work:</strong> {instructor?.work || "N/A"}
-        </p>
-        <p>
-          <strong>Education:</strong> {instructor?.education || "N/A"}
-        </p>
-      </div>
 
-      {/* Enrolled Users */}
-      <div className="enrolled-users">
-        <h2>Enrolled Users</h2>
-        {enrolledUsers.length > 0 ? (
-          <ul>
-            {enrolledUsers.map((user) => (
-              <li key={user._id}>
-                {user.name} ({user.email})
+        {/* Basic Info */}
+        <p><strong>Description:</strong> {course.description}</p>
+        <p><strong>Price:</strong> ₹{course.price}</p>
+        <p><strong>Level:</strong> {course.level}</p>
+        <p><strong>Category:</strong> {course.category}</p>
+        <p><strong>Total Enrolled:</strong> {course.totalEnrolled}</p>
+
+        {/* Skills */}
+        {course.skills && course.skills.length > 0 && (
+          <div className="skills-box">
+            <p className="skills-title">Skills Included</p>
+            <div className="skills-list">
+              {course.skills.map((skill, index) => (
+                <button key={index} className="skill-button">
+                  {skill}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Instructor */}
+        <h3>Instructor Details</h3>
+        {instructor ? (
+          <div className="instructor-box">
+            {instructor.profileImage && (
+              <img
+                src={`${import.meta.env.VITE_API_URL}/assets/${instructor.profileImage}`}
+                alt="Instructor"
+                className="instructor-img"
+              />
+            )}
+
+            <p><strong>Name:</strong> {instructor.name}</p>
+            <p><strong>Email:</strong> {instructor.email}</p>
+            <p><strong>Expertise:</strong> {instructor.expertise}</p>
+            <p><strong>Education:</strong> {instructor.education}</p>
+            <p><strong>Work Experience:</strong> {instructor.work}</p>
+            <p><strong>Bio:</strong> {instructor.bio}</p>
+          </div>
+        ) : (
+          <p>No instructor info.</p>
+        )}
+
+        {/* Modules */}
+        <h3>Modules</h3>
+        {course.modules.length > 0 ? (
+          <ul className="modules-list">
+            {course.modules.map((module, index) => (
+              <li key={index} className="module-item">
+                <strong>📘 {module.title}</strong>
               </li>
             ))}
           </ul>
         ) : (
-          <p>No enrolled users yet</p>
+          <p>No modules found.</p>
         )}
       </div>
     </div>
   );
 };
 
-export default CourseDetailsAdmin;
+export default AdminCourseDetails;

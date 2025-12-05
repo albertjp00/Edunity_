@@ -116,6 +116,26 @@ export interface IAdminAuthService {
 
 
 
+//adminInstructor services
+
+export interface IAdminInstructorService {
+  getInstructors(
+    page: string,
+    search: string
+  ): Promise<PaginatedInstructors | null>;
+
+  getKycDetails(id: string): Promise<void | null>;
+
+  verifyKyc(id: string): Promise<void | null>;
+
+  rejectKyc(id: string, reason: string): Promise<void | null>;
+
+  getInstructorsRequest(id: string): Promise<IInstructor | null>;
+
+  getInstructorsCoursesRequest(id: string): Promise<ICourse[] | null>;
+}
+
+
 
 
 export interface PaginatedUsers {

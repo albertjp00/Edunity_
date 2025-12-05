@@ -13,17 +13,17 @@ interface Purchase {
   createdAt: string;
 }
 
-interface PurchasesPagination {
-  currentPage: number;
-  totalPages: number;
-  totalPurchases: number;
-  purchases: Purchase[];
-}
+// interface PurchasesPagination {
+//   currentPage: number;
+//   totalPages: number;
+//   totalPurchases: number;
+//   resData: Purchase[];
+// }
 
-interface PurchasesResponse {
-  success: boolean;
-  purchases: PurchasesPagination;
-}
+// interface PurchasesResponse {
+//   success: boolean;
+//   purchases: PurchasesPagination;
+// }
 
 
 const Purchases: React.FC = () => {
@@ -36,15 +36,16 @@ const Purchases: React.FC = () => {
   const fetchPurchases = async (search: string = "", page: number = 1) => {
     try {
       setLoading(true);
-      const res = await adminApi.get<PurchasesResponse>(
+      const res = await adminApi.get(
         `/admin/purchases?search=${search}&page=${page}`
       );
-      console.log(res);
+      // console.log(res);
       const resData = res.data.purchases
+      console.log(resData);
       
-      setPurchases(resData.purchases);
-      setPages(resData.totalPages);
-      setCurrentPage(resData.currentPage);
+      setPurchases(resData);
+      setPages(res.data.totalPages);
+      setCurrentPage(res.data.currentPage);
     } catch (err) {
       console.error("Error fetching purchases:", err);
     } finally {

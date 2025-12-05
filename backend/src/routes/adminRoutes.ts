@@ -6,12 +6,12 @@ import { adminAuthMiddleware } from '../middleware/authMiddleware'
 import { AdminRepository } from '../repositories/adminRepositories'
 import { InstructorRepository } from '../repositories/instructorRepository'
 import { UserRepository } from '../repositories/userRepository'
-import { AdminService } from '../services/admin/adminServices'
+import { AdminService } from '../services/admin/dashboardServices'
 import { AdminCourseService } from '../services/admin/courseServices'
 import { AdminInstructorService } from '../services/admin/instructorServices'
 import { AdminUserService } from '../services/admin/userServices'
 import { AdminAuthController } from '../controllers/admin/authController'
-import { AdminDashboardController } from '../controllers/admin/controller'
+import { AdminDashboardController } from '../controllers/admin/dashboard'
 
 const admin = express.Router()
 

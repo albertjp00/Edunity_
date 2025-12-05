@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import "./editEvents.css";
 import type { Ievent } from "../../interterfaces/events";
 import { getEditEvent, updateEvent } from "../../services/eventsServices";
+import type { IEventFormData } from "../../interterfaces/instructorInterfaces";
 
 const EditEvents: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -99,7 +100,7 @@ const EditEvents: React.FC = () => {
 
     if (!validateForm()) return;
 
-    const formData = { title, topic, description, date, time };
+    const formData :IEventFormData = { title, topic, description, date, time };
 
     try {
       await updateEvent(id!, formData);

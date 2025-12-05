@@ -40,18 +40,18 @@ const InstructorProfile: React.FC = () => {
     }
   };
 
-  const getCourses = async () => {
-    try {
-      const res = await instructorApi.get<{ success: boolean; course: ICourse[] }>(
-        `/instructor/getCourse`
-      );
-      if (res.data.success) {
-        // setCourses(res.data.course.slice(0,4));
-      }
-    } catch (error) {
-      console.error('Error fetching courses:', error);
-    }
-  };
+  // const getCourses = async () => {
+  //   try {
+  //     const res = await instructorApi.get(
+  //       `/instructor/getCourse`
+  //     );
+  //     if (res.data.success) {
+  //       // setCourses(res.data.course.slice(0,4));
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching courses:', error);
+  //   }
+  // };
 
   // const courseDetails = (id: string) => {
   //   navigate(`/instructor/courseDetails/${id}`);
@@ -59,7 +59,7 @@ const InstructorProfile: React.FC = () => {
 
   useEffect(() => {
     getProfile();
-    getCourses();
+    // getCourses();
   }, []);
 
   return (

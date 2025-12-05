@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import instructorApi from '../../../api/instructorApi';
 import './editCourse.css';
+import { getCourseDetails } from '../../services/Instructor/instructorServices';
 
 // Interfaces
 interface Module {
@@ -110,7 +111,7 @@ const EditCourse: React.FC = () => {
 
 
     const validateCourseForm = (form: CourseForm): boolean => {
-        const MAX_TITLE_LENGTH = 30;
+        const MAX_TITLE_LENGTH = 40;
         const MAX_DESCRIPTION_LENGTH = 1000;
         const MAX_CONTENT_LENGTH = 2000;
         const MAX_PRICE = 1000;
@@ -249,12 +250,12 @@ const EditCourse: React.FC = () => {
 
     const fetchData = async () => {
         try {
-            const res = await instructorApi.get(`/instructor/course/${id}`);
+            const res = await getCourseDetails(id);
             console.log(res);
 
-
+            if(!res) return
             if (res.data.success) {
-                const course = res.data.course.course;
+                const course = res.data.course;
 
                 setForm({
                     title: course.title || '',

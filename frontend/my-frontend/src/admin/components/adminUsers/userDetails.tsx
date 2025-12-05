@@ -4,14 +4,14 @@ import profilePic from "../../../assets/profilePic.png";
 import { useNavigate, useParams } from "react-router-dom";
 import "./userDetails.css";
 import adminApi from "../../../api/adminApi";
-import type { EnrolledCourse, User } from "../../adminInterfaces";
+import type { AdminUserCourses, User } from "../../adminInterfaces";
 import { getUserCourses, getUserDetails } from "../../services/adminServices";
 
 
 
 const AdminUserDetails: React.FC = () => {
   const [user, setUser] = useState<User>({});
-  const [courses, setCourses] = useState<EnrolledCourse[]>([]);
+  const [courses, setCourses] = useState<AdminUserCourses[]>([]);
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate();
@@ -19,9 +19,12 @@ const AdminUserDetails: React.FC = () => {
   // Get user profile
   const fetchUser = async () => {
     try {
-      if(!id) return
+      if (!id) return
       const response = await getUserDetails(id);
+      console.log(response);
+
       setUser(response?.data.user);
+      setLoading(false)
     } catch (error) {
       console.error("Error fetching user profile:", error);
     }
@@ -30,8 +33,10 @@ const AdminUserDetails: React.FC = () => {
   // Get user enrolled courses
   const fetchCourses = async () => {
     try {
-      if(!id) return 
+      if (!id) return
       const res = await getUserCourses(id);
+      console.log(res);
+
       if (res?.data.success) {
         setCourses(res.data.courses);
       }
@@ -53,8 +58,8 @@ const AdminUserDetails: React.FC = () => {
     } catch (error) {
       console.error("Error blocking/unblocking user:", error);
     } finally {
-        setLoading(false);
-      }
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -87,7 +92,7 @@ const AdminUserDetails: React.FC = () => {
               alt="Profile"
               className="profile-avatar"
             />
-            <div className="details">
+            <div className="user-details">
               <h2>{user.name}</h2>
               <h5>Email: {user.email}</h5>
             </div>
@@ -151,39 +156,26 @@ const AdminUserDetails: React.FC = () => {
         <h3 className="enrolled-title">Enrolled Courses</h3>
         <div className="enrolled-courses">
           {courses.length > 0 ? (
-            courses.map((enrolled) => (
+            courses.map((c) => (
               <div
                 className="course-card-mini"
-                key={enrolled.course._id}
-                onClick={() => gotoCourse(enrolled.course._id)}
+                key={c.id}
+                onClick={() => gotoCourse(c.id)}
               >
                 <img
-                  src={`${import.meta.env.VITE_API_URL}/assets/${enrolled.course.thumbnail}`}
-                  alt={enrolled.course.title}
+                  src={`${import.meta.env.VITE_API_URL}/assets/${c.thumbnail}`}
+                  alt={c.title}
                   className="course-thumb-mini"
                 />
                 <div className="course-details-mini">
-                  <h4>{enrolled.course.title}</h4>
-                  <p>
-                    <strong>Price:</strong> ₹{enrolled.course.price}
-                  </p>
-                  <p>
-                    <strong>Description:</strong>{" "}
-                    {enrolled.course.description
-                      ? enrolled.course.description.slice(0, 80)
-                      : "No description"}
-                    ...
-                  </p>
-                  <p>
-                    <strong>Modules:</strong>{" "}
-                    {enrolled.course.modules?.length ?? 0}
-                  </p>
+                  <h4>{c.title}</h4>
                 </div>
               </div>
             ))
           ) : (
             <p>No enrolled courses.</p>
           )}
+
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@ import adminApi from "../../api/adminApi";
 export const getUsers = async (queryParams: URLSearchParams) => {
   try {
     const res = await adminApi.get(`/admin/getUsers?${queryParams.toString()}`);
-    return res.data;
+    return res;
   } catch (error) {
     console.log(error);
   }

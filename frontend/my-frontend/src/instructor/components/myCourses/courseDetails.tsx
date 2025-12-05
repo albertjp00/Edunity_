@@ -14,6 +14,7 @@ interface Module {
 
 interface Course {
   _id: string;
+  id:string;
   title: string;
   description: string;
   price: number;
@@ -36,9 +37,10 @@ const InstructorCourseDetails: React.FC = () => {
     try {
       const res = await getCourseDetails(id)
       if(!res) return
-      console.log(res.data.course);
       if (res.data.success) {
-        setCourse(res.data.course.course as Course);
+        console.log(res);
+        
+        setCourse(res.data.course as Course);
         setQuizExists(res.data.course.quizExists);
       }
     } catch (err) {
@@ -86,24 +88,24 @@ const InstructorCourseDetails: React.FC = () => {
           <h2>{course.title}</h2>
 
           {!quizExists ? (
-            <button onClick={() => addQuiz(course._id)} className="edit-button">
+            <button onClick={() => addQuiz(course.id)} className="edit-button">
               📑 Add Quiz
             </button>
           ) : (
             <>
-              <button onClick={() => navigate(`/instructor/quiz/${course._id}`)} className="edit-button">
+              <button onClick={() => navigate(`/instructor/quiz/${course.id}`)} className="edit-button">
                 📘 View Quiz
               </button>
-              {/* <button onClick={() => editQuiz(course._id)} className="edit-button">
+              {/* <button onClick={() => editQuiz(course.id)} className="edit-button">
                 ✏️ Edit Quiz
               </button> */}
             </>
           )}
 
-          <button onClick={() => purchaseDetails(course._id)} className='edit-button'>
+          <button onClick={() => purchaseDetails(course.id)} className='edit-button'>
             📚Purchase Details</button>
 
-          <button onClick={() => handleEdit(course._id)} className="edit-button">
+          <button onClick={() => handleEdit(course.id)} className="edit-button">
             ✏️ Edit Course
           </button>
         </div>

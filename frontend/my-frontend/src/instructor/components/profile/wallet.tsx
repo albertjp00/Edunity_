@@ -19,29 +19,29 @@ interface WalletData {
 
 const UserWallet: React.FC = () => {
   const [wallet, setWallet] = useState<WalletData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  // const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchWallet = async () => {
       try {
-        setLoading(true);
-  
-        const res = await instructorApi.get(`/instructor/wallet`);
-        console.log(res);
+        // setLoading(true);
         
-        setWallet(res.data.wallet);
+        const res = await instructorApi.get('/instructor/wallet');
+        console.log('sw',res);
+        
+        setWallet(res.data);
       } catch (err) {
         console.log(err);
         
       } finally {
-        setLoading(false); 
+        // setLoading(false); 
       }
     };
 
     fetchWallet();
   }, []);
 
-  if (loading) return <p className="wallet-loading">Loading wallet...</p>;
+  // if (loading) return <p className="wallet-loading">Loading wallet...</p>;
 
   return (
     <div className="wallet-container">

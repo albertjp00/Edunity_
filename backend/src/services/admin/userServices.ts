@@ -61,10 +61,10 @@ export class AdminUserService implements IAdminUserServices {
             }
         }
 
-    getUsersCoursesRequest = async(id:string):Promise<IMyCourses | null>=>{
+    getUsersCoursesRequest = async(id:string):Promise<ICourse[] | null>=>{
         try {
         const page = 1
-            const result = await this.userRepository.findMyCourses(id , page)
+            const result = await this.adminRepository.findUserCourses(id , page)
             return result
         } catch (error) {
             console.log(error); 

@@ -7,6 +7,7 @@ import useDebounce from '../../components/debounce/debounce';
 
 interface Instructor {
   _id: string;
+  id?:string;
   name: string;
   email: string;
   profileImage?: string;
@@ -14,7 +15,8 @@ interface Instructor {
 }
 
 interface InstructorsResponse {
-  data: {
+  mapped: {
+    id:string
     instructors: Instructor[];
     totalPages: number;
     currentPage: number;
@@ -36,9 +38,9 @@ const InstructorsAdmin: React.FC = () => {
       const response = await adminApi.get<InstructorsResponse>(`/admin/getInstructors?page=${currentPage}&search=${search}`);
       console.log(response);
       const resData = response.data
-      setInstructors(resData.data.instructors);
-      setPages(resData.data.totalPages);
-      setPage(resData.data.currentPage)
+      setInstructors(resData.mapped.instructors);
+      setPages(resData.mapped.totalPages);
+      setPage(resData.mapped.currentPage)
     } catch (error) {
       console.error("Error fetching instructors:", error);
     }
@@ -80,14 +82,14 @@ const InstructorsAdmin: React.FC = () => {
         title="Instructors"
         data={instructors}
         columns={[
-          { label: "Name", render: (i) => <Link to={`/admin/instructors/${i._id}`}>{i.name}</Link> },
+          { label: "Name", render: (i) => <Link to={`/admin/instructors/${i.id}`}>{i.name}</Link> },
           { label: "Email", render: (i) => i.email },
           { label: "Picture", render: (i) => i.profileImage && <img src={`${import.meta.env.VITE_API_URL}/assets/${i.profileImage}`} width={40} /> },
           {
             label: "KYC", render: (i) => {
               if (i.KYCstatus === "notApplied") return <span>No KYC Submitted</span>;
               if (i.KYCstatus === "verified") return <button className="btn-verified">Verified</button>;
-              if (i.KYCstatus === "pending") return <Link to={`/admin/viewKyc/${i._id}`}><button>Verify</button></Link>;
+              if (i.KYCstatus === "pending") return <Link to={`/admin/viewKyc/${i.id}`}><button>Verify</button></Link>;
               if (i.KYCstatus === "rejected") return <span>Rejected</span>;
             }
           },

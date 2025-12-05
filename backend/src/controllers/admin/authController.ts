@@ -1,19 +1,20 @@
 import { NextFunction , Response} from "express";
-import { IAdminAuthController } from "../../interfaces/adminInterfaces";
+import { IAdminAuthController, IAdminAuthService } from "../../interfaces/adminInterfaces";
 import { IAdminService } from "../../interfacesServices.ts/adminServiceInterfaces";
 import { AdminAuthRequest } from "../../middleware/authMiddleware";
 import { HttpStatus } from "../../enums/httpStatus.enums";
 
-import { AdminService } from "../../services/admin/adminServices";  
+import { AdminService } from "../../services/admin/dashboardServices";  
+import { AdminLoginDTO } from "../../dto/adminDTO";
 // // service file
 
 
 export class AdminAuthController implements
     IAdminAuthController
  {
-    private _adminAuthService: IAdminService
+    private _adminAuthService: IAdminAuthService
 
-    constructor(adminAuthService: IAdminService) {
+    constructor(adminAuthService: IAdminAuthService) {
         this._adminAuthService = adminAuthService
 
     }
@@ -22,9 +23,10 @@ export class AdminAuthController implements
     adminLogin = async (req: AdminAuthRequest, res: Response,next: NextFunction) => {
         try {
             const { email, password } = req.body
-            console.log(email);
+            // console.log(email);
 
-            const result = await this._adminAuthService.loginRequest(email, password)
+            const result : AdminLoginDTO = await this._adminAuthService.loginRequest(email, password)            
+
             if (result?.success) {
                 res.status(HttpStatus.OK).json({ success: true, message: result.message, token: result.token })
             } else {

@@ -19,13 +19,13 @@ export interface IUserRepository {
 
   findById(id: string): Promise<IUser | null>;
 
-  isBlocked(id: string):Promise<boolean>
+  isBlocked(id: string): Promise<boolean>
 
   updateProfile(id: string, data: Partial<IUser>): Promise<IUser | null>;
 
   changePassword(id: string, password: string): Promise<IUser | null>;
 
-  getWallet(userId: string):Promise<IWallet | null>
+  getWallet(userId: string): Promise<IWallet | null>
 
   getPayment(userId: string): Promise<IPayment[] | null>
 
@@ -43,37 +43,37 @@ export interface IUserRepository {
 
   getCourseDetails(id: string, courseId: string): Promise<IMyCourse | null>
 
-  findInstructors():Promise<IInstructor[] | null>
+  findInstructors(): Promise<IInstructor[] | null>
 
   addMyCourse(id: string, data: any): Promise<IMyCourse | null>
 
-  sendNotification(userId : string , title : string , message : string ):Promise<INotification | null>
+  sendNotification(userId: string, title: string, message: string): Promise<INotification | null>
 
-  getNotifications(userId : string ):Promise<INotification[] | null>
+  getNotifications(userId: string): Promise<INotification[] | null>
 
-  notificationsMarkRead(userId : string):Promise<INotification[] | null>
+  notificationsMarkRead(userId: string): Promise<INotification[] | null>
 
-  findMyCourses(id: string , page : number): Promise<IMyCourses | null>
+  findMyCourses(id: string, page: number): Promise<IMyCourses | null>
 
   viewMyCourse(id: string, courseId: string): Promise<IMyCourse | null>
 
   updateProgress(userId: string, courseId: string, moduleTitle: string): Promise<IMyCourse | null>
 
-  getCertificate(userId: string , courseId : string , certificate : string) : Promise<IMyCourse | null>
+  getCertificate(userId: string, courseId: string, certificate: string): Promise<IMyCourse | null>
 
-  addReview(userId: string,userName : string , userImage : string , courseId: string, rating: number, comment: string): Promise<IReview>
+  addReview(userId: string, userName: string, userImage: string, courseId: string, rating: number, comment: string): Promise<IReview>
 
   getMyEvent(id: string): Promise<IMyEvent | null>
 
   getEvents(): Promise<IEvent[] | null>
 
-  getMyEvents(id:string):Promise<IEvent[] | null>
+  getMyEvents(id: string): Promise<IEvent[] | null>
 
   addtoFavourites(id: string, courseId: string): Promise<IFavourite | null>
 
   getFavourites(userId: string): Promise<IFavourite[] | null>
 
-  addParticipant(eventId: string,userId: string): Promise<IEvent | null>
+  addParticipant(eventId: string, userId: string): Promise<IEvent | null>
 
 }
 
@@ -204,21 +204,25 @@ export interface UserDTO {
   id: string;
   name: string;
   email: string;
+  profileImage: string;
+  blocked: boolean;
+
   bio?: string | undefined;
-  image?: string  | undefined;
+  image?: string | undefined;
   gender?: string | undefined;
   dob?: string | undefined;
-  location? : string | undefined;
-  phone? : string | undefined;
-  createdAt: string;
+  location?: string | undefined;
+  phone?: string | undefined;
+  createdAt?: string;
+
 }
 
 
 
 
 export interface IMessagedUser {
-    instructor : IUser;
-    lastMessage : IMessage
+  instructor: IUser;
+  lastMessage: IMessage
 }
 
 
@@ -232,19 +236,19 @@ export interface LoginResult {
 }
 
 
-export interface googleLoginResult{
-     accessToken: string;
-     refreshToken : string ; 
-     user: IUser;
+export interface googleLoginResult {
+  accessToken: string;
+  refreshToken: string;
+  user: IUser;
 }
 
 
 export interface IMyCourses {
-  myCourses : IMyCourse[];
-      totalCount : number;
-      totalPages : number;
-      currentPage : number; 
-      
+  myCourses: IMyCourse[];
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+
 }
 
 
@@ -253,4 +257,11 @@ export interface WalletTransaction {
   amount: number;
   courseId?: string;
   description?: string;
+}
+
+
+export interface AdminUserCourseDTO {
+  id: string;
+  title: string;
+  thumbnail: string;
 }

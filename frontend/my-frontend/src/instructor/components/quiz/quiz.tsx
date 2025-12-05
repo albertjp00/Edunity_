@@ -31,6 +31,9 @@ const Quiz: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
+  console.log('get quiz');
+  
+
   const fetchQuiz = async () => {
     try {
       const res = await instructorApi.get(`/instructor/quiz/${courseId}`);

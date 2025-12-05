@@ -1,5 +1,7 @@
+import { AdminLoginDTO } from "../dto/adminDTO";
 import { PaginatedInstructors, PaginatedUsers } from "../interfaces/adminInterfaces";
 import { IMyCourses } from "../interfaces/userInterfaces";
+import { ICourse } from "../models/course";
 import { IEarnings } from "../models/earnings";
 import { IUser } from "../models/user";
 
@@ -24,7 +26,7 @@ export interface IEarningsResult {
 
 
 export interface IAdminService {
-    loginRequest(email: string, password: string): Promise<AdminLoginResult | null>;
+    loginRequest(email: string, password: string): Promise<AdminLoginDTO>;
 
 
     getStats(): Promise<{
@@ -50,5 +52,5 @@ export interface  IAdminUserServices {
 
     unblockUser(id: string): Promise<boolean | null>;
 
-    getUsersCoursesRequest(id:string):Promise<IMyCourses | null>
+    getUsersCoursesRequest(id:string):Promise<ICourse[] | null>
 }

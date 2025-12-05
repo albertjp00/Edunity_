@@ -1,3 +1,4 @@
+import { LoginDTO } from "../dto/userDTO";
 import { UserDTO } from "../interfaces/userInterfaces";
 import { IUser } from "../models/user";
 
@@ -17,3 +18,13 @@ export const mapUserToDTO = (user: IUser): UserDTO => {
     createdAt: user.createdAt.toISOString()
   };
 };
+
+
+
+export const LoginMapper =(login:any): LoginDTO => {
+    return {
+      message:login.message,
+      accessToken : login.accessToken,
+    };
+  }
+

@@ -1,4 +1,5 @@
 import instructorApi from "../../api/instructorApi";
+import type { IEventFormData } from "../interterfaces/instructorInterfaces";
 
 
 
@@ -13,7 +14,7 @@ export const getEditEvent = async (id:string) => {
 }
 
 
-export const updateEvent = async (id:string , formData:any) => {
+export const updateEvent = async (id:string , formData:IEventFormData) => {
     try {
         const res = await instructorApi.patch(`/instructor/event/${id}`,
             formData

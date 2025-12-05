@@ -55,3 +55,17 @@ export const getAdminCourses = async (page: number,search : string ,  limit: num
     throw error;
   }
 };
+
+
+
+export const viewCourseDetails = async (id:string)=>{
+    try {
+        const res = await adminApi.get(`/admin/courseDetails/${id}`)
+    console.log("data",res.data.course);
+    
+    return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}

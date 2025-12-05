@@ -14,6 +14,8 @@ import {
 } from "recharts";
 
 
+
+
 import adminApi from "../../../api/adminApi";
 
 
@@ -145,6 +147,23 @@ const AdminDashboard: React.FC = () => {
 
     fetchUserOverview()
   }, [])
+
+
+  // const [total , setTotal ]= useState<number>()
+
+  // const getTotal = async() =>{
+  //   try {
+  //     const res = await adminApi.get('/admin/getEarnings')
+  //     setTotal(res)
+  //   } catch (error) {
+  //     console.log(error);
+      
+  //   }
+  // }
+
+  // useEffect(()=>{
+  //   getTotal()
+  // },[])
 
   // Dummy sparkline data for charts
   const sparkData = Array.from({ length: 7 }, (_, i) => ({

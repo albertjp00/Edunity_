@@ -4,6 +4,8 @@ import { HttpStatus } from '../../enums/httpStatus.enums';
 import { IInstFinancialController, IInstKYCController,
      IInstProfileReadController, IInstProfileUpdateController } from '../../interfaces/instructorInterfaces';
 import { IInstructorProfileService } from '../../interfacesServices.ts/instructorServiceInterface';
+import { mapDashboardToDTO, mapEarningsToDTO, mapInstructorProfileToDTO, mapNotificationToDTO, walleToDto } from '../../mapper/instructor.mapper';
+import { INotification } from '../../models/notification';
 // import { InstructorProfileService } from '../../services/instructor/profileServices';
 
 
@@ -33,11 +35,12 @@ export class InstProfileController implements
             }
 
             const profile = await this._profileService.getProfile(userId);
-            // console.log(profile);
+            console.log(profile);
+            const profileDTO = mapInstructorProfileToDTO(profile)
 
 
             if (profile) {
-                res.status(HttpStatus.OK).json({ data: profile });
+                res.status(HttpStatus.OK).json({ data: profileDTO });
             } else {
                 res.status(404).json({ error: 'Profile not found' });
             }
@@ -124,7 +127,7 @@ export class InstProfileController implements
 
             const result = await this._profileService.kycSubmit(id, idProofFile.filename, addressProofFile.filename)
 
-            res.status(HttpStatus.OK).json({ success: true, data: result })
+            res.status(HttpStatus.OK).json({ success: true})
         } catch (error) {
             console.error(error)
             res.status(500).json({ success: false, message: "Server error" })
@@ -139,10 +142,13 @@ export class InstProfileController implements
             console.log(id);
 
             const notifications = await this._profileService.getNotifications(id as string)
-            console.log(notifications);
+            console.log('dto---',notifications);
+            const notificationDto = notifications?.map((n:INotification)=>
+            mapNotificationToDTO(n))
+            
 
 
-            res.status(HttpStatus.OK).json({ success: true, notifications: notifications })
+            res.status(HttpStatus.OK).json({ success: true, notifications: notificationDto })
         } catch (error) {
             console.error(error)
             res.status(500).json({ success: false, message: "Server error" })
@@ -156,6 +162,7 @@ export class InstProfileController implements
             const instructorId = req.instructor?.id
             const result = await this._profileService.getDashboard(instructorId as string)
             console.log("dashboard", result);
+            // const dashboardDTO = mapDashboardToDTO(result);
 
             res.status(HttpStatus.OK).json({ success: true, dashboard: result })
         } catch (error) {
@@ -170,9 +177,10 @@ export class InstProfileController implements
             const instructorId = req.instructor?.id
             const result = await this._profileService.getEarnings(instructorId as string)
             console.log("earnings", result);
+             const earningsDTO = mapEarningsToDTO(result);
 
 
-            res.status(HttpStatus.OK).json({ success: true, earnings: result })
+            res.status(HttpStatus.OK).json({ success: true, earnings: earningsDTO })
         } catch (error) {
             console.log(error);
             next(error)
@@ -183,7 +191,11 @@ export class InstProfileController implements
     getWallet = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
         try {
             const id = req.instructor?.id
-            const wallet = await this._profileService.getWallet(id as string)
+            const result = await this._profileService.getWallet(id as string)
+            console.log('wallet',result);
+            if(!result) return
+            const wallet = walleToDto(result)
+            
             res.status(HttpStatus.OK).json({ success: true, wallet })
         } catch (error) {
             console.log(error);

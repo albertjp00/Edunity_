@@ -84,7 +84,6 @@ export class AuthService implements IUserAuthService {
             return {
                 success: true,
                 message: "Login successful",
-                user,
                 accessToken,
                 refreshToken,
             };

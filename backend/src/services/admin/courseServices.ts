@@ -1,3 +1,4 @@
+import { IAdminCourseService } from "../../interfaces/adminInterfaces";
 import { IUserRepository } from "../../interfaces/userInterfaces";
 import { ICourse } from "../../models/course";
 import { IInstructor } from "../../models/instructor";
@@ -7,7 +8,7 @@ import { UserRepository } from "../../repositories/userRepository";
 
 
 
-export class AdminCourseService {
+export class AdminCourseService implements IAdminCourseService {
     constructor(
         private adminRepository: IAdminRepository,
         private instructorRepository: IInsRepository,
@@ -53,6 +54,9 @@ export class AdminCourseService {
         }
     };
 
+
+
+
     getCourseDetailsRequest = async (courseId: string) => {
         try {
             const details = await this.adminRepository.getFullCourseDetails(courseId);
@@ -63,9 +67,16 @@ export class AdminCourseService {
         }
     };
 
+
+
+
     getPurchaseDetails = async (search: string, page: number) => {
         try {
+            
             const data = await this.adminRepository.getPurchases(search, page)
+            
+            console.log('getting purchase detaislssssssssssssssssss',data);
+
             return data
         } catch (error) {
             console.log(error);

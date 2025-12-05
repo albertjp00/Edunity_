@@ -1,4 +1,4 @@
-import { PaginatedInstructors } from "../../interfaces/adminInterfaces";
+import { IAdminInstructorService, PaginatedInstructors } from "../../interfaces/adminInterfaces";
 import { ICourse } from "../../models/course";
 import { IInstructor } from "../../models/instructor";
 import { IAdminRepository } from "../../repositories/adminRepositories";
@@ -7,7 +7,7 @@ import { kycRejectMail } from "../../utils/sendMail";
 
 
 
-export class AdminInstructorService{
+export class AdminInstructorService implements IAdminInstructorService{
     constructor(
         private adminRepository : IAdminRepository,
         private instructorRepository: IInsRepository
@@ -16,6 +16,8 @@ export class AdminInstructorService{
         getInstructors = async (page: string, search: string): Promise<PaginatedInstructors | null> => {
         try {
             const result = await this.adminRepository.findInstructors(page, search)
+            // console.log(result);
+            
             return result
         } catch (error) {
             console.log(error);

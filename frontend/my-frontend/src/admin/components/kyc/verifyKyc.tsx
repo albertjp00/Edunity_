@@ -22,6 +22,8 @@ const VerifyKYC: React.FC = () => {
   const fetchKyc = async () => {
     try {
       const res = await adminApi.get(`/admin/getKyc/${id}`)
+      console.log(res);
+      
       setKyc(res.data.data)
     } catch (err) {
       console.error(err)

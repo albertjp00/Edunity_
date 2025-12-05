@@ -10,6 +10,7 @@ import useDebounce from "../../components/debounce/debounce";
 
 interface User {
   _id: string;
+  id?:string;
   name: string;
   email: string;
   profileImage?: string;
@@ -42,11 +43,16 @@ const UsersAdmin: React.FC = () => {
 
       const res = await getUsers(queryParams);
 
-      setUsers(res.users);
-      setTotalPages(res.totalPages)
+      console.log(res);
+      
+
+      if(!res) return
+      
+      setUsers(res.data.users);
+      setTotalPages(res.data.totalPages)
 
       // setTotalPages(Math.ceil(res.total / usersPerPage)); // ✅ backend must return total count
-      setCurrentPage(res.currentPage);
+      setCurrentPage(res.data.currentPage);
 
     } catch (error) {
       console.error("Error fetching users:", error);

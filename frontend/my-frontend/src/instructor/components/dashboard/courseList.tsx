@@ -3,6 +3,7 @@ import instructorApi from "../../../api/instructorApi";
 
 interface Course {
   _id: string;
+  id:string;
   title: string;
   totalEnrolled: number;
   status: string;
@@ -32,7 +33,7 @@ const CourseList: React.FC = () => {
         </thead>
         <tbody>
           {courses.map((c) => (
-            <tr key={c._id}>
+            <tr key={c.id}>
               <td>{c.title}</td>
               <td>{c.totalEnrolled}</td>
               

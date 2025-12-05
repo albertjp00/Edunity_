@@ -2,7 +2,7 @@ import { Response, Request, NextFunction } from "express";
 import { AdminAuthRequest } from "../../middleware/authMiddleware";
 import { HttpStatus } from "../../enums/httpStatus.enums";
 import { IAdminCourseReadController, IAdminCourseService, IAdminPurchaseController } from "../../interfaces/adminInterfaces";
-import { AdminCourseService } from "../../services/admin/courseServices";
+import { mapCourseDetailsToDTO, mapCourseToDTO, mapPurchaseToDTO } from "../../mapper/admin.mapper";
 
 
 
@@ -10,97 +10,80 @@ import { AdminCourseService } from "../../services/admin/courseServices";
 export class AdminCourseController implements
     IAdminCourseReadController,
     IAdminPurchaseController {
-    private _courseService: IAdminCourseService
 
-    //pass the dependencies from outside the class(DI)
-    constructor(adminCourseService: IAdminCourseService
-    ) {
-        this._courseService = adminCourseService
+    private _courseService: IAdminCourseService;
+
+    constructor(adminCourseService: IAdminCourseService) {
+        this._courseService = adminCourseService;
     }
 
 
-
-
-    getCourses = async (req: Request, res: Response ,next: NextFunction) => {
+    
+    getCourses = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 6;
-            const search = req.query.search
-            console.log(search);
+            const search = req.query.search as string;
 
-            const data = await this._courseService.getCoursesRequest(page, search as string, limit);
-            console.log(data)
+            const data = await this._courseService.getCoursesRequest(page, search, limit);
+
+            const courseDTOs = (data.courses ?? []).map(mapCourseToDTO);
             res.json({
                 success: true,
-                courses: data.courses,
+                courses: courseDTOs,
                 totalPages: data.totalPages,
                 currentPage: data.currentPage,
             });
         } catch (error) {
-            next(error)
-            console.error(error);
+            next(error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to get courses" });
-            
         }
     };
 
 
-    getCourseDetails = async (req: Request, res: Response,next: NextFunction) => {
+    getCourseDetails = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const id = req.params.id!
-            console.log('course details');
-
+            const id = req.params.id!;
             const data = await this._courseService.getCourseDetailsRequest(id);
-            console.log(data);
-
+            console.log('admin course details',data);
+            
+            const courseDetailsDTO = mapCourseDetailsToDTO(data);
 
             res.json({
                 success: true,
-                course: data?.course,
-                instructor: data?.instructor,
-                enrolledUsers: data?.enrolledUsers,
+                course: courseDetailsDTO,
             });
         } catch (error) {
-            next(error)
-            console.error(error);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to get course details" });
+            next(error);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to fetch course details" });
         }
     };
 
 
-
-    getAllPurchases = async (req: AdminAuthRequest, res: Response,next: NextFunction) => {
+    getAllPurchases = async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
         try {
+            const { search, page } = req.query;
+
+            const purchases = await this._courseService.getPurchaseDetails(
+                search as string,
+                Number(page)
+            );
+
+            console.log('dtooooooooo', purchases);
 
 
-            const { search, page } = req.query
-            console.log("search", search);
-
-            const data = await this._courseService.getPurchaseDetails(search as string, Number(page))
-            // console.log(data);
+            const purchaseDTOs = (purchases.purchases ?? []).map(mapPurchaseToDTO);
+            console.log('dto result -------------', purchaseDTOs);
 
 
-            res.json({ success: true, purchases: data });
+            res.json({
+                success: true, purchases: purchaseDTOs,
+                currentPage: purchases.currentPage,
+                totalPages: purchases.totalPages,
+                totalPurchases: purchases.totalPurchases,
+            });
         } catch (err) {
-            next(err)
-            // res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: err.message });
-            console.log(err);
-
+            next(err);
         }
     };
-
-
-    // getInstructors = async(req:Request , res:Response):Promise<void>=>{
-    //     try {
-    //         const id = req.params.id!
-    //         console.log('get instructorssssss ',id);
-
-    //         const result = await this.courseService.getInstructorsRequest(id)
-    //         res.json({success:true , instructor:result})
-    //     } catch (error) {
-    //         console.log(error);
-
-    //     }
-    // }
-
 }

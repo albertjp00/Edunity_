@@ -56,10 +56,11 @@ export class CourseService implements IInstCourseService {
       const instructor = await this.instructorRepository.findById(id)
       const l = courses?.length
 
+      
       return {
         courses,
         skills,
-        totalPages: Math.ceil(totalItems / l!) -1,
+        totalPages: Math.ceil(totalItems / limit),
         currentPage: page,
         totalItems,
         instructor
@@ -105,7 +106,7 @@ export class CourseService implements IInstCourseService {
         }
       }
 
-      console.log('course in service',course.modules);
+      // console.log('course in service',course.modules);
       
       const quiz = await this.instructorRepository.getQuizByCourseId(courseId);
       const quizExists = !!quiz;
@@ -160,7 +161,7 @@ export class CourseService implements IInstCourseService {
 
   editCourseRequest = async (id: string, data: Partial<ICourse>): Promise<ICourse | null> => {
     try {
-      console.log(data);
+      // console.log(data);
 
       return await this.instructorRepository.editCourse(id, data);
     } catch (error) {

@@ -49,3 +49,11 @@ export interface EnrolledCourse {
   progress: { completedModules: string[] };
   userId: string;
 }
+
+
+export interface AdminUserCourses{
+  _id:string;
+  id:string;
+  title : string;
+  thumbnail : string;
+}

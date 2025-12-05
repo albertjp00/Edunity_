@@ -2,9 +2,11 @@ import React, { useEffect, useState} from "react";
 import './adminCourse.css'
 import { getAdminCourses } from "../../services/adminServices";
 import useDebounce from "../debounce/debounce";
+import { useNavigate } from "react-router-dom";
 
 interface Course {
   _id: string;
+  id:string;
   title: string;
   instructorName: string;
   category: string;
@@ -14,6 +16,7 @@ interface Course {
 }
 
 const CoursesAdmin: React.FC = () => {
+  const navigate =  useNavigate()
   const [courses, setCourses] = useState<Course[]>([]);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -57,6 +60,10 @@ const CoursesAdmin: React.FC = () => {
     }
   };
 
+  const gotoCourseDetails = (id:string)=>{
+    navigate(`/admin/courseDetails/${id}`)
+  }
+
 
 
 
@@ -85,16 +92,16 @@ const CoursesAdmin: React.FC = () => {
             <th>Price</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody >
           {courses.length > 0 ? (
             courses.map((course) => (
-              <tr key={course._id}>
+              <tr key={course._id} onClick={()=>gotoCourseDetails(course.id)}>
                 <td>
                   <img
                     src={
-                      course.thumbnail
-                        ? `${import.meta.env.VITE_API_URL}/assets/${course.thumbnail}`
-                        : "https://via.placeholder.com/80x50"
+                    
+                         `${import.meta.env.VITE_API_URL}/assets/${course.thumbnail}`
+                        
                     }
                     alt={course.title}
                     className="thumbnail"

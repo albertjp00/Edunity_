@@ -1,13 +1,15 @@
-import mongoose ,{Schema, Document} from "mongoose";
+import mongoose ,{Schema, Document , Types} from "mongoose";
 
 
-export interface INotification extends Document{
+export interface  INotification extends Document{
+    _id: Types.ObjectId;
     recipientId : string;
     senderId : string;
     title : string;
     message : string;
     isRead : boolean
 }
+
 
 const notificationSchema : Schema = new Schema<INotification>(
   {

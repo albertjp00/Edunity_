@@ -39,7 +39,7 @@ import InstructorCourseDetails from './instructor/components/myCourses/courseDet
 import InstructorEditCourse from './instructor/pages/profile/editCourse'
 import InstProtectedRoute from './instructor/components/InsProtected'
 import KycVerification from './instructor/pages/profile/kyc'
-import ViewKyc from './instructor/components/kyc/viewKyc'
+import ViewKyc from './admin/components/kyc/viewKyc'
 import CreateEvents from './instructor/pages/events/createEvents'
 import InstructorEditEvents from './instructor/pages/events/editEvents'
 import AddCoursesInstructor from './instructor/pages/course/addCourses'
@@ -79,7 +79,7 @@ import AllPayments from './user/components/payments/payments'
 import UserNotifications from './user/components/notifications/notifications'
 import InstructorDashboard from './instructor/components/dashboard/instructorDashboard'
 import UserWallet from './instructor/components/profile/wallet'
-import InstructorAllCourses from './instructor/pages/course/allCourses'
+import InstructorAllCoursesPage from './instructor/pages/course/allCoursesPage'
 // import PurchasesAdmin from './admin/pages/purchases/purchasesAdmin'
 
 function App() {
@@ -154,7 +154,7 @@ function App() {
             <Route path='/instructor/addCourse' element={<InstProtectedRoute><AddCoursesInstructor /></InstProtectedRoute>} />
             <Route path='/instructor/courseDetails/:id' element={<InstProtectedRoute><InstructorCourseDetails /></InstProtectedRoute>} />
             <Route path='/instructor/editCourse/:id' element={<InstProtectedRoute><InstructorEditCourse /></InstProtectedRoute>} />
-            <Route path='/instructor/allCourses' element={<InstProtectedRoute><InstructorAllCourses /></InstProtectedRoute>} />
+            <Route path='/instructor/allCourses' element={<InstProtectedRoute><InstructorAllCoursesPage /></InstProtectedRoute>} />
 
             <Route path='instructor/purchaseDetails/:id' element={<InstProtectedRoute><CoursePurchaseDetails /></InstProtectedRoute>}></Route>
 

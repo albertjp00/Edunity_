@@ -1,11 +1,11 @@
 import React from 'react'
-import Navbar from '../../../user/components/navbar/navbar'
 import EditEvents from '../../components/events/editEvents'
+import InstructorNavbar from '../../components/navbar/navbar'
 
 const InstructorEditEvents = () => {
   return (
     <div>
-      <Navbar />
+      <InstructorNavbar />
       <EditEvents />
     </div>
   )

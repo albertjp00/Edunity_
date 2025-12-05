@@ -6,7 +6,7 @@ import instructorApi from "../../../api/instructorApi";
 import eventImage from '../../../assets/webinar_thumnail.png'
 
 interface IEvent {
-  _id: string;
+  id: string;
   instructorId: string;
   instructorName: string;
   title: string;
@@ -63,8 +63,8 @@ const EventDetails: React.FC = () => {
   const handleJoin = async () => {
     if (!event || !instructor) return;
     try {
-      await instructorApi.patch(`/instructor/joinEvent/${event._id}`, { userId: instructor });
-      navigate(`/instructor/joinEvent/${event._id}`, {
+      await instructorApi.patch(`/instructor/joinEvent/${event.id}`, { userId: instructor });
+      navigate(`/instructor/joinEvent/${event.id}`, {
         state: { instructorName }
       });
     } catch (error) {
@@ -90,7 +90,7 @@ const EventDetails: React.FC = () => {
           <p><strong>Topic:</strong> {event.topic}</p>
           <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</p>
           <p><strong>Time:</strong> {event.time}</p>
-          <p><strong>Duration:</strong> {event.duration} minutes</p>
+          <p><strong>Duration:</strong> {event.duration || 2}  Hour</p>
           <p><strong>Participants:</strong> {event.participants}</p>
         </div>
 
