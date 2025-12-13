@@ -33,7 +33,8 @@ app.use(express.json());
 app.use(
   cors({
     // origin: 'https://spoke-indices-questions-announcement.trycloudflare.com',
-    origin:"http://localhost:5173",
+    
+    origin: [process.env.FRONTEND_URL].filter(Boolean) as string[],
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -47,17 +48,17 @@ app.use("/instructor", instructorRoutes);
 app.use("/admin", adminRoutes);
 app.use("/messages", messageRoutes);
 
-app.use(errorHandler)
 
 // ✅ Initialize socket.io
 const io = new Server(server, {
   
   cors: {
     origin: [
-    "http://localhost:5173",
-    // process.env.FROTEND_URL,
+    
+    process.env.FRONTEND_URL,
     //  'https://spoke-indices-questions-announcement.trycloudflare.com'
-  ],
+  ].filter(Boolean) as string[],
+
     credentials: true,
   },
   
@@ -68,6 +69,9 @@ const io = new Server(server, {
 setupSocket(io); // ✅ attach all socket handlers
 
 // io.use(socketAuthMiddleware)
+
+app.use(errorHandler)
+
 
 connectDB().then(() => {
   server.listen(PORT, () => {

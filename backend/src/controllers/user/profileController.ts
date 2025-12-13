@@ -3,6 +3,7 @@ import { AuthRequest } from '../../middleware/authMiddleware';
 import { HttpStatus } from '../../enums/httpStatus.enums';
 import { INotificationController, IPasswordController, IPaymentController, IProfileReadController, IProfileWriteController, IWalletController } from '../../interfaces/userInterfaces';
 import { IUserProfileService } from '../../interfacesServices.ts/userServiceInterfaces';
+import { StatusMessage } from '../../enums/statusMessage';
 // import { ProfileService } from '../../services/user/profileService';
 
 
@@ -27,7 +28,7 @@ export class ProfileController implements
             const userId = req.user?.id
 
             if (!userId) {
-                res.status(401).json({ error: 'Unauthorized' });
+                res.status(401).json({ error: StatusMessage.UNAUTHORIZED });
                 return;
             }
             const profile = await this._profileService.getProfile(userId);
@@ -37,12 +38,12 @@ export class ProfileController implements
             if (profile) {
                 res.status(HttpStatus.OK).json({ data: profile });
             } else {
-                res.status(HttpStatus.NOT_FOUND).json({ error: 'Profile not found' });
+                res.status(HttpStatus.NOT_FOUND).json({ error: StatusMessage.PROFILE_NOT_FOUND });
             }
         } catch (error) {
             // console.error('Get profile error:', error);
             next(error)
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' });
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: StatusMessage.INTERNAL_SERVER_ERROR });
         }
     };
 
@@ -50,7 +51,7 @@ export class ProfileController implements
 
     editProfile = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            console.log('user profiel ', req.user?.id, req.file)
+            // console.log('user profiel ', req.user?.id, req.file)
             const userId = req.user?.id; // Assuming `req.user` is set by auth middleware
             const updateData = req.body;
 
@@ -60,7 +61,7 @@ export class ProfileController implements
             data.profileImage = file
 
             if (!userId) {
-                res.status(HttpStatus.UNAUTHORIZED).json({ error: 'Unauthorized' });
+                res.status(HttpStatus.UNAUTHORIZED).json({ error: StatusMessage.UNAUTHORIZED });
                 return;
             }
 
@@ -69,16 +70,16 @@ export class ProfileController implements
             if (updatedProfile) {
                 res.status(HttpStatus.OK).json({
                     success: true,
-                    message: 'Profile updated successfully',
+                    message: StatusMessage.PROFILE_UPDATED,
                     profile: updatedProfile
                 });
             } else {
-                res.status(HttpStatus.NOT_FOUND).json({ error: 'Profile not found' });
+                res.status(HttpStatus.NOT_FOUND).json({ error: StatusMessage.PROFILE_NOT_FOUND });
             }
         } catch (error) {
             // console.error('Update profile error:', error);
             next(error)
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' });
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: StatusMessage.INTERNAL_SERVER_ERROR });
         }
     };
 
@@ -92,22 +93,22 @@ export class ProfileController implements
 
 
             if (!id) {
-                res.status(HttpStatus.UNAUTHORIZED).json({ success: false, message: "Unauthorized" })
+                res.status(HttpStatus.UNAUTHORIZED).json({ success: false, message: StatusMessage.UNAUTHORIZED })
                 return;
             }
 
             const result = await this._profileService.passwordChange(id, newPassword, oldPassword)
-            console.log(result);
+            // console.log(result);
 
             if (result) {
-                res.status(HttpStatus.OK).json({ success: true, message: "Password updated successfully" })
+                res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.PASSWORD_CHANGED })
             } else {
-                res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: "Old password is incorrect" })
+                res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: StatusMessage.INCORRECT_PASSWORD })
             }
         } catch (error) {
             // console.error(error);
             next(error)
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
         }
     };
 
@@ -120,7 +121,6 @@ export class ProfileController implements
 
         } catch (error) {
             console.log(error);
-
         }
     }
 
@@ -128,7 +128,7 @@ export class ProfileController implements
         try {
             const userId = req.user?.id
             const payment = await this._profileService.getPayment(userId as string)
-            console.log(payment);
+            // console.log(payment);
 
             res.status(HttpStatus.OK).json({ success: true, payments: payment })
 
@@ -162,6 +162,20 @@ export class ProfileController implements
         } catch (error) {
             console.log(error);
 
+        }
+    }
+
+
+    subscriptionCheck = async(req:AuthRequest , res : Response , next:NextFunction)=>{
+        try {
+            const id = req.user?.id!
+            const result = await this._profileService.subscriptionCheckRequest(id)
+            console.log('subscription',result);
+            
+            res.status(HttpStatus.OK).json({result})
+        } catch (error) {
+            console.log(error);
+            
         }
     }
 }

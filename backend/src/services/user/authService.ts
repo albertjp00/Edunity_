@@ -8,6 +8,7 @@ import { OAuth2Client } from "google-auth-library";
 import { IUser } from "../../models/user";
 import { googleLoginResult, IUserRepository } from "../../interfaces/userInterfaces";
 import { IUserAuthService } from "../../interfacesServices.ts/userServiceInterfaces";
+import { StatusMessage } from "../../enums/statusMessage";
 
 dotenv.config();
 
@@ -66,16 +67,16 @@ export class AuthService implements IUserAuthService {
             const user = await this.userRepository.findByEmail(email);
 
             if (!user) {
-                return { success: false, message: "User not found" };
+                return { success: false, message: StatusMessage.USER_NOT_FOUND };
             }
 
             if (user.blocked) {
-                return { success: false, message: "Your account is blocked" };
+                return { success: false, message: StatusMessage.BLOCKED };
             }
 
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
-                return { success: false, message: "Invalid password" };
+                return { success: false, message: StatusMessage.INCORRECT_PASSWORD };
             }
 
             const accessToken = jwt.sign({ id: user._id }, secret, { expiresIn: "3h" });
@@ -83,13 +84,13 @@ export class AuthService implements IUserAuthService {
 
             return {
                 success: true,
-                message: "Login successful",
+                message: StatusMessage.LOGIN_SUCCESS,
                 accessToken,
                 refreshToken,
             };
         } catch (error) {
             console.error(error);
-            return { success: false, message: "Internal server error" }; // ✅ safe fallback
+            return { success: false, message: StatusMessage.INTERNAL_SERVER_ERROR }; // ✅ safe fallback
         }
     };
 
@@ -116,7 +117,7 @@ export class AuthService implements IUserAuthService {
         try {
             const userExists = await this.userRepository.findByEmail(email);
             if (userExists) {
-                return { success: false, message: "Email already registered" };
+                return { success: false, message: StatusMessage.EMAIL_EXISTS };
             }
 
             const otp = generateOtp();
@@ -133,7 +134,7 @@ export class AuthService implements IUserAuthService {
 
             console.log("otpStore:", otpStore);
 
-            return { success: true, message: "OTP sent to your email" };
+            return { success: true, message: StatusMessage.OTP_SEND_to_MAIL };
         } catch (error) {
             console.error(error);
             throw error
@@ -186,16 +187,16 @@ export class AuthService implements IUserAuthService {
             console.log('verify otp user', email);
 
             if (!storedData) {
-                return { success: false, message: "OTP not found or expired" };
+                return { success: false, message: StatusMessage.OTP_NOT_FOUND };
             }
 
             if (Date.now() > storedData.expiresAt) {
                 otpStore.delete(email);
-                return { success: false, message: "OTP expired" };
+                return { success: false, message: StatusMessage.OTP_EXPIRED };
             }
 
             if (storedData.otp !== otp) {
-                return { success: false, message: "Incorrect OTP" };
+                return { success: false, message: StatusMessage.INVALID_OTP};
             }
 
             const hashedPassword = await bcrypt.hash(storedData.password, 10);
@@ -208,10 +209,10 @@ export class AuthService implements IUserAuthService {
 
             otpStore.delete(email);
 
-            return { success: true, message: "OTP verified, user registered successfully" };
+            return { success: true, message: StatusMessage.OTP_VERIFIED };
         } catch (error) {
             console.error(error);
-            return { success: false, message: "OTP ve   rification failed" };
+            return { success: false, message: StatusMessage.OTP_VERIFICATION_FAILED };
         }
     }
 
@@ -251,7 +252,7 @@ export class AuthService implements IUserAuthService {
 
             const user = await this.userRepository.findByEmail(email);
             if (!user) {
-                return { success: false, message: "Email doesn't exist" };
+                return { success: false, message: StatusMessage.EMAIL_NOT_EXISTS };
             }
 
             const defaultEmail = 'albertjpaul@gmail.com'
@@ -267,10 +268,10 @@ export class AuthService implements IUserAuthService {
             });
 
 
-            return { success: true, message: "OTP sent successfully" };
+            return { success: true, message: StatusMessage.OTP_SENT };
         } catch (error) {
             console.error(error);
-            return { success: false, message: "Something went wrong" };
+            return { success: false, message: StatusMessage.SOMETHING_WRONG };
         }
     };
 
@@ -279,42 +280,43 @@ export class AuthService implements IUserAuthService {
             const storedData = otpStore.get(email);
 
             if (!storedData) {
-                return { success: false, message: "OTP not found or expired" };
+                return { success: false, message: StatusMessage.OTP_NOT_FOUND };
             }
 
             if (Date.now() > storedData.expiresAt) {
                 otpStore.delete(email);
-                return { success: false, message: "OTP expired" };
+                return { success: false, message: StatusMessage.OTP_EXPIRED };
             }
 
             if (storedData.otp !== otp) {
-                return { success: false, message: "Incorrect OTP" };
+                return { success: false, message: StatusMessage.INVALID_OTP };
             }
 
             otpStore.delete(email);
 
-            return { success: true, message: "OTP verified successfully" };
+            return { success: true, message:StatusMessage.OTP_VERIFIED };
         } catch (error) {
             console.error(error);
-            return { success: false, message: "OTP verification failed" };
+            return { success: false, message: StatusMessage.OTP_VERIFICATION_FAILED };
         }
     };
 
+    
     async resetPassword(email: string, newPassword: string): Promise<{ success: boolean; message: string }> {
         try {
             const user = await this.userRepository.findByEmail(email);
             if (!user) {
-                return { success: false, message: "User not found" };
+                return { success: false, message: StatusMessage.USER_NOT_FOUND };
             }
 
             const hashedPassword = await bcrypt.hash(newPassword, 10);
 
             await this.userRepository.changePassword(user._id, hashedPassword);
 
-            return { success: true, message: "Password reset successfully" };
+            return { success: true, message: StatusMessage.PASSWORD_CHANGED };
         } catch (error) {
             console.error(error);
-            return { success: false, message: "Password reset failed" };
+            return { success: false, message: StatusMessage.RESET_FAILED };
         }
     }
 

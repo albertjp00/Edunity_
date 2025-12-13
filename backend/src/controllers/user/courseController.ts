@@ -12,6 +12,7 @@ import {
 } from "../../interfaces/userInterfaces";
 import { HttpStatus } from "../../enums/httpStatus.enums";
 import { IUserCourseService } from "../../interfacesServices.ts/userServiceInterfaces";
+import { StatusMessage } from "../../enums/statusMessage";
 // import { UserCourseService } from "../../services/user/userCourseService";
 
 
@@ -40,8 +41,8 @@ export class UserCourseController
     showCourses = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             console.log("get Courses user");
-            const fron = parseInt(process.env.REFRESH_TIME!,10)
-            console.log("time",fron);
+            const fron = parseInt(process.env.REFRESH_TIME!, 10)
+            console.log("time", fron);
 
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 6;
@@ -58,7 +59,7 @@ export class UserCourseController
         } catch (error) {
             // console.error(error);
             next(error)
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to get courses" });
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, messaage: StatusMessage.FAILED_TO_GET_COURSES });
         }
     };
 
@@ -131,7 +132,7 @@ export class UserCourseController
         } catch (error) {
             // console.log("Error in getAllCourses:", error);
             next(error)
-            res.status(500).json({ message: "Failed to fetch courses" });
+            res.status(500).json({ message: StatusMessage.FAILED_TO_GET_COURSES });
         }
     };
 
@@ -146,7 +147,6 @@ export class UserCourseController
             const courseId = req.query.id as string
             const result = await this._courseService.fetchCourseDetails(id, courseId)
             // console.log("course", result);
-
 
             res.status(HttpStatus.OK).json({ success: true, course: result })
         } catch (error) {
@@ -205,7 +205,7 @@ export class UserCourseController
             //         message: error.message,  
             //     });
             // }
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Payment initiation failed" });
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.PAYMENT_FAILURE });
         }
     };
 
@@ -239,7 +239,7 @@ export class UserCourseController
         } catch (error) {
             // console.error("Payment verification failed:", error);
             next(error)
-            res.status(500).json({ success: false, message: "Payment verification failed" });
+            res.status(500).json({ success: false, message: StatusMessage.PAYMENT_VERIFICATION_FAILURE });
         }
     };
 
@@ -258,6 +258,62 @@ export class UserCourseController
     }
 
 
+    buySubscription = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const userId = req.user?.id!;
+            console.log('Buy subscription', userId);
+
+            // Key for debouncing (user + course)
+            const key = `buyCourse_${userId}`;
+
+            const subscribe = await debounceCall(key, 2000, async () => {
+                // This function runs only if user hasn't triggered in last 2s
+                return await this._courseService.buySubscriptionRequest(userId);
+            });
+
+            res.status(HttpStatus.OK).json({
+                success: true,
+                orderId: subscribe.id,
+                amount: subscribe.amount,
+                currency: subscribe.currency,
+                key: process.env.RAZORPAY_KEY_ID,
+            });
+
+        } catch (error) {
+            next(error)
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.PAYMENT_FAILURE });
+        }
+    };
+
+
+    verifySubscriptionPayment = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+            const userId = req.user?.id!;
+
+            const key = `verifySubscription_${userId}`;
+
+            const result = await debounceCall(key, 2000, async () => {
+                return await this._courseService.verifySubscriptionPaymentRequest(
+                    razorpay_order_id,
+                    razorpay_payment_id,
+                    razorpay_signature,
+                    userId
+                );
+            });
+
+            if (result.success) {
+                res.status(200).json({success:true,result});
+            } else {
+                res.status(400).json(result);
+            }
+        } catch (error) {
+            next(error);
+        }
+    };
+
+
+    
 
 
     myCourses = async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -271,7 +327,9 @@ export class UserCourseController
 
             const result = await this._courseService.myCoursesRequest(id, page)
             console.log('my courses result ', result);
+
             if (!result) return
+
 
             const { populatedCourses, result: paginationData } = result;
 
@@ -288,6 +346,36 @@ export class UserCourseController
             next(error)
         }
     }
+
+
+        mySubscriptionCourses = async (req: AuthRequest, res: Response, next: NextFunction) => {
+        try {
+            const id = req.user?.id!
+
+            const page = parseInt(req.params.page as string) || 1
+            console.log(id, page);
+
+
+            const result = await this._courseService.mySubscriptionCoursesRequest(id, page)
+            console.log('my subscription courses result ', result);
+            if (!result) return
+
+        
+            
+            res.status(HttpStatus.OK).json({
+                success: true,
+                courses: result.courses,
+                totalCount: result.totalCount,
+                totalPages: result.totalPages,
+                currentPage: page,
+            });
+
+        } catch (error) {
+            // console.log(error);
+            next(error)
+        }
+    }
+
 
 
     viewMyCourse = async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -318,14 +406,14 @@ export class UserCourseController
 
 
             if (!key) {
-                res.status(400).json({ success: false, message: "Missing key" });
+                res.status(400).json({ success: false, message: StatusMessage.MISSING_KEY });
             }
 
             const signedUrl = await generateSignedUrl(key as string);
             res.status(HttpStatus.OK).json({ success: true, url: signedUrl });
         } catch (error) {
             console.error("Error refreshing video URL:", error);
-            res.status(500).json({ success: false, message: "Error generating URL" });
+            res.status(500).json({ success: false, message: StatusMessage.ERROR_LINK });
         }
     };
 
@@ -338,7 +426,7 @@ export class UserCourseController
             console.log('progress', req.body, courseId);
 
             if (!userId || !courseId || !moduleTitle) {
-                res.status(400).json({ success: false, message: "Missing required fields" });
+                res.status(400).json({ success: false, message: StatusMessage.MISSING_FIELDS });
                 return;
             }
 
@@ -349,7 +437,7 @@ export class UserCourseController
             res.status(HttpStatus.OK).json({ success: true, progress: result });
         } catch (error) {
             next(error)
-            res.status(500).json({ success: false, message: "Internal server error" });
+            res.status(500).json({ success: false, message: HttpStatus.INTERNAL_SERVER_ERROR });
         }
     };
 
@@ -399,7 +487,7 @@ export class UserCourseController
         } catch (error) {
             // console.error("Error updating progress:", error);
             next(error)
-            res.status(500).json({ success: false, message: "Internal server error" });
+            res.status(500).json({ success: false, message: HttpStatus.INTERNAL_SERVER_ERROR });
         }
     };
 
@@ -413,14 +501,14 @@ export class UserCourseController
             // console.log(result);
 
             if (!result.success) {
-                res.json({ success: false, message: "Course already exists in favourites" });
+                res.json({ success: false, message: StatusMessage.COURSE_ALREADY_EXISTS });
             }
 
             res.status(HttpStatus.OK).json(result);
         } catch (error) {
             // console.log(error);
             next(error)
-            res.status(500).json({ success: false, message: "Internal server error" });
+            res.status(500).json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
         }
     };
 

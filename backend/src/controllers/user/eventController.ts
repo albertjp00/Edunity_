@@ -9,6 +9,7 @@ import {  IUserEventEnrollmentController, IUserEventJoinController, IUserEventRe
 import { HttpStatus } from "../../enums/httpStatus.enums";
 
 import { IUserEventService } from "../../interfacesServices.ts/userServiceInterfaces";
+import { StatusMessage } from "../../enums/statusMessage";
 // import { UserEventService } from "../../services/user/eventService";
 
 
@@ -29,6 +30,7 @@ export class UserEventController implements
 
     }
 
+
     getEvents = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void | null> => {
         try {
             const result = await this._userEventService.getEventsRequest()
@@ -41,6 +43,7 @@ export class UserEventController implements
             next(error)
         }
     }
+
 
     getEventDetails = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void | null> => {
         try {
@@ -64,7 +67,7 @@ export class UserEventController implements
             const eventId = req.params.id
             logger.info('enroll events ', id, eventId)
             if (!eventId) {
-                res.status(400).json({ success: false, message: "event Id missing" });
+                res.status(400).json({ success: false, message: StatusMessage.NO_EVENT_ID });
                 return;
             }
             const result = await this._userEventService.eventEnrollRequest(id, eventId)
@@ -108,7 +111,7 @@ export class UserEventController implements
             const result = await this._userEventService.joinUserEventRequest(eventId, userId);
 
             if (!result || !result.success) {
-                res.status(400).json({ message: result?.message || "Failed to start event" });
+                res.status(400).json({ message: result?.message || StatusMessage.FAILED_TO_START });
                 return;
             }
 
@@ -127,7 +130,7 @@ export class UserEventController implements
             res.status(HttpStatus.OK).json({ result, userId });
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: "Server error" });
+            res.status(500).json({ message: StatusMessage.INTERNAL_SERVER_ERROR });
         }
     };
 

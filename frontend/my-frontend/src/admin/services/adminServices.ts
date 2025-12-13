@@ -1,4 +1,14 @@
 import adminApi from "../../api/adminApi";
+import type { LoginFormData } from "../pages/login/adminLogin";
+
+export const adminLogin = async (value :LoginFormData) => {
+    try {
+        const response = await adminApi.post("/admin/login", value);
+        return response
+    } catch (error) {
+        console.error('Error fetching instructor profile:', error);
+    }
+};
 
 
 export const getProfile = async (id: string) => {
@@ -69,3 +79,54 @@ export const viewCourseDetails = async (id:string)=>{
         
     }
 }
+
+
+export const toggleBlockUserApi = (userId: string,blocked: boolean) => {
+  const res =  adminApi.put(`/admin/blockUser/${userId}`, {
+    blocked,
+  });
+  return res
+};
+
+
+export const getStats = async() => {
+  const res =  await adminApi.get("/admin/stats");
+  return res
+};
+
+export const getOverview = async() => {
+  const res =  await adminApi.get('/admin/userOverview')
+  return res
+};
+
+
+
+export const getKyc = async(id:string) => {
+  const res =  await adminApi.get(`/admin/getKyc/${id}`)
+  return res
+};
+
+export const KycVerify = async(instructorId:string) => {
+  const res =  await adminApi.put(`/admin/verifyKyc/${instructorId}`)
+  return res
+};
+
+export const KycReject = async(instructorId:string , selectedReason : string) => {
+  const res =  await adminApi.put(`/admin/rejectKyc/${instructorId}`,
+        { reason: selectedReason }
+      )
+  return res
+};
+
+
+export const getPurchases = async(search :string , page:number) => {
+  const res =  await adminApi.get(`/admin/purchases?search=${search}&page=${page}`);
+  return res
+};
+
+
+// adminApi.get<InstructorsResponse>(`/admin/getInstructors?page=${currentPage}&search=${search}`);
+export const getInstructorsData = async(search :string , currentPage:number) => {
+  const res =  await adminApi.get(`/admin/getInstructors?page=${currentPage}&search=${search}`);
+  return res
+};

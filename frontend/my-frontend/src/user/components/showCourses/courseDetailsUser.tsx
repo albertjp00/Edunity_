@@ -5,7 +5,7 @@ import api from "../../../api/userApi";
 import { toast } from "react-toastify";
 import buyNowImage from '../../../assets/buyCourse.png'
 import VideoPlayerUser from "../videoPlayer/videoPlayer";
-import { paymentCancel } from "../../services/courseServices";
+import { buyCourseService, paymentCancel } from "../../services/courseServices";
 
 interface Module {
   title: string;
@@ -25,6 +25,7 @@ interface Course {
   enrolled?: number;
   lectures?: number;
   language?: string;
+  accessType: string;
 }
 
 interface Instructor {
@@ -35,7 +36,7 @@ interface Instructor {
 }
 
 interface IReview {
-  userId : string;
+  userId: string;
   userName: string;
   userImage?: string;
   rating: number;
@@ -89,7 +90,7 @@ const CourseDetailsUser: React.FC = () => {
     try {
       const res = await api.get(`/user/courseDetails?id=${id}`);
       console.log(res);
-      
+
       setCourse(res.data.course);
       setInstructor(res.data.course.instructor);
       setHasAccess(res.data.course.hasAccess);
@@ -116,60 +117,63 @@ const CourseDetailsUser: React.FC = () => {
     setActivePayment(courseId);
 
     try {
-  const { data } = await api.get(`/user/buyCourse/${courseId}`);
+      const res = await buyCourseService(courseId)
+      console.log(res);
+      if (!res) return
+      const { data } = res
 
-  const options: RazorpayOptions = {
-    key: data.key,
-    amount: data.amount,
-    currency: data.currency,
-    name: "Edunity",
-    description: "Course Purchase",
-    order_id: data.orderId,
-    handler: async function (response) {
-      try {
-        await api.post("/user/payment/verify", {
-          ...response,
-          courseId,
-        });
-        toast.success("Payment Successful! Course Unlocked.");
-        navigate("/user/myCourses");
-      } finally {
-        setActivePayment(null);
-        localStorage.removeItem("payment_in_progress");
-      }
-    },
-    modal: {
-      ondismiss: async function () {
-        try {
-          await paymentCancel(courseId);
-        } finally {
-          setActivePayment(null);
-          localStorage.removeItem("payment_in_progress");
-        }
-      },
-    },
-    theme: { color: "#6a5af9" },
-  };
+      const options: RazorpayOptions = {
+        key: data.key,
+        amount: data.amount,
+        currency: data.currency,
+        name: "Edunity",
+        description: "Course Purchase",
+        order_id: data.orderId,
+        handler: async function (response) {
+          try {
+            await api.post("/user/payment/verify", {
+              ...response,
+              courseId,
+            });
+            toast.success("Payment Successful! Course Unlocked.");
+            navigate("/user/myCourses");
+          } finally {
+            setActivePayment(null);
+            localStorage.removeItem("payment_in_progress");
+          }
+        },
+        modal: {
+          ondismiss: async function () {
+            try {
+              await paymentCancel(courseId);
+            } finally {
+              setActivePayment(null);
+              localStorage.removeItem("payment_in_progress");
+            }
+          },
+        },
+        theme: { color: "#6a5af9" },
+      };
 
-  const rzp = new window.Razorpay(options);
+      const rzp = new window.Razorpay(options);
 
-  // ALWAYS WORKS — best place for cleanup + cancel call
-  // rzp.on("modal.closed", async () => {
-  //   try {
-  //     await paymentCancel(courseId);
-  //   } finally {
-  //     setActivePayment(null);
-  //     localStorage.removeItem("payment_in_progress");
-  //   }
-  // });
+      // ALWAYS WORKS — best place for cleanup + cancel call
+      // rzp.on("modal.closed", async () => {
+      //   try {
+      //     await paymentCancel(courseId);
+      //   } finally {
+      //     setActivePayment(null);
+      //     localStorage.removeItem("payment_in_progress");
+      //   }
+      // });
 
-  rzp.open();
-} catch (error) {
-  console.error("Payment error:", error);
-  toast.error("Payment failed. Try again.");
-  setActivePayment(null);
-  localStorage.removeItem("payment_in_progress");
-}
+      rzp.open();
+    } catch (error) {
+      console.error("Payment error:", error);
+      toast.error("Payment failed. Try again.");
+      setActivePayment(null);
+      localStorage.removeItem("payment_in_progress");
+    }
   }
 
 
@@ -331,9 +335,9 @@ const CourseDetailsUser: React.FC = () => {
                         <p className="review-date">
                           {new Date(rev.createdAt).toLocaleDateString()}
                         </p>
-                        
+
                       </div>
-                      
+
                     </div>
                     <p className="review-rating">⭐ {rev.rating}/5</p>
                     <p className="review-comment">{rev.comment}</p>
@@ -391,26 +395,54 @@ const CourseDetailsUser: React.FC = () => {
               <div className="price-section">
                 <span className="discount-price">₹{course.price}</span>
                 <span className="original-price">₹120</span>
-                <p className="guarantee-text">30-Day Money-Back Guarantee</p>
+                <p className="guarantee-text">7-Day Money-Back Guarantee</p>
               </div>
             }
 
-            {!hasAccess && (
-              <button
-                onClick={() => buyCourse(course._id)}
-                className="buy-btn"
-                disabled={activePayment === course._id}
-              >
-                {activePayment === course._id ? "Processing..." : "BUY NOW"}
-              </button>
+            {/* If course is subscription-only → show Subscribe message */}
+
+            {course.accessType === "subscription" ? (
+              !hasAccess ? (
+                <button
+                  className="buy-btn"
+                  onClick={() => navigate("/user/subscription")}
+                >
+                  Subscribe to Unlock
+                </button>
+              ) : (
+                <button className="buy-btn" disabled>
+                  Included in Your Subscription
+                </button>
+              )
+            ) : (
+              /* One-time purchase button */
+              !hasAccess && (
+                <button
+                  onClick={() => buyCourse(course._id)}
+                  className="buy-btn"
+                  disabled={activePayment === course._id}
+                >
+                  {activePayment === course._id ? "Processing..." : "BUY NOW"}
+                </button>
+              )
             )}
+
 
             <ul className="course-info">
               <li><strong>Enrolled:</strong> {course.enrolled || 100}</li>
               <li><strong>Lectures:</strong> {course.lectures || 80}</li>
               <li><strong>Skill Level:</strong> {course.level}</li>
               <li><strong>Language:</strong> {course.language || "English"}</li>
+
+              {/* New field */}
+              <li>
+                <strong>Access Type:</strong>{" "}
+                {course.accessType === "subscription"
+                  ? "Subscription Required"
+                  : "One-Time Purchase"}
+              </li>
             </ul>
+
           </div>
         </div>
       </div>

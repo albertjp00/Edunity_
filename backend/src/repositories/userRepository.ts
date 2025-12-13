@@ -85,12 +85,12 @@ export class UserRepository extends BaseRepository<IUser>
   }
 
 
-  async onPurchase(id: string , value : boolean): Promise<ICourse | null> {
-    return await CourseModel.findByIdAndUpdate(id, { onPurchase: value },{new : true})
+  async onPurchase(id: string, value: boolean): Promise<ICourse | null> {
+    return await CourseModel.findByIdAndUpdate(id, { onPurchase: value }, { new: true })
   }
 
-    async cancelPurchase(id: string): Promise<ICourse | null> {
-    return await CourseModel.findByIdAndUpdate(id, { onPurchase: false },{new : true})
+  async cancelPurchase(id: string): Promise<ICourse | null> {
+    return await CourseModel.findByIdAndUpdate(id, { onPurchase: false }, { new: true })
   }
 
   async buyCourse(id: string): Promise<ICourse | null> {
@@ -98,7 +98,10 @@ export class UserRepository extends BaseRepository<IUser>
   }
 
 
-
+  async updateSubscription(id: string, data: any): Promise<boolean> {
+    await UserModel.findByIdAndUpdate(id, { subscription: data }, { new: true })
+    return true
+  }
 
 
 
@@ -563,6 +566,57 @@ export class UserRepository extends BaseRepository<IUser>
       });
     }
   }
+
+
+  async getSubscriptionActive(id: string): Promise<boolean> {
+    const user = await UserModel.findById(id);
+
+    if (!user || !user.subscription) return false;
+
+    if (!user.subscription.isActive) return false;
+
+    const { isActive, endDate } = user.subscription
+
+    if (endDate < new Date()) {
+      user.subscription.isActive = false
+      await user.save()
+      return false
+    }
+    return true;
+  }
+
+
+  async getSubscriptionCourses(id: string, page: number): Promise<any> {
+    try {
+      // ---------- 1. Check if subscription is active ----------
+      // const isActive = await this.getSubscriptionActive(id);
+      // if (!isActive) {
+      //   return { success: false, message: "Subscription expired or inactive" };
+      // }
+
+
+      const limit = 3;
+      const skip = (page - 1) * limit;
+
+      const courses = await CourseModel.find({ accessType: "subscription" })
+        .skip(skip)
+        .limit(limit)
+        // .select("title thumbnail price skills level instructorId");
+
+      const total = await CourseModel.countDocuments({ accessType: "subscription" });
+
+      return {
+        page,
+        totalPages: Math.ceil(total / limit),
+        courses,
+      };
+    } catch (error) {
+      console.log(error);
+      return { success: false, message: "Internal server error" };
+    }
+  }
+
+
 
 
 

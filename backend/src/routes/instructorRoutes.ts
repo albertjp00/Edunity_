@@ -14,6 +14,7 @@ import { InstAuthService } from "../services/instructor/authService"
 import { CourseService } from "../services/instructor/courseServices"
 import { InstructorProfileService } from "../services/instructor/profileServices"
 import { InstEventService } from "../services/instructor/eventService"
+import { INSTRUCTOR_ROUTES } from "../routesConstants.ts/instructorRoutesContstants"
 
 
 
@@ -65,68 +66,148 @@ const messageController = new MessageController(messageService)
 const instructor = express.Router()
 
 
-instructor.post('/login',authController.login)
-instructor.post('/register',authController.register)
-instructor.post("/resendOtp", authController.resendOtp);
-instructor.post("/verifyOtp", authController.verifyOtp);
-instructor.get('/profile',instAuthMiddleware,profileController.getProfile)
-instructor.put('/profile',instAuthMiddleware,upload.single("profileImage"),profileController.editProfile)
-instructor.put('/passwordChange',instAuthMiddleware,profileController.changePassword)
-instructor.post('/kycSubmit' ,instAuthMiddleware ,
+
+
+instructor.post(INSTRUCTOR_ROUTES.AUTH.LOGIN, authController.login);
+instructor.post(INSTRUCTOR_ROUTES.AUTH.REGISTER, authController.register);
+instructor.post(INSTRUCTOR_ROUTES.AUTH.RESEND_OTP, authController.resendOtp);
+instructor.post(INSTRUCTOR_ROUTES.AUTH.VERIFY_OTP, authController.verifyOtp);
+
+instructor.post(INSTRUCTOR_ROUTES.AUTH.FORGOT_PASSWORD, authController.forgotPassword);
+instructor.post(INSTRUCTOR_ROUTES.AUTH.OTP_VERIFY_FORGOT, authController.verifyOtpForgotPass);
+instructor.post(INSTRUCTOR_ROUTES.AUTH.RESEND_FORGOT_OTP, authController.resendOtpForgotPassword);
+instructor.put(INSTRUCTOR_ROUTES.AUTH.RESET_PASSWORD, authController.resetPassword);
+
+// Profile
+instructor.get(INSTRUCTOR_ROUTES.PROFILE.GET, instAuthMiddleware, profileController.getProfile);
+instructor.put(
+  INSTRUCTOR_ROUTES.PROFILE.UPDATE,
+  instAuthMiddleware,
+  upload.single("profileImage"),
+  profileController.editProfile
+);
+instructor.put(INSTRUCTOR_ROUTES.PROFILE.CHANGE_PASSWORD, instAuthMiddleware, profileController.changePassword);
+
+instructor.post(
+  INSTRUCTOR_ROUTES.PROFILE.KYC_SUBMIT,
+  instAuthMiddleware,
   upload.fields([
-    { name: 'idProof', maxCount: 1 },
-    { name: 'addressProof', maxCount: 1 }
+    { name: "idProof", maxCount: 1 },
+    { name: "addressProof", maxCount: 1 },
   ]),
   profileController.kycSubmit
 );
 
-instructor.get('/dashboard',instAuthMiddleware,profileController.getDashboardData)
-instructor.get('/earnings',instAuthMiddleware,profileController.getEarnings)
+instructor.get(INSTRUCTOR_ROUTES.PROFILE.DASHBOARD, instAuthMiddleware, profileController.getDashboardData);
+instructor.get(INSTRUCTOR_ROUTES.PROFILE.EARNINGS, instAuthMiddleware, profileController.getEarnings);
+instructor.get(INSTRUCTOR_ROUTES.PROFILE.NOTIFICATIONS, instAuthMiddleware, profileController.getNotifications);
+instructor.get(INSTRUCTOR_ROUTES.PROFILE.WALLET, instAuthMiddleware, profileController.getWallet);
 
-instructor.get('/notifications',instAuthMiddleware,profileController.getNotifications)
+// Courses
+instructor.post(INSTRUCTOR_ROUTES.COURSE.GET_MY_COURSES, instAuthMiddleware, courseController.myCourses);
+instructor.get(INSTRUCTOR_ROUTES.COURSE.DETAILS, instAuthMiddleware, courseController.courseDetails);
+instructor.get(INSTRUCTOR_ROUTES.COURSE.REFRESH_VIDEO, instAuthMiddleware, courseController.refreshVideoUrl);
+instructor.patch(
+  INSTRUCTOR_ROUTES.COURSE.EDIT,
+  instAuthMiddleware,
+  upload.any(),
+  courseController.editCourse
+);
+instructor.post(INSTRUCTOR_ROUTES.COURSE.ADD,instAuthMiddleware,upload.any(),courseController.addCourse);
 
-instructor.post('/forgotPassword',authController.forgotPassword)  
-instructor.post('/otpVerify',authController.verifyOtpForgotPass) 
-instructor.post('/resendOtpForgotPass',authController.resendOtpForgotPassword)
-instructor.put('/resetPassword',authController.resetPassword)
+instructor.get(INSTRUCTOR_ROUTES.COURSE.PURCHASE_DETAILS, instAuthMiddleware, courseController.purchaseDetails);
 
-instructor.get('/wallet',instAuthMiddleware,profileController.getWallet)
+// Quiz
+instructor.post(INSTRUCTOR_ROUTES.COURSE.ADD_QUIZ, instAuthMiddleware, courseController.addQuiz);
+instructor.get(INSTRUCTOR_ROUTES.COURSE.GET_QUIZ, instAuthMiddleware, courseController.getQuiz);
+instructor.put(INSTRUCTOR_ROUTES.COURSE.EDIT_QUIZ, instAuthMiddleware, courseController.editQuiz);
 
+// Events
+instructor.post(INSTRUCTOR_ROUTES.EVENTS.CREATE, instAuthMiddleware, eventController.createEvents);
+instructor.get(INSTRUCTOR_ROUTES.EVENTS.LIST, instAuthMiddleware, eventController.getAllEvents);
+instructor.get(INSTRUCTOR_ROUTES.EVENTS.GET, instAuthMiddleware, eventController.getEvent);
+instructor.patch(INSTRUCTOR_ROUTES.EVENTS.EDIT, instAuthMiddleware, eventController.editEvent);
+instructor.get(INSTRUCTOR_ROUTES.EVENTS.LIST_ALL, instAuthMiddleware, eventController.getAllEvents);
 
-instructor.post('/getCourse',instAuthMiddleware,courseController.myCourses)
-instructor.get('/course/:id', instAuthMiddleware, courseController.courseDetails);
-instructor.get("/videos/refresh",instAuthMiddleware, courseController.refreshVideoUrl);
+instructor.patch(INSTRUCTOR_ROUTES.EVENTS.JOIN_EVENT, instAuthMiddleware, eventController.joinEvent);
 
-instructor.patch('/course/:id', instAuthMiddleware,upload.any(), courseController.editCourse);
-
-instructor.post("/course",instAuthMiddleware,upload.any(),courseController.addCourse);
-
-
-instructor.get('/purchaseDetails/:id',instAuthMiddleware , courseController.purchaseDetails)
-
-
-
-instructor.post('/event',instAuthMiddleware ,eventController.createEvents)
-instructor.get('/event',instAuthMiddleware ,eventController.getAllEvents)
-instructor.get('/getEvent/:id',instAuthMiddleware ,eventController.getEvent)
-instructor.patch('/event/:id',instAuthMiddleware ,eventController.editEvent)
-instructor.get('/allEvents',instAuthMiddleware ,eventController.getAllEvents)
-
-
-instructor.patch('/joinEvent/:eventId',instAuthMiddleware , eventController.joinEvent)
-// instructor.patch("/endEvent/:id",instAuthMiddleware , eventController.endSession)
-
-
-instructor.get('/getMessagedStudents',instAuthMiddleware , messageController.getMessagedStudents)
-instructor.get('/messages/:receiverId',instAuthMiddleware , messageController.getMessages)
-instructor.post('/sendMessage/:receiverId',instAuthMiddleware ,upload.single("attachment"), messageController.sendInstructorMessage)
-
-
+// Chat
+instructor.get(INSTRUCTOR_ROUTES.CHAT.MESSAGED_STUDENTS, instAuthMiddleware, messageController.getMessagedStudents);
+instructor.get(INSTRUCTOR_ROUTES.CHAT.MESSAGES, instAuthMiddleware, messageController.getMessages);
+instructor.post(
+  INSTRUCTOR_ROUTES.CHAT.SEND_MESSAGE,
+  instAuthMiddleware,
+  upload.single("attachment"),
+  messageController.sendInstructorMessage
+);
 
 
-instructor.post('/addQuiz/:id',instAuthMiddleware , courseController.addQuiz)
-instructor.get('/quiz/:courseId',instAuthMiddleware , courseController.getQuiz)
-instructor.put('/quiz/:quizId',instAuthMiddleware , courseController.editQuiz)
+
+
+
+
+// instructor.post('/login',authController.login)
+// instructor.post('/register',authController.register)
+// instructor.post("/resendOtp", authController.resendOtp);
+// instructor.post("/verifyOtp", authController.verifyOtp);
+// instructor.get('/profile',instAuthMiddleware,profileController.getProfile)
+// instructor.put('/profile',instAuthMiddleware,upload.single("profileImage"),profileController.editProfile)
+// instructor.put('/passwordChange',instAuthMiddleware,profileController.changePassword)
+// instructor.post('/kycSubmit' ,instAuthMiddleware ,
+//   upload.fields([
+//     { name: 'idProof', maxCount: 1 },
+//     { name: 'addressProof', maxCount: 1 }
+//   ]),
+//   profileController.kycSubmit
+// );
+
+// instructor.get('/dashboard',instAuthMiddleware,profileController.getDashboardData)
+// instructor.get('/earnings',instAuthMiddleware,profileController.getEarnings)
+
+// instructor.get('/notifications',instAuthMiddleware,profileController.getNotifications)
+
+// instructor.post('/forgotPassword',authController.forgotPassword)  
+// instructor.post('/otpVerify',authController.verifyOtpForgotPass) 
+// instructor.post('/resendOtpForgotPass',authController.resendOtpForgotPassword)
+// instructor.put('/resetPassword',authController.resetPassword)
+
+// instructor.get('/wallet',instAuthMiddleware,profileController.getWallet)
+
+
+// instructor.post('/getCourse',instAuthMiddleware,courseController.myCourses)
+// instructor.get('/course/:id', instAuthMiddleware, courseController.courseDetails);
+// instructor.get("/videos/refresh",instAuthMiddleware, courseController.refreshVideoUrl);
+
+// instructor.patch('/course/:id', instAuthMiddleware,upload.any(), courseController.editCourse);
+
+// instructor.post("/course",instAuthMiddleware,upload.any(),courseController.addCourse);
+
+
+// instructor.get('/purchaseDetails/:id',instAuthMiddleware , courseController.purchaseDetails)
+
+
+
+// instructor.post('/event',instAuthMiddleware ,eventController.createEvents)
+// instructor.get('/event',instAuthMiddleware ,eventController.getAllEvents)
+// instructor.get('/getEvent/:id',instAuthMiddleware ,eventController.getEvent)
+// instructor.patch('/event/:id',instAuthMiddleware ,eventController.editEvent)
+// instructor.get('/allEvents',instAuthMiddleware ,eventController.getAllEvents)
+
+
+// instructor.patch('/joinEvent/:eventId',instAuthMiddleware , eventController.joinEvent)
+// // instructor.patch("/endEvent/:id",instAuthMiddleware , eventController.endSession)
+
+
+// instructor.get('/getMessagedStudents',instAuthMiddleware , messageController.getMessagedStudents)
+// instructor.get('/messages/:receiverId',instAuthMiddleware , messageController.getMessages)
+// instructor.post('/sendMessage/:receiverId',instAuthMiddleware ,upload.single("attachment"), messageController.sendInstructorMessage)
+
+
+
+
+// instructor.post('/addQuiz/:id',instAuthMiddleware , courseController.addQuiz)
+// instructor.get('/quiz/:courseId',instAuthMiddleware , courseController.getQuiz)
+// instructor.put('/quiz/:quizId',instAuthMiddleware , courseController.editQuiz)
 
 
 

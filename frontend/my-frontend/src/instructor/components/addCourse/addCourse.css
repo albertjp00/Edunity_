@@ -1,107 +1,121 @@
 .addCourse {
   display: flex;
-  justify-content: flex-start;
-  padding: 40px;
-  background-color: #f9f9f9;
-  min-height: 100vh;
-  
+  justify-content: center;
+  padding: 20px;
 }
 
 .add-course-form {
-  width: 50%; 
-  background: #fff;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  width: 700px;
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
-
 
 .add-course-form h2 {
   margin-bottom: 20px;
-  font-size: 26px;
-  font-weight: bold;
-  color: #333;
-  border-bottom: 2px solid #eee;
-  padding-bottom: 10px;
+  text-align: center;
 }
 
-.add-course-form label {
+label {
+  font-weight: 100;
+  margin-top: 35px;
   display: block;
-  margin-bottom: 6px;
-  font-weight: 500;
-  color: #444;
+  font-size: 18px;
 }
 
-.add-course-form input,
-.add-course-form textarea,
-.add-course-form select {
+.title-name{
   width: 100%;
   padding: 10px;
-  margin-bottom: 18px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 15px;
+  margin-top: 6px;
+  border-radius: 6px;
+  border: 1px solid #d1d1d1;
+  outline: none;
+  font-size: 14px;
   background-color: white;
   color: black;
 }
 
-.add-course-form textarea {
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  border-radius: 6px;
+  border: 1px solid #d1d1d1;
+  outline: none;
+  font-size: 14px;
+  background-color: white;
+  color: black;
+}
+
+textarea {
+  min-height: 90px;
   resize: vertical;
-  min-height: 100px;
 }
 
 .skills-checkbox-group {
   display: flex;
-  gap: 15px;
+  gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 20px;
+  margin-top: 10px;
 }
 
 .skill-checkbox {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 14px;
+  background: #f6f6f6;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
-.selected-skills {
-  margin-bottom: 20px;
-  background: #f0f4ff;
-  padding: 10px;
-  border-radius: 6px;
+.access-type-group {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.access-radio {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
 }
 
 .module-card {
   padding: 15px;
-  background: #f7f7f7;
   border-radius: 8px;
-  margin-bottom: 15px;
+  background: #fafafa;
+  border: 1px solid #e2e2e2;
+  margin-top: 15px;
 }
 
 button {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 8px;
   cursor: pointer;
-  font-size: 15px;
-  font-weight: 500;
-}
-
-button[type="button"] {
-  background: #eaeaea;
-  color: #333;
-  margin-bottom: 20px;
-}
-
-button[type="button"]:hover {
-  background: #ddd;
 }
 
 .add-course-btn {
-  background: #007bff;
-  color: #fff;
+  margin-top: 20px;
+  width: 100%;
+  padding: 10px;
+  background: #4a77f8;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .add-course-btn:hover {
-  background: #0056b3;
+  background: #335eea;
+}
+
+.module-card input,
+.module-card textarea {
+  margin-bottom: 8px;
 }

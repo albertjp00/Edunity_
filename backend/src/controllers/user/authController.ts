@@ -8,6 +8,7 @@ import { IAuthBasicController, IAuthForgotPasswordController,
    IAuthGoogleController, IAuthRegisterController } from "../../interfaces/userInterfaces";
 import { IUserAuthService } from "../../interfacesServices.ts/userServiceInterfaces";
 import { LoginMapper } from "../../mapper/user.mapper";
+import { StatusMessage } from "../../enums/statusMessage";
 // import { AuthService } from "../../services/user/authService";
 
 
@@ -42,7 +43,7 @@ export class AuthController
       logger.info(`Login user: ${req.body.email}`);
 
       if (!email || !password) {
-        res.status(HttpStatus.BAD_REQUEST).json({ message: "Email and password are required" });
+        res.status(HttpStatus.BAD_REQUEST).json({ message: StatusMessage.EMAIL_AND_PASWWORD });
         return;
       }
 
@@ -90,23 +91,23 @@ export class AuthController
       logger.info('refresh token ', token);
 
       if (!token) {
-        res.status(HttpStatus.UNAUTHORIZED).json({ message: "Refresh token required" });
+        res.status(HttpStatus.UNAUTHORIZED).json({ message: StatusMessage.TOKEN_REQUIRED });
         return;
       }
 
       jwt.verify(token, REFRESH_KEY, (err: any, user: any) => {
         if (err) {
-          res.status(HttpStatus.FORBIDDEN).json({ message: "Invalid refresh token" });
+          res.status(HttpStatus.FORBIDDEN).json({ message: StatusMessage.INVALID_REFRESH_TOKEN });
           return;
         }
 
         if (!process.env.ACCESS_SECRET) throw new Error("ACCESS_SECRET not set");
         if (!process.env.REFRESH_TIME) throw new Error("REFRESH_TIME not set");
 
-        const refresh = parseInt(process.env.REFRESH_TIME!,10)
+      
 
         const newAccessToken = jwt.sign({ id: user.id }, SECRET_KEY, {
-          expiresIn: refresh,
+          expiresIn: Number(process.env.REFRESH_TIME),
         });
 
         res.json({ accessToken: newAccessToken });
@@ -128,10 +129,10 @@ export class AuthController
         path: "/", // must match the cookie path you set when issuing it
       });
 
-      res.status(HttpStatus.OK).json({ success: true, message: "Logged out successfully" });
+      res.status(HttpStatus.OK).json({ success: true });
     } catch (err) {
       next(err)
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Logout failed" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false });
 
     }
   };
@@ -141,9 +142,10 @@ export class AuthController
   checkBlocked = async (req: AuthRequest, res: Response) => {
     try {
       const id = req.user?.id!
-      logger.info('blocked or not ', id);
-
+      
       const isBlocked = await this._authService.isBlocked(id)
+      // console.log('blocked or not',isBlocked);
+      
       res.json({ blocked: isBlocked })
     } catch (error) {
       console.log(error);
@@ -169,7 +171,7 @@ export class AuthController
       next(error)
       res
         .status(HttpStatus.BAD_REQUEST)
-        .json({ success: false, message: error.message || "Registration failed" });
+        .json({ success: false, message: error.message || StatusMessage.REGISTRATION_FAILED });
     }
   };
 
@@ -179,17 +181,17 @@ export class AuthController
       const { email } = req.body;
 
       if (!email) {
-        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: "Email is required" });
+        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: StatusMessage.EMAIL_REQUIRED });
         return;
       }
 
       await this._authService.resendOtpRequest(email);
 
-      res.status(HttpStatus.OK).json({ success: true, message: "OTP resent successfully" });
+      res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.OTP_SENT });
     } catch (error) {
       // console.error(error);
       next(error)
-      res.status(500).json({ success: false, message: "Failed to resend OTP" });
+      res.status(500).json({ success: false, message: StatusMessage.OTP_RESEND_FAILED });
     }
   };
 
@@ -219,7 +221,7 @@ export class AuthController
       // console.log(req.body);
 
       if (!token) {
-        res.status(HttpStatus.BAD_REQUEST).json({ message: "Token is required" });
+        res.status(HttpStatus.BAD_REQUEST).json({ message: StatusMessage.TOKEN_REQUIRED });
         return;
       }
       const { accessToken, refreshToken, user } = await this._authService.googleLogin(token);
@@ -237,7 +239,7 @@ export class AuthController
     } catch (error: any) {
       // console.error("Google Sign-In error:", error);
       next(error)
-      res.status(500).json({ message: error.message || "Google Sign-In failed" });
+      res.status(500).json({ message: error.message || StatusMessage.GOOGLE_SIGN_IN_FALIED });
     }
   };
 
@@ -252,11 +254,11 @@ export class AuthController
         return;
       }
 
-      res.status(HttpStatus.OK).json({ success: true, message: "OTP sent successfully" });
+      res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.OTP_SENT });
     } catch (error) {
       // console.error(error);
       next(error)
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: StatusMessage.INTERNAL_SERVER_ERROR });
     }
   };
 
@@ -274,11 +276,11 @@ export class AuthController
 
       }
 
-      res.status(HttpStatus.OK).json({ success: true, message: "OTP verified successfully" });
+      res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.OTP_VERIFIED });
     } catch (error) {
       // console.error(error);
       next(error)
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: StatusMessage.INTERNAL_SERVER_ERROR });
     }
   };
 
@@ -289,17 +291,17 @@ export class AuthController
 
 
       if (!email) {
-        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: "Email is required" });
+        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: StatusMessage.EMAIL_REQUIRED });
         return;
       }
 
       await this._authService.forgotPassword(email);
 
-      res.status(HttpStatus.OK).json({ success: true, message: "OTP resent successfully" });
+      res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.OTP_SENT });
     } catch (error) {
       // console.error(error);
       next(error)
-      res.status(500).json({ success: false, message: "Failed to resend OTP" });
+      res.status(500).json({ success: false, message: StatusMessage.OTP_RESEND_FAILED });
     }
   };
 
@@ -325,11 +327,11 @@ export class AuthController
         return;
       }
 
-      res.json({ success: true, message: "Password changed successfully" });
+      res.json({ success: true, message: StatusMessage.PASSWORD_CHANGED });
     } catch (error) {
       // console.error(error);
       next(error)
-      res.json({ success: false, message: "Internal server error" });
+      res.json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
     }
   };
 

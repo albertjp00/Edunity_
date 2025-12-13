@@ -1,6 +1,6 @@
 import React, { useEffect, useState, type ChangeEvent } from "react";
 import "./purchases.css";
-import adminApi from "../../../api/adminApi";
+import { getPurchases } from "../../services/adminServices";
 
 interface Purchase {
   _id: string;
@@ -36,9 +36,7 @@ const Purchases: React.FC = () => {
   const fetchPurchases = async (search: string = "", page: number = 1) => {
     try {
       setLoading(true);
-      const res = await adminApi.get(
-        `/admin/purchases?search=${search}&page=${page}`
-      );
+      const res = await getPurchases(search , page)
       // console.log(res);
       const resData = res.data.purchases
       console.log(resData);

@@ -104,6 +104,8 @@ export const setupSocket = (io: Server) => {
       else socket.to(eventId).emit("offer", { offer, from });
     });
 
+    
+
     socket.on("answer", ({ eventId, answer, from, to }: any) => {
       if (to) io.to(to).emit("answer", { answer, from });
       else socket.to(eventId).emit("answer", { answer, from });

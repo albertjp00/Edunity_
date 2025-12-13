@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import "./verifyKyc.css"
 import { toast } from "react-toastify"
-import adminApi from "../../../api/adminApi"
+import { getKyc, KycReject, KycVerify } from "../../services/adminServices"
 
 interface KycDetails {
   instructorId: string
@@ -21,7 +21,10 @@ const VerifyKYC: React.FC = () => {
 
   const fetchKyc = async () => {
     try {
-      const res = await adminApi.get(`/admin/getKyc/${id}`)
+      if(!id){
+        return
+      }
+      const res = await getKyc(id)
       console.log(res);
       
       setKyc(res.data.data)
@@ -34,7 +37,7 @@ const VerifyKYC: React.FC = () => {
   const verifyKyc = async () => {
     if (!kyc) return
     try {
-      const res = await adminApi.put(`/admin/verifyKyc/${kyc.instructorId}`)
+      const res = await KycVerify(kyc.instructorId)
       if (res.data.success) {
         toast.success("KYC Verified")
         navigate("/admin/instructors")
@@ -53,10 +56,7 @@ const VerifyKYC: React.FC = () => {
     }
 
     try {
-      const res = await adminApi.put(
-        `/admin/rejectKyc/${kyc.instructorId}`,
-        { reason: selectedReason }
-      )
+      const res = await KycReject(kyc.instructorId , selectedReason)
       if (res.data.success) {
         toast.success("KYC Rejected")
         navigate("/admin/instructors")

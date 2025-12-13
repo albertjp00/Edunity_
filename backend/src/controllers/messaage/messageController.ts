@@ -6,6 +6,7 @@ import {
   UserMessageController
 } from "../../interfaces/messageInterfaces";
 import { IMessageService } from "../../interfacesServices.ts/messageServiceInterface";
+import { StatusMessage } from "../../enums/statusMessage";
 // import { MessageService } from "../../services/message/messageService";
 
 
@@ -45,7 +46,7 @@ export class MessageController implements
       const { id } = req.params;
       const instructor = await this.messageService.getInstructorToMessage(id as string);
       if (!instructor) {
-        res.status(HttpStatus.NOT_FOUND).json({ success: false, message: "Instructor not found" });
+        res.status(HttpStatus.NOT_FOUND).json({ success: false, message: StatusMessage.INSTRUCTOR_NOT_FOUND });
         return
       }
 
@@ -59,7 +60,7 @@ export class MessageController implements
       });
     } catch (error) {
       console.error(error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to fetch instructor" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.FAILED_TO_FETCH_DATA });
       next(error)
     }
   };
@@ -117,7 +118,7 @@ export class MessageController implements
       res.status(201).json({ success: true, message });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, error: "Failed to send message" });
+      res.status(500).json({ success: false, error: StatusMessage.FAILED_TO_SEND_MESSAGE });
       next(error)
     }
   };
@@ -146,7 +147,7 @@ export class MessageController implements
       res.status(HttpStatus.OK).json({ success: true, messages });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, error: "Failed to fetch chat history" });
+      res.status(500).json({ success: false, error: StatusMessage.FAILED_TO_FETCH_DATA });
       next(error)
     }
   };
@@ -237,7 +238,7 @@ export class MessageController implements
       res.status(HttpStatus.OK).json({ success: true, message });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, error: "Failed to send message" });
+      res.status(500).json({ success: false, error: StatusMessage.FAILED_TO_SEND_MESSAGE });
       next(error)
     }
   };

@@ -6,6 +6,7 @@ import { otpStore } from "../../utils/otpStore";
 import { generateOtp } from "../../utils/otp";
 import { sendOtp } from "../../utils/sendMail";
 import { InstAuthRequest } from "../../middleware/authMiddleware";
+import { StatusMessage } from "../../enums/statusMessage";
 
 dotenv.config()
 
@@ -212,24 +213,24 @@ export class InstAuthService {
             const storedData = otpStore.get(email);
 
             if (!storedData) {
-                return { success: false, message: "OTP not found or expired" };
+                return { success: false, message: StatusMessage.OTP_NOT_FOUND };
             }
 
             if (Date.now() > storedData.expiresAt) {
                 otpStore.delete(email);
-                return { success: false, message: "OTP expired" };
+                return { success: false, message: StatusMessage.OTP_EXPIRED };
             }
 
             if (storedData.otp !== otp) {
-                return { success: false, message: "Incorrect OTP" };
+                return { success: false, message: StatusMessage.INVALID_OTP };
             }
 
             otpStore.delete(email);
 
-            return { success: true, message: "OTP verified successfully" };
+            return { success: true, message: StatusMessage.OTP_VERIFIED };
         } catch (error) {
             console.error(error);
-            return { success: false, message: "OTP verification failed" };
+            return { success: false, message: StatusMessage.OTP_VERIFICATION_FAILED };
         }
     };
 

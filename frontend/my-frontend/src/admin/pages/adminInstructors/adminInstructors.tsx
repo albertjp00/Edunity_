@@ -1,9 +1,9 @@
 import React, { useEffect, useState} from 'react';
 import './adminInstructors.css';
 import { Link } from 'react-router-dom';
-import adminApi from '../../../api/adminApi';
 import AdminList from '../../components/usersInstructorList/usersList';
 import useDebounce from '../../components/debounce/debounce';
+import { getInstructorsData } from '../../services/adminServices';
 
 interface Instructor {
   _id: string;
@@ -14,15 +14,15 @@ interface Instructor {
   KYCstatus: 'notApplied' | 'verified' | 'pending' | 'rejected';
 }
 
-interface InstructorsResponse {
-  mapped: {
-    id:string
-    instructors: Instructor[];
-    totalPages: number;
-    currentPage: number;
-    totalInstructors: number;
-  }
-}
+// interface InstructorsResponse {
+//   mapped: {
+//     id:string
+//     instructors: Instructor[];
+//     totalPages: number;
+//     currentPage: number;
+//     totalInstructors: number;
+//   }
+// }
 
 
 const InstructorsAdmin: React.FC = () => {
@@ -35,7 +35,7 @@ const InstructorsAdmin: React.FC = () => {
 
   const getInstructors = async (currentPage: number, search: string = ''): Promise<void> => {
     try {
-      const response = await adminApi.get<InstructorsResponse>(`/admin/getInstructors?page=${currentPage}&search=${search}`);
+      const response  = await getInstructorsData(search , currentPage)
       console.log(response);
       const resData = response.data
       setInstructors(resData.mapped.instructors);

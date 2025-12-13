@@ -3,9 +3,10 @@ import "./adminLogin.css";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import type { AxiosError } from "axios";
-import api from "../../../api/userApi";
+// import api from "../../../api/userApi";
+import { adminLogin } from "../../services/adminServices";
 
-interface LoginFormData {
+export interface LoginFormData {
   email: string;
   password: string;
 }
@@ -28,8 +29,10 @@ const LoginAdmin: React.FC = () => {
   const onSubmitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await api.post("/admin/login", value);
-
+      const response = await adminLogin(value)
+      if(!response) {
+        return
+      }
       // if (response.status === 200 && response.data.accessToken) {
       //   localStorage.setItem("token", response.data.accessToken);
       //   navigate("/user/home");

@@ -3,9 +3,8 @@ import React, { useEffect, useState } from "react";
 import profilePic from "../../../assets/profilePic.png";
 import { useNavigate, useParams } from "react-router-dom";
 import "./userDetails.css";
-import adminApi from "../../../api/adminApi";
 import type { AdminUserCourses, User } from "../../adminInterfaces";
-import { getUserCourses, getUserDetails } from "../../services/adminServices";
+import { getUserCourses, getUserDetails, toggleBlockUserApi } from "../../services/adminServices";
 
 
 
@@ -51,9 +50,11 @@ const AdminUserDetails: React.FC = () => {
 
   const toggleBlockUser = async () => {
     try {
-      await adminApi.put(`/admin/blockUser/${id}`, {
-        blocked: !user.blocked,
-      });
+      if(!id){ 
+        console.log('id undefined') 
+        return;
+      }
+       await toggleBlockUserApi(id, !user.blocked);
       setUser({ ...user, blocked: !user.blocked });
     } catch (error) {
       console.error("Error blocking/unblocking user:", error);

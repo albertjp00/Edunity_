@@ -10,6 +10,7 @@ import { HttpStatus } from "../../enums/httpStatus.enums";
 import { IInstCourseManageController, IInstCourseViewController, IInstQuizController } from "../../interfaces/instructorInterfaces";
 import { IInstCourseService } from "../../interfacesServices.ts/instructorServiceInterface";
 import { mapCourseDetailsToDTO, mapInstructorCourseToDTO } from "../../mapper/instructor.mapper";
+import { StatusMessage } from "../../enums/statusMessage";
 // import { CourseService } from "../../services/instructor/courseServices";
 
 
@@ -78,7 +79,7 @@ export class InstCourseController implements
       const courseId = req.params.id!
       const result = await this._courseService.fetchCourseDetails(courseId)
       if (!result || !result.course) {
-        res.status(404).json({ success: false, message: "Course not found" });
+        res.status(404).json({ success: false, message:StatusMessage.COURSE_NOT_FOUND });
         return
       }
       // console.log("coursedetails", result?.course.modules);
@@ -101,7 +102,7 @@ export class InstCourseController implements
     try {
       const { key } = req.query; // frontend sends the key (filename)
       if (!key) {
-        res.status(400).json({ success: false, message: "Missing key" });
+        res.status(400).json({ success: false, message: StatusMessage.MISSING_KEY });
         return
       }
 
@@ -109,7 +110,7 @@ export class InstCourseController implements
       res.status(HttpStatus.OK).json({ success: true, url: signedUrl });
     } catch (error) {
       console.error("Error refreshing video URL:", error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Error generating URL" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.ERROR_LINK });
       next(error)
     }
   };
@@ -124,14 +125,14 @@ export class InstCourseController implements
       console.log(data);
 
       if (!data) {
-        res.status(404).json({ success: false, message: "No purchases found" });
+        res.status(404).json({ success: false, message: StatusMessage.PURCHASE_NOT_FOUND });
         return
       }
 
       res.status(HttpStatus.OK).json({ success: true, details: data });
     } catch (error) {
       console.error(error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
       next(error)
     }
   };
@@ -140,8 +141,8 @@ export class InstCourseController implements
     try {
       const courseId = req.params.id!;
       const files = Array.isArray(req.files) ? req.files : [];
-      // console.log("📦 Edit Course:", courseId);
-      // console.log("🗂️ Multer Files:", files);
+      // console.log(" Edit Course:", courseId);
+      // console.log(" Multer Files:", files);
 
       const skills =
         typeof req.body.skills === "string"
@@ -196,14 +197,14 @@ export class InstCourseController implements
 
 
       if (!result) {
-        res.status(404).json({ success: false, message: "Course not found" });
+        res.status(404).json({ success: false, message: StatusMessage.COURSE_NOT_FOUND });
         return;
       }
 
       res.status(HttpStatus.OK).json({ success: true });
     } catch (error) {
       console.error("❌ Error editing course:", error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal Server Error" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message:StatusMessage.INTERNAL_SERVER_ERROR });
       next(error)
     }
   };
@@ -231,12 +232,9 @@ export class InstCourseController implements
 
       const files = Array.isArray(req.files) ? req.files : [];
 
-
       const moduleIndexes = req.body.modules.map((_: any, i: number) => i);
 
-
       const modules = [];
-
 
       for (const index of moduleIndexes) {
         const title = req.body.modules?.[index]?.title;
@@ -276,6 +274,7 @@ export class InstCourseController implements
         price: Number(req.body.price),
         level: req.body.level,
         category: req.body.category,
+        accessType : req.body.accessType,
         modules,
         thumbnail: thumbnailFile ? thumbnailFile.filename : undefined,
       };
@@ -289,7 +288,7 @@ export class InstCourseController implements
       res.status(HttpStatus.OK).json({ success: true });
     } catch (error) {
       console.error("❌ Error adding course:", error);
-      res.status(500).json({ success: false, message: "Error adding course" });
+      res.status(500).json({ success: false, message: StatusMessage.ERROR_ADDING_COURSE });
       next(error)
     }
   };
@@ -309,7 +308,7 @@ export class InstCourseController implements
 
 
       if (!id || !title || !questions) {
-        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: "Missing required fields" });
+        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: StatusMessage.MISSING_FIELDS });
         return;
       }
 
@@ -322,7 +321,7 @@ export class InstCourseController implements
       console.error("Error adding quiz:", error);
 
       const message =
-        error instanceof Error ? error.message : "Something went wrong";
+        error instanceof Error ? error.message : StatusMessage.SOMETHING_WRONG;
 
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message });
       next(error)
@@ -342,7 +341,7 @@ export class InstCourseController implements
       const result = await this._courseService.getQuiz(courseId as string)
 
       if (!result) {
-        res.json({ success: false, message: "Quiz not found" });
+        res.json({ success: false, message: StatusMessage.QUIZ_NOT_FOUND });
         return;
       }
 

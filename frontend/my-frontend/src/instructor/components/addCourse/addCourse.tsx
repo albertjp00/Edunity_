@@ -8,7 +8,7 @@ interface Module {
   title: string;
   video: File | null;
   content: string;
-  videoFile ?: File;
+  videoFile?: File;
 }
 
 interface CourseForm {
@@ -20,6 +20,7 @@ interface CourseForm {
   level: string;
   modules: Module[];
   category: string;
+  accessType: 'subscription' | 'oneTime' | '';
 }
 
 const AddCourse: React.FC = () => {
@@ -34,6 +35,7 @@ const AddCourse: React.FC = () => {
     level: "Beginner",
     modules: [],
     category: "",
+    accessType: 'oneTime'
   });
 
   const handleChange = (
@@ -69,101 +71,114 @@ const AddCourse: React.FC = () => {
     });
   };
 
-// const validateCourseForm = (form: CourseForm): boolean => {
-//         const MAX_TITLE_LENGTH = 30;
-//         const MAX_DESCRIPTION_LENGTH = 1000;
-//         const MAX_CONTENT_LENGTH = 2000; 
-//         const MAX_PRICE = 1000;
-//         const MAX_FILE_SIZE_MB = 50;
+  const validateCourseForm = (form: CourseForm): boolean => {
+    const MAX_TITLE_LENGTH = 30;
+    const MAX_DESCRIPTION_LENGTH = 1000;
+    const MAX_CONTENT_LENGTH = 2000;
+    const MAX_PRICE = 1000;
+    const MAX_FILE_SIZE_MB = 50;
 
-//         if (!form.title.trim()) {
-//             toast.error("Course title is required");
-//             return false;
-//         }
-//         if (form.title.length > MAX_TITLE_LENGTH) {
-//             toast.error(`Title should not exceed ${MAX_TITLE_LENGTH} characters`);
-//             return false;
-//         }
+    if (!form.title.trim()) {
+      toast.error("Course title is required");
+      return false;
+    }
+    if (form.title.length > MAX_TITLE_LENGTH) {
+      toast.error(`Title should not exceed ${MAX_TITLE_LENGTH} characters`);
+      return false;
+    }
 
-//         if (!form.description.trim()) {
-//             toast.error("Description is required");
-//             return false;
-//         }
-//         if (form.description.length > MAX_DESCRIPTION_LENGTH) {
-//             toast.error(`Description should not exceed ${MAX_DESCRIPTION_LENGTH} characters`);
-//             return false;
-//         }
+    if (!form.description.trim()) {
+      toast.error("Description is required");
+      return false;
+    }
+    if (form.description.length > MAX_DESCRIPTION_LENGTH) {
+      toast.error(`Description should not exceed ${MAX_DESCRIPTION_LENGTH} characters`);
+      return false;
+    }
 
-//         if (!form.price || isNaN(Number(form.price)) || Number(form.price) <= 0) {
-//             toast.error("Enter a valid price greater than 0");
-//             return false;
-//         }
-//         if (Number(form.price) > MAX_PRICE) {
-//             toast.error(`Price cannot exceed ₹${MAX_PRICE}`);
-//             return false;
-//         }
+    if (!form.price || isNaN(Number(form.price)) || Number(form.price) <= 0) {
+      toast.error("Enter a valid price greater than 0");
+      return false;
+    }
+    if (Number(form.price) > MAX_PRICE) {
+      toast.error(`Price cannot exceed ₹${MAX_PRICE}`);
+      return false;
+    }
 
-//         if (!form.category.trim()) {
-//             toast.error("Category is required");
-//             return false;
-//         }
+    if (!form.category.trim()) {
+      toast.error("Category is required");
+      return false;
+    }
 
-//         if (!form.level.trim()) {
-//             toast.error("Level is required");
-//             return false;
-//         }
+    if (!form.level.trim()) {
+      toast.error("Level is required");
+      return false;
+    }
 
-//         if (!form.skills.length) {
-//             toast.error("At least one skill is required");
-//             return false;
-//         }
+    if (!form.skills.length) {
+      toast.error("At least one skill is required");
+      return false;
+    }
 
-//         if (form.thumbnail instanceof File) {
-//             if (form.thumbnail.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-//                 toast.error(`Thumbnail size must be less than ${MAX_FILE_SIZE_MB}MB`);
-//                 return false;
-//             }
-//         }
+    if (form.thumbnail instanceof File) {
+      if (form.thumbnail.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+        toast.error(`Thumbnail size must be less than ${MAX_FILE_SIZE_MB}MB`);
+        return false;
+      }
+    }
 
-//         if (!form.modules.length) {
-//             toast.error("Add at least one module");
-//             return false;
-//         }
+    if (!form.modules.length) {
+      toast.error("Add at least one module");
+      return false;
+    }
 
-//         for (let i = 0; i < form.modules.length; i++) {
-//             const mod = form.modules[i];
+    if (!form.accessType) {
+      toast.error("Please select course access type");
+      return false;
+    }
 
-//             if (!mod.title.trim()) {
-//                 toast.error(`Module ${i + 1} title is required`);
-//                 return false;
-//             }
-//             if (mod.title.length > MAX_TITLE_LENGTH) {
-//                 toast.error(`Module ${i + 1} title cannot exceed ${MAX_TITLE_LENGTH} characters`);
-//                 return false;
-//             }
+    if (form.accessType !== "subscription") {
+      if (!form.price || Number(form.price) <= 0) {
+        toast.error("Enter a valid price for one-time purchase");
+        return false;
+      }
+    }
 
-//             if (!mod.content.trim()) {
-//                 toast.error(`Module ${i + 1} content is required`);
-//                 return false;
-//             }
-//             if (mod.content.length > MAX_CONTENT_LENGTH) {
-//                 toast.error(`Module ${i + 1} content too long (max ${MAX_CONTENT_LENGTH} chars)`);
-//                 return false;
-//             }
 
-//             if (mod.videoFile && mod.videoFile.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-//                 toast.error(`Module ${i + 1} video exceeds ${MAX_FILE_SIZE_MB}MB`);
-//                 return false;
-//             }
-//         }
+    for (let i = 0; i < form.modules.length; i++) {
+      const mod = form.modules[i];
 
-//         return true; // ✅ Passed all validations
-//     };
+      if (!mod.title.trim()) {
+        toast.error(`Module ${i + 1} title is required`);
+        return false;
+      }
+      if (mod.title.length > MAX_TITLE_LENGTH) {
+        toast.error(`Module ${i + 1} title cannot exceed ${MAX_TITLE_LENGTH} characters`);
+        return false;
+      }
+
+      if (!mod.content.trim()) {
+        toast.error(`Module ${i + 1} content is required`);
+        return false;
+      }
+      if (mod.content.length > MAX_CONTENT_LENGTH) {
+        toast.error(`Module ${i + 1} content too long (max ${MAX_CONTENT_LENGTH} chars)`);
+        return false;
+      }
+
+      if (mod.videoFile && mod.videoFile.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+        toast.error(`Module ${i + 1} video exceeds ${MAX_FILE_SIZE_MB}MB`);
+        return false;
+      }
+    }
+
+    return true; // ✅ Passed all validations
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    // if (!validateCourseForm(form)) return;
+    if (!validateCourseForm(form)) return;
 
     try {
       const formData = new FormData();
@@ -173,13 +188,14 @@ const AddCourse: React.FC = () => {
       formData.append("price", form.price);
       formData.append("level", form.level);
       formData.append("category", form.category);
+      formData.append('accessType',form.accessType)
 
 
       if (form.thumbnail) {
         formData.append("thumbnail", form.thumbnail);
       }
 
-      
+
       form.modules.forEach((module, index) => {
         formData.append(`modules[${index}][title]`, module.title);
         formData.append(`modules[${index}][content]`, module.content);
@@ -188,10 +204,10 @@ const AddCourse: React.FC = () => {
         }
       });
 
-          
+
 
       const res = await addCourse(formData)
-      if(!res) return
+      if (!res) return
       if (res.data.success) {
         toast.success("Course added successfully!");
         navigate("/instructor/home");
@@ -208,7 +224,7 @@ const AddCourse: React.FC = () => {
         <h2>Add New Course</h2>
 
         <label>Course Title</label>
-        <input name="title" placeholder="Course Title" onChange={handleChange} />
+        <input className="title-name" name="title" placeholder="Course Title" onChange={handleChange} />
 
         <label>Description</label>
         <textarea
@@ -258,6 +274,34 @@ const AddCourse: React.FC = () => {
           <option value="Design">Design</option>
           <option value="Language">Language</option>
         </select>
+
+        <label>Course Access Type</label>
+        <div className="access-type-group">
+          <label className="access-radio">
+            <input
+              type="radio"
+              name="accessType"
+              value="subscription"
+              checked={form.accessType === "subscription"}
+              onChange={handleChange}
+            />
+            Subscription 
+          </label>
+
+          <label className="access-radio">
+            <input
+              type="radio"
+              name="accessType"
+              value="oneTime"
+              checked={form.accessType === "oneTime"}
+              onChange={handleChange}
+            />
+            One-Time Purchase
+          </label>
+
+          
+        </div>
+
 
         <label>Price</label>
         <input

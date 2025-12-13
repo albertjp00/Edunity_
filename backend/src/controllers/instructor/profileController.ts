@@ -6,6 +6,7 @@ import { IInstFinancialController, IInstKYCController,
 import { IInstructorProfileService } from '../../interfacesServices.ts/instructorServiceInterface';
 import { mapDashboardToDTO, mapEarningsToDTO, mapInstructorProfileToDTO, mapNotificationToDTO, walleToDto } from '../../mapper/instructor.mapper';
 import { INotification } from '../../models/notification';
+import { StatusMessage } from '../../enums/statusMessage';
 // import { InstructorProfileService } from '../../services/instructor/profileServices';
 
 
@@ -74,7 +75,7 @@ export class InstProfileController implements
 
             if (updatedProfile) {
                 res.status(HttpStatus.OK).json({
-                    success: true, message: 'Profile updated successfully',
+                    success: true, message: StatusMessage.PROFILE_UPDATED,
                     profile: updatedProfile
                 })
             } else {
@@ -94,20 +95,20 @@ export class InstProfileController implements
             const { newPassword, oldPassword } = req.body;
 
             if (!id) {
-                res.status(401).json({ success: false, message: "Unauthorized" });
+                res.status(401).json({ success: false, message: StatusMessage.UNAUTHORIZED });
                 return;
             }
 
             const result = await this._profileService.passwordChange(id, newPassword, oldPassword);
 
             if (result) {
-                res.status(HttpStatus.OK).json({ success: true, message: "Password updated successfully" });
+                res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.PASSWORD_CHANGED });
             } else {
-                res.status(HttpStatus.FORBIDDEN).json({ success: false, message: "Old password is incorrect" });
+                res.status(HttpStatus.FORBIDDEN).json({ success: false, message: StatusMessage.INCORRECT_PASSWORD });
             }
         } catch (error) {
             console.error(error);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
             next(error)
         }
     };
@@ -121,7 +122,7 @@ export class InstProfileController implements
             const addressProofFile = (req.files as { [fieldname: string]: Express.Multer.File[] })["addressProof"]?.[0]
 
             if (!id || !idProofFile || !addressProofFile) {
-                res.status(400).json({ success: false, message: "Missing required fields" })
+                res.status(400).json({ success: false, message: StatusMessage.MISSING_FIELDS })
                 return
             }
 
@@ -130,7 +131,7 @@ export class InstProfileController implements
             res.status(HttpStatus.OK).json({ success: true})
         } catch (error) {
             console.error(error)
-            res.status(500).json({ success: false, message: "Server error" })
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR })
             next(error)
         }
     }
@@ -151,7 +152,7 @@ export class InstProfileController implements
             res.status(HttpStatus.OK).json({ success: true, notifications: notificationDto })
         } catch (error) {
             console.error(error)
-            res.status(500).json({ success: false, message: "Server error" })
+            res.status(500).json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR })
             next(error)
         }
     }

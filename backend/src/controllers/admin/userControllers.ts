@@ -3,6 +3,7 @@ import { HttpStatus } from "../../enums/httpStatus.enums";
 import { IAdminUserManagementController } from "../../interfaces/adminInterfaces";
 import { mapAdminUserCourseToDTO, mapUserToDTO } from "../../mapper/admin.mapper";
 import { IAdminUserServices } from "../../interfacesServices.ts/adminServiceInterfaces";
+import { StatusMessage } from "../../enums/statusMessage";
 // import { AdminUserService } from "../../services/admin/userServices";
 
 
@@ -53,7 +54,7 @@ export class AdminUserController implements IAdminUserManagementController {
                 totalUsers: data.totalUsers
             });
         } catch (error) {
-            res.status(500).json({ message: "Error fetching users", error });
+            res.status(500).json({ message: StatusMessage.FAILED_TO_FETCH_DATA, error });
             next(error)
         }
     };
@@ -70,7 +71,7 @@ export class AdminUserController implements IAdminUserManagementController {
             if (result) {
                 res.status(HttpStatus.OK).json({ success: true })
             } else {
-                res.json({ success: false })
+                res.status(HttpStatus.OK).json({ success: false })
             }
         } catch (error) {
             console.log(error);

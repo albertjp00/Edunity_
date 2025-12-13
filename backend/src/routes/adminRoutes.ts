@@ -12,6 +12,7 @@ import { AdminInstructorService } from '../services/admin/instructorServices'
 import { AdminUserService } from '../services/admin/userServices'
 import { AdminAuthController } from '../controllers/admin/authController'
 import { AdminDashboardController } from '../controllers/admin/dashboard'
+import { ADMIN_ROUTES } from '../routesConstants.ts/adminRouteConstants'
 
 const admin = express.Router()
 
@@ -43,43 +44,77 @@ const adminCourseService = new AdminCourseService(adminRepo ,  instructorRepo , 
 const courseController = new AdminCourseController(adminCourseService);
 
 
-admin.post('/login',authController.adminLogin)
 
-admin.get('/getUsers',adminAuthMiddleware,userController.getUsers)
+admin.post(ADMIN_ROUTES.AUTH.LOGIN, authController.adminLogin);
 
+admin.get(ADMIN_ROUTES.USERS.GET_ALL, adminAuthMiddleware, userController.getUsers);
 
-admin.put('/blockUser/:id',adminAuthMiddleware ,userController.blockUnblock)
+admin.put(ADMIN_ROUTES.USERS.BLOCK_UNBLOCK, adminAuthMiddleware, userController.blockUnblock);
 
-// admin.put('/unblockUsers/:id',dashboardController.unblockUser)
+admin.get(ADMIN_ROUTES.INSTRUCTORS.GET_ALL, adminAuthMiddleware, instructorController.getInstructor);
 
+admin.get(ADMIN_ROUTES.INSTRUCTORS.GET_KYC, adminAuthMiddleware, instructorController.getKyc);
 
-admin.get('/getInstructors', adminAuthMiddleware ,instructorController.getInstructor)
+admin.put(ADMIN_ROUTES.INSTRUCTORS.VERIFY_KYC, adminAuthMiddleware, instructorController.verifyKyc);
 
-admin.get('/getKyc/:id' , adminAuthMiddleware ,instructorController.getKyc)
+admin.put(ADMIN_ROUTES.INSTRUCTORS.REJECT_KYC, adminAuthMiddleware, instructorController.rejectKyc);
 
-admin.put('/verifyKyc/:id' , adminAuthMiddleware, instructorController.verifyKyc)
+admin.get(ADMIN_ROUTES.INSTRUCTORS.GET_BY_ID, adminAuthMiddleware, instructorController.getInstructors);
 
-admin.put('/rejectKyc/:id' , adminAuthMiddleware, instructorController.rejectKyc)
+admin.get(ADMIN_ROUTES.INSTRUCTORS.GET_COURSES, adminAuthMiddleware, instructorController.getInstructorsCourses);
 
-admin.get('/instructors/:id', adminAuthMiddleware,instructorController.getInstructors)
+admin.get(ADMIN_ROUTES.COURSES.GET_ALL, adminAuthMiddleware, courseController.getCourses);
 
-admin.get('/instructorsCourses/:id', adminAuthMiddleware,instructorController.getInstructorsCourses)
+admin.get(ADMIN_ROUTES.COURSES.GET_DETAILS, adminAuthMiddleware, courseController.getCourseDetails);
 
-admin.get('/user/:id',userController.getUser)
+admin.get(ADMIN_ROUTES.COURSES.GET_PURCHASES, adminAuthMiddleware, courseController.getAllPurchases);
 
-admin.get('/userCourses/:id', adminAuthMiddleware,userController.getUserCourses)
+admin.get(ADMIN_ROUTES.DASHBOARD.STATS, adminAuthMiddleware, dashboardController.dashboardStats);
 
+admin.get(ADMIN_ROUTES.DASHBOARD.USER_OVERVIEW, adminAuthMiddleware, dashboardController.getUserOverview);
 
-admin.get('/courses', adminAuthMiddleware,courseController.getCourses)
-
-admin.get('/courseDetails/:id', adminAuthMiddleware,courseController.getCourseDetails)
-
-admin.get("/purchases", adminAuthMiddleware, courseController.getAllPurchases);
+admin.get(ADMIN_ROUTES.DASHBOARD.EARNINGS, adminAuthMiddleware, dashboardController.getEarnings);
 
 
-admin.get('/stats',adminAuthMiddleware , dashboardController.dashboardStats)
-admin.get('/userOverview',adminAuthMiddleware,dashboardController.getUserOverview)
 
-admin.get('/getEarnings',adminAuthMiddleware,dashboardController.getEarnings)
+
+// admin.post('/login',authController.adminLogin)
+
+// admin.get('/getUsers',adminAuthMiddleware,userController.getUsers)
+
+
+// admin.put('/blockUser/:id',adminAuthMiddleware ,userController.blockUnblock)
+
+// // admin.put('/unblockUsers/:id',dashboardController.unblockUser)
+
+
+// admin.get('/getInstructors', adminAuthMiddleware ,instructorController.getInstructor)
+
+// admin.get('/getKyc/:id' , adminAuthMiddleware ,instructorController.getKyc)
+
+// admin.put('/verifyKyc/:id' , adminAuthMiddleware, instructorController.verifyKyc)
+
+// admin.put('/rejectKyc/:id' , adminAuthMiddleware, instructorController.rejectKyc)
+
+// admin.get('/instructors/:id', adminAuthMiddleware,instructorController.getInstructors)
+
+// admin.get('/instructorsCourses/:id', adminAuthMiddleware,instructorController.getInstructorsCourses)
+
+// admin.get('/user/:id',userController.getUser)
+
+// admin.get('/userCourses/:id', adminAuthMiddleware,userController.getUserCourses)
+
+
+// admin.get('/courses', adminAuthMiddleware,courseController.getCourses)
+
+// admin.get('/courseDetails/:id', adminAuthMiddleware,courseController.getCourseDetails)
+
+// admin.get("/purchases", adminAuthMiddleware, courseController.getAllPurchases);
+
+
+// admin.get('/stats',adminAuthMiddleware , dashboardController.dashboardStats)
+// admin.get('/userOverview',adminAuthMiddleware,dashboardController.getUserOverview)
+
+// admin.get('/getEarnings',adminAuthMiddleware,dashboardController.getEarnings)
 
 export default admin

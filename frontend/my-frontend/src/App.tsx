@@ -80,6 +80,7 @@ import UserNotifications from './user/components/notifications/notifications'
 import InstructorDashboard from './instructor/components/dashboard/instructorDashboard'
 import UserWallet from './instructor/components/profile/wallet'
 import InstructorAllCoursesPage from './instructor/pages/course/allCoursesPage'
+import SubscriptionPage from './user/pages/subscription/subscriptionPage'
 // import PurchasesAdmin from './admin/pages/purchases/purchasesAdmin'
 
 function App() {
@@ -94,6 +95,7 @@ function App() {
             <Route path='/' element={<ProtectedRoute><Home /></ProtectedRoute>} />
             <Route path='/user/home' element={<ProtectedRoute><Home /></ProtectedRoute>} />
             {/* <Route path='/user/home' element={<Home />} /> */}
+            <Route path='/user/subscription' element={<ProtectedRoute><SubscriptionPage/></ProtectedRoute>} />
             <Route path='/user/login' element={<Login />} />
             <Route path='/user/register' element={<Register />} />
             <Route path='/user/verifyOtp' element={<VerifyOtp />} />

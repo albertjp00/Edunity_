@@ -33,6 +33,7 @@ export interface ICourse extends Document {
   review: IReview[];
   onPurchase:boolean;
   averageRating?: number
+  accessType : string
 }
 
 
@@ -84,6 +85,11 @@ const CourseSchema: Schema = new Schema<ICourse>({
   onPurchase:{
     type : Boolean,
     default : false
+  },
+
+  accessType :{
+    type:String,
+    default : 'oneTime'
   },
 
   review: [

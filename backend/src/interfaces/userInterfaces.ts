@@ -33,6 +33,8 @@ export interface IUserRepository {
 
   buyCourse(id: string): Promise<ICourse | null>
 
+  updateSubscription(id:string , data:any):Promise<boolean>
+
   getCourses(skip: number, limit: number): Promise<ICourse[] | null>
 
   countCourses(): Promise<number>;
@@ -74,6 +76,10 @@ export interface IUserRepository {
   getFavourites(userId: string): Promise<IFavourite[] | null>
 
   addParticipant(eventId: string, userId: string): Promise<IEvent | null>
+
+  getSubscriptionActive(id: string): Promise<boolean>
+
+  getSubscriptionCourses(id:string , page:number):Promise<any>
 
 }
 
@@ -157,6 +163,7 @@ export interface IUserCoursePaymentController {
 
 export interface IUserMyCourseController {
   myCourses(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+  mySubscriptionCourses(req: AuthRequest, res: Response, next: NextFunction):Promise<void>
   viewMyCourse(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
   refreshVideoUrl(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
   updateProgress(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;

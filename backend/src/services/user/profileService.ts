@@ -1,3 +1,4 @@
+import { StatusMessage } from '../../enums/statusMessage';
 import { IUserProfileService } from '../../interfacesServices.ts/userServiceInterfaces';
 import { mapUserToDTO } from '../../mapper/user.mapper';
 import { INotification } from '../../models/notification';
@@ -33,7 +34,7 @@ export class ProfileService implements IUserProfileService {
       return dto
     } catch (error) {
       console.error('ProfileService.getProfile error:', error);
-      throw new Error('Failed to get profile');
+      throw new Error(StatusMessage.FAILED_TO_FETCH_DATA);
     }
   }
 
@@ -50,7 +51,7 @@ export class ProfileService implements IUserProfileService {
       return dto
     } catch (error) {
       console.error('ProfileService.updateProfile error:', error);
-      throw new Error('Failed to update profile');
+      throw new Error(StatusMessage.PROFILE_UPDATE_FAILED);
     }
   }
 
@@ -116,5 +117,14 @@ export class ProfileService implements IUserProfileService {
     }
   }
 
+  async subscriptionCheckRequest(id:string):Promise<boolean | null>{
+    try {
+      const user = await this.userRepository.getSubscriptionActive(id)
+      return user
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+  }
 
 }

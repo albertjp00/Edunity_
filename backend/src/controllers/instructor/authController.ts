@@ -1,4 +1,5 @@
 import { HttpStatus } from "../../enums/httpStatus.enums";
+import { StatusMessage } from "../../enums/statusMessage";
 import {  IInstLoginController, IInstPasswordResetController,
    IInstRegisterController } from "../../interfaces/instructorInterfaces";
 
@@ -30,7 +31,7 @@ export class InstAuthController implements
       if (response.success) {
         res.status(HttpStatus.OK).json({
           success: true,
-          message: response.message,
+          message: StatusMessage.LOGIN_SUCCESS,
           instructor: response.instructor,
           token: response.accessToken,
           refreshToken: response.refreshToken
@@ -38,14 +39,14 @@ export class InstAuthController implements
       } else {
         res.status(response.statusCode || HttpStatus.UNAUTHORIZED).json({
           success: false,
-          message: response.message
+          message: StatusMessage.LOGIN_FAILED
         });
       }
     } catch (error) {
       console.error(error);
       res.status(500).json({
         success: false,
-        message: "Server error"
+        message: StatusMessage.INTERNAL_SERVER_ERROR
       });
       next(error)
     }
@@ -70,7 +71,7 @@ export class InstAuthController implements
       console.error("Register error:", error);
       res
         .status(HttpStatus.BAD_REQUEST)
-        .json({ success: false, message: error.message || "Registration failed" });
+        .json({ success: false, message: StatusMessage.REGISTRATION_FAILED });
         next(error)
     }
   };
@@ -81,16 +82,16 @@ export class InstAuthController implements
       const { email } = req.body;
 
       if (!email) {
-        res.status(400).json({ success: false, message: "Email is required" });
+        res.status(400).json({ success: false, message: StatusMessage.EMAIL_REQUIRED });
         return;
       }
 
       await this._instAuthService.resendOtpRequest(email);
 
-      res.status(HttpStatus.OK).json({ success: true, message: "OTP resent successfully" });
+      res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.OTP_SENT });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, message: "Failed to resend OTP" });
+      res.status(500).json({ success: false, message: StatusMessage.OTP_RESEND_FAILED });
       next(error)
     }
   };
@@ -132,10 +133,10 @@ export class InstAuthController implements
         return;
       }
 
-      res.status(HttpStatus.OK).json({ success: true, message: "OTP sent successfully" });
+      res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.OTP_SENT });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: StatusMessage.INTERNAL_SERVER_ERROR });
       next(error)
     }
   };
@@ -154,10 +155,10 @@ export class InstAuthController implements
 
       }
 
-      res.status(HttpStatus.OK).json({ success: true, message: "OTP verified successfully" });
+      res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.OTP_VERIFIED });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: StatusMessage.INTERNAL_SERVER_ERROR });
       next(error)
     }
   };
@@ -169,16 +170,16 @@ export class InstAuthController implements
 
 
       if (!email) {
-        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: "Email is required" });
+        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: StatusMessage.EMAIL_REQUIRED });
         return;
       }
 
       await this._instAuthService.forgotPassword(email);
 
-      res.status(HttpStatus.OK).json({ success: true, message: "OTP resent successfully" });
+      res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.OTP_SENT });
     } catch (error) {
       console.error(error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to resend OTP" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message:StatusMessage.OTP_RESEND_FAILED });
       next(error)
     }
   };
@@ -205,10 +206,10 @@ export class InstAuthController implements
         return;
       }
 
-      res.status(HttpStatus.OK).json({ success: true, message: "Password changed successfully" });
+      res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.PASSWORD_CHANGED });
     } catch (error) {
       console.error(error);
-      res.json({ success: false, message: "Internal server error" });
+      res.json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
       next(error)
     }
   };

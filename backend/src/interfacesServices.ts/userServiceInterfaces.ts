@@ -1,4 +1,5 @@
 import { googleLoginResult, IMyCourses } from "../interfaces/userInterfaces";
+import { ICourse } from "../models/course";
 import { IEvent } from "../models/events";
 import { IFavourite } from "../models/favourites";
 import { IInstructor } from "../models/instructor";
@@ -110,10 +111,20 @@ export interface IUserCourseService {
         userId: string
     ): Promise<{ success: boolean; message: string }>;
 
+    buySubscriptionRequest(userId : string):Promise<any>
+    verifySubscriptionPaymentRequest(   
+        razorpay_order_id: string,
+        razorpay_payment_id: string,
+        razorpay_signature: string,
+        userId: string
+    ): Promise<{ success: boolean; message: string }>;
+
     myCoursesRequest(
         id: string,
         page: number
     ): Promise<{ populatedCourses: IMyCourse[]; result: IMyCourses } | null>;
+
+    mySubscriptionCoursesRequest(id:string , page:number):Promise<any>
 
     viewMyCourseRequest(
         id: string,
@@ -201,4 +212,5 @@ export interface IUserProfileService {
   getPayment(userId: string): Promise<IPayment[] | null>;
   getNotifications(userId: string): Promise<INotification[] | null>;
   notificationsMarkRead(userId: string): Promise<INotification[] | null>;
+  subscriptionCheckRequest(id:string):Promise<boolean | null>;
 }

@@ -11,7 +11,7 @@
   justify-content: center;
 }
 
-.profile-card1 {
+.profile-card-one {
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
@@ -54,7 +54,6 @@
   margin-top: 5px;
 }
 
-/* About Me as separate box */
 .about-me-box {
   border: 1px solid #ddd;
   border-radius: 10px;
@@ -62,6 +61,11 @@
   background-color: #fefefe;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   margin-bottom: 20px;
+  transform: translateY(-5px);
+}
+
+.about-me-box:hover {
+  transform: translateY(-5px);
 }
 
 .about-me-box h4 {

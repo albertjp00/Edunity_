@@ -16,7 +16,17 @@ export interface IUser extends Document {
   createdAt: Date;
   googleId : string;
   courseCount : number;
+  subscription : Subscription;
 }
+
+interface Subscription {
+    isActive: Boolean,
+    startDate:  Date ,
+    endDate:  Date ,
+    paymentId:  String ,
+    orderId:  String 
+}
+
 
 const UserSchema: Schema = new Schema<IUser>({
   name: {
@@ -83,7 +93,16 @@ const UserSchema: Schema = new Schema<IUser>({
 
   courseCount :{
     type : Number,
-  }
+  },
+
+  subscription: {
+    isActive: { type: Boolean, default: false },
+    startDate: { type: Date },
+    endDate: { type: Date },
+    orderId: { type: String },
+    paymentId: { type: String }
+  },
+
 });
 
 

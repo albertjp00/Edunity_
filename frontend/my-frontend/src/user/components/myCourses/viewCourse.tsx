@@ -509,7 +509,7 @@ const ViewMyCourse: React.FC = () => {
                 {/* <span className="current-price">${course.price}</span> */}
                 {/* <span className="old-price">$120</span> */}
               </p>
-              <button className="buy-btn">Continue Course</button>
+              {/* <button className="buy-btn">Continue Course</button> */}
 
               {canCancel && (
                 <button

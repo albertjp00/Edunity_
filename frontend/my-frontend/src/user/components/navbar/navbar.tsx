@@ -60,6 +60,10 @@ const Navbar = () => {
           <img src={notificationImg} alt="Notifications" className="noti-img" />
           {hasUnread && <span className="notification-dot"></span>}
         </div>
+
+        <Link to='/user/subscription'>
+          <p className='fav-course'>Subscription</p>
+        </Link>
         <Link to="/user/favourites" >
           <p className='fav-course'>Favourites</p>
         </Link>

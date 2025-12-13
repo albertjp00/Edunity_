@@ -6,6 +6,7 @@ import { HttpStatus } from "../../enums/httpStatus.enums";
 
 import { AdminService } from "../../services/admin/dashboardServices";  
 import { AdminLoginDTO } from "../../dto/adminDTO";
+import { StatusMessage } from "../../enums/statusMessage";
 // // service file
 
 
@@ -28,9 +29,9 @@ export class AdminAuthController implements
             const result : AdminLoginDTO = await this._adminAuthService.loginRequest(email, password)            
 
             if (result?.success) {
-                res.status(HttpStatus.OK).json({ success: true, message: result.message, token: result.token })
+                res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.LOGIN_SUCCESS, token: result.token })
             } else {
-                res.json({ success: false, message: result?.message })
+                res.json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR })
             }
         } catch (error) {
             console.log(error);

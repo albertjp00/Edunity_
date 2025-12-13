@@ -12,6 +12,7 @@ export interface ICourseRepository {
 
   buyCourse(id: string): Promise<ICourse | null>
 
+
   getCourses(skip: number, limit: number): Promise<ICourse[] | null>
 
     countCourses(): Promise<number>;
@@ -77,6 +78,8 @@ implements ICourseRepository {
             },
           ]);
         }
+
+        
       
 
           async countCourses(): Promise<number> {

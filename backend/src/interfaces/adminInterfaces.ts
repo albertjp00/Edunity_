@@ -109,9 +109,7 @@ export interface IAdminCourseService {
 
 export interface IAdminAuthService {
   loginRequest(
-    email: string,
-    password: string
-  ): Promise<{ success: boolean; message: string; token?: string }>;
+    email: string,password: string): Promise<{ success: boolean; message: string; token?: string }>;
 }
 
 

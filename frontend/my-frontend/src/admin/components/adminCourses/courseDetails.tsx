@@ -39,6 +39,10 @@ const AdminCourseDetails: React.FC = () => {
 
   const fetchCourse = async () => {
     try {
+      if (!id) {
+        console.error("Course ID not found");
+        return;
+      }
       const res = await viewCourseDetails(id);
       if (!res) return;
 

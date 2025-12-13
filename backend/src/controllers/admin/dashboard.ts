@@ -7,6 +7,7 @@ import { IAdminAuthController, IAdminDashboardController, IAdminInstructorContro
 import { IAdminService } from "../../interfacesServices.ts/adminServiceInterfaces";
 import { mapEarningsToDTO, mapStatsToDTO, mapUserOverviewToDTO } from "../../mapper/admin.mapper";
 import { AdminService } from "../../services/admin/dashboardServices";  // service file
+import { StatusMessage } from "../../enums/statusMessage";
 
 
 
@@ -50,9 +51,9 @@ export class AdminDashboardController implements
             });
         } catch (error) {
             console.error("Error fetching user overview:", error);
-            res.status(500).json({
+            res.status(HttpStatus.OK).json({
                 success: false,
-                message: "Failed to fetch user overview chart data",
+                message:StatusMessage.FAILED_TO_FETCH_DATA,
             });
             next(error)
         }

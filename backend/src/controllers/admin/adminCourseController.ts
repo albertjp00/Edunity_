@@ -3,6 +3,7 @@ import { AdminAuthRequest } from "../../middleware/authMiddleware";
 import { HttpStatus } from "../../enums/httpStatus.enums";
 import { IAdminCourseReadController, IAdminCourseService, IAdminPurchaseController } from "../../interfaces/adminInterfaces";
 import { mapCourseDetailsToDTO, mapCourseToDTO, mapPurchaseToDTO } from "../../mapper/admin.mapper";
+import { StatusMessage } from "../../enums/statusMessage";
 
 
 
@@ -28,7 +29,7 @@ export class AdminCourseController implements
             const data = await this._courseService.getCoursesRequest(page, search, limit);
 
             const courseDTOs = (data.courses ?? []).map(mapCourseToDTO);
-            res.json({
+            res.status(HttpStatus.OK).json({
                 success: true,
                 courses: courseDTOs,
                 totalPages: data.totalPages,
@@ -36,7 +37,7 @@ export class AdminCourseController implements
             });
         } catch (error) {
             next(error);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to get courses" });
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.FAILED_TO_GET_COURSES });
         }
     };
 
@@ -49,13 +50,13 @@ export class AdminCourseController implements
             
             const courseDetailsDTO = mapCourseDetailsToDTO(data);
 
-            res.json({
+            res.status(HttpStatus.OK).json({
                 success: true,
                 course: courseDetailsDTO,
             });
         } catch (error) {
             next(error);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to fetch course details" });
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.FAILED_TO_GET_COURSE_DETAILS });
         }
     };
 
@@ -76,7 +77,7 @@ export class AdminCourseController implements
             console.log('dto result -------------', purchaseDTOs);
 
 
-            res.json({
+            res.status(HttpStatus.OK).json({
                 success: true, purchases: purchaseDTOs,
                 currentPage: purchases.currentPage,
                 totalPages: purchases.totalPages,

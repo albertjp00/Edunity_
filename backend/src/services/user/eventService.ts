@@ -4,6 +4,7 @@ import { IMyEvent } from "../../models/myEvents";
 import { InstructorRepository } from "../../repositories/instructorRepository";
 import { UserRepository } from "../../repositories/userRepository";
 import { IUserEventService } from "../../interfacesServices.ts/userServiceInterfaces";
+import { StatusMessage } from "../../enums/statusMessage";
 
 
 export class NotFoundError extends Error {
@@ -122,15 +123,15 @@ export class UserEventService implements IUserEventService {
             // console.log(myEvent);
             
 
-            if (!myEvent) return { success: false, message: "Event not found" };
+            if (!myEvent) return { success: false, message: StatusMessage.NO_EVENT_FOUND };
             // if (myEvent.userId !== userId)
             //     return { success: false, message: "Not authorized" };
 
             const event = await this.instructorRepository.getEvent(eventId);
-            if (!event) return { success: false, message: "Event not found" };
+            if (!event) return { success: false, message: StatusMessage.NO_EVENT_FOUND };
 
             if (!event.isLive)
-                return { success: false, message: "Event has not started yet" };
+                return { success: false, message: StatusMessage.EVENT_NOT_STARTED };
             console.log(event);
             
 
@@ -146,8 +147,8 @@ export class UserEventService implements IUserEventService {
 
             // const meetingLink = event.meetingLink;
             const result: { success: boolean; message: string; meetingLink?: string } = meetingLink !== undefined
-                ? { success: true, message: "Joined event", meetingLink }
-                : { success: true, message: "Joined event" };
+                ? { success: true, message: StatusMessage.EVENT_JOINED, meetingLink }
+                : { success: true, message: StatusMessage.EVENT_JOINED };
 
             
             // console.log(result);

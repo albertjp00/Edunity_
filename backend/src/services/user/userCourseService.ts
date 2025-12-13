@@ -17,6 +17,7 @@ import { fileURLToPath } from "url";
 import { generateCertificate } from '../../utils/certificate';
 import { generateSignedUrl } from '../../utils/getSignedUrl';
 import { IUserCourseService } from '../../interfacesServices.ts/userServiceInterfaces';
+import { StatusMessage } from '../../enums/statusMessage';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -97,6 +98,17 @@ export class UserCourseService implements IUserCourseService {
   }
 
 
+  mySubscriptionCoursesRequest  = async(id:string , page:number):Promise<any> =>{ 
+    try {
+      const courses = await this.userRepository.getSubscriptionCourses(id , page)
+      return courses
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+
+
 
 
   fetchCourseDetails = async (userId: string, courseId: string): Promise<ICourseDetails | null> => {
@@ -109,6 +121,10 @@ export class UserCourseService implements IUserCourseService {
 
       const course: any = await this.userRepository.getCourse(courseId);
       // console.log('myCoursessss', course);
+      const userSubscription = await this.userRepository.getSubscriptionActive(userId)
+      if(userSubscription){
+        hasAccess = true
+      }
 
 
       if (myCourse) {
@@ -139,13 +155,13 @@ export class UserCourseService implements IUserCourseService {
       console.log('buy course service');
       const course = await this.userRepository.getCourse(courseId);
       if (!course) {
-        throw new Error("Course not found");
+        throw new Error(StatusMessage.COURSE_NOT_FOUND);
       }
-      if(course.onPurchase){
-        throw new Error("Payment already initiated for this course.") 
+      if (course.onPurchase) {
+        throw new Error(StatusMessage.PAYMENT_ALREADY_PROGRESS)
       }
 
-      
+
 
       const options = {
         amount: course.price! * 100,
@@ -157,7 +173,7 @@ export class UserCourseService implements IUserCourseService {
 
       const order = await razorpay.orders.create(options);
 
-      const onPurchase = await this.userRepository.onPurchase(courseId , true)
+      const onPurchase = await this.userRepository.onPurchase(courseId, true)
 
       return order;
 
@@ -167,12 +183,12 @@ export class UserCourseService implements IUserCourseService {
     }
   };
 
-    cancelPayment  = async (courseId : string ):Promise<void>=>{
+  cancelPayment = async (courseId: string): Promise<void> => {
     try {
       const result = await this.userRepository.cancelPurchase(courseId)
     } catch (error) {
       console.log(error);
-      
+
     }
   }
 
@@ -190,7 +206,7 @@ export class UserCourseService implements IUserCourseService {
       if (razorpay_signature === expectedSign) {
         const course = await this.userRepository.getCourse(courseId)
         if (!course) {
-          return { success: false, message: "Course not found" };
+          return { success: false, message: StatusMessage.COURSE_NOT_FOUND };
         }
         const updateEnrolled = await this.userRepository.buyCourse(courseId)
 
@@ -208,12 +224,12 @@ export class UserCourseService implements IUserCourseService {
         const adminEarningsUpdate = await this.adminRepository.updateEarnings(courseId, coursePrice, instructorId,
           instructorEarning, adminEarning)
 
-      //   const wallet = await this.instructorRepository.addToWallet(instructorId, {
-      //   type: "credit",
-      //   amount: instructorEarning,
-      //   courseId,
-      //   description: `Earnings of course: ${course.title}`,
-      // });
+        //   const wallet = await this.instructorRepository.addToWallet(instructorId, {
+        //   type: "credit",
+        //   amount: instructorEarning,
+        //   courseId,
+        //   description: `Earnings of course: ${course.title}`,
+        // });
 
         const courseName = course.title
         const payment = await this.userRepository.userPayment(userId, courseId, courseName, coursePrice)
@@ -222,21 +238,87 @@ export class UserCourseService implements IUserCourseService {
         const title = "Course Purchased"
         const message = `You have successfully purchased the course "${course?.title}`
         const notification = await this.userRepository.sendNotification(userId, title, message)
-        const onPurchase = await this.userRepository.onPurchase(courseId , false)
+        const onPurchase = await this.userRepository.onPurchase(courseId, false)
 
-        return { success: true, message: "Payment verified and course added" };
+        return { success: true, message: StatusMessage.COURSE_ADDED };
       } else {
-        return { success: false, message: "Invalid signature" };
+        return { success: false, message: StatusMessage.INVALID_SIGNATURE };
       }
     } catch (error) {
       console.log(error);
-      return { success: false, message: "Payment verification failed" }
+      return { success: false, message: StatusMessage.PAYMENT_VERIFICATION_FAILURE }
 
     }
 
   }
 
 
+  //subscription
+  buySubscriptionRequest = async (userId: string) => {
+    try {
+      const options = {
+        amount: 39900,  // ₹399
+        currency: "INR",
+        receipt: `subscription_${Date.now()}`,
+        notes: { userId },
+      };
+
+      const order = await razorpay.orders.create(options);
+      return order;
+
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
+
+
+
+  verifySubscriptionPaymentRequest = async (
+    razorpay_order_id: string,
+    razorpay_payment_id: string,
+    razorpay_signature: string,
+    userId: string
+  ): Promise<{ success: boolean; message: string }> => {
+    try {
+      const sign = razorpay_order_id + "|" + razorpay_payment_id;
+      const expectedSign = crypto
+        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+        .update(sign)
+        .digest("hex");
+
+      if (razorpay_signature !== expectedSign) {
+        return { success: false, message: "Invalid Payment Signature" };
+      }
+
+      const data = {
+        isActive: true,
+        startDate: new Date(),
+        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 days
+        paymentId: razorpay_payment_id,
+        orderId: razorpay_order_id
+      }
+
+      console.log('verify service ', data);
+      
+
+      
+      await this.userRepository.updateSubscription(userId, data);
+
+      await this.userRepository.sendNotification(
+        userId,
+        "Subscription Activated",
+        "Your premium subscription is now active!"
+      );
+
+      return { success: true, message: "Subscription Activated" };
+
+    } catch (error) {
+      console.error(error);
+      return { success: false, message: "Subscription Verification Failed" };
+    }
+  };
 
 
 
@@ -293,7 +375,7 @@ export class UserCourseService implements IUserCourseService {
           const rawUrl = module.videoUrl;
 
           if (rawUrl) {
-            
+
             let key: string | undefined;
 
             if (rawUrl.includes(".amazonaws.com/")) {
@@ -353,7 +435,7 @@ export class UserCourseService implements IUserCourseService {
       const myCourse = await this.userRepository.findUserCourse(userId, courseId);
 
       if (!myCourse) {
-        return { success: false, message: "Course not found for this user" };
+        return { success: false, message: StatusMessage.COURSE_NOT_FOUND };
       }
 
       let filePath = myCourse.certificate;
@@ -368,7 +450,7 @@ export class UserCourseService implements IUserCourseService {
         if (completedModules < totalModules) {
           return {
             success: false,
-            message: "Course not completed yet, cannot generate certificate",
+            message: StatusMessage.COURSE_NOT_COMPLETED,
           };
         }
 
@@ -388,7 +470,7 @@ export class UserCourseService implements IUserCourseService {
 
     } catch (error) {
       console.error(error);
-      return { success: false, message: "Error generating certificate" };
+      return { success: false, message: StatusMessage.ERROR_CERTIFICATE };
     }
   }
 
@@ -438,13 +520,13 @@ export class UserCourseService implements IUserCourseService {
       const result = await this.userRepository.addtoFavourites(userId, courseId);
 
       if (!result) {
-        return { success: false, message: "Course already in favourites" };
+        return { success: false, message: StatusMessage.COURSE_ALREADY_EXISTS };
       }
 
-      return { success: true, message: "Added to favourites" };
+      return { success: true, message: StatusMessage.COURSE_ADDED };
     } catch (error) {
       console.log(error);
-      return { success: false, message: "Something went wrong" };
+      return { success: false, message: StatusMessage.INTERNAL_SERVER_ERROR };
     }
   }
 
@@ -574,10 +656,10 @@ export class UserCourseService implements IUserCourseService {
 
   async cancelCourseRequest(userId: string, courseId: string): Promise<void> {
     const enrollment = await this.userRepository.findUserCourse(userId, courseId);
-    if (!enrollment) throw new Error("User not enrolled in this course");
+    if (!enrollment) throw new Error(StatusMessage.NOT_ENROLLED);
 
     const course = await this.userRepository.getCourse(courseId);
-    if (!course) throw new Error("Course not found");
+    if (!course) throw new Error(StatusMessage.COURSE_NOT_FOUND);
 
     // Refund only if paid
     if (course.price && course.price > 0) {

@@ -66,6 +66,8 @@ const Profile: React.FC = () => {
     try {
       const res = await getUserMyCourses();
       if (res?.data.success) {
+        // console.log('courses',res);
+        
         const courses = res.data.courses.slice(0,3)
         setCourses(courses);
       }
@@ -121,7 +123,7 @@ const fetchPayments = async () => {
     <div className="profile-container1">
       {/* Left Side - Profile Info */}
       <div className="profile-left">
-        <div className="profile-card1">
+        <div className="profile-card-one">
           <div className="user-name-card-image">
             <img
               src={

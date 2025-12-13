@@ -6,6 +6,7 @@ import { IInstEventService } from "../../interfacesServices.ts/instructorService
 import { mapEventToDTO } from "../../mapper/instructor.mapper"
 import { IEvent } from "../../models/events"
 import { IEventDTO } from "../../dto/instructorDTO"
+import { StatusMessage } from "../../enums/statusMessage"
 // import { InstEventService } from "../../services/instructor/eventService"
 
 
@@ -73,7 +74,7 @@ export class EventController implements
             });
         } catch (error) {
             console.log(error);
-            res.status(500).json({ success: false, message: "Server error" });
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
             next(error)
         }
     };
@@ -104,7 +105,7 @@ export class EventController implements
             if (!data.title || !data.description || !data.date || !data.topic) {
                 res.status(400).json({
                     success: false,
-                    message: "Title, description, and date are required",
+                    message: StatusMessage.TITLE_DES_DATE,
                 });
                 return;
             }
@@ -115,7 +116,7 @@ export class EventController implements
             if (eventDate < today) {
                 res.status(400).json({
                     success: false,
-                    message: "Event date must be today or a future date",
+                    message: StatusMessage.EVENT_DATE_ERROR
                 });
                 return;
             }
@@ -148,7 +149,7 @@ export class EventController implements
             const result = await this._eventService.joinEventRequest(eventId, instructorId);
 
             if (!result || !result.success) {
-                res.status(HttpStatus.BAD_REQUEST).json({ message: result?.message || "Failed to start event" });
+                res.status(HttpStatus.BAD_REQUEST).json({ message: result?.message || StatusMessage.FAILED_TO_START });
                 return
             }
 
@@ -162,7 +163,7 @@ export class EventController implements
             });
         } catch (error) {
             console.error(error);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Server error" });
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: StatusMessage.INTERNAL_SERVER_ERROR });
             next(error)
         }
     };
@@ -174,14 +175,14 @@ export class EventController implements
             const eventId = req.params.eventId!
 
             if (!instructorId) {
-                res.status(401).json({ message: "Unauthorized" });
+                res.status(401).json({ message: StatusMessage.UNAUTHORIZED });
                 return
             }
 
             const result = await this._eventService.endEventRequest(eventId, instructorId);
 
             if (!result || !result.success) {
-                res.status(400).json({ message: result?.message || "Failed to end event" });
+                res.status(400).json({ message: result?.message || StatusMessage.FAILED_TO_END });
                 return
             }
 
@@ -191,7 +192,7 @@ export class EventController implements
             });
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: "Server error" });
+            res.status(500).json({ message: StatusMessage.INTERNAL_SERVER_ERROR });
             next(error)
         }
     };

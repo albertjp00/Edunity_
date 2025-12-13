@@ -16,7 +16,7 @@ import {
 
 
 
-import adminApi from "../../../api/adminApi";
+import { getOverview, getStats } from "../../services/adminServices";
 
 
 interface DashboardStats {
@@ -101,7 +101,7 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await adminApi.get("/admin/stats");
+        const res = await getStats()
         console.log(res);
 
         const data = res.data.stats;
@@ -134,7 +134,7 @@ const AdminDashboard: React.FC = () => {
 
     const fetchUserOverview = async () => {
       try {
-        const res = await adminApi.get('/admin/userOverview')
+        const res = await getOverview()
         console.log(res);
 
         setUserOverview(res.data.data)

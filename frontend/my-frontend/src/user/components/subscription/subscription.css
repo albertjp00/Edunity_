@@ -1,0 +1,79 @@
+.subscription-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+}
+
+.subscription-title {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.subscription-card {
+  width: 380px;
+  padding: 30px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background: #fff;
+}
+
+.subscription-card h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.subscription-desc {
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.subscription-benefits {
+  margin-bottom: 24px;
+}
+
+.subscription-benefits li {
+  margin-bottom: 6px;
+  font-size: 15px;
+}
+
+.subscription-price {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.btn-subscribe,
+.btn-active {
+  width: 100%;
+  padding: 12px 0;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.btn-subscribe {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+}
+
+.btn-active {
+  background-color: #22c55e;
+  color: white;
+  border: none;
+  cursor: default;
+}
+
+.btn-subscribe:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+
+.courses-section{
+    width: 100%;
+}
