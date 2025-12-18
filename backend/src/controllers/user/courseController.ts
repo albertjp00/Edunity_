@@ -138,6 +138,7 @@ export class UserCourseController
 
 
 
+    
 
     courseDetails = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
@@ -146,7 +147,10 @@ export class UserCourseController
             const id = req.user?.id!
             const courseId = req.query.id as string
             const result = await this._courseService.fetchCourseDetails(id, courseId)
-            // console.log("course", result);
+            console.log("course-----", result);
+            if(result === 'myCourseExists'){
+                res.status(HttpStatus.OK).json({success:"exists"})
+            }
 
             res.status(HttpStatus.OK).json({ success: true, course: result })
         } catch (error) {
@@ -469,8 +473,13 @@ export class UserCourseController
             const userId = req.user?.id;
 
             const result = await this._courseService.addReview(userId as string, courseId, rating, review)
+            console.log('reviewwwwwwwwwwwwwwwwwww',result);
+            
+            if(result === 'exists'){
+                res.json({success:false , message : 'Review already added'})
+            }
 
-            res.status(HttpStatus.OK).json({ success: true })
+            res.status(HttpStatus.OK).json({ success: true , review :result})
         } catch (error) {
             console.log(error);
 
@@ -501,14 +510,14 @@ export class UserCourseController
             // console.log(result);
 
             if (!result.success) {
-                res.json({ success: false, message: StatusMessage.COURSE_ALREADY_EXISTS });
+                res.json({ success: false, message: StatusMessage.COURSE_ALREADY_EXISTS , added:false });
             }
 
             res.status(HttpStatus.OK).json(result);
         } catch (error) {
             // console.log(error);
             next(error)
-            res.status(500).json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
+            res.status(500).json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR , added:true });
         }
     };
 
@@ -551,10 +560,13 @@ export class UserCourseController
 
 
             const quiz = await this._courseService.getQuiz(courseId as string)
+            console.log(quiz);
+            
             res.status(HttpStatus.OK).json({ success: true, quiz })
         } catch (error) {
             // console.log(error);
             next(error)
+            
 
         }
     }

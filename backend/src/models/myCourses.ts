@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
+import { IReview } from "./course";
 
 export interface IModule {
   title: string;
@@ -29,6 +30,7 @@ export interface IMyCourse extends Document {
   amountPaid:number
   paymentStatus:string
   cancelCourse : boolean
+  review:IReview[]
 }
 
 

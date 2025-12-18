@@ -1,3 +1,4 @@
+import axios from "axios";
 import api from "../../api/userApi";
 import type { IRegister, IUser } from "../interfaces";
 
@@ -67,3 +68,28 @@ export const userVerifyOtp = async(email:string , otp:string)=>{
         
 //     }
 // }
+
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const googleLogin = async(credentialResponse:any)=>{
+    try {
+        const res = await axios.post(`${import.meta.env.VITE_API_URL}/user/auth/googleLogin`, {
+              token: credentialResponse.credential,
+            }, { withCredentials: true });
+        return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
+
+export const forgotPassword = async(email:string)=>{
+    try {
+        const res = await api.post("/user/forgotPassword", { email });
+        return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}

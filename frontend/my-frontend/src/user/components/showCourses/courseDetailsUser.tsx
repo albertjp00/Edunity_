@@ -5,7 +5,7 @@ import api from "../../../api/userApi";
 import { toast } from "react-toastify";
 import buyNowImage from '../../../assets/buyCourse.png'
 import VideoPlayerUser from "../videoPlayer/videoPlayer";
-import { buyCourseService, paymentCancel } from "../../services/courseServices";
+import { addToFavourites, buyCourseService, paymentCancel } from "../../services/courseServices";
 
 interface Module {
   title: string;
@@ -90,7 +90,10 @@ const CourseDetailsUser: React.FC = () => {
     try {
       const res = await api.get(`/user/courseDetails?id=${id}`);
       console.log(res);
-
+      if(res.data.success=='exists'){
+        navigate(`/user/viewMyCourse/${id}`,{replace:true})
+        return
+      }
       setCourse(res.data.course);
       setInstructor(res.data.course.instructor);
       setHasAccess(res.data.course.hasAccess);
@@ -206,6 +209,22 @@ const CourseDetailsUser: React.FC = () => {
   // };
 
 
+  const handleAddtofavourites = async (id:string)=>{
+    try {
+      const res = await addToFavourites(id)
+      if(!res) return
+      if(res.data.success){
+        if(res.data.added){
+          toast.success('Added to favourites')
+        }else{
+          toast.success('Removed from favourites')
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
 
 
 
@@ -426,6 +445,10 @@ const CourseDetailsUser: React.FC = () => {
                 </button>
               )
             )}
+
+            <button className="buy-btn" onClick={()=>handleAddtofavourites(course._id)}>
+              Add to Favourites
+            </button>
 
 
             <ul className="course-info">

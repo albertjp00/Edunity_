@@ -5,8 +5,8 @@ import EarningsChart from "./earningsChart";
 import RecentStudents from "./recentStudents";
 import StatsCard from "./statsCard";
 import CourseList from "./courseList";
-import instructorApi from "../../../api/instructorApi";
 import InstructorNavbar from "../navbar/navbar";
+import { getStats } from "../../services/Instructor/instructorServices";
 
 interface Student {
   name: string;
@@ -28,8 +28,8 @@ const InstructorDashboard: React.FC = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await instructorApi.get("/instructor/dashboard");
-        console.log(res);
+        const res = await getStats()
+        if(!res) return
         
         setStats(res.data.dashboard);
       } catch (err) {

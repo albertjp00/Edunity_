@@ -17,7 +17,7 @@ const fetchEvents = async (search = "", page = 1) => {
   try {
     const result = await getMyEvents(search, page);
     console.log(result);
-    
+     
     if (!result) return;
 
     const eventsData = Array.isArray(result.data?.events) ? result.data.events : [];

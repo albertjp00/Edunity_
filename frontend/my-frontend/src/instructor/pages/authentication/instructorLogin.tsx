@@ -1,13 +1,15 @@
 import axios from 'axios'
-import React, { useState, useEffect, type FormEvent } from 'react'
+import React, { useState, useEffect, type FormEvent, type ChangeEvent } from 'react'
 import './instructorLogin.css'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import instructorApi from '../../../api/instructorApi'
+import eye from '../../../assets/eye-icon.png'
 
 const InstructorLogin = () => {
 
   const navigate = useNavigate()
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [value, setValue] = useState({
     email: '',
     password: ''
@@ -23,23 +25,35 @@ const InstructorLogin = () => {
       localStorage.setItem('instructor', response.data.token);
       // localStorage.setItem('instructorId', response.data.instructor._id);
       navigate('/instructor/home');
-    } catch (error: any) {
-      const message = error.response?.data?.message || "Something went wrong";
+    } catch (error: unknown) {
+  if (axios.isAxiosError(error)) {
+    const message =
+      error.response?.data?.message || "Something went wrong";
 
-      if (error.response?.status === 403) {
-        toast.warning(message); 
-      } else {
-        toast.error(message);
-      }
+    if (error.response?.status === 403) {
+      toast.warning(message);
+    } else {
+      toast.error(message);
     }
+  } else {
+    toast.error("Unexpected error occurred");
+  }
+}
 
 
   }
 
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+      setValue({
+        ...value,
+        [e.target.name]: e.target.value,
+      });
+    };
+
   useEffect(()=>{
       console.log('useEffect');
 
-      let token = localStorage.getItem('instructor')
+      const token = localStorage.getItem('instructor')
       if(token){
         navigate('/instructor/home')
       }
@@ -63,15 +77,27 @@ const InstructorLogin = () => {
           />
 
 
-          <input
-            className='inputs'
-            type='password'
-            name='password'
-            placeholder='Enter Password'
-            value={value.password}
-            onChange={(e) => setValue({ ...value, [e.target.name]: e.target.value })}
+          <div className="password-wrapper">
+            <input
+              className="inputs"
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Enter Password"
+              value={value.password}
+              onChange={handleChange}
+            />
 
-          />
+            <img
+              className="eye-icon"
+              src={eye}
+              
+              onClick={() => setShowPassword((prev) => !prev)}
+              role="button"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              
+            </img>
+          </div>
 
 
           <div className="button-container">

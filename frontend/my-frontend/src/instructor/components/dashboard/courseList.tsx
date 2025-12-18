@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import instructorApi from "../../../api/instructorApi";
+import { getCourse } from "../../services/Instructor/instructorServices";
 
 interface Course {
   _id: string;
@@ -14,7 +14,8 @@ const CourseList: React.FC = () => {
 
   useEffect(() => {
     const fetchCourses = async () => {
-      const res = await instructorApi.get("/instructor/getCourse");
+      const res = await getCourse()
+      if(!res) return
       setCourses(res.data.course);
     };
     fetchCourses();

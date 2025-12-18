@@ -1,9 +1,9 @@
 import React, { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import './instVerifyotp.css'
 import { useNavigate } from "react-router-dom";
-import api from "../../../api/userApi";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { resendOtpRequest, verifyOtp } from "../../services/Instructor/instructorServices";
 
 const InstructorVerifyOtp : React.FC = () => {
   const [otp, setOtp] = useState('');
@@ -17,11 +17,10 @@ const InstructorVerifyOtp : React.FC = () => {
 
     try {
       const email = localStorage.getItem('instOtpEmail')
-      const res = await api.post('/instructor/verifyOtp', {
-        email,
-        otp
-      })
-      console.log(res);
+      if(!email) return
+      const res = await verifyOtp(email , otp)
+      // console.log(res);
+      if(!res) return
 
       if (res.data.success) {
         //     localStorage.setItem('token',res.data.result.token)
@@ -46,9 +45,12 @@ const InstructorVerifyOtp : React.FC = () => {
 
   const resendOtp = async () => {
     const email = localStorage.getItem('instOtpEmail')
-    const res = await api.post('/instructor/resendOtp',{email})
+    if(!email) return
+    const res = await resendOtpRequest(email)
+    if(!res) return
 
     if (res.data.success) {
+      toast.success('Otp resend to your mail')
         setTimeLeft(60)
         setIsDisabled(false)
         

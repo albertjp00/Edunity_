@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../../api/userApi";
 // import './forgotPassMail.css'
 import { toast } from "react-toastify";
+import { forgotPassword } from "../../services/Instructor/instructorServices";
+import axios from "axios";
 
 const InstructorForgotPassword: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -12,7 +13,8 @@ const InstructorForgotPassword: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await api.post("/instructor/forgotPassword", { email });
+      const response = await forgotPassword(email)
+      if(!response) return
       console.log(response.data);
       
       if (response.data.success) {
@@ -22,15 +24,17 @@ const InstructorForgotPassword: React.FC = () => {
       }else{
         toast.error(response.data.message)
       }
-    } catch (error:any) {
-      console.error(error);
-      if (error.response) {
-      toast.error(error.response.data.message || "Something went wrong");
-    } else {
-      toast.error("Network error, please try again later");
-    }
-  
-    }
+    } catch (error: unknown) {
+  console.error(error);
+
+  if (axios.isAxiosError(error)) {
+    toast.error(
+      error.response?.data?.message || "Something went wrong"
+    );
+  } else {
+    toast.error("Network error, please try again later");
+  }
+}
   };
 
   return (

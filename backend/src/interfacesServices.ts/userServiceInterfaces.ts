@@ -1,5 +1,5 @@
 import { googleLoginResult, IMyCourses } from "../interfaces/userInterfaces";
-import { ICourse } from "../models/course";
+import { ICourse, IReview } from "../models/course";
 import { IEvent } from "../models/events";
 import { IFavourite } from "../models/favourites";
 import { IInstructor } from "../models/instructor";
@@ -92,7 +92,7 @@ export interface IUserCourseService {
     fetchCourseDetails(
         userId: string,
         courseId: string
-    ): Promise<ICourseDetails | null>;
+    ): Promise<ICourseDetails | string | null>;
 
     buyCourseRequest(
         userId: string,
@@ -147,7 +147,7 @@ export interface IUserCourseService {
         courseId: string,
         rating: number,
         review: string
-    ): Promise<boolean | null>;
+    ): Promise<IReview | null | string | undefined>;
 
     getInstructorsRequest(): Promise<IInstructor[] | null>;
 

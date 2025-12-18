@@ -2,7 +2,8 @@
 
 
 export interface Ievent {
-  id?: string;     
+  id?: string;    
+  _id?:string ;
   title: string;
   topic:string
   instructorName?:string;

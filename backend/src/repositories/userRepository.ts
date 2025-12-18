@@ -93,6 +93,12 @@ export class UserRepository extends BaseRepository<IUser>
     return await CourseModel.findByIdAndUpdate(id, { onPurchase: false }, { new: true })
   }
 
+  async getMyCoursesCount(id:string):Promise<number>{
+    return MyCourseModel.countDocuments({userId : id , date :{
+      
+    }})
+  }
+
   async buyCourse(id: string): Promise<ICourse | null> {
     return await CourseModel.findByIdAndUpdate(id, { $inc: { totalEnrolled: 1 } })
   }
@@ -350,27 +356,28 @@ export class UserRepository extends BaseRepository<IUser>
   }
 
 
-  async updateProgress(userId: string, courseId: string, moduleTitle: string): Promise<IMyCourse | null> {
-    try {
-      console.log(userId, courseId);
+async updateProgress(userId: string,courseId: string,moduleTitle: string): Promise<IMyCourse | null> {
+  try {
+    const course = await MyCourseModel.findOne({ userId, courseId });
 
-      const course = await MyCourseModel.findOneAndUpdate(
-        { userId, courseId },
-        {
-          $set: { cancelCourse: false },
-          $addToSet: { "progress.completedModules": moduleTitle }
-        },
-        { new: true }
-      );
+    if (!course) return null;
 
-      console.log("course update progress", course);
-      return course;
-    } catch (error) {
-      console.log(error);
-      return null
+    const alreadyCompleted =
+      course.progress?.completedModules?.includes(moduleTitle);
 
+    if (!alreadyCompleted) {
+      course.progress.completedModules.push(moduleTitle);
+      course.cancelCourse = false; 
+      await course.save();
     }
+
+    return course;
+  } catch (error) {
+    console.error("Update progress error:", error);
+    return null;
   }
+}
+
 
   async getCertificate(userId: string, courseId: string, certificate: string): Promise<IMyCourse | null> {
     try {
@@ -421,7 +428,9 @@ export class UserRepository extends BaseRepository<IUser>
       const total = course.review.reduce((sum, r) => sum + r.rating, 0);
       course.averageRating = total / course.review.length;
 
-      await course.save();
+      const review = await course.save();
+      console.log('review added',review);
+      
 
       return newReview;
     } catch (error) {

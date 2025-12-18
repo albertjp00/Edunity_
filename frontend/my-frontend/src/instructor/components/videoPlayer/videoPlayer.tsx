@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
+import { refreshVideo } from "../../services/Instructor/instructorServices";
 
 interface VideoPlayerProps {
   initialUrl: string;
@@ -15,9 +15,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ initialUrl }) => {
     // Auto-refresh before expiry (e.g., after 55 minutes)
     refreshTimer.current = setTimeout(async () => {
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/instructor/videos/refresh?key=${key}`
-        );
+        const res = await refreshVideo(key)
+        if(!res) return
         if (res.data.success) {
           setVideoUrl(res.data.url);
           console.log("🔄 Video URL refreshed successfully!");

@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import "./chatwindow.css";
-import instructorApi from "../../../api/instructorApi";
 import attachmentImage from "../../../assets/documentImage.jpg";
+import { getMessages, sendMessages } from "../../services/Instructor/instructorServices";
 
 const socket = io(import.meta.env.VITE_API_URL);
 
@@ -48,7 +48,8 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
 
     const fetchMessages = async () => {
       try {
-        const res = await instructorApi.get(`/instructor/messages/${receiverId}`);
+        const res = await getMessages(receiverId)
+        if(!res) return
         if (res.data.success) {
           const sorted = res.data.messages.sort(
             (a: Message, b: Message) =>
@@ -129,10 +130,8 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
     if (file) formData.append("attachment", file);
 
     try {
-      const res = await instructorApi.post(`/instructor/sendMessage/${receiverId}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
+      const res = await sendMessages(receiverId , formData)
+      if(!res) return
       if (res.data.success) {
         const newMessage = res.data.message;
 

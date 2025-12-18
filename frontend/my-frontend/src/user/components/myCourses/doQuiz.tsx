@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import api from "../../../api/userApi";
 import "./doQuiz.css";
+import { getQuiz, submitQuiz } from "../../services/courseServices";
 
 interface IOption {
   text: string;
@@ -33,9 +33,9 @@ const DoQuiz: React.FC = () => {
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const res = await api.get(`/user/quiz/${courseId}`);
-        console.log(res);
-
+        if(!courseId) return
+        const res = await getQuiz(courseId)
+        if(!res) return
         setQuiz(res.data.quiz);
       } catch (err) {
         console.error("Error fetching quiz:", err);
@@ -52,11 +52,10 @@ const DoQuiz: React.FC = () => {
     if (!quiz) return;
 
     try {
+      if(!courseId) return
       const quizId = quiz._id
-      const res = await api.post(`/user/quiz/${courseId}/${quizId}`, {
-        answers, 
-      });
-
+      const res = await submitQuiz(courseId , quizId  , answers)
+      if(!res) return
       if (res.data.success) {
         if(res.data.success){
           console.log(res);

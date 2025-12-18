@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import instructorApi from "../../../api/instructorApi";
 import profileImage from "../../../assets/profilePic.png";
 import "./instructorChat.css";
 import InstructorChatWindow from "./instChatWindow";
 import InstructorNavbar from "../navbar/navbar";
 import type { ApiStudent, IStudent } from "../../interterfaces/chat";
 import { io } from "socket.io-client";
+import { fetchMessagedStudents } from "../../services/Instructor/instructorServices";
 
 
 const socket = io(import.meta.env.VITE_API_URL)
@@ -23,7 +23,8 @@ const InstructorChat: React.FC = () => {
 
   const getMessagedStudents = async () => {
     try {
-      const response = await instructorApi.get("/instructor/getMessagedStudents");
+      const response = await fetchMessagedStudents()
+      if(!response) return
 
       if (response.data.success) {
         // assuming the backend also returns instructorId

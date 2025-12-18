@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Bell } from "lucide-react";
-import instructorApi from "../../../api/instructorApi";
+import { notificationMarkAsRead } from "../../services/Instructor/instructorServices";
 
 interface Notification {
   _id: string;
@@ -42,7 +42,7 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ userId }) => {
   // ✅ Mark notification as read
   const handleMarkAsRead = async (id: string) => {
     try {
-      await instructorApi.patch(`/instructor/notifications/${id}/read`);
+      await notificationMarkAsRead(id)
       setNotifications((prev) =>
         prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
       );

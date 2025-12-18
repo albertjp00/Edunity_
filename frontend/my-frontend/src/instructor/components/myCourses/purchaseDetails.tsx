@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import api from "../../../api/userApi";
 import "./purchaseDetails.css";
+import { purchaseDetails } from "../../services/Instructor/instructorServices";
 
 export interface IPurchaseDetails {
   name: string;
@@ -22,7 +22,8 @@ const PurchaseDetails: React.FC = () => {
     if (!id) return;
     const getPurchaseDetails = async () => {
       try {
-        const res = await api.get(`/instructor/purchaseDetails/${id}`);
+        const res = await purchaseDetails(id)
+        if(!res)  return
         if (res.data.success) {
           setDetails(res.data.details); 
           console.log(res.data);

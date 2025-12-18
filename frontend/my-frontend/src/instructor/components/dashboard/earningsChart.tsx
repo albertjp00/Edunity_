@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import instructorApi from "../../../api/instructorApi";
 import StatsCard from "./statsCard";
+import { getEarnings } from "../../services/Instructor/instructorServices";
 
 // const data = [
 //   { month: "Jan", earnings: 2000 },
@@ -30,8 +30,9 @@ const EarningsChart: React.FC = () => {
 
   useEffect(()=>{
     const Earnings = async ()=>{
-    const res = await instructorApi.get('/instructor/earnings')
-    console.log("earnings" , res);
+    const res = await getEarnings()
+    if(!res) return
+    // console.log("earnings" , res);
     
     setEarnings(res.data.earnings.monthlyEarnings)
     setTotalEarnings(res.data.earnings.totalEarnings)

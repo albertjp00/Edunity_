@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../../api/userApi";
 import './forgotPassMail.css'
 import { toast } from "react-toastify";
+import { forgotPassword } from "../../services/authServices";
+import axios from "axios";
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -12,8 +13,8 @@ const ForgotPassword: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await api.post("/user/forgotPassword", { email });
-      console.log(response.data);
+      const response = await forgotPassword(email)
+      if(!response) return
       
       if (response.data.success) {
         navigate("/user/otpVerification", {
@@ -22,13 +23,14 @@ const ForgotPassword: React.FC = () => {
       }else{
         toast.error(response.data.message)
       }
-    } catch (error:any) {
-      console.error(error);
-      if (error.response) {
-      toast.error(error.response.data.message || "Something went wrong");
-    } else {
-      toast.error("Network error, please try again later");
-    }
+    } catch (error: unknown) {
+  console.error(error);
+
+  if (axios.isAxiosError(error)) {
+    toast.error(error.response?.data?.message || "Something went wrong");
+  } else {
+    toast.error("Network error, please try again later");
+  }
   
     }
   };

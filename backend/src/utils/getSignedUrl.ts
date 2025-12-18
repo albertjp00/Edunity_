@@ -18,7 +18,7 @@ export async function generateSignedUrl(key: string) {
     Key: key,
   });
 
-  const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+  const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 });
 
   // 👇 Add these lines here
   console.log("Generated signed URL at:", new Date().toISOString());

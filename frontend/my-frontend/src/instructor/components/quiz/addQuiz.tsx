@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import api from "../../../api/instructorApi";
 import "./addQuiz.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { addQuiz } from "../../services/Instructor/instructorServices";
 
 interface QuestionForm {
   id: string;
@@ -101,7 +101,8 @@ const AddQuiz: React.FC<AddQuizProps> = ({
 
     try {
       setSubmitting(true);
-      const res = await api.post(`/instructor/addQuiz/${id}`, payload);
+      if(!id) return
+      const res = await addQuiz(id , payload)
       if (res?.data?.success) {
         toast.success("Quiz Added")
         navigate(-1)

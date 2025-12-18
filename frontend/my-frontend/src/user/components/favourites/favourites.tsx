@@ -1,27 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import api from '../../../api/userApi';
 import './favourites.css'
 import Navbar from '../navbar/navbar';
 import { useNavigate } from 'react-router-dom';
+import type { Favourite } from '../../interfaces';
+import { getFavouriteCourses } from '../../services/courseServices';
 
-interface Course {
-  _id: string;
-  title: string;
-  description: string;
-  thumbnail?: string;
-  modules?: string[];
-}
 
-interface Favourite {
-  _id: string;
-  userId: string;
-  courseId: string;
-  course: Course;
-  progress: {
-    completedModules: string[];
-  };
-  createdAt: string;
-}
 
 // const API_URL = import.meta.env.VITE_API_URL
 
@@ -31,7 +15,8 @@ const Favourites = () => {
 
   const getFavourites = async () => {
     try {
-      const res = await api.get('/user/getFavourites')
+      const res = await getFavouriteCourses()
+      if(!res) return
       if (res.data.success) {
         console.log("Favourites:", res.data.favourites)
         setFavourites(res.data.favourites)

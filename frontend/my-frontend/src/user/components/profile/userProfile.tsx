@@ -13,7 +13,7 @@ import type { IPayment } from "../../interfaces";
 interface User {
   name?: string;
   email?: string;
-  profileImage?: string;
+  image?: string;
   bio?: string;
   gender?: string;
   dob?: string;
@@ -51,6 +51,8 @@ const Profile: React.FC = () => {
   const fetchProfile = async () => {
     try {
       const response = await getUserProfile();
+      console.log(response);
+      
       setUser(response?.data.data);
 
       if (response?.data.data.blocked) {
@@ -127,8 +129,8 @@ const fetchPayments = async () => {
           <div className="user-name-card-image">
             <img
               src={
-                user.profileImage
-                  ? `${import.meta.env.VITE_API_URL}/assets/${user.profileImage}`
+                user.image
+                  ? `${import.meta.env.VITE_API_URL}/assets/${user.image}`
                   : profilePic
               }
               alt="Profile"

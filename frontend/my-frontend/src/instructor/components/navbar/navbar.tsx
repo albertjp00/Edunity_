@@ -4,7 +4,6 @@ import "./navbar.css";
 import logo from "../../../assets/logo.png";
 import notificationImg from '../../../assets/notification.png'
 // import NotificationBell from "../notification/notificationBell";
-// import instructorApi from "../../../api/instructorApi";
 // import { useEffect, useState } from "react";
 
 const InstructorNavbar = () => {

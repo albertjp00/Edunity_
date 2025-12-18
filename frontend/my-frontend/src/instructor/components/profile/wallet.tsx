@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./wallet.css";
-import instructorApi from "../../../api/instructorApi";
+import { getWallet } from "../../services/Instructor/instructorServices";
 
 interface Transaction {
   type: "credit" | "debit";
@@ -26,9 +26,9 @@ const UserWallet: React.FC = () => {
       try {
         // setLoading(true);
         
-        const res = await instructorApi.get('/instructor/wallet');
-        console.log('sw',res);
-        
+        const res = await getWallet()
+
+        if(!res) return
         setWallet(res.data);
       } catch (err) {
         console.log(err);

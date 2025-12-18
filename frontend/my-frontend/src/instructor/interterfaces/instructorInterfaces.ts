@@ -5,3 +5,44 @@ export interface IEventFormData {
     date:string,
      time:string 
     };
+
+
+
+
+
+ export    interface QuizOption {
+  text: string;
+}
+
+export interface QuizQuestion {
+  question: string;
+  options: QuizOption[];
+  correctAnswer: string;
+  points: number;
+}
+
+export interface QuizPayload {
+  courseId: string;
+  title: string;
+  questions: QuizQuestion[];
+}
+
+
+export interface Option {
+  text: string;
+}
+
+export interface Question {
+  _id?: string; // make optional since new questions won't have one yet
+  question: string;
+  options: Option[];
+  correctAnswer: string;
+  points: number;
+}
+
+export interface QuizData {
+  _id: string;
+  courseId: string;
+  title: string;
+  questions: Question[];
+}

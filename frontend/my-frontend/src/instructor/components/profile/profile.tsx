@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import profilePic from './../../../assets/profilePic.png';
 import { Link } from 'react-router-dom';
 import './profile.css'
-import instructorApi from '../../../api/instructorApi';
 import Navbar from '../../components/navbar/navbar';
+import { fetchProfile } from '../../services/Instructor/instructorServices';
 
 interface IUser {
   _id?: string;
@@ -17,13 +17,13 @@ interface IUser {
   work?: string;
 }
 
-interface ICourse {
-  _id: string;
-  title: string;
-  thumbnail?: string;
-  level?: string;
-  price?: number;
-}
+// interface ICourse {
+//   _id: string;
+//   title: string;
+//   thumbnail?: string;
+//   level?: string;
+//   price?: number;
+// }
 
 const InstructorProfile: React.FC = () => {
   const [user, setUser] = useState<IUser>({});
@@ -33,7 +33,8 @@ const InstructorProfile: React.FC = () => {
 
   const getProfile = async () => {
     try {
-      const response = await instructorApi.get('/instructor/profile');
+      const response = await fetchProfile()
+      if(!response) return
       setUser(response.data.data);
     } catch (error) {
       console.error('Error fetching profile:', error);

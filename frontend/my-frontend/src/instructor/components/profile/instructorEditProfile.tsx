@@ -3,7 +3,7 @@ import './instructorEditProfile.css';
 import { toast } from 'react-toastify';
 import profilePic from './../../../assets/profilePic.png';
 import { useNavigate } from 'react-router-dom';
-import instructorApi from '../../../api/instructorApi';
+import { fetchProfile, profileEdit } from '../../services/Instructor/instructorServices';
 
 interface InstructorProfile {
   name: string;
@@ -59,12 +59,8 @@ const InstructorProfileEdit: React.FC = () => {
     }
 
     try {
-      const response = await instructorApi.put('/instructor/profile', formData,{
-        headers: {
-    "Content-Type": "multipart/form-data",
-  },
-      });
-console.log(response);
+      const response = await profileEdit(formData)
+      if(!response) return
 
       if (response.data.success) {
         toast.success('Profile updated', { autoClose: 1500 });
@@ -78,14 +74,10 @@ console.log(response);
 
   const getProfile = async () => {
     try {
-      const token = localStorage.getItem('instructor');
-      if (!token) return;
+      
 
-      const response = await instructorApi.get<{ data: InstructorProfile }>('/instructor/profile', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetchProfile()
+      if(!response) return
 
       setData(response.data.data);
     } catch (error) {

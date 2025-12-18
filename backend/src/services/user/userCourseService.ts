@@ -1,5 +1,5 @@
 import { IMyCourses } from '../../interfaces/userInterfaces';
-import { ICourse } from '../../models/course';
+import { ICourse, IReview } from '../../models/course';
 import { IFavourite } from '../../models/favourites';
 import { IInstructor } from '../../models/instructor';
 import { IMyCourse, IProgress } from '../../models/myCourses';
@@ -35,6 +35,7 @@ export interface IviewCourse {
   course: ICourse,
   instructor: IInstructor
   progress: IProgress
+  cancelCourse: boolean
   quizExists: boolean
   enrolledAt: Date
 }
@@ -98,34 +99,43 @@ export class UserCourseService implements IUserCourseService {
   }
 
 
-  mySubscriptionCoursesRequest  = async(id:string , page:number):Promise<any> =>{ 
+  mySubscriptionCoursesRequest = async (id: string, page: number): Promise<any> => {
     try {
-      const courses = await this.userRepository.getSubscriptionCourses(id , page)
+      const courses = await this.userRepository.getSubscriptionCourses(id, page)
       return courses
     } catch (error) {
       console.log(error);
-      
+
     }
   }
 
 
 
 
-  fetchCourseDetails = async (userId: string, courseId: string): Promise<ICourseDetails | null> => {
+  fetchCourseDetails = async (userId: string, courseId: string): Promise<ICourseDetails | string | null> => {
     try {
       console.log("service get course details");
       let hasAccess = false
-      const myCourse = await this.userRepository.getCourseDetails(userId, courseId);
-      // console.log(myCourse);
+      const myCourse: IMyCourse | null = await this.userRepository.getCourseDetails(userId, courseId);
+
+      const completedModules = myCourse?.progress?.completedModules || [];
+
+      if(myCourse){
+        return 'myCourseExists'
+      }
 
 
       const course: any = await this.userRepository.getCourse(courseId);
       // console.log('myCoursessss', course);
-      const userSubscription = await this.userRepository.getSubscriptionActive(userId)
-      if(userSubscription){
-        hasAccess = true
+
+      if (course.accessType == 'subscription') {
+        const userSubscription = await this.userRepository.getSubscriptionActive(userId)
+        if (userSubscription) {
+          hasAccess = true
+        }
       }
 
+      
 
       if (myCourse) {
         hasAccess = true
@@ -136,7 +146,7 @@ export class UserCourseService implements IUserCourseService {
         ...(course.toObject?.() || course),
         instructor,
         hasAccess,
-        completedModules: myCourse?.progress?.completedModules || []
+        completedModules
       };
     } catch (error) {
       console.log(error);
@@ -148,34 +158,39 @@ export class UserCourseService implements IUserCourseService {
 
 
 
+
   // import OrderModel from "../models/orderModel"; // adjust path
 
   buyCourseRequest = async (userId: string, courseId: string) => {
     try {
       console.log('buy course service');
-      const course = await this.userRepository.getCourse(courseId);
-      if (!course) {
-        throw new Error(StatusMessage.COURSE_NOT_FOUND);
+
+      const courseCount = await this.userRepository.getMyCoursesCount(userId)
+      if (courseCount < 5) {
+        const course = await this.userRepository.getCourse(courseId);
+        if (!course) {
+          throw new Error(StatusMessage.COURSE_NOT_FOUND);
+        }
+        if (course.onPurchase) {
+          throw new Error(StatusMessage.PAYMENT_ALREADY_PROGRESS)
+        }
+
+
+
+        const options = {
+          amount: course.price! * 100,
+          currency: "INR",
+          receipt: `receipt_${Date.now()}`,
+          notes: { userId, courseId },
+        };
+
+
+        const order = await razorpay.orders.create(options);
+
+        const onPurchase = await this.userRepository.onPurchase(courseId, true)
+
+        return order;
       }
-      if (course.onPurchase) {
-        throw new Error(StatusMessage.PAYMENT_ALREADY_PROGRESS)
-      }
-
-
-
-      const options = {
-        amount: course.price! * 100,
-        currency: "INR",
-        receipt: `receipt_${Date.now()}`,
-        notes: { userId, courseId },
-      };
-
-
-      const order = await razorpay.orders.create(options);
-
-      const onPurchase = await this.userRepository.onPurchase(courseId, true)
-
-      return order;
 
     } catch (error) {
       console.error(error);
@@ -301,9 +316,9 @@ export class UserCourseService implements IUserCourseService {
       }
 
       console.log('verify service ', data);
-      
 
-      
+
+
       await this.userRepository.updateSubscription(userId, data);
 
       await this.userRepository.sendNotification(
@@ -361,6 +376,7 @@ export class UserCourseService implements IUserCourseService {
       const myCourse = await this.userRepository.viewMyCourse(id, myCourseId);
       if (!myCourse) return null;
       const progress = myCourse.progress
+      const cancelCourse = myCourse.cancelCourse
       // console.log('service my course details',myCourse);
       const enrolledAt = myCourse.createdAt
 
@@ -407,7 +423,7 @@ export class UserCourseService implements IUserCourseService {
 
 
 
-      return { course, instructor, progress, quizExists, enrolledAt };
+      return { course, instructor, progress, cancelCourse, quizExists, enrolledAt };
     } catch (error) {
       console.log(error);
       return null;
@@ -474,9 +490,21 @@ export class UserCourseService implements IUserCourseService {
     }
   }
 
-  async addReview(userId: string, courseId: string, rating: number, review: string): Promise<boolean | null> {
+  async addReview(userId: string, courseId: string, rating: number, review: string): Promise<IReview | null | string | undefined> {
 
     try {
+      console.log('in servire review');
+      
+      const courseReview = await this.userRepository.getCourse(courseId)
+      console.log(courseReview);
+      
+      const reviewed = courseReview?.review.some((r:IReview)=>  r.userId === userId )
+      
+      console.log('reviewdddd',reviewed);
+      
+      if (reviewed) {
+      return 'exists'
+    }
 
       const user = await this.userRepository.findById(userId)
       console.log(user);
@@ -485,12 +513,13 @@ export class UserCourseService implements IUserCourseService {
         const userImage = user.profileImage || ''
 
 
-        const update = await this.userRepository.addReview(userId, userName, userImage, courseId, rating, review)
+        let addedReview = await this.userRepository.addReview(userId, userName, userImage, courseId, rating, review)
+        return addedReview
 
       }
 
 
-      return true
+      
     } catch (error) {
       console.log(error);
       return null
@@ -591,7 +620,7 @@ export class UserCourseService implements IUserCourseService {
 
   getQuiz = async (courseId: string) => {
     try {
-      console.log('quiz service');
+      // console.log('quiz service');
 
       // const course = await this.userRepository.getCourse(myCourseId)
       // console.log(course);

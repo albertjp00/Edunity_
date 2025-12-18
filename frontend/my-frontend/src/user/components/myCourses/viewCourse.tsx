@@ -1,61 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./viewMyCourse.css";
-import api from "../../../api/userApi";
-import { viewMyCourse } from "../../services/courseServices";
+import { cancelCourse, submitReview, updateProgress, viewMyCourse } from "../../services/courseServices";
 import VideoPlayerUser from "../videoPlayer/videoPlayer";
 import { toast } from "react-toastify";
 import ConfirmModal from "../modal/modal";
 import { getCertificate } from "../../../services/user/userServices";
-
-
-interface IInstructor {
-  _id: string;
-  name: string;
-  email: string;
-  expertise?: string;
-  bio?: string;
-  profileImage?: string;
-  work?: string;
-  education?: string;
-}
-
-interface IModule {
-  title: string;
-  videoUrl: string;
-  content: string;
-}
-
-interface ICourse {
-  _id: string;
-  title: string;
-  description: string;
-  price: string;
-  thumbnail: string;
-  modules: IModule[];
-  review: IReview[]
-}
+import type { ICourse, IInstructor, IMyCourse, IReview } from "../../interfaces";
 
 
 
-interface IMyCourse {
-  _id: string;
-  userId: string;
-  course: ICourse;
-  progress: {
-    completedModules: string[];
-  };
-  enrolledAt: string;
-}
-
-interface IReview {
-  userId: string;
-  userName: string;
-  userImage?: string;
-  rating: number;
-  comment: string;
-  createdAt: string;
-}
 
 const ViewMyCourse: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -92,15 +46,16 @@ const ViewMyCourse: React.FC = () => {
       setReview(fetchedMyCourse.course?.review)
 
 
-      const enrolledDate = new Date(fetchedMyCourse.enrolledAt);
-      const now = new Date();
-      const diffDays =
-        (now.getTime() - enrolledDate.getTime()) / (1000 * 60 * 60 * 24);
+      // const enrolledDate = new Date(fetchedMyCourse.enrolledAt);
+      // const now = new Date();
+      // const diffDays =
+      //   (now.getTime() - enrolledDate.getTime()) / (1000 * 60 * 60 * 24);
 
-      const hasViewedMoreThanOne =
-        fetchedMyCourse.progress.completedModules.length > 1;
+      // const hasViewedMoreThanOne =
+      //   fetchedMyCourse.progress.completedModules.length > 1;
 
-      setCanCancel(diffDays <= 10 && !hasViewedMoreThanOne);
+      // setCanCancel(diffDays <= 10 && !hasViewedMoreThanOne);
+      setCanCancel(res.data.course.cancelCourse)
     } catch (err) {
       console.error("Error fetching course:", err);
     }
@@ -110,6 +65,8 @@ const ViewMyCourse: React.FC = () => {
   useEffect(() => {
     fetchCourse();
   }, []);
+
+  
 
   const toggleModule = (index: number): void => {
     setExpandedModule(expandedModule === index ? null : index);
@@ -121,8 +78,10 @@ const ViewMyCourse: React.FC = () => {
     try {
       console.log('marked as completed');
 
-      await api.post("/user/updateProgress", { courseId: id, moduleTitle });
+      if(!id) return
+      await updateProgress(id , moduleTitle)
       setCompletedModules((prev) => [...prev, moduleTitle]);
+      setCanCancel(false)
     } catch (err) {
       console.error("Error updating progress:", err);
     }
@@ -137,7 +96,9 @@ const ViewMyCourse: React.FC = () => {
 
   const confirmCancel = async () => {
     try {
-      const res = await api.delete(`/user/cancelCourse/${selectedCourseId}`);
+      if (!selectedCourseId) return;
+      const res = await cancelCourse(selectedCourseId)
+      if(!res) return
       if (res.data.success) {
         toast.success("Course cancelled successfully!");
         navigate("/user/myCourses");
@@ -155,8 +116,6 @@ const ViewMyCourse: React.FC = () => {
     setShowModal(false);
     setSelectedCourseId(null);
   };
-
-
 
 
   const gotoQuiz = (myCourseId: string) => {
@@ -200,16 +159,28 @@ const ViewMyCourse: React.FC = () => {
 
     try {
       // setLoadingReview(true);
-      const res = await api.post("/user/review", {
-        courseId: course?._id,
-        rating,
-        review: reviewText,
-      });
+      const courseId = course?._id
+      if(!courseId) return
+      const res = await submitReview(courseId , rating , reviewText)
+      // const res = await api.post("/user/review", {
+      //   courseId: course?._id,
+      //   rating,
+      //   review: reviewText,
+      // });
 
+      if(!res) return
+      console.log(res);
+      
       if (res.data.success) {
         toast.success("Review submitted successfully!");
         setRating(0);
         setReviewText("");
+        console.log(res);
+        
+        const newReview = res.data.review
+        setReview((prev)=>prev ? [...prev , newReview] : newReview)
+      }else if(!res.data.success){
+        toast.error(res.data.message)
       }
     } catch (error) {
       console.error("Error submitting review:", error);

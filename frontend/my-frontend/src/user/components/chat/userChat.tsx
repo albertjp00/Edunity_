@@ -6,7 +6,7 @@ import "./userChat.css";
 import Navbar from "../navbar/navbar";
 import { io } from "socket.io-client";
 import { useParams } from "react-router-dom";
-import { getMessagedInstructors, toMessageInstructor } from "../../../services/user/userServices";
+import { getMessagedInstructors, toMessageInstructor } from "../../services/instructorServices";
 
 
 const socket = io(import.meta.env.VITE_API_URL)

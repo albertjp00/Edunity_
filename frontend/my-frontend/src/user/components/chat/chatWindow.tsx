@@ -1,12 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-
 import "./chatWindow.css";
-import api from "../../../api/userApi";
-
-
 import attachmentImage from '../../../assets/documentImage.jpg'
 import { io } from "socket.io-client";
-import { getMessages } from "../../../services/user/userServices";
+import { getMessages, sendMessagesToInstructor } from "../../services/instructorServices";
 // import { connectSocket } from "../../../api/socketApi";
 
 // const socket = connectSocket()
@@ -143,9 +139,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     if (file) formData.append("attachment", file);
 
     try {
-      const res = await api.post("/user/chat", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const res = await sendMessagesToInstructor(formData)
+      if(!res) return
 
       if (res.data.success) {
         const newMessage = res.data.message;

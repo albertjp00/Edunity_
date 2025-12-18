@@ -1,5 +1,15 @@
 import api from "../../api/userApi";
 
+export const getMyEvents = async()=>{
+    try {
+        const res = await api.get("/user/myEvents");        
+        return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
 
 
 export const getEvents = async()=>{
@@ -35,4 +45,5 @@ export const eventEnroll = async(id:string)=>{
         
     }
 }
+
 

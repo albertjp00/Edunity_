@@ -1,9 +1,8 @@
 import React, { useState, useEffect, type ChangeEvent, type FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import instructorApi from '../../../api/instructorApi';
 import './editCourse.css';
-import { getCourseDetails } from '../../services/Instructor/instructorServices';
+import { editCourse, getCourseDetails } from '../../services/Instructor/instructorServices';
 
 // Interfaces
 interface Module {
@@ -232,10 +231,9 @@ const EditCourse: React.FC = () => {
                     formData.append(`modules[${idx}][videoUrl]`, mod.videoUrl);
                 }
             });
-
-            const res = await instructorApi.patch(`/instructor/course/${id}`, formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
+            if(!id) return
+            const res = await editCourse(id , formData)
+            if(!res) return
 
             if (res.data.success) {
                 toast.success('Course Updated');

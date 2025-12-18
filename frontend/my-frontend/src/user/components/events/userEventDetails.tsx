@@ -6,7 +6,7 @@ import './userEventDetails.css';
 import { eventEnroll, getDetailsEvent } from "../../services/eventServices";
 import { toast } from "react-toastify";
 import type { Ievent } from "../../../instructor/interterfaces/events";
-import api from "../../../api/userApi";
+import { getUserProfile } from "../../services/profileServices";
 
 const EventDetails: React.FC = () => {
   const { id } = useParams();
@@ -35,7 +35,8 @@ const EventDetails: React.FC = () => {
 
   useEffect(() => {
     const getUser = async () => {
-      const res = await api.get('/user/profile')
+      const res = await getUserProfile()
+      if(!res) return
       setUser(res.data.data.name)
 
 

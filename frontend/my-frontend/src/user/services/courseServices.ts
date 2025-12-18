@@ -103,3 +103,98 @@ export const getSubscriptionCourses = async (page:number)=>{
     
   }
 }
+
+
+export const getFavouriteCourses = async ()=>{
+  try {
+    const res = await api.get('/user/getFavourites')
+    
+    return res
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
+
+export const getQuiz = async (courseId : string)=>{
+  try {
+    const res = await api.get(`/user/quiz/${courseId}`);
+    
+    return res
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const submitQuiz = async (courseId : string , quizId :string , answers : any)=>{
+  try {
+    const res = await api.post(`/user/quiz/${courseId}/${quizId}`, {
+        answers, 
+      });
+    
+    return res
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
+
+export const updateProgress = async (courseId : string , moduleTitle : string)=>{
+  try {
+    const res = await api.post("/user/updateProgress", { courseId: courseId, moduleTitle });
+    
+    return res
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
+export const cancelCourse = async (selectedCourseId:string)=>{
+  try {
+    const res = await api.delete(`/user/cancelCourse/${selectedCourseId}`);
+    
+    return res
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
+
+export const submitReview = async (courseId : string , rating : number , reviewText : string)=>{
+  try {
+    console.log(courseId , rating , reviewText);
+    
+    const res = await api.post("/user/review", {
+        courseId: courseId,
+        rating,
+        review: reviewText,
+      });
+    
+    return res
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
+
+export const addToFavourites= async (id : string)=>{
+  try {    
+
+    const res = await api.get(`/user/addtoFavourites/${id}`)
+    
+    return res
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
+

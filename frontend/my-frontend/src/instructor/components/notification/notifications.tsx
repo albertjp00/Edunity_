@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./notifications.css"; 
-import instructorApi from "../../../api/instructorApi";
 import InstructorNavbar from "../navbar/navbar";
+import { getNotification } from "../../services/Instructor/instructorServices";
 
 interface Notification {
   _id: string;
@@ -24,8 +24,9 @@ const InstructorNotifications = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const res = await instructorApi.get(`/instructor/notifications`);
-        console.log(res);
+        const res = await getNotification()
+        // console.log(res);
+        if(!res) return
         
         setNotifications(res.data.notifications);
       } catch (error) {

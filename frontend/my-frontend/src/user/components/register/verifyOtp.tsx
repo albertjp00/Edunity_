@@ -3,6 +3,7 @@ import './verifyotp.css'
 import { useNavigate } from "react-router-dom";
 import api from "../../../api/userApi";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const VerifyOtp : React.FC = () => {
   const [otp, setOtp] = useState('');
@@ -31,10 +32,12 @@ const VerifyOtp : React.FC = () => {
         navigate('/user/login')
       }
       // You can redirect to login/home here
-    } catch (err: any) {
-      console.log(err);
+    } catch (err) {
+      if(axios.isAxiosError(err)){
+        console.log(err);
 
       toast.error(err.response?.data?.message || "OTP verification failed");
+      }
     }
   };
 
@@ -43,6 +46,7 @@ const VerifyOtp : React.FC = () => {
     const res = await api.post('/user/resendOtp',{email})
 
     if (res.data.success) {
+      toast.success('Otp resend to your mail')
         setTimeLeft(60)
         setIsDisabled(false)
         

@@ -1,11 +1,10 @@
 // src/pages/OtpVerification.tsx
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import api from "../../../api/userApi";
 // import "./forgotPassMail.css";
 import { toast } from "react-toastify";
-import publicApi from "../../../api/publicApi";
 import axios from "axios";
+import { resendOtpForgotPass, resetPasswordRequest } from "../../services/Instructor/instructorServices";
 
 interface LocationState {
   email: string;
@@ -44,9 +43,10 @@ const OtpVerificationInstructor: React.FC = () => {
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      const response = await publicApi.post("/instructor/otpVerify", { email, otp });
 
+    try {
+      const response = await resetPasswordRequest(email , otp)
+      if(!response) return
       if (response.data.success) {
         if (type === "forgot") {
           navigate("/instructor/resetPassword", { state: { email } });
@@ -66,7 +66,8 @@ const OtpVerificationInstructor: React.FC = () => {
 
   const handleResend = async () => {
     try {
-      const response = await api.post("/instructor/resendOtpForgotPass", { email });
+      const response = await resendOtpForgotPass(email)
+      if(!response) return
       if (response.data.success) {
         setIsResendDisabled(true);
         setTimer(60); // reset countdown

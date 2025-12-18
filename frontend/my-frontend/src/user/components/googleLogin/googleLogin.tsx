@@ -1,16 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
 import { GoogleLogin } from "@react-oauth/google";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { googleLogin } from "../../services/authServices";
 
 const GoogleLoginButton = () => {
     const navigate = useNavigate()
   const handleSuccess = async (credentialResponse: any) => {
   try {
-    const res = await axios.post(`${import.meta.env.VITE_API_URL}/user/auth/googleLogin`, {
-      token: credentialResponse.credential,
-    }, { withCredentials: true });
+    const res = await googleLogin(credentialResponse)
+    if(!res) return
 
     const {token , user } = res.data;
 
@@ -23,7 +21,7 @@ const GoogleLoginButton = () => {
   }
 };
 
-
+ 
   return (
     
     <GoogleLogin

@@ -46,13 +46,16 @@ export class AdminCourseController implements
         try {
             const id = req.params.id!;
             const data = await this._courseService.getCourseDetailsRequest(id);
-            console.log('admin course details',data);
+            console.log('admin course details',id,data);
             
-            const courseDetailsDTO = mapCourseDetailsToDTO(data);
+            // const courseDetailsDTO = mapCourseDetailsToDTO(data);
+
+            // console.log(courseDetailsDTO);
+            
 
             res.status(HttpStatus.OK).json({
                 success: true,
-                course: courseDetailsDTO,
+                course: data,
             });
         } catch (error) {
             next(error);

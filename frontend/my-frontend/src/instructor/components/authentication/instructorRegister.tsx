@@ -2,10 +2,10 @@ import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import "./instructorRegister.css";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import instructorApi from "../../../api/instructorApi";
 import registerImage from '../../../assets/authImage.png'
+import { instructorRegister } from "../../services/Instructor/instructorServices";
 
-interface RegisterForm {
+export interface RegisterForm {
   name: string;
   email: string;
   password: string;
@@ -23,53 +23,59 @@ const RegisterInstructor = () => {
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
 
-  const validate = (): boolean => {
-    const { name, email, password, confirmPassword } = formData;
+  const validate = (name: string, value: string) => {
+    switch (name) {
+      case "name":
+        if (!value.trim()) return "Name is required";
+        break;
 
-    if (!name.trim()) {
-      setMessage("Please fill all the fields");
-      return false;
+      case "email": {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!value.trim()) return "Email is required";
+        if (!emailRegex.test(value)) return "Invalid email format";
+
+        const [localPart] = value.split("@");
+        if (localPart.length < 3)
+          return "Email must contain at least 3 characters before @";
+        break;
+      }
+
+      case "password": {
+        const passwordRegex =
+          /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+
+        if (!value.trim()) return "Password is required";
+        if (!passwordRegex.test(value))
+          return "Password must be 6+ chars, include number & special char";
+        break;
+      }
+
+      case "confirmPassword":
+        if (value !== formData.password)
+          return "Passwords do not match";
+        break;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email.trim() || !emailRegex.test(email)) {
-      setMessage("Please enter a valid email");
-      return false;
-    }
-
-    if (!password.trim()) {
-      setMessage("Password is required");
-      return false;
-    }
-
-    const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
-
-    if (!passwordRegex.test(password)) {
-      setMessage("Password must be at least 6 characters, include 1 number and 1 special character");
-      return false;
-    }
-
-
-    if (!confirmPassword.trim() || password !== confirmPassword) {
-      setMessage("Passwords do not match");
-      return false;
-    }
-
-    return true;
+    return "";
   };
 
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const {name , value } = e.target
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    const error = validate(name, value);
+    setMessage(error);
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!validate()) return;
+    // if (!validate()) return;
 
     try {
       localStorage.setItem("instOtpEmail", formData.email);
 
-      const res = await instructorApi.post("/instructor/register", formData);
+      const res = await instructorRegister(formData)
+      if (!res) return
       console.log(res);
 
       if (res?.data.success) {

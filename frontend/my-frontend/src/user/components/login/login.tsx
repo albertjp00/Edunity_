@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import type { AxiosError } from "axios";
 import api from "../../../api/userApi";
 import GoogleLoginButton from "../googleLogin/googleLogin";
+import eye from '../../../assets/eye-icon.png'
 
 interface LoginFormData {
   email: string;
@@ -13,13 +14,15 @@ interface LoginFormData {
 
 const LoginUser: React.FC = () => {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+
 
   const [value, setValue] = useState<LoginFormData>({
     email: "",
     password: "",
   });
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => { 
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setValue({
       ...value,
       [e.target.name]: e.target.value,
@@ -64,14 +67,28 @@ const LoginUser: React.FC = () => {
             onChange={handleChange}
           />
 
-          <input
-            className="inputs"
-            type="password"
-            name="password"
-            placeholder="Enter Password"
-            value={value.password}
-            onChange={handleChange}
-          />
+          <div className="password-wrapper">
+            <input
+              className="inputs"
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Enter Password"
+              value={value.password}
+              onChange={handleChange}
+            />
+
+            <img
+              className="eye-icon"
+              src={eye}
+              
+              onClick={() => setShowPassword((prev) => !prev)}
+              role="button"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              
+            </img>
+          </div>
+
 
           <div className="button-container">
             <button type="submit" className="btn">

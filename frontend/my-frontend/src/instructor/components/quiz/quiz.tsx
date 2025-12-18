@@ -1,28 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "./quiz.css";
-import instructorApi from "../../../api/instructorApi";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { getQuiz, quizSave } from "../../services/Instructor/instructorServices";
+import type { Question, QuizData } from "../../interterfaces/instructorInterfaces";
 
-interface Option {
-  text: string;
-}
 
-interface Question {
-  _id?: string; // make optional since new questions won't have one yet
-  question: string;
-  options: Option[];
-  correctAnswer: string;
-  points: number;
-}
-
-interface QuizData {
-  _id: string;
-  courseId: string;
-  title: string;
-  questions: Question[];
-}
 
 const Quiz: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
@@ -36,7 +20,9 @@ const Quiz: React.FC = () => {
 
   const fetchQuiz = async () => {
     try {
-      const res = await instructorApi.get(`/instructor/quiz/${courseId}`);
+      if(!courseId) return
+      const res = await getQuiz(courseId)
+      if(!res) return
       if (res.data.success) {
         setQuiz(res.data.quiz);
       } else {
@@ -134,7 +120,8 @@ const Quiz: React.FC = () => {
 
     try {
       const quizId = quiz._id;
-      const res = await instructorApi.put(`/instructor/quiz/${quizId}`, quiz);
+      const res = await quizSave(quizId , quiz)
+      if(!res) return
       if (res.data.success) {
         toast.success("Quiz updated successfully!");
         setIsEditing(false);

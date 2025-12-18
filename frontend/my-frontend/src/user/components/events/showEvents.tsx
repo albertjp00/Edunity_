@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { getEvents } from "../../services/eventServices";
+import { getEvents, getMyEvents } from "../../services/eventServices";
 import type { MyEvent, UEvent } from "../../interfaces";
 import thumbnail from "../../../assets/webinar_thumnail.png";
 import "./showEvents.css";
 import { useNavigate } from "react-router-dom";
-import api from "../../../api/userApi";
 
 const Events: React.FC = () => {
   const [events, setEvents] = useState<UEvent[]>([]);
@@ -26,7 +25,8 @@ const Events: React.FC = () => {
 
 const fetchMyEvents = async () => {
   try {
-    const res = await api.get("/user/myEvents");
+    const res = await getMyEvents()
+    if(!res) return
     const registeredIds = res.data.events.map((e: MyEvent) => e.eventId);
     setMyRegisteredEvents(registeredIds);
   } catch (error) {

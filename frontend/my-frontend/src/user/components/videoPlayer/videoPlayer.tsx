@@ -42,7 +42,7 @@ const VideoPlayerUser: React.FC<VideoPlayerProps> = ({ initialUrl, onComplete })
       console.log("🧹 Unmounted, clearing timer");
       if (refreshTimer.current) clearTimeout(refreshTimer.current);
     };
-  }, [initialUrl]);
+  }, [videoUrl]);
 
 
   return (

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./allCourses.css";
 import api from "../../../api/userApi";
 import { useNavigate } from "react-router-dom";
+import useDebounce from "../../../admin/components/debounce/debounce";
 
 interface Course {
   _id: string;
@@ -34,7 +35,7 @@ const AllCourses: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const fetchCourses = async (page: number = 1) => {
+  const fetchCourses = async (page: number = 1 , searchQuery:string) => {
     try {
       const queryParams = new URLSearchParams({
         page: page.toString(),
@@ -60,6 +61,8 @@ const AllCourses: React.FC = () => {
         queryParams.append("search", searchQuery.trim());
       }
 
+      
+
       const response = await api.get(
         `/user/getAllCourses?${queryParams.toString()}`
       );
@@ -75,18 +78,21 @@ const AllCourses: React.FC = () => {
   const handleSearch = (e: React.FormEvent) => {
   e.preventDefault();
   setCurrentPage(1);
-  fetchCourses(1);
+  fetchCourses(1,searchQuery);
 };
 
   const gotoCourse = (id: string): void => {
     navigate(`/user/courseDetails/${id}`);
   };
 
-  // 🔎 Trigger fetch on search + filters
+  
+  const debouncedSearchTerm = useDebounce(searchQuery,500)
+
   useEffect(() => {
-    fetchCourses(currentPage);
+    fetchCourses(currentPage,debouncedSearchTerm);
   }, [
     currentPage,
+    debouncedSearchTerm,
     selectedCategories,
     selectedInstructors,
     selectedPrice,

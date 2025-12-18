@@ -12,6 +12,20 @@ export interface IRegister{
   password : string;
 }
 
+
+
+export interface IError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+    status?: number;
+  };
+  
+  message?: string;
+}
+
+
 export interface MyEvent {
   _id: string;
   eventId: string;
@@ -83,4 +97,78 @@ export interface IPayment {
   status: string;
   courseId: string;
   courseName : string
+}
+
+
+
+export interface Course {
+  _id: string;
+  title: string;
+  description: string;
+  thumbnail?: string;
+  modules?: string[];
+}
+
+export interface Favourite {
+  _id: string;
+  userId: string;
+  courseId: string;
+  course: Course;
+  progress: {
+    completedModules: string[];
+  };
+  createdAt: string;
+}
+
+
+
+
+
+
+export interface IInstructor {
+  _id: string;
+  name: string;
+  email: string;
+  expertise?: string;
+  bio?: string;
+  profileImage?: string;
+  work?: string;
+  education?: string;
+}
+
+export interface IModule {
+  title: string;
+  videoUrl: string;
+  content: string;
+}
+
+export interface ICourse {
+  _id: string;
+  title: string;
+  description: string;
+  price: string;
+  thumbnail: string;
+  modules: IModule[];
+  review: IReview[]
+}
+
+
+
+export interface IMyCourse {
+  _id: string;
+  userId: string;
+  course: ICourse;
+  progress: {
+    completedModules: string[];
+  };
+  enrolledAt: string;
+}
+
+export interface IReview {
+  userId: string;
+  userName: string;
+  userImage?: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
 }

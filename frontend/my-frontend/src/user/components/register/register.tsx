@@ -28,45 +28,77 @@ const Register = () => {
   const navigate = useNavigate()
 
   const [message, setMessage] = useState("");
+  const [error , setError] = useState<Record<string , string>>({})
 
-  const validate = (): boolean => {
+  const validate = (name: string, value: string) => {
+    switch (name) {
+      case "name":
+        if (!value.trim()) return "Name is required";
+        break;
 
-    const { name, email, password, confirmPassword } = formData
+      case "email": {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!value.trim()) return "Email is required";
+        if (!emailRegex.test(value)) return "Invalid email format";
 
-    if (!name.trim()) {
-      setMessage('Please fill all the fileds')
-      return false
+        const [localPart] = value.split("@");
+        if (localPart.length < 3)
+          return "Email must contain at least 3 characters before @";
+        break;
+      }
+
+      case "password": {
+        const passwordRegex =
+          /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+
+        if (!value.trim()) return "Password is required";
+        if (!passwordRegex.test(value))
+          return "Password must be 6+ chars, include number & special char";
+        break;
+      }
+
+      case "confirmPassword":
+        if (value !== formData.password)
+          return "Passwords do not match";
+        break;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email.trim() || !emailRegex.test(email)) {
-      setMessage("Please enter a valid email");
-      return false;
-    }
-
-    if (!password.trim() || password.length < 6) {
-      setMessage("Password must be at least 6 characters");
-      return false;
-    }
-
-    if (!confirmPassword.trim() || password != confirmPassword) {
-      setMessage("Passwords do not match")
-      return false;
-    }
-
-    return true
-
-  }
+    return "";
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const {name , value } = e.target
+    setFormData((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+
+    const error = validate(name , value)
+    setError((prev) => ({
+    ...prev,
+    [name]: error,
+  }));
   };
+
+  const validateOnSubmit = () => {
+  const newErrors: Record<string, string> = {};
+
+  (Object.keys(formData) as Array<keyof RegisterForm>).forEach((key) => {
+    const error = validate(key, formData[key]);
+    if (error) newErrors[key] = error;
+  });
+
+  setError(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
+
 
 
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!validate()) return;
+    // if (!validate()) return;
+    if(!validateOnSubmit) return
 
     try {
       localStorage.setItem("otpEmail", formData.email);
@@ -113,6 +145,7 @@ const Register = () => {
             onChange={handleChange}
             value={formData.name}
           />
+          {error.name && <p className="error">{error.name}</p>}
 
           <input
             className="input"
@@ -122,6 +155,7 @@ const Register = () => {
             onChange={handleChange}
             value={formData.email}
           />
+          {error.email && <p className="error">{error.email}</p>}
 
           <input
             className="input"
@@ -131,6 +165,8 @@ const Register = () => {
             onChange={handleChange}
             value={formData.password}
           />
+          {error.password && <p className="error">{error.password}</p>}
+
 
           <input
             className="input"
@@ -139,10 +175,17 @@ const Register = () => {
             placeholder="Confirm password"
             onChange={handleChange}
           />
+          {error.confirmPassword && (
+  <p className="error">{error.confirmPassword}</p>
+)}
 
-          <button type="submit" className="register-button">
+        
+          
+          <button type="submit" className="register-button" disabled={Object.values(error).some(Boolean)}>
             Sign Up
           </button>
+          
+          
 
           {message && <p className="message">{message}</p>}
 

@@ -8,7 +8,7 @@
 .profile-left {
   flex: 0.7;
   display: flex;
-  justify-content: center;
+  justify-content: center;  
 }
 
 .profile-card-one {
@@ -16,10 +16,11 @@
   border-radius: 16px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   padding: 30px 40px;
-  width: 100%;
+  /* width: 1000%; */
   max-width: 500px;
   text-align: left;
   animation: fadeIn 0.5s ease-in-out;
+
 }
 
 /* Profile header (image + name) */
@@ -144,7 +145,7 @@
 
 
 .profile-right {
-  flex: 1;
+  flex: .9;
   background: #ffffff;
   padding: 20px 25px;
   border-radius: 10px;
@@ -197,9 +198,8 @@
 
 
 
-/* --------------------------
-   Payment History - userProfile.css
-   -------------------------- */
+   /* Payment History - userProfile.css */
+
 
 /* Section title */
 .payment-history-title {
