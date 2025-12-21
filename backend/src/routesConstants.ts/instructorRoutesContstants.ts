@@ -28,6 +28,7 @@ export const INSTRUCTOR_ROUTES = {
     REFRESH_VIDEO: "/videos/refresh",
     EDIT: "/course/:id",
     ADD: "/course",
+    CATEGORY:"/getCategory",
 
     PURCHASE_DETAILS: "/purchaseDetails/:id",
 

@@ -71,7 +71,7 @@ export interface IUserRepository {
 
   getMyEvents(id: string): Promise<IEvent[] | null>
 
-  addtoFavourites(id: string, courseId: string): Promise<IFavourite | null>
+  addtoFavourites(id: string, courseId: string): Promise<string | null>
 
   getFavourites(userId: string): Promise<IFavourite[] | null>
 

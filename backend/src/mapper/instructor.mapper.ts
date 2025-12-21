@@ -106,7 +106,8 @@ export const mapInstructorProfileToDTO = (
     KYCstatus: profile.KYCstatus,
     work: profile.work ?? "",
     education: profile.education ?? "",
-    blocked: profile.blocked ?? false
+    blocked: profile.blocked ?? false,
+    skills:profile.skills ?? []
   };
 };
 

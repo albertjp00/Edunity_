@@ -1,4 +1,5 @@
 import { ICount, IUserOverview, PaginatedInstructors, PaginatedUsers, PurchaseResult } from "../interfaces/adminInterfaces";
+import { CategoryModel, ICategory } from "../models/category";
 import { CourseModel, ICourse } from "../models/course";
 import { EarningModel, IEarnings } from "../models/earnings";
 import { FavouritesModel, IFavourite } from "../models/favourites";
@@ -48,6 +49,10 @@ export interface IAdminRepository {
     } | null>;
 
     getPurchases(search: string, page: number): Promise<PurchaseResult | null>
+
+    addCategory(category:string , skills:string[]):Promise<ICategory | null>
+    getCategory(): Promise<ICategory[] | null>
+    deleteCategory(category:string): Promise<boolean>
 
     getTotalUsers(): Promise<number | null>
     getTotalInstructors(): Promise<number | null>
@@ -287,6 +292,20 @@ export class AdminRepository implements IAdminRepository {
         }
     }
 
+
+    async addCategory(category: string , skills:string[]): Promise<ICategory | null> {
+        return await CategoryModel.create({name:category , skills:skills})
+        
+    }
+
+    async getCategory(): Promise<ICategory[] | null>{
+        return await CategoryModel.find()
+    }
+
+     async deleteCategory(category:string): Promise<boolean>{
+        await CategoryModel.findOneAndDelete({name:category})
+        return true
+    }
 
 
 

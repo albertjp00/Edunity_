@@ -129,3 +129,26 @@ export const getInstructorsData = async(search :string , currentPage:number) => 
   const res =  await adminApi.get(`/admin/getInstructors?page=${currentPage}&search=${search}`);
   return res
 };
+
+export const fetchCategory = async() => {
+  const res =  await adminApi.get(`/admin/getCategories`);
+  return res
+};
+
+
+export const addCategory = async(category:string , skills : string[]) => {
+  const res =  await adminApi.post(`/admin/addCategory`,{
+    category,
+    skills
+  });
+  return res
+};
+
+
+
+export const deleteCategory = async(category:string) => {
+  const res =  await adminApi.patch(`/admin/deleteCategory`,{
+    category
+  });
+  return res
+};

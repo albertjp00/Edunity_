@@ -372,5 +372,20 @@ export class InstCourseController implements
   }
 
 
+  getCategory = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const category = await this._courseService.getCategoryRequest()
+
+
+      res.status(HttpStatus.OK).json({ success: true , category:category });
+    } catch (error) {
+      console.error("Error fetching quiz:", error);
+      next(error)
+    }
+  }
+
+
+
+
 }
 

@@ -172,3 +172,52 @@ export interface IReview {
   comment: string;
   createdAt: string;
 }
+
+
+
+export interface IModule {
+  title: string;
+  videoUrl: string;
+  content: string;
+}
+
+
+
+export interface IInstructor {
+  name: string;
+  profileImage?: string;
+  bio?: string;
+  expertise?: string;
+}
+
+export interface IReview {
+  userId: string;
+  userName: string;
+  userImage?: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
+
+export interface RazorpayInstance {
+  open: () => void;
+}
+
+export interface RazorpayOptions {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  handler: (response: {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+  }) => void;
+  modal?: { ondismiss?: () => void };
+  theme?: { color?: string };
+}
+
+

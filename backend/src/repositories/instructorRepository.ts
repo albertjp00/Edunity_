@@ -11,6 +11,7 @@ import { INotification, NotificationModel } from "../models/notification";
 import { EarningModel, IEarnings } from "../models/earnings";
 import { IWallet, WalletModel } from "../models/wallet";
 import { WalletTransaction } from "../interfaces/userInterfaces";
+import { CategoryModel, ICategory } from "../models/category";
 // import { IInsRepository } from "../interfaces/instructorInterfaces";
 
 
@@ -74,6 +75,8 @@ export interface IInsRepository {
   // getMyCourses(id : string):Promise<string[] | null>
 
   getDashboard(instructorId: string): Promise<any>
+
+  getCategory():Promise<ICategory[] | null>;
 
 
 }
@@ -503,7 +506,14 @@ export class InstructorRepository implements IInsRepository {
 //   }
 
 
-
+getCategory = async():Promise<ICategory[] | null>=>{
+  try {
+    return await CategoryModel.find()
+  } catch (error) {
+    console.log(error);
+    return null
+  }
+}
 
 
 

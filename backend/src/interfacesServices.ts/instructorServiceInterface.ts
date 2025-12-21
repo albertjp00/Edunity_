@@ -1,4 +1,5 @@
 import { IEventResult, IPurchaseDetails } from "../interfaces/instructorInterfaces";
+import { ICategory } from "../models/category";
 import { ICourse } from "../models/course";
 import { IEvent } from "../models/events";
 import { INotification } from "../models/notification";
@@ -76,6 +77,8 @@ export interface IInstCourseService {
     getQuiz(courseId: string): Promise<any>;
 
     updateQuiz(id: string, data: any): Promise<any>;
+
+    getCategoryRequest():Promise<ICategory[] | null>;
 }
 
 

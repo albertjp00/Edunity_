@@ -189,7 +189,7 @@ router.get(ROUTES.CHAT.INSTRUCTOR_TO_MESSAGE, authMiddleware, messageController.
 // router.get('/getInstructors',authMiddleware , courseController.getInstructors)
 // router.get('/getFavourites',authMiddleware ,courseController.getFavourites)
 // router.get('/addtoFavourites/:id',authMiddleware,courseController.addtoFavourites)
-// router.get('/FavouritesCourseDetails/:id',authMiddleware,courseController.favCourseDetails)
+// router.get('/favouritesCourseDetails/:id',authMiddleware,courseController.favCourseDetails)
 
 
 

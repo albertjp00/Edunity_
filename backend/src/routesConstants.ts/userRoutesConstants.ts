@@ -38,7 +38,7 @@ export const ROUTES = {
     GET_INSTRUCTORS: "/getInstructors",
     FAVOURITES: "/getFavourites",
     ADD_FAVOURITES: "/addtoFavourites/:id",
-    FAV_COURSE_DETAILS: "/FavouritesCourseDetails/:id",
+    FAV_COURSE_DETAILS: "/favouritesCourseDetails/:id",
 
     BUY: "/buyCourse/:id",
     VERIFY_PAYMENT: "/payment/verify",

@@ -102,6 +102,7 @@ export interface IInstCourseManageController {
   addCourse(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
   editCourse(req: Request, res: Response,next: NextFunction): Promise<void>;
   refreshVideoUrl(req: Request, res: Response,next: NextFunction): Promise<void>;
+  getCategory(req: Request, res: Response,next: NextFunction): Promise<void>;
 }
 
 // Quiz Management Interfaces

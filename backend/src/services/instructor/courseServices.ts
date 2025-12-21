@@ -1,5 +1,6 @@
 import { IPurchaseDetails } from "../../interfaces/instructorInterfaces";
 import { IInstCourseService } from "../../interfacesServices.ts/instructorServiceInterface";
+import { ICategory } from "../../models/category";
 import { ICourse } from "../../models/course";
 import { IInsRepository, InstructorRepository, ISkills } from "../../repositories/instructorRepository";
 import { generateSignedUrl } from "../../utils/getSignedUrl";
@@ -200,6 +201,16 @@ export class CourseService implements IInstCourseService {
     } catch (error) {
       console.log(error);
 
+    }
+  }
+
+  async getCategoryRequest():Promise<ICategory[] | null>{
+    try {
+      const category = await this.instructorRepository.getCategory()
+      return category
+    } catch (error) {
+      console.log(error);
+      return null
     }
   }
 

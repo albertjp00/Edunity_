@@ -542,22 +542,23 @@ export class UserCourseService implements IUserCourseService {
 
 
 
-  async addtoFavourites(userId: string, courseId: string): Promise<{ success: boolean; message: string }> {
-    try {
-      console.log('add to fav');
+    async addtoFavourites(userId: string, courseId: string): Promise<string | null> {
+      try {
+        // console.log('add to fav');
 
-      const result = await this.userRepository.addtoFavourites(userId, courseId);
+        const result = await this.userRepository.addtoFavourites(userId, courseId);
 
-      if (!result) {
-        return { success: false, message: StatusMessage.COURSE_ALREADY_EXISTS };
+        // if (result == 'existing') {
+        //   return result;
+        // }
+
+        return result
+      } catch (error) {
+        console.log(error);
+        return null
+        // return { success: false, message: StatusMessage.INTERNAL_SERVER_ERROR };
       }
-
-      return { success: true, message: StatusMessage.COURSE_ADDED };
-    } catch (error) {
-      console.log(error);
-      return { success: false, message: StatusMessage.INTERNAL_SERVER_ERROR };
     }
-  }
 
   async getFavourites(userId: string): Promise<IFavourite[] | null> {
     try {
@@ -585,14 +586,17 @@ export class UserCourseService implements IUserCourseService {
     }
   }
 
-  favCourseDetails = async (userId: string, courseId: string): Promise<ICourseDetails | null> => {
+  favCourseDetails = async (userId: string, courseId: string): Promise<ICourseDetails | boolean | null> => {
     try {
-      console.log("service get course details");
+      // console.log();
       let hasAccess = false
       const myCourse = await this.userRepository.getCourseDetails(userId, courseId);
       console.log(myCourse);
       const favCourse = await this.userRepository.getFavCourseDetails(userId, courseId);
-      console.log(myCourse);
+      console.log("service get course details",favCourse);
+      if(!favCourse){
+        return false
+      }
 
 
       const course: any = await this.userRepository.getCourse(courseId);

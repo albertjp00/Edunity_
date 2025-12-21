@@ -363,3 +363,16 @@ export const refreshVideo =  async (key:string)=>{
     
   }
 }
+
+
+export const getCategory =  async ()=>{
+  try {
+    const res = await instructorApi.get(`/instructor/getCategory`);
+    return res
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
+

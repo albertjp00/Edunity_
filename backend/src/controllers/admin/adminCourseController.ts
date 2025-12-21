@@ -1,7 +1,7 @@
 import { Response, Request, NextFunction } from "express";
 import { AdminAuthRequest } from "../../middleware/authMiddleware";
 import { HttpStatus } from "../../enums/httpStatus.enums";
-import { IAdminCourseReadController, IAdminCourseService, IAdminPurchaseController } from "../../interfaces/adminInterfaces";
+import { IAdminCategoryController, IAdminCourseReadController, IAdminCourseService, IAdminPurchaseController } from "../../interfaces/adminInterfaces";
 import { mapCourseDetailsToDTO, mapCourseToDTO, mapPurchaseToDTO } from "../../mapper/admin.mapper";
 import { StatusMessage } from "../../enums/statusMessage";
 
@@ -10,7 +10,8 @@ import { StatusMessage } from "../../enums/statusMessage";
 
 export class AdminCourseController implements
     IAdminCourseReadController,
-    IAdminPurchaseController {
+    IAdminPurchaseController,
+    IAdminCategoryController {
 
     private _courseService: IAdminCourseService;
 
@@ -90,4 +91,46 @@ export class AdminCourseController implements
             next(err);
         }
     };
+
+
+    addCategory = async(req:AdminAuthRequest , res:Response , next:NextFunction)=>{
+        try {
+            const {category,skills} = req.body
+            console.log(category , skills);
+            
+            const categories = await this._courseService.addCategoryRequest(category , skills)
+            console.log('adding ------',categories);
+            
+            res.json({success:true , category : categories})
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
+
+    getCategory = async(req:AdminAuthRequest , res:Response , next:NextFunction)=>{
+        try {
+            const categories = await this._courseService.getCategoryRequest()
+            console.log(categories);
+            
+            res.json({success:true , category:categories })
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
+
+    deleteCategory = async(req:AdminAuthRequest , res:Response , next:NextFunction)=>{
+        try {
+            const category = req.body.category
+            
+            const categories = await this._courseService.deleteCategoryRequest(category)
+            // console.log(categories);
+            
+            res.json({success:true})
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
 }

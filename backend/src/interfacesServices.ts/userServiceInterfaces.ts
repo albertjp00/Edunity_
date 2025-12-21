@@ -154,7 +154,7 @@ export interface IUserCourseService {
     addtoFavourites(
         userId: string,
         courseId: string
-    ): Promise<{ success: boolean; message: string }>;
+    ): Promise<string | null>;
 
     getFavourites(
         userId: string
@@ -163,7 +163,7 @@ export interface IUserCourseService {
     favCourseDetails(
         userId: string,
         courseId: string
-    ): Promise<ICourseDetails | null>;
+    ): Promise<ICourseDetails | boolean | null>;
 
     getQuiz(
         courseId: string

@@ -1,5 +1,6 @@
 import { IAdminCourseService } from "../../interfaces/adminInterfaces";
 import { IUserRepository } from "../../interfaces/userInterfaces";
+import { ICategory } from "../../models/category";
 import { ICourse } from "../../models/course";
 import { IInstructor } from "../../models/instructor";
 import { IAdminRepository } from "../../repositories/adminRepositories";
@@ -76,6 +77,42 @@ export class AdminCourseService implements IAdminCourseService {
             const data = await this.adminRepository.getPurchases(search, page)
             
             console.log('getting purchase detaislssssssssssssssssss',data);
+
+            return data
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+    addCategoryRequest = async (category:string , skills:string[]):Promise<ICategory | null> => {
+        try {
+            
+            const data = await this.adminRepository.addCategory(category , skills)
+
+            return data
+        } catch (error) {
+            console.log(error);
+            return null
+        }
+    }
+
+    getCategoryRequest = async () => {
+        try {
+            
+            const data = await this.adminRepository.getCategory()
+
+            return data
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+    deleteCategoryRequest = async (category:string) => {
+        try {
+            
+            const data = await this.adminRepository.deleteCategory(category)
 
             return data
         } catch (error) {

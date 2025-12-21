@@ -75,8 +75,11 @@ admin.get(ADMIN_ROUTES.DASHBOARD.USER_OVERVIEW, adminAuthMiddleware, dashboardCo
 
 admin.get(ADMIN_ROUTES.DASHBOARD.EARNINGS, adminAuthMiddleware, dashboardController.getEarnings);
 
+admin.post(ADMIN_ROUTES.CATEGORY.ADD_CATEGORY, adminAuthMiddleware, courseController.addCategory);
 
+admin.get(ADMIN_ROUTES.CATEGORY.GET_CATEGORY, adminAuthMiddleware, courseController.getCategory);
 
+admin.patch(ADMIN_ROUTES.CATEGORY.DELETE_CATEGORY, adminAuthMiddleware, courseController.deleteCategory);
 
 // admin.post('/login',authController.adminLogin)
 

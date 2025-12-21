@@ -57,3 +57,10 @@ export interface AdminUserCourses{
   title : string;
   thumbnail : string;
 }
+
+
+export interface ICategory{
+  _id:string
+  name:string
+  skills:string[]
+}

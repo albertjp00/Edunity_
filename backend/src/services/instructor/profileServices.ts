@@ -23,9 +23,9 @@ export class InstructorProfileService implements IInstructorProfileService {
 
       const { password, ...userWithoutPassword } = user.toObject();
       //   console.log(userWithoutPassword);
-      const dto = mapInstructorToDTO(user)
+      // const dto = mapInstructorToDTO(user)
 
-      return dto;
+      return user;
     } catch (error) {
       console.error('ProfileService.getProfile error:', error);
       throw new Error('Failed to get profile');

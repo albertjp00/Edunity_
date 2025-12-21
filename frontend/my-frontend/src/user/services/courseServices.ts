@@ -198,3 +198,17 @@ export const addToFavourites= async (id : string)=>{
 }
 
 
+export const fetchFavourites= async (id:string)=>{
+  try {    
+
+    const res = await api.get(`/user/favouritesCourseDetails/${id}`)
+    
+    return res
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
+
+

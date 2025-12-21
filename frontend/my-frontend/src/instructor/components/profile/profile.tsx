@@ -2,20 +2,10 @@ import React, { useEffect, useState } from 'react';
 import profilePic from './../../../assets/profilePic.png';
 import { Link } from 'react-router-dom';
 import './profile.css'
-import Navbar from '../../components/navbar/navbar';
 import { fetchProfile } from '../../services/Instructor/instructorServices';
+import type { IUser } from '../../interterfaces/instructorInterfaces';
 
-interface IUser {
-  _id?: string;
-  name?: string;
-  email?: string;
-  profileImage?: string;
-  bio?: string;
-  expertise?: string;
-  KYCstatus?: 'verified' | 'pending' | 'rejected' | string;
-  education?: string;
-  work?: string;
-}
+
 
 // interface ICourse {
 //   _id: string;
@@ -35,6 +25,8 @@ const InstructorProfile: React.FC = () => {
     try {
       const response = await fetchProfile()
       if(!response) return
+      console.log(response);
+      
       setUser(response.data.data);
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -65,7 +57,7 @@ const InstructorProfile: React.FC = () => {
 
   return (
       <>
-      <Navbar />
+      
 
       <div className="profile-container1">
         {/* LEFT */}
@@ -123,6 +115,12 @@ const InstructorProfile: React.FC = () => {
                 )}
               </p>
             </div>
+
+            <div className="user-details-box">
+              <span>skills : {user.skills?.join(', ')}</span>
+            </div>
+
+
 
             <div className="btn-edit">
               <Link to="/instrcutor/passwordChange">

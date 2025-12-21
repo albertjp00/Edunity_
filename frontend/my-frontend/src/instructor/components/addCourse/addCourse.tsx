@@ -1,8 +1,9 @@
-import React, { useState, type ChangeEvent, type FormEvent } from "react";
+import React, { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import "./addCourse.css";
-import { addCourse } from "../../services/Instructor/instructorServices";
+import { addCourse, getCategory } from "../../services/Instructor/instructorServices";
+import type { ICategory } from "../../../admin/adminInterfaces";
 
 interface Module {
   title: string;
@@ -25,6 +26,9 @@ interface CourseForm {
 
 const AddCourse: React.FC = () => {
   const navigate = useNavigate();
+  const [categories , setCategories] = useState<ICategory[]>([])
+  const [skills , setSkills ] = useState<string[]>([])
+  const [subscription , setSubscription] = useState<boolean>(false)
 
   const [form, setForm] = useState<CourseForm>({
     title: "",
@@ -41,6 +45,9 @@ const AddCourse: React.FC = () => {
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
+    if(e.target.value == 'subscription') setSubscription(false) 
+    if(e.target.value == 'oneTime') setSubscription(true) 
+    
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -218,6 +225,44 @@ const AddCourse: React.FC = () => {
     }
   };
 
+
+
+
+  useEffect(() => {
+      const fetchCategories = async () => {
+        try {
+          const res = await getCategory();
+          if (!res) return;
+          setCategories(res.data.category);
+          setSkills(res.data.categories.skills)
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      fetchCategories();
+    }, []);
+
+    useEffect(() => {
+  if (categories.length && !form.category) {
+    setForm((prev) => ({
+      ...prev,
+      category: categories[0].name,
+    }));
+  }
+}, [categories]);
+
+
+    useEffect(()=>{
+      if(!form.category) return
+
+      const selectedCategory = categories.find(
+        (cat)=>cat.name==form.category
+      )
+
+      setSkills(selectedCategory?.skills || [])
+
+    },[form.category , categories])
+
   return (
     <div className="addCourse">
       <form className="add-course-form" onSubmit={handleSubmit}>
@@ -233,9 +278,22 @@ const AddCourse: React.FC = () => {
           onChange={handleChange}
         ></textarea>
 
+
+        <label htmlFor="select-category">Category</label>
+        <select
+          className="select-category"
+          name="category"
+          value={form.category}
+          onChange={handleChange}
+        >
+          {categories.map((c)=>(
+            <option value={c.name}>{c.name}</option>
+          ))}
+        </select>
+
         <label>Skills</label>
         <div className="skills-checkbox-group">
-          {["React", "HTML", "CSS", "JavaScript", "Node.js"].map((skill) => (
+          {skills.map((skill) => (
             <label key={skill} className="skill-checkbox">
               <input
                 type="checkbox"
@@ -260,20 +318,7 @@ const AddCourse: React.FC = () => {
           <option value="Advanced">Advanced</option>
         </select>
 
-        <label htmlFor="select-category">Category</label>
-        <select
-          className="select-category"
-          name="category"
-          value={form.category}
-          onChange={handleChange}
-        >
-          <option value="Web Development">Web Development</option>
-          <option value="Mobile Development">Mobile Development</option>
-          <option value="Data Science">Data Science</option>
-          <option value="Cyber Security">Cyber Security</option>
-          <option value="Design">Design</option>
-          <option value="Language">Language</option>
-        </select>
+        
 
         <label>Course Access Type</label>
         <div className="access-type-group">
@@ -303,13 +348,17 @@ const AddCourse: React.FC = () => {
         </div>
 
 
-        <label>Price</label>
+        {subscription && 
+        <>
+          <label>Price</label>
         <input
           name="price"
           placeholder="Price"
           type="number"
           onChange={handleChange}
         />
+        </>
+        }
 
         <label>Thumbnail</label>
         <input

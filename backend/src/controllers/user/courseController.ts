@@ -507,17 +507,18 @@ export class UserCourseController
             const courseId = req.params.id!;
 
             const result = await this._courseService.addtoFavourites(userId, courseId);
-            // console.log(result);
+            console.log(result);
 
-            if (!result.success) {
-                res.json({ success: false, message: StatusMessage.COURSE_ALREADY_EXISTS , added:false });
-            }
+            // if (result == 'existing') {
+            //     res.json({ success: true, message: StatusMessage.COURSE_ALREADY_EXISTS , fav:"removed" });
+            //     return
+            // }
 
-            res.status(HttpStatus.OK).json(result);
+            res.status(HttpStatus.OK).json({success:true, fav:result});
         } catch (error) {
             // console.log(error);
             next(error)
-            res.status(500).json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR , added:true });
+            res.status(500).json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR  });
         }
     };
 
@@ -539,9 +540,12 @@ export class UserCourseController
     favCourseDetails = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             const id = req.user?.id!
-            const courseId = req.query.id as string
+            const courseId = req.params.id as string
             const result = await this._courseService.favCourseDetails(id, courseId)
             // console.log("course", result);
+            if(result == false){
+                res.json({success:false})
+            }
 
             res.json({ success: true, course: result })
         } catch (error) {

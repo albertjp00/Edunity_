@@ -113,6 +113,8 @@ instructor.patch(
   upload.any(),
   courseController.editCourse
 );
+
+instructor.get(INSTRUCTOR_ROUTES.COURSE.CATEGORY,instAuthMiddleware,upload.any(),courseController.getCategory);
 instructor.post(INSTRUCTOR_ROUTES.COURSE.ADD,instAuthMiddleware,upload.any(),courseController.addCourse);
 
 instructor.get(INSTRUCTOR_ROUTES.COURSE.PURCHASE_DETAILS, instAuthMiddleware, courseController.purchaseDetails);

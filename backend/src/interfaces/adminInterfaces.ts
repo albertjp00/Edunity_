@@ -1,4 +1,5 @@
 import { AdminAuthRequest } from "../middleware/authMiddleware";
+import { ICategory } from "../models/category";
 import { ICourse } from "../models/course";
 import { IInstructor } from "../models/instructor";
 import { IUser } from "../models/user";
@@ -25,8 +26,11 @@ export interface IAdminPurchaseController {
   getAllPurchases(req: AdminAuthRequest, res: Response,next: NextFunction): Promise<void>;
 }
 
-
-
+export interface IAdminCategoryController{
+  addCategory(req:AdminAuthRequest , res:Response , next:NextFunction):Promise<void>;
+  getCategory(req:AdminAuthRequest , res:Response , next:NextFunction):Promise<void>;
+  deleteCategory(req:AdminAuthRequest , res:Response , next:NextFunction):Promise<void>;
+}
 
 //controller.ts
 //  AUTH INTERFACE
@@ -103,6 +107,11 @@ export interface IAdminCourseService {
     getCourseDetailsRequest(courseId: string): Promise<any>;
 
     getPurchaseDetails(search: string, page: number): Promise<any>;
+
+    addCategoryRequest(category:string , skills:string[]):Promise<ICategory | null>;
+    getCategoryRequest():Promise<any>;
+    getCategoryRequest(category:string):Promise<any>;
+    deleteCategoryRequest(category:string):Promise<any>;
 }
 
 

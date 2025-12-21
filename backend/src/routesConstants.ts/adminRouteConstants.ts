@@ -30,4 +30,10 @@ export const ADMIN_ROUTES = {
     USER_OVERVIEW: "/userOverview",
     EARNINGS: "/getEarnings",
   },
+
+  CATEGORY:{
+    ADD_CATEGORY:'/addCategory',
+    GET_CATEGORY:'/getCategories',
+    DELETE_CATEGORY:'/deleteCategory'
+  }
 };

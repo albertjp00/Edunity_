@@ -12,6 +12,7 @@ interface InstructorProfile {
   bio: string;
   image?: string;
   work: string;
+  skills: string[]
   education: string;
   profileImage?: string;
 }
@@ -19,6 +20,7 @@ interface InstructorProfile {
 
 const InstructorProfileEdit: React.FC = () => {
   const navigate = useNavigate();
+  const [skillInput, setSkillInput] = useState('');
 
   const [data, setData] = useState<InstructorProfile>({
     name: '',
@@ -29,6 +31,7 @@ const InstructorProfileEdit: React.FC = () => {
     work: '',
     education: '',
     profileImage: '',
+    skills: []
   });
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -53,6 +56,7 @@ const InstructorProfileEdit: React.FC = () => {
     formData.append('bio', data.bio);
     formData.append('work', data.work);
     formData.append('education', data.education);
+    formData.append('skills', JSON.stringify(data.skills));
 
     if (selectedFile) {
       formData.append('profileImage', selectedFile);
@@ -60,7 +64,7 @@ const InstructorProfileEdit: React.FC = () => {
 
     try {
       const response = await profileEdit(formData)
-      if(!response) return
+      if (!response) return
 
       if (response.data.success) {
         toast.success('Profile updated', { autoClose: 1500 });
@@ -74,12 +78,19 @@ const InstructorProfileEdit: React.FC = () => {
 
   const getProfile = async () => {
     try {
-      
+
 
       const response = await fetchProfile()
-      if(!response) return
+      if (!response) return
 
-      setData(response.data.data);
+      const profile = response.data.data;
+
+      setData((prev) => ({
+  ...prev,             
+  ...profile,           
+  skills: Array.isArray(profile.skills) ? profile.skills : [],
+}));
+
     } catch (error) {
       console.error(error);
     }
@@ -88,6 +99,30 @@ const InstructorProfileEdit: React.FC = () => {
   useEffect(() => {
     getProfile();
   }, []);
+
+  const addSkill = () => {
+    if (!skillInput.trim()) return;
+
+    if (data.skills.includes(skillInput.trim())) {
+      toast.warning('Skill already added');
+      return;
+    }
+
+    setData({
+      ...data,
+      skills: [...data.skills, skillInput.trim()],
+    });
+
+    setSkillInput('');
+  };
+
+  const removeSkill = (skill: string) => {
+    setData({
+      ...data,
+      skills: data.skills.filter((s) => s !== skill),
+    });
+  };
+
 
   return (
     <div className="editProfile">
@@ -100,8 +135,8 @@ const InstructorProfileEdit: React.FC = () => {
               selectedFile
                 ? URL.createObjectURL(selectedFile)
                 : data.profileImage
-                ? `${import.meta.env.VITE_API_URL}/assets/${data.profileImage}`
-                : profilePic
+                  ? `${import.meta.env.VITE_API_URL}/assets/${data.profileImage}`
+                  : profilePic
             }
             alt="Profile"
             className="profile-avatar"
@@ -123,6 +158,30 @@ const InstructorProfileEdit: React.FC = () => {
                 rows={4}
                 className="textarea"
               />
+
+              <label>Add Skills</label>
+
+              <div className="skills-input">
+                <input
+                  type="text"
+                  value={skillInput}
+                  onChange={(e) => setSkillInput(e.target.value)}
+                  placeholder="e.g. React, Node.js"
+                />
+                <button type="button" onClick={addSkill}>
+                  Add
+                </button>
+              </div>
+
+              <div className="skills-list">
+                {data.skills.map((skill) => (
+                  <span key={skill} className="skill-chip">
+                    {skill}
+                    <button type="button" onClick={() => removeSkill(skill)}>×</button>
+                  </span>
+                ))}
+              </div>
+
 
               <label>Work Experience</label>
               <input

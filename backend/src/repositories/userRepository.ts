@@ -474,12 +474,14 @@ async updateProgress(userId: string,courseId: string,moduleTitle: string): Promi
     return await MyEventModel.find({ userId: id })
   }
 
-  async addtoFavourites(userId: string, courseId: string): Promise<IFavourite | null> {
+  async addtoFavourites(userId: string, courseId: string): Promise<string | null> {
     const existing = await FavouritesModel.findOne({ userId, courseId });
     if (existing) {
-      return null;
+      await FavouritesModel.deleteOne({userId , courseId})
+      return "removed"
     }
-    return await FavouritesModel.create({ userId, courseId });
+    await FavouritesModel.create({ userId, courseId });
+    return "added"
   }
 
 

@@ -5,65 +5,9 @@ import api from "../../../api/userApi";
 import { toast } from "react-toastify";
 import buyNowImage from '../../../assets/buyCourse.png'
 import VideoPlayerUser from "../videoPlayer/videoPlayer";
-import { addToFavourites, buyCourseService, paymentCancel } from "../../services/courseServices";
+import { addToFavourites, buyCourseService, fetchFavourites, paymentCancel } from "../../services/courseServices";
+import type {  IInstructor, IModule, IReview, RazorpayInstance, RazorpayOptions } from "../../interfaces";
 
-interface Module {
-  title: string;
-  videoUrl: string;
-  content: string;
-}
-
-interface Course {
-  _id: string;
-  title: string;
-  description: string;
-  price: number;
-  level: string;
-  thumbnail: string;
-  skills: string[];
-  modules: Module[];
-  enrolled?: number;
-  lectures?: number;
-  language?: string;
-  accessType: string;
-}
-
-interface Instructor {
-  name: string;
-  profileImage: string;
-  bio?: string;
-  expertise?: string;
-}
-
-interface IReview {
-  userId: string;
-  userName: string;
-  userImage?: string;
-  rating: number;
-  comment: string;
-  createdAt: string;
-}
-
-
-interface RazorpayInstance {
-  open: () => void;
-}
-
-interface RazorpayOptions {
-  key: string;
-  amount: number;
-  currency: string;
-  name: string;
-  description: string;
-  order_id: string;
-  handler: (response: {
-    razorpay_payment_id: string;
-    razorpay_order_id: string;
-    razorpay_signature: string;
-  }) => void;
-  modal?: { ondismiss?: () => void };
-  theme?: { color?: string };
-}
 
 declare global {
   interface Window {
@@ -71,14 +15,30 @@ declare global {
   }
 }
 
+export interface ICourse {
+  _id: string;
+  title: string;
+  description: string;
+  price?: number;
+  level: string;
+  thumbnail?: string;
+  skills: string[];
+  modules: IModule[];
+  enrolled?: number;
+  lectures?: number;
+  language?: string;
+  accessType: string;
+}
+
 const CourseDetailsUser: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [course, setCourse] = useState<Course | null>(null);
+  const [course, setCourse] = useState<ICourse | null>(null);
   const [hasAccess, setHasAccess] = useState<boolean>(false);
-  const [instructor, setInstructor] = useState<Instructor | null>(null);
+  const [instructor, setInstructor] = useState<IInstructor | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
   const [activePayment, setActivePayment] = useState<string | null>(null);
   const [reviews, setReviews] = useState<IReview[]>([]);
+  const [fav , setFavourites] = useState<boolean>(false)
   // const [rating, setRating] = useState<number>(0);
   // const [comment, setComment] = useState<string>("");
   // const [loadingReview, setLoadingReview] = useState<boolean>(false);
@@ -208,21 +168,44 @@ const CourseDetailsUser: React.FC = () => {
   //   }
   // };
 
+  useEffect(()=>{
+    const getFavourites = async()=>{
+    try {
+      if(!id) return
+      const res = await fetchFavourites(id)
+      if(!res) return
+      // console.log('favvv',res);
+      
+      if(res.data.success){
+        setFavourites(res.data.success)
+      }
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+  getFavourites()
+  },[])
+
 
   const handleAddtofavourites = async (id:string)=>{
     try {
       const res = await addToFavourites(id)
       if(!res) return
-      if(res.data.success){
-        if(res.data.added){
+      console.log('added fav ', res);
+      
+    if(res.data.success){
+      if(res.data.fav == 'added'){
+        setFavourites(true)
           toast.success('Added to favourites')
-        }else{
-          toast.success('Removed from favourites')
+      }else if(res.data.fav=='removed'){
+          setFavourites(false)
+          toast.success('Removed from favourites') 
         }
-      }
+    }
+      
     } catch (error) {
       console.log(error);
-      
     }
   }
 
@@ -447,7 +430,7 @@ const CourseDetailsUser: React.FC = () => {
             )}
 
             <button className="buy-btn" onClick={()=>handleAddtofavourites(course._id)}>
-              Add to Favourites
+              {fav ?  "Remove from favourites" : "Add to Favourites"}
             </button>
 
 

@@ -91,7 +91,8 @@ export interface IInstructorProfileDTO{
   KYCstatus: "pending" | "verified" | "rejected" | "notApplied";
   work?: string;
   education?: string;
-  blocked?:boolean
+  blocked?:boolean;
+  skills:string[];
 }
 
 

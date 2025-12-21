@@ -1,8 +1,10 @@
 import { NextFunction, Response } from 'express';
 import { InstAuthRequest } from '../../middleware/authMiddleware';
 import { HttpStatus } from '../../enums/httpStatus.enums';
-import { IInstFinancialController, IInstKYCController,
-     IInstProfileReadController, IInstProfileUpdateController } from '../../interfaces/instructorInterfaces';
+import {
+    IInstFinancialController, IInstKYCController,
+    IInstProfileReadController, IInstProfileUpdateController
+} from '../../interfaces/instructorInterfaces';
 import { IInstructorProfileService } from '../../interfacesServices.ts/instructorServiceInterface';
 import { mapDashboardToDTO, mapEarningsToDTO, mapInstructorProfileToDTO, mapNotificationToDTO, walleToDto } from '../../mapper/instructor.mapper';
 import { INotification } from '../../models/notification';
@@ -24,7 +26,7 @@ export class InstProfileController implements
 
 
 
-    getProfile = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
+    getProfile = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
         try {
             const userId = req.instructor?.id
             console.log('instructor get profile');
@@ -54,14 +56,19 @@ export class InstProfileController implements
 
 
 
-    editProfile = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
+    editProfile = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
         try {
             console.log('user profile ', req.instructor?.id, req.file)
             const userId = req.instructor?.id; // Assuming `req.user` is set by auth middleware
             // const updateData = req.body;
 
+            if (req.body.skills) {
+                req.body.skills = JSON.parse(req.body.skills);
+            }
+
 
             const data = { ...req.body }
+
             const file = req.file?.filename
 
             data.profileImage = file
@@ -70,6 +77,9 @@ export class InstProfileController implements
                 res.status(401).json({ error: 'Unauthorized' });
                 return;
             }
+
+            console.log('editing-------', data);
+
 
             const updatedProfile = await this._profileService.editProfileRequest(userId, data);
 
@@ -89,7 +99,7 @@ export class InstProfileController implements
     };
 
 
-    changePassword = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
+    changePassword = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
         try {
             const id = req.instructor?.id;
             const { newPassword, oldPassword } = req.body;
@@ -114,7 +124,7 @@ export class InstProfileController implements
     };
 
 
-    kycSubmit = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
+    kycSubmit = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
         try {
             const id = req.instructor?.id
 
@@ -128,7 +138,7 @@ export class InstProfileController implements
 
             const result = await this._profileService.kycSubmit(id, idProofFile.filename, addressProofFile.filename)
 
-            res.status(HttpStatus.OK).json({ success: true})
+            res.status(HttpStatus.OK).json({ success: true })
         } catch (error) {
             console.error(error)
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR })
@@ -137,16 +147,16 @@ export class InstProfileController implements
     }
 
 
-    getNotifications = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
+    getNotifications = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
         try {
             const id = req.instructor?.id
             console.log(id);
 
             const notifications = await this._profileService.getNotifications(id as string)
-            console.log('dto---',notifications);
-            const notificationDto = notifications?.map((n:INotification)=>
-            mapNotificationToDTO(n))
-            
+            console.log('dto---', notifications);
+            const notificationDto = notifications?.map((n: INotification) =>
+                mapNotificationToDTO(n))
+
 
 
             res.status(HttpStatus.OK).json({ success: true, notifications: notificationDto })
@@ -158,7 +168,7 @@ export class InstProfileController implements
     }
 
 
-    getDashboardData = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
+    getDashboardData = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
         try {
             const instructorId = req.instructor?.id
             const result = await this._profileService.getDashboard(instructorId as string)
@@ -173,12 +183,12 @@ export class InstProfileController implements
     }
 
 
-    getEarnings = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
+    getEarnings = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
         try {
             const instructorId = req.instructor?.id
             const result = await this._profileService.getEarnings(instructorId as string)
             console.log("earnings", result);
-             const earningsDTO = mapEarningsToDTO(result);
+            const earningsDTO = mapEarningsToDTO(result);
 
 
             res.status(HttpStatus.OK).json({ success: true, earnings: earningsDTO })
@@ -189,14 +199,14 @@ export class InstProfileController implements
     }
 
 
-    getWallet = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
+    getWallet = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
         try {
             const id = req.instructor?.id
             const result = await this._profileService.getWallet(id as string)
-            console.log('wallet',result);
-            if(!result) return
+            console.log('wallet', result);
+            if (!result) return
             const wallet = walleToDto(result)
-            
+
             res.status(HttpStatus.OK).json({ success: true, wallet })
         } catch (error) {
             console.log(error);

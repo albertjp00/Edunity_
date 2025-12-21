@@ -13,6 +13,7 @@ export interface IInstructor extends Document {
   KYCstatus: "pending" | "verified" | "rejected" | "notApplied";
   work?: string;
   education?: string;
+  skills?:[];
   blocked?:boolean
 }
 
@@ -59,6 +60,10 @@ const InstructorSchema: Schema<IInstructor> = new Schema({
   },
   education: {
     type: String
+  },
+  skills:{
+    Type:[String],
+    default:[]
   },
   blocked:{
     type:Boolean,
