@@ -11,6 +11,11 @@
   color: #1f2937;
 }
 
+.buttons{
+  display: flex;
+  justify-content:space-between;
+}
+
 .purchases-table {
   width: 100%;
   border-collapse: collapse;

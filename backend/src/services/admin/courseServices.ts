@@ -6,6 +6,8 @@ import { IInstructor } from "../../models/instructor";
 import { IAdminRepository } from "../../repositories/adminRepositories";
 import { IInsRepository, InstructorRepository } from "../../repositories/instructorRepository";
 import { UserRepository } from "../../repositories/userRepository";
+import PDFDocument from "pdfkit";
+import { once } from "events";
 
 
 
@@ -31,7 +33,7 @@ export class AdminCourseService implements IAdminCourseService {
         try {
             const skip = (page - 1) * limit;
 
-            const query:any = {}
+            const query: any = {}
 
             if (search) {
                 query.$or = [
@@ -73,10 +75,10 @@ export class AdminCourseService implements IAdminCourseService {
 
     getPurchaseDetails = async (search: string, page: number) => {
         try {
-            
+
             const data = await this.adminRepository.getPurchases(search, page)
-            
-            console.log('getting purchase detaislssssssssssssssssss',data);
+
+            console.log('getting purchase detaislssssssssssssssssss', data);
 
             return data
         } catch (error) {
@@ -85,10 +87,51 @@ export class AdminCourseService implements IAdminCourseService {
         }
     }
 
-    addCategoryRequest = async (category:string , skills:string[]):Promise<ICategory | null> => {
+
+    
+    generatePurchasesPDF = async (purchases: any[]): Promise<Buffer> => {
+        const doc = new PDFDocument({ margin: 30, size: "A4" });
+
+        const chunks: Uint8Array[] = [];
+        doc.on("data", (chunk) => chunks.push(chunk));
+
+        // Title
+        doc.fontSize(18).text("Purchase Report", { align: "center" });
+        doc.moveDown(2);
+
+        // Header
+        doc.fontSize(10).text(
+            "User | Email | Course | Price | Paid | Status | Date",
+            { underline: true }
+        );
+        doc.moveDown(1);
+
+        // Rows
+        purchases.forEach((p, index) => {
+            doc
+                .fontSize(9)
+                .text(
+                    `${index + 1}. ${p.userName} | ${p.userEmail} | ${p.courseTitle} | ₹${p.coursePrice} | ₹${p.amountPaid} | ${p.paymentStatus} | ${new Date(
+                        p.createdAt
+                    ).toLocaleDateString()}`
+                )
+                .moveDown(0.5);
+        });
+
+        doc.end();
+
+        // ✅ wait for stream to finish
+        await once(doc, "end");
+
+        return Buffer.concat(chunks);
+    }
+
+
+
+    addCategoryRequest = async (category: string, skills: string[]): Promise<ICategory | null> => {
         try {
-            
-            const data = await this.adminRepository.addCategory(category , skills)
+
+            const data = await this.adminRepository.addCategory(category, skills)
 
             return data
         } catch (error) {
@@ -99,7 +142,6 @@ export class AdminCourseService implements IAdminCourseService {
 
     getCategoryRequest = async () => {
         try {
-            
             const data = await this.adminRepository.getCategory()
 
             return data
@@ -109,9 +151,9 @@ export class AdminCourseService implements IAdminCourseService {
         }
     }
 
-    deleteCategoryRequest = async (category:string) => {
+    deleteCategoryRequest = async (category: string) => {
         try {
-            
+
             const data = await this.adminRepository.deleteCategory(category)
 
             return data

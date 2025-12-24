@@ -20,7 +20,7 @@ export class AdminCourseController implements
     }
 
 
-    
+
     getCourses = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const page = parseInt(req.query.page as string) || 1;
@@ -47,12 +47,12 @@ export class AdminCourseController implements
         try {
             const id = req.params.id!;
             const data = await this._courseService.getCourseDetailsRequest(id);
-            console.log('admin course details',id,data);
-            
+            console.log('admin course details', id, data);
+
             // const courseDetailsDTO = mapCourseDetailsToDTO(data);
 
             // console.log(courseDetailsDTO);
-            
+
 
             res.status(HttpStatus.OK).json({
                 success: true,
@@ -68,6 +68,8 @@ export class AdminCourseController implements
     getAllPurchases = async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
         try {
             const { search, page } = req.query;
+            console.log('search page  e ee ', search, page);
+
 
             const purchases = await this._courseService.getPurchaseDetails(
                 search as string,
@@ -78,7 +80,7 @@ export class AdminCourseController implements
 
 
             const purchaseDTOs = (purchases.purchases ?? []).map(mapPurchaseToDTO);
-            console.log('dto result -------------', purchaseDTOs);
+            // console.log('dto result -------------', purchaseDTOs);
 
 
             res.status(HttpStatus.OK).json({
@@ -93,44 +95,74 @@ export class AdminCourseController implements
     };
 
 
-    addCategory = async(req:AdminAuthRequest , res:Response , next:NextFunction)=>{
+
+    exportPurchasesPDF = async (req: AdminAuthRequest, res: Response) => {
         try {
-            const {category,skills} = req.body
-            console.log(category , skills);
-            
-            const categories = await this._courseService.addCategoryRequest(category , skills)
-            console.log('adding ------',categories);
-            
-            res.json({success:true , category : categories})
+            const result = await this._courseService.getPurchaseDetails('', 1);
+            const purchases = result.purchases
+            if (!purchases || purchases.length === 0) {
+                return res.status(400).json({ message: "No purchase data found" });
+            }
+
+            const pdfBuffer = await this._courseService.generatePurchasesPDF(purchases);
+
+            res.setHeader("Content-Type", "application/pdf");
+            res.setHeader(
+                "Content-Disposition",
+                "attachment; filename=purchase-report.pdf"
+            );
+
+            console.log(pdfBuffer);
+        
+            res.send(pdfBuffer);
         } catch (error) {
             console.log(error);
-            
+
+        }
+    };
+
+
+
+
+
+    addCategory = async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
+        try {
+            const { category, skills } = req.body
+            console.log(category, skills);
+
+            const categories = await this._courseService.addCategoryRequest(category, skills)
+            console.log('adding ------', categories);
+
+            res.json({ success: true, category: categories })
+        } catch (error) {
+            console.log(error);
+
         }
     }
 
-    getCategory = async(req:AdminAuthRequest , res:Response , next:NextFunction)=>{
+    getCategory = async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
         try {
             const categories = await this._courseService.getCategoryRequest()
             console.log(categories);
-            
-            res.json({success:true , category:categories })
+
+            res.json({ success: true, category: categories })
         } catch (error) {
             console.log(error);
-            
+
         }
     }
 
-    deleteCategory = async(req:AdminAuthRequest , res:Response , next:NextFunction)=>{
+    deleteCategory = async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
         try {
             const category = req.body.category
-            
+
             const categories = await this._courseService.deleteCategoryRequest(category)
             // console.log(categories);
-            
-            res.json({success:true})
+
+            res.json({ success: true })
         } catch (error) {
             console.log(error);
-            
+
         }
     }
 }

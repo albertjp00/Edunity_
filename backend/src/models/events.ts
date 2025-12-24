@@ -8,7 +8,8 @@ export interface IEvent extends Document {
   description: string;
   topic: string;
   date: Date;
-  time: string
+  time: string;
+  ampm:string;
   participants: number;
   participantsList: string[]; 
   isLive: boolean;            
@@ -17,6 +18,7 @@ export interface IEvent extends Document {
   recordingUrl?: string;      
   createdAt: Date;
   updatedAt: Date;
+  isOver:boolean
 }
 
 const EventSchema: Schema = new Schema<IEvent>(
@@ -28,12 +30,13 @@ const EventSchema: Schema = new Schema<IEvent>(
     topic: { type: String, required: true },
     date: { type: Date, required: true },
     time: { type: String, required: true },
-    participants: { type: Number, default: 0 },          // ✅ Counter
-    participantsList: { type: [String], default: [] },   // ✅ Array of userIds
+    ampm:{type :String , required :true},
+    participants: { type: Number, default: 0 },         
     isLive: { type: Boolean, default: false },
     maxParticipants: { type: Number },
     meetingLink: { type: String },
     recordingUrl: { type: String },
+    isOver:{type:Boolean , default:false}
   },
   { timestamps: true }
 );

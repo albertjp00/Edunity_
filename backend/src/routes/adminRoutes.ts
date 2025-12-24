@@ -69,6 +69,9 @@ admin.get(ADMIN_ROUTES.COURSES.GET_DETAILS, adminAuthMiddleware, courseControlle
 
 admin.get(ADMIN_ROUTES.COURSES.GET_PURCHASES, adminAuthMiddleware, courseController.getAllPurchases);
 
+admin.get(ADMIN_ROUTES.COURSES.EXPORT_PDF, adminAuthMiddleware, courseController.exportPurchasesPDF);
+
+
 admin.get(ADMIN_ROUTES.DASHBOARD.STATS, adminAuthMiddleware, dashboardController.dashboardStats);
 
 admin.get(ADMIN_ROUTES.DASHBOARD.USER_OVERVIEW, adminAuthMiddleware, dashboardController.getUserOverview);

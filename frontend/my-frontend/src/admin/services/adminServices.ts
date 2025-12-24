@@ -130,6 +130,13 @@ export const getInstructorsData = async(search :string , currentPage:number) => 
   return res
 };
 
+export const exportData = async() => {
+  const res =  await adminApi.get(`/admin/exportPdf`,{
+    responseType:'blob'
+  });
+  return res
+};
+
 export const fetchCategory = async() => {
   const res =  await adminApi.get(`/admin/getCategories`);
   return res

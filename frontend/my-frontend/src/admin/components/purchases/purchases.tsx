@@ -1,6 +1,7 @@
 import React, { useEffect, useState, type ChangeEvent } from "react";
 import "./purchases.css";
-import { getPurchases } from "../../services/adminServices";
+import { exportData, getPurchases } from "../../services/adminServices";
+import { toast } from "react-toastify";
 
 interface Purchase {
   _id: string;
@@ -11,6 +12,7 @@ interface Purchase {
   amountPaid: number;
   paymentStatus: string;
   createdAt: string;
+  purchasedAt: string;
 }
 
 // interface PurchasesPagination {
@@ -36,11 +38,11 @@ const Purchases: React.FC = () => {
   const fetchPurchases = async (search: string = "", page: number = 1) => {
     try {
       setLoading(true);
-      const res = await getPurchases(search , page)
+      const res = await getPurchases(search, page)
       // console.log(res);
       const resData = res.data.purchases
       console.log(resData);
-      
+
       setPurchases(resData);
       setPages(res.data.totalPages);
       setCurrentPage(res.data.currentPage);
@@ -51,7 +53,9 @@ const Purchases: React.FC = () => {
     }
   };
 
-  
+
+
+
 
   useEffect(() => {
     fetchPurchases(searchTerm, currentPage);
@@ -63,13 +67,28 @@ const Purchases: React.FC = () => {
     fetchPurchases(searchTerm, 1);
   };
 
-    if (loading)
+  if (loading)
     return (
       <div className="loader-container">
         <div className="loader"></div>
         <p>Loading...</p>
       </div>
     );
+
+  const exportDetails = async () => {
+    const response = await exportData();
+
+    if (!response) {
+      toast.error("Something went wrong");
+      return;
+    }
+
+    const blob = new Blob([response.data], { type: "application/pdf" });
+    const url = window.URL.createObjectURL(blob);
+
+    window.open(url, "_blank");
+  };
+
 
   return (
     <div className="purchases-container">
@@ -86,8 +105,13 @@ const Purchases: React.FC = () => {
           }
           className="search-box"
         />
-        <button type="submit">Search</button>
+        <div className="buttons">
+          <button type="submit">Search</button>
+          <button onClick={exportDetails} type="submit">Export</button>
+        </div>
       </form>
+
+
 
       <table className="purchases-table">
         <thead>
@@ -118,7 +142,8 @@ const Purchases: React.FC = () => {
                 <td data-label="Amount Paid">₹{p.amountPaid}</td>
                 <td data-label="Status">{p.paymentStatus}</td>
                 <td data-label="Date">
-                  {new Date(p.createdAt).toLocaleString()}
+                  {new Date(p.purchasedAt).toLocaleDateString('en-GB')}
+
                 </td>
               </tr>
             ))

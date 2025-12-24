@@ -23,6 +23,7 @@ export const ADMIN_ROUTES = {
     GET_ALL: "/courses",
     GET_DETAILS: "/courseDetails/:id",
     GET_PURCHASES: "/purchases",
+    EXPORT_PDF: "/exportPdf",
   },
 
   DASHBOARD: {

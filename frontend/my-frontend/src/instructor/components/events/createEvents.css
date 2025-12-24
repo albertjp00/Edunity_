@@ -67,6 +67,57 @@
   flex-direction: column;
   align-items: flex-start;
 }
+.form-group-time {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.form-group-time label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-group-time .time-wrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.form-group-time input[type="time"],
+.form-group-time select  {
+  height: 40px;
+  padding: 8px 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group-time input[type="time"] {
+  flex: 1;
+}
+
+.form-group-time select {
+  width: 80px;
+  cursor: pointer;
+  background-color: #fff;
+}
+
+.form-group-time input:focus,
+.form-group-time select:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+}
+
+.form-group-time .error {
+  font-size: 12px;
+  color: #e11d48;
+}
+
+
 
 .error {
   color: #e74c3c;

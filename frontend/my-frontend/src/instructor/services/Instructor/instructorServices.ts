@@ -69,8 +69,6 @@ export const kycSubmit = async (formData: FormData) => {
 
 
 export const addEvent = async (formData: Ievent) => {
-
-
   try {
     const res = await instructorApi.post('/instructor/event', {
       formData

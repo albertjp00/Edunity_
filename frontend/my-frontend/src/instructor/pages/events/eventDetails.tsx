@@ -14,6 +14,7 @@ interface IEvent {
   topic: string;
   date: string;
   time: string;
+  ampm: string;
   duration: number;
   participants: number;
   participantsList: string[];
@@ -49,16 +50,25 @@ const EventDetails: React.FC = () => {
     fetchEvent();
   }, [eventId]);
 
+
   const canJoin = useMemo(() => {
     if (!event) return false;
-
     const now = new Date();
     const eventDateTime = new Date(event.date);
-    const [hours, minutes] = event.time.split(":").map(Number);
+    // eslint-disable-next-line prefer-const
+    let [hours, minutes] = event.time.split(":").map(Number);
+    // Convert 12-hour → 24-hour
+    if (event.ampm === "pm" && hours !== 12) {
+      hours += 12;
+    }
+    if (event.ampm === "am" && hours === 12) {
+      hours = 0;
+    }
     eventDateTime.setHours(hours, minutes, 0, 0);
-
     return now >= eventDateTime;
   }, [event]);
+
+
 
   const handleJoin = async () => {
     if (!event || !instructor) return;

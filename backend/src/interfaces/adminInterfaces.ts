@@ -24,6 +24,7 @@ export interface  IAdminCourseReadController {
 //Admin Purchase Operations
 export interface IAdminPurchaseController {
   getAllPurchases(req: AdminAuthRequest, res: Response,next: NextFunction): Promise<void>;
+  // exportPurchasesPDF(req: AdminAuthRequest,res: Response , next : NextFunction):Promise<void>;
 }
 
 export interface IAdminCategoryController{
@@ -107,6 +108,8 @@ export interface IAdminCourseService {
     getCourseDetailsRequest(courseId: string): Promise<any>;
 
     getPurchaseDetails(search: string, page: number): Promise<any>;
+
+    generatePurchasesPDF(purchases: any[]): Promise<Buffer>;
 
     addCategoryRequest(category:string , skills:string[]):Promise<ICategory | null>;
     getCategoryRequest():Promise<any>;

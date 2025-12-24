@@ -27,7 +27,7 @@ export class EventController implements
         try {
             const id = req.instructor?.id
             const data = { ...req.body.formData }
-            // console.log("event creation", data);
+            console.log("event creation", data);
 
 
             await this._eventService.createEventRequest(id as string, data)

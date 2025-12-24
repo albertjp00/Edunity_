@@ -10,17 +10,30 @@ const EventForm: React.FC = () => {
     topic: "",
     description: "",
     date: "",
-    time: ''
+    time: '',
+    ampm: ''
   });
 
   const [errors, setErrors] = useState<Partial<Ievent>>({});
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" }); // clear error on change
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
   };
+
 
   const validate = (): boolean => {
     const newErrors: Partial<Ievent> = {};
@@ -39,13 +52,19 @@ const EventForm: React.FC = () => {
     }
     if (!formData.date) {
       newErrors.date = "Please select a date.";
-
-    } if (!formData.time) {
-      newErrors.time = "Please select a time.";
-    }
-    else if (new Date(formData.date) < new Date()) {
+    } else if (new Date(formData.date) < new Date()) {
       newErrors.date = "Date must be in the future.";
     }
+
+    if (!formData.time) {
+      newErrors.time = "Please select a time.";
+    }
+
+    if (!formData.ampm) {
+      newErrors.ampm = "Please select AM or PM.";
+    }
+
+
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -57,12 +76,18 @@ const EventForm: React.FC = () => {
     if (!validate()) return;
 
 
+    const payload = {
+      ...formData,
+      time: `${formData.time} ${formData.ampm.toUpperCase()}`
+    };
 
-    const res = await addEvent(formData);
+
+
+    const res = await addEvent(payload);
     if (!res) return
     if (res.data.success) {
       toast.success("Event Created")
-      setFormData({ title: "", topic: "", description: "", date: "", time: '' });
+      setFormData({ title: "", topic: "", description: "", date: "", time: '', ampm: '' });
       setErrors({});
     }
   };
@@ -118,16 +143,33 @@ const EventForm: React.FC = () => {
           />
           {errors.date && <span className="error">{errors.date}</span>}
         </div>
-        <div className="form-group">
+        <div className="form-group-time">
           <label>Time</label>
-          <input
-            type="time"
-            name="time"
-            value={formData.time}
-            onChange={handleChange}
-          />
-          {errors.time && <span className="error">{errors.time}</span>}
+
+          <div className="time-wrapper">
+            <input
+              type="time"
+              name="time"
+              value={formData.time}
+              onChange={handleChange}
+            />
+
+            <select
+              name="ampm"
+              value={formData.ampm}
+              onChange={handleChange}
+            >
+              <option value="">--</option>
+              <option value="am">AM</option>
+              <option value="pm">PM</option>
+            </select>
+
+          </div>
+
+          {errors.ampm && <span className="error">{errors.ampm}</span>}
+
         </div>
+
 
 
         <button type="submit">➕ Add Event</button>
