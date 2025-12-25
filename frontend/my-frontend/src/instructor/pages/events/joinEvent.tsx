@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import MeetingRoom from "../../../eventMeeting/meetingRoom";
 import instructorApi from "../../../api/instructorApi";
+import { toast } from "react-toastify";
 
 const InstructorEvent: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
@@ -24,12 +25,14 @@ const InstructorEvent: React.FC = () => {
           console.log('dadaaadadad',data);
           
         } else {
-          alert(data.message || "Failed to join event");
+          // alert(data.message || "Failed to join event");
+          toast.error("Failed to join event")
         }
         setInstructor(data.instructorId)
       } catch (err) {
         console.error(err);
-        alert("Server error joining event");
+        // alert("Server error joining event");
+        toast.error("Server error joining event")
       } finally {
         setLoading(false);
       }

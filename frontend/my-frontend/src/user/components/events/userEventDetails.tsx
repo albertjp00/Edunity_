@@ -36,7 +36,7 @@ const EventDetails: React.FC = () => {
   useEffect(() => {
     const getUser = async () => {
       const res = await getUserProfile()
-      if(!res) return
+      if (!res) return
       setUser(res.data.data.name)
 
 
@@ -94,21 +94,28 @@ const EventDetails: React.FC = () => {
 
         <p className="ue-event-online">🌐 Online Event</p>
 
-        {!isEnrolled ? (
-          <button onClick={handleEnroll} className="ue-enroll-btn">
-            Enroll Now
-            
-          </button>
-          
-        ) : canJoin ? (
-          <button onClick={handleJoinEvent} className="ue-join-btn">
-            Join Event
-          </button>
+        {!event.isOver ? (
+          !isEnrolled ? (
+            <button onClick={handleEnroll} className="ue-enroll-btn">
+              Enroll Now
+
+            </button>
+
+          ) : canJoin ? (
+            <button onClick={handleJoinEvent} className="ue-join-btn">
+              Join Event
+            </button>
+          ) : (
+            <p className="ue-event-notice">
+              Event can be joined at {event.time} on {new Date(event.date).toLocaleDateString()}
+            </p>
+          )
         ) : (
-          <p className="ue-event-notice">
-            Event can be joined at {event.time} on {new Date(event.date).toLocaleDateString()}
+          <p className="text-red">
+            ❌ This event has ended.
           </p>
         )}
+
       </div>
     </div>
   );

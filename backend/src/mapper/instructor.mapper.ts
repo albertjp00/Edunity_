@@ -87,6 +87,7 @@ export const mapEventToDTO = (event: any): IEventDTO => {
     participants: event.participants,
     isLive: event.isLive,
     meetingLink: event.meetingLink ?? null,
+    isOver:event.isOver
   };
 };
 

@@ -4,9 +4,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import "./eventDetails.css";
 import instructorApi from "../../../api/instructorApi";
 import eventImage from '../../../assets/webinar_thumnail.png'
+import { toast } from "react-toastify";
+import { eventEnd } from "../../services/eventsServices";
 
 interface IEvent {
   id: string;
+  _id: string;
   instructorId: string;
   instructorName: string;
   title: string;
@@ -14,7 +17,6 @@ interface IEvent {
   topic: string;
   date: string;
   time: string;
-  ampm: string;
   duration: number;
   participants: number;
   participantsList: string[];
@@ -24,6 +26,7 @@ interface IEvent {
   recordingUrl?: string;
   createdAt: string;
   updatedAt: string;
+  isOver: boolean
 }
 
 const EventDetails: React.FC = () => {
@@ -38,6 +41,8 @@ const EventDetails: React.FC = () => {
     const fetchEvent = async () => {
       try {
         const result = await instructorApi.get(`/instructor/getEvent/${eventId}`);
+        console.log(result);
+
         setEvent(result.data.event);
         setInstructor(result.data.event.instructorId);
         setInstructorName(result.data.event.instructorName)
@@ -50,38 +55,51 @@ const EventDetails: React.FC = () => {
     fetchEvent();
   }, [eventId]);
 
-
   const canJoin = useMemo(() => {
     if (!event) return false;
+
     const now = new Date();
     const eventDateTime = new Date(event.date);
-    // eslint-disable-next-line prefer-const
-    let [hours, minutes] = event.time.split(":").map(Number);
-    // Convert 12-hour → 24-hour
-    if (event.ampm === "pm" && hours !== 12) {
-      hours += 12;
-    }
-    if (event.ampm === "am" && hours === 12) {
-      hours = 0;
-    }
+    const [hours, minutes] = event.time.split(":").map(Number);
     eventDateTime.setHours(hours, minutes, 0, 0);
+
     return now >= eventDateTime;
   }, [event]);
-
-
 
   const handleJoin = async () => {
     if (!event || !instructor) return;
     try {
-      await instructorApi.patch(`/instructor/joinEvent/${event.id}`, { userId: instructor });
-      navigate(`/instructor/joinEvent/${event.id}`, {
+      await instructorApi.patch(`/instructor/joinEvent/${event._id}`, { userId: instructor });
+      navigate(`/instructor/joinEvent/${event._id}`, {
         state: { instructorName }
       });
     } catch (error) {
       console.error(error);
-      alert("Unable to join event. Please try again.");
+      // alert("Unable to join event. Please try again.");
+      toast.error("Unable to join event. Please try again.")
     }
   };
+
+
+  const endEvent = async () => {
+    try {
+      if (!eventId) return
+      const res = await eventEnd(eventId)
+
+      if (res?.data?.success) {
+        toast.success("Event ended successfully");
+
+        // Optional UI update
+        setEvent((prev) =>
+          prev ? { ...prev, isLive: false, isOver: true } : prev
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to end event");
+    }
+  };
+
 
   if (loading) return <p>Loading event...</p>;
   if (!event) return <p>Event not found.</p>;
@@ -106,26 +124,40 @@ const EventDetails: React.FC = () => {
 
         <p className="event-description">{event.description}</p>
 
-        {canJoin ? (
-          event.isLive ? (
-            event.participants < (event.maxParticipants || Infinity) ? (
-              <button onClick={handleJoin} className="join-btn">
-                Join Event
-              </button>
+        {!event.isOver ? (
+          canJoin ? (
+            event.isLive ? (
+              event.participants < (event.maxParticipants || Infinity) ? (
+                <button onClick={handleJoin} className="join-btn">
+                  Join Event
+                </button>
+              ) : (
+                <p className="text-red">This event is full.</p>
+              )
             ) : (
-              <p className="text-red">This event is full.</p>
+              <button onClick={handleJoin} className="join-btn">
+                Start Event
+              </button>
             )
           ) : (
-            <button onClick={handleJoin} className="join-btn">
-              Start Event
-            </button>
+            <p className="text-yellow">
+              Event can only be joined at {event.time} on{" "}
+              {new Date(event.date).toLocaleDateString()}.
+            </p>
           )
         ) : (
-          <p className="text-yellow">
-            Event can only be joined at {event.time} on{" "}
-            {new Date(event.date).toLocaleDateString()}.
+          <p className="text-red">
+            ❌ This event has ended.
           </p>
         )}
+
+
+        {event.isLive && !event.isOver && (
+          <button className="end-btn" onClick={endEvent}>
+            End Event
+          </button>
+        )}
+
       </div>
     </div>
 

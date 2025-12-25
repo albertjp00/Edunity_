@@ -14,6 +14,11 @@
             "date": 1766574012412,
             "name": "C:\\Edunity_\\app-logs\\error-2025-12-24.log",
             "hash": "41c3e40f313011b069c8ac09d880ead449b4e05cbe4e0a02dd4db1f9aa23da63"
+        },
+        {
+            "date": 1766601273826,
+            "name": "C:\\Edunity_\\app-logs\\error-2025-12-25.log",
+            "hash": "c6d5239aba3376405e0e45cbc905d2162fde6d54ea04a3746c1be90b901e13da"
         }
     ],
     "hashType": "sha256"

@@ -25,3 +25,13 @@ export const updateEvent = async (id:string , formData:IEventFormData) => {
         throw error
     }
 }
+
+export const eventEnd = async (eventId:string) => {
+    try {
+        const res = await instructorApi.patch(`/instructor/endEvent/${eventId}`);
+        return res
+    } catch (error) {
+        console.log(error);
+        throw error
+    }
+}

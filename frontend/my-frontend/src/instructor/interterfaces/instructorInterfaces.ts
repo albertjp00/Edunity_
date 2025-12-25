@@ -1,9 +1,12 @@
 export interface IEventFormData { 
-    title:string , 
-    topic:string, 
-    description:string, 
-    date:string,
-     time:string 
+    title?:string , 
+    topic?:string, 
+    description?:string, 
+    date?:string,
+     time?:string ,
+    //  ampm:string,
+    isLive?:boolean
+    isOver?:boolean
     };
 
 

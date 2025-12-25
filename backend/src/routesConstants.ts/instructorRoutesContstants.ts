@@ -44,6 +44,7 @@ export const INSTRUCTOR_ROUTES = {
     EDIT: "/event/:id",
     LIST_ALL: "/allEvents",
     JOIN_EVENT: "/joinEvent/:eventId",
+    END_EVENT:'/endEvent/:eventId'
   },
 
   CHAT: {

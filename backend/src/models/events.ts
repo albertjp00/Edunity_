@@ -2,6 +2,7 @@
 import mongoose , { Schema, Document, Types } from "mongoose";
 
 export interface IEvent extends Document {
+  _id:string;
   instructorId: string;
   instructorName: string;
   title: string;
@@ -9,7 +10,7 @@ export interface IEvent extends Document {
   topic: string;
   date: Date;
   time: string;
-  ampm:string;
+  // ampm:string;
   participants: number;
   participantsList: string[]; 
   isLive: boolean;            
@@ -30,7 +31,7 @@ const EventSchema: Schema = new Schema<IEvent>(
     topic: { type: String, required: true },
     date: { type: Date, required: true },
     time: { type: String, required: true },
-    ampm:{type :String , required :true},
+    // ampm:{type :String , required :true},
     participants: { type: Number, default: 0 },         
     isLive: { type: Boolean, default: false },
     maxParticipants: { type: Number },

@@ -132,6 +132,8 @@ export class EventController implements
         }
     }
 
+    
+
 
 
     joinEvent = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
@@ -188,7 +190,6 @@ export class EventController implements
 
             res.status(HttpStatus.OK).json({
                 success: true,
-                message: result.message,
             });
         } catch (error) {
             console.error(error);

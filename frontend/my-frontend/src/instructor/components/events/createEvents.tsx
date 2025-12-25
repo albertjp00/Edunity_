@@ -11,7 +11,7 @@ const EventForm: React.FC = () => {
     description: "",
     date: "",
     time: '',
-    ampm: ''
+    // ampm: ''
   });
 
   const [errors, setErrors] = useState<Partial<Ievent>>({});
@@ -60,9 +60,9 @@ const EventForm: React.FC = () => {
       newErrors.time = "Please select a time.";
     }
 
-    if (!formData.ampm) {
-      newErrors.ampm = "Please select AM or PM.";
-    }
+    // if (!formData.ampm) {
+    //   newErrors.ampm = "Please select AM or PM.";
+    // }
 
 
 
@@ -78,7 +78,7 @@ const EventForm: React.FC = () => {
 
     const payload = {
       ...formData,
-      time: `${formData.time} ${formData.ampm.toUpperCase()}`
+      // time: `${formData.time} ${formData.ampm.toUpperCase()}`
     };
 
 
@@ -87,7 +87,7 @@ const EventForm: React.FC = () => {
     if (!res) return
     if (res.data.success) {
       toast.success("Event Created")
-      setFormData({ title: "", topic: "", description: "", date: "", time: '', ampm: '' });
+      setFormData({ title: "", topic: "", description: "", date: "", time: ''});
       setErrors({});
     }
   };
@@ -154,7 +154,7 @@ const EventForm: React.FC = () => {
               onChange={handleChange}
             />
 
-            <select
+            {/* <select
               name="ampm"
               value={formData.ampm}
               onChange={handleChange}
@@ -162,11 +162,11 @@ const EventForm: React.FC = () => {
               <option value="">--</option>
               <option value="am">AM</option>
               <option value="pm">PM</option>
-            </select>
+            </select> */}
 
           </div>
 
-          {errors.ampm && <span className="error">{errors.ampm}</span>}
+          {/* {errors.ampm && <span className="error">{errors.ampm}</span>} */}
 
         </div>
 

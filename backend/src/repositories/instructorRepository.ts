@@ -247,7 +247,7 @@ export class InstructorRepository implements IInsRepository {
 
 
   async updateEvent(id: string, data: Partial<IEvent>): Promise<IEvent | null> {
-    return await EventModel.findByIdAndUpdate(id, { ...data })
+    return await EventModel.findByIdAndUpdate(id, { ...data },{new:true})
   }
 
 

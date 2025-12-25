@@ -24,17 +24,13 @@ const InstructorChat: React.FC = () => {
   const getMessagedStudents = async () => {
     try {
       const response = await fetchMessagedStudents()
-      if(!response) return
+      if (!response) return
 
       if (response.data.success) {
         // assuming the backend also returns instructorId
         setInstructorId(response.data.instructorId);
 
         console.log(response.data);
-
-
-
-
 
         const normalized: IStudent[] = response.data.students.map(
           (item: ApiStudent) => ({
@@ -128,7 +124,7 @@ const InstructorChat: React.FC = () => {
 
 
 
-  
+
 
 
   // const timeoutRefs = useRef<NodeJS.Timeout | null>(null);
@@ -142,11 +138,11 @@ const InstructorChat: React.FC = () => {
       setTypingStudents((prev) => ({ ...prev, [senderId]: true }));
 
 
-    setTimeout(() => {
+      setTimeout(() => {
         setTypingStudents((prev) => ({ ...prev, [senderId]: false }));
       }, 2000);
     };
-    
+
 
     const handleStopTyping = ({ senderId }: { senderId: string }) => {
       setTypingStudents((prev) => ({ ...prev, [senderId]: false }));
@@ -191,6 +187,50 @@ const InstructorChat: React.FC = () => {
       socket.off("userStopTyping", handleStopTyping);
     };
   }, []);
+
+  useEffect(() => {
+    const handleReceiveMessage = (message: {
+      senderId: string;
+      text?: string;
+      attachment?: string;
+      timestamp: Date;
+    }) => {
+      setStudents(prev => {
+        const updated = prev.map(stu => {
+          if (stu.id === message.senderId) {
+            let displayMessage = "";
+
+            if (message.text?.trim()) {
+              displayMessage = message.text;
+            } else if (message.attachment) {
+              displayMessage = /\.(jpg|jpeg|png|gif|webp)$/i.test(message.attachment)
+                ? "📷 Image"
+                : "📄 Document";
+            }
+
+            return {
+              ...stu,
+              lastMessage: displayMessage || stu.lastMessage,
+              timestamp: message.timestamp.toString(),
+              unreadCount:
+                selected?.id === stu.id ? 0 : (stu.unreadCount || 0) + 1,
+            };
+          }
+          return stu;
+        });
+
+        // 🔥 Move sender to top
+        return sortStudents(updated);
+      });
+    };
+
+    socket.on("receiveMessage", handleReceiveMessage);
+
+    return () => {
+      socket.off("receiveMessage", handleReceiveMessage);
+    };
+  }, [selected]);
+
 
 
 

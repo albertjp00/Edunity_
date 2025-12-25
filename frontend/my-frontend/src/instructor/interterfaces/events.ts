@@ -10,6 +10,7 @@ export interface Ievent {
   description: string;
   date: string;        
   time:string;
-  ampm :string;
+  isOver:string;
+  // ampm :string;
 }
 

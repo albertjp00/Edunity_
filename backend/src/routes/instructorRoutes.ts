@@ -132,6 +132,7 @@ instructor.patch(INSTRUCTOR_ROUTES.EVENTS.EDIT, instAuthMiddleware, eventControl
 instructor.get(INSTRUCTOR_ROUTES.EVENTS.LIST_ALL, instAuthMiddleware, eventController.getAllEvents);
 
 instructor.patch(INSTRUCTOR_ROUTES.EVENTS.JOIN_EVENT, instAuthMiddleware, eventController.joinEvent);
+instructor.patch(INSTRUCTOR_ROUTES.EVENTS.END_EVENT, instAuthMiddleware, eventController.endEvent);
 
 // Chat
 instructor.get(INSTRUCTOR_ROUTES.CHAT.MESSAGED_STUDENTS, instAuthMiddleware, messageController.getMessagedStudents);

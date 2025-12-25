@@ -61,6 +61,7 @@ export interface IEventDTO {
   participants: number;
   isLive: boolean;
   meetingLink?: string;
+  isOver:boolean
 }
 
 export interface EventDTO {

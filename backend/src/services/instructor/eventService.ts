@@ -7,7 +7,7 @@ import { IInstEventService } from "../../interfacesServices.ts/instructorService
 
 
 
-export class InstEventService  implements IInstEventService{
+export class InstEventService implements IInstEventService {
     constructor(private InstructorRepository: IInsRepository) { }
 
     createEventRequest = async (id: string, data: any): Promise<IEvent | null> => {
@@ -24,10 +24,10 @@ export class InstEventService  implements IInstEventService{
         }
     }
 
-    getMyEventsRequest = async (id: string , search : string , page : string): Promise<IEventResult | null> => {
+    getMyEventsRequest = async (id: string, search: string, page: string): Promise<IEventResult | null> => {
         try {
 
-            const events = await this.InstructorRepository.getMyEvents(id , search , page)
+            const events = await this.InstructorRepository.getMyEvents(id, search, page)
             return events
 
         } catch (error) {
@@ -38,14 +38,51 @@ export class InstEventService  implements IInstEventService{
 
     getEventRequest = async (id: string): Promise<IEvent | null> => {
         try {
+            const event = await this.InstructorRepository.getEvent(id);
+            if (!event) return null;
 
-            const event = await this.InstructorRepository.getEvent(id)
-            return event
+            const now = new Date();
+
+            const eventDate = new Date(event.date);
+            const [hourStr, minuteStr] = event.time.split(":");
+
+            if (!hourStr || !minuteStr) return event;
+
+            const eventDateTime = new Date(
+                eventDate.getFullYear(),
+                eventDate.getMonth(),
+                eventDate.getDate(),
+                Number(hourStr),
+                Number(minuteStr),
+                0,
+                0
+            );
+
+            // ✅ Proper local debugging
+            // console.log("NOW:", now.toString());
+            // console.log("EVENT:", eventDateTime.toString());
+
+            if (now >= eventDateTime && !event.isLive && !event.isOver) {
+                
+                await this.InstructorRepository.updateEvent(
+                    event._id.toString(),
+                    { isLive: true }
+                );
+
+                event.isLive = true;
+            }
+
+            return event;
         } catch (error) {
             console.log(error);
-            return null
+            return null;
         }
-    }
+    };
+
+
+
+
+
 
     updateEventRequest = async (id: string, data: any): Promise<IEvent | null> => {
         try {
@@ -109,6 +146,7 @@ export class InstEventService  implements IInstEventService{
             await this.InstructorRepository.updateEvent(eventId, {
                 isLive: false,
                 meetingLink: undefined,
+                isOver:true
             });
 
             return { success: true, message: "Event ended successfully" };
