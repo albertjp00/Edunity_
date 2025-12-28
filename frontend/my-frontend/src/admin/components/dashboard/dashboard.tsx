@@ -17,24 +17,10 @@ import {
 
 
 import { getOverview, getStats } from "../../services/adminServices";
+import type { DashboardStats } from "../../adminInterfaces";
 
 
-interface DashboardStats {
-  totalUsers: number;
-  totalInstructors: number;
-  totalCourses: number;
-  totalEnrolled: number;
 
-  totalEarnings: number;
-  activeUsers: number;
-  statsChange: {
-    instructors: number;
-    courses: number;
-    enrolled: number;
-    events: number;
-    earnings: number;
-  };
-}
 
 const StatCard: React.FC<{
   title: string;

@@ -6,28 +6,9 @@ import instructorApi from "../../../api/instructorApi";
 import eventImage from '../../../assets/webinar_thumnail.png'
 import { toast } from "react-toastify";
 import { eventEnd } from "../../services/eventsServices";
+import type { IEvent } from "../../interterfaces/instructorInterfaces";
 
-interface IEvent {
-  id: string;
-  _id: string;
-  instructorId: string;
-  instructorName: string;
-  title: string;
-  description: string;
-  topic: string;
-  date: string;
-  time: string;
-  duration: number;
-  participants: number;
-  participantsList: string[];
-  isLive: boolean;
-  maxParticipants?: number;
-  meetingLink?: string;
-  recordingUrl?: string;
-  createdAt: string;
-  updatedAt: string;
-  isOver: boolean
-}
+
 
 const EventDetails: React.FC = () => {
   const { eventId } = useParams();

@@ -5,11 +5,9 @@ import { toast } from "react-toastify";
 import type { AxiosError } from "axios";
 // import api from "../../../api/userApi";
 import { adminLogin } from "../../services/adminServices";
+import type { LoginFormData } from "../../adminInterfaces";
 
-export interface LoginFormData {
-  email: string;
-  password: string;
-}
+
 
 const LoginAdmin: React.FC = () => {
   const navigate = useNavigate();

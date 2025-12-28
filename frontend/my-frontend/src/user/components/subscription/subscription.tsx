@@ -5,26 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../../api/userApi';
 import { getSubscription, subscribe } from '../../services/courseServices';
 import SubscriptionCourses from './subscriptionCourses';
+import type { RazorpayInstance, RazorpayOptions } from '../../interfaces';
 
-interface RazorpayInstance {
-  open: () => void;
-}
 
-interface RazorpayOptions {
-  key: string;
-  amount: number;
-  currency: string;
-  name: string;
-  description: string;
-  order_id: string;
-  handler: (response: {
-    razorpay_payment_id: string;
-    razorpay_order_id: string;
-    razorpay_signature: string;
-  }) => void;
-  modal?: { ondismiss?: () => void };
-  theme?: { color?: string };
-}
 
 declare global {
   interface Window {

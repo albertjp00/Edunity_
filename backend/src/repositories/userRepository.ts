@@ -1,5 +1,5 @@
 import mongoose, { Types } from 'mongoose';
-import { CourseModel, ICourse, IReview } from '../models/course';
+import { CourseModel, ICourse } from '../models/course';
 import { EventModel, IEvent } from '../models/events';
 import { FavouritesModel, IFavourite } from '../models/favourites';
 import { IMyCourse, MyCourseModel } from '../models/myCourses';
@@ -15,6 +15,7 @@ import { IWallet, WalletModel } from '../models/wallet';
 import { log } from 'winston';
 import { IPayment, PaymentModel } from '../models/payment';
 import { INotification, NotificationModel } from '../models/notification';
+import { IReview, ReviewModel } from '../models/review';
 
 
 
@@ -397,42 +398,18 @@ async updateProgress(userId: string,courseId: string,moduleTitle: string): Promi
 
   async addReview(userId: string, userName: string, userImage: string, courseId: string, rating: number, comment: string): Promise<IReview> {
     try {
-      const course = await CourseModel.findById(courseId);
+      // const course = await CourseModel.findById(courseId);
 
-      if (!course) {
-        throw new Error("Course not found");
+      const review = await ReviewModel.findOneAndUpdate({userId , courseId}, {$set:{ rating , comment}},{new:true , upsert:true})
+
+      if(!review){
+        const review = await ReviewModel.create({userId ,courseId , userName , userImage , rating , comment})
+        return review
       }
-
-      // Check if user already reviewed
-      const existingReview = course.review.find(
-        (r) => r.userId.toString() === userId
-      );
-      if (existingReview) {
-        throw new Error("User has already reviewed this course");
-      }
-
-      // Create new review
-      const newReview: IReview = {
-        userId,
-        userName,
-        userImage,
-        rating,
-        comment,
-        createdAt: new Date(),
-      };
-
-      // Add review to course
-      course.review.push(newReview);
-
-      // Calculate new average rating
-      const total = course.review.reduce((sum, r) => sum + r.rating, 0);
-      course.averageRating = total / course.review.length;
-
-      const review = await course.save();
-      console.log('review added',review);
       
 
-      return newReview;
+
+      return review
     } catch (error) {
       console.error("Error adding review:", error);
       throw new Error("Unable to add review");

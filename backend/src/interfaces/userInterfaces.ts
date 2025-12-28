@@ -1,4 +1,4 @@
-import { ICourse, IReview } from "../models/course";
+import { ICourse} from "../models/course";
 import { IEvent } from "../models/events";
 import { IFavourite } from "../models/favourites";
 import { IInstructor } from "../models/instructor";
@@ -89,6 +89,7 @@ export interface IUserRepository {
 // controller interfaces 
 import { Request, Response, NextFunction } from "express";
 import { AuthRequest } from "../middleware/authMiddleware.js";
+import { IReview } from "../models/review";
 
 
 //authController

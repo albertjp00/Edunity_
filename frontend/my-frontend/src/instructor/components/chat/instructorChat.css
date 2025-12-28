@@ -30,6 +30,7 @@
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.2s ease;
+  position: relative;   
 }
 
 .sidebar-user:hover {
@@ -174,3 +175,15 @@
   color: #888;
   font-style: italic;
 }
+
+
+/* .unread-badge {
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+  margin-left: auto;
+} */
+
+

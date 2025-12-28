@@ -1,5 +1,5 @@
 import { googleLoginResult, IMyCourses } from "../interfaces/userInterfaces";
-import { ICourse, IReview } from "../models/course";
+import { ICourse } from "../models/course";
 import { IEvent } from "../models/events";
 import { IFavourite } from "../models/favourites";
 import { IInstructor } from "../models/instructor";
@@ -7,6 +7,7 @@ import { IMyCourse } from "../models/myCourses";
 import { IMyEvent } from "../models/myEvents";
 import { INotification } from "../models/notification";
 import { IPayment } from "../models/payment";
+import { IReview } from "../models/review";
 import { IUser } from "../models/user";
 import { IWallet } from "../models/wallet";
 import { ICourseDetails, IviewCourse } from "../services/user/userCourseService";

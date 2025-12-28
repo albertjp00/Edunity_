@@ -4,25 +4,9 @@ import { useNavigate } from "react-router-dom";
 import "./addCourse.css";
 import { addCourse, getCategory } from "../../services/Instructor/instructorServices";
 import type { ICategory } from "../../../admin/adminInterfaces";
+import type { addCourseModule, CourseForm } from "../../interterfaces/instructorInterfaces";
 
-interface Module {
-  title: string;
-  video: File | null;
-  content: string;
-  videoFile?: File;
-}
 
-interface CourseForm {
-  title: string;
-  description: string;
-  skills: string[];
-  price: string;
-  thumbnail: File | null;
-  level: string;
-  modules: Module[];
-  category: string;
-  accessType: 'subscription' | 'oneTime' | '';
-}
 
 const AddCourse: React.FC = () => {
   const navigate = useNavigate();
@@ -60,7 +44,7 @@ const AddCourse: React.FC = () => {
 
   const updateModule = (
     index: number,
-    field: keyof Module,
+    field: keyof addCourseModule,
     value: string | File | null
   ) => {
     const updatedModules = [...form.modules];

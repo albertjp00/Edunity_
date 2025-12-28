@@ -8,14 +8,7 @@ export interface IModule {
   signedVideoUrl?: string; 
 }
 
-export interface IReview {
-  userId: string;
-  userName : string;
-  userImage : string;
-  rating: number;
-  comment: string;
-  createdAt?: Date;
-}
+
 
 export interface ICourse extends Document {
   _id: Types.ObjectId; 
@@ -30,10 +23,10 @@ export interface ICourse extends Document {
   createdAt?: Date;
   totalEnrolled?: number;
   category: string;
-  review: IReview[];
   onPurchase:boolean;
   averageRating?: number
   accessType : string
+  
 }
 
 
@@ -92,18 +85,7 @@ const CourseSchema: Schema = new Schema<ICourse>({
     default : 'oneTime'
   },
 
-  review: [
-    {
-      
-      userId: { type: String, required: true },
-      userName : {type :String},
-      userImage : {type : String},
-      rating: { type: Number, required: true, min: 1, max: 5 },
-      comment: { type: String, required: true },
-      createdAt: { type: Date, default: Date.now },
-    
-    }
-  ]
+
 });
 
 export const CourseModel = mongoose.model<ICourse>("Course", CourseSchema);

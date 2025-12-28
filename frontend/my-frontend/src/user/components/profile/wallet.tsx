@@ -1,20 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./wallet.css";
 import api from "../../../api/userApi";
+import type { WalletData } from "../../interfaces";
 
-interface Transaction {
-  type: "credit" | "debit";
-  amount: number;
-  courseId?: string;
-  description?: string;
-  createdAt: string;
-}
-
-interface WalletData {
-  userId: string;
-  balance: number;
-  transactions: Transaction[];
-}
 
 
 const Wallet: React.FC = () => {

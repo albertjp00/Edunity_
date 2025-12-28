@@ -6,7 +6,8 @@ import VideoPlayerUser from "../videoPlayer/videoPlayer";
 import { toast } from "react-toastify";
 import ConfirmModal from "../modal/modal";
 import { getCertificate } from "../../../services/user/userServices";
-import type { ICourse, IInstructor, IMyCourse, IReview } from "../../interfaces";
+import type { ICourse, IInstructor, IMyCourse, IReview, User } from "../../interfaces";
+import { getUserProfile } from "../../services/profileServices";
 
 
 
@@ -22,7 +23,16 @@ const ViewMyCourse: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [review, setReview] = useState<IReview[] | null>()
+  const [user, setUser] = useState<User | null>()
+  const [myReview, setMyReview] = useState<IReview | null>(null)
+  // const [myReviewRating, setReviewRating] = useState<number | null>(null)
+  // const [myReviewText, setReviewText] = useState<string | null>("")
+  const [isEditingReview, setIsEditingReview] = useState(false);
+  const [rating, setRating] = useState<number>(0);
+  const [reviewText, setReviewText] = useState<string>("");
+  // const [loadingReview, setLoadingReview] = useState<boolean>(false);
   const navigate = useNavigate();
+
 
   const [canCancel, setCanCancel] = useState<boolean>(false);
 
@@ -46,6 +56,21 @@ const ViewMyCourse: React.FC = () => {
       setReview(fetchedMyCourse.course?.review)
 
 
+
+
+      const reviews = fetchedMyCourse.course?.review || [];
+      if (!user) return
+      const hasMyReview = reviews.find((r) => r.userId === user.id
+      );
+
+      if (hasMyReview) {
+        setMyReview(hasMyReview);
+      }
+      console.log(hasMyReview);
+
+
+
+
       // const enrolledDate = new Date(fetchedMyCourse.enrolledAt);
       // const now = new Date();
       // const diffDays =
@@ -55,6 +80,8 @@ const ViewMyCourse: React.FC = () => {
       //   fetchedMyCourse.progress.completedModules.length > 1;
 
       // setCanCancel(diffDays <= 10 && !hasViewedMoreThanOne);
+
+
       setCanCancel(res.data.course.cancelCourse)
     } catch (err) {
       console.error("Error fetching course:", err);
@@ -62,11 +89,34 @@ const ViewMyCourse: React.FC = () => {
   };
 
 
-  useEffect(() => {
-    fetchCourse();
-  }, []);
+  const fetchUser = async () => {
+    try {
+      const res = await getUserProfile()
+      if (!res) return
+      console.log('user', res);
 
-  
+      setUser(res.data.data)
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
+
+
+
+
+  useEffect(() => {
+    fetchUser()
+  }, [])
+
+
+  useEffect(() => {
+    if (user) {
+      fetchCourse();
+    }
+  }, [user]);
+
+
 
   const toggleModule = (index: number): void => {
     setExpandedModule(expandedModule === index ? null : index);
@@ -78,8 +128,8 @@ const ViewMyCourse: React.FC = () => {
     try {
       console.log('marked as completed');
 
-      if(!id) return
-      await updateProgress(id , moduleTitle)
+      if (!id) return
+      await updateProgress(id, moduleTitle)
       setCompletedModules((prev) => [...prev, moduleTitle]);
       setCanCancel(false)
     } catch (err) {
@@ -98,7 +148,7 @@ const ViewMyCourse: React.FC = () => {
     try {
       if (!selectedCourseId) return;
       const res = await cancelCourse(selectedCourseId)
-      if(!res) return
+      if (!res) return
       if (res.data.success) {
         toast.success("Course cancelled successfully!");
         navigate("/user/myCourses");
@@ -146,9 +196,7 @@ const ViewMyCourse: React.FC = () => {
 
   //reviews 
 
-  const [rating, setRating] = useState<number>(0);
-  const [reviewText, setReviewText] = useState<string>("");
-  // const [loadingReview, setLoadingReview] = useState<boolean>(false);
+
 
 
   const handleSubmitReview = async () => {
@@ -160,26 +208,27 @@ const ViewMyCourse: React.FC = () => {
     try {
       // setLoadingReview(true);
       const courseId = course?._id
-      if(!courseId) return
-      const res = await submitReview(courseId , rating , reviewText)
+      if (!courseId) return
+      const res = await submitReview(courseId, rating, reviewText)
       // const res = await api.post("/user/review", {
       //   courseId: course?._id,
       //   rating,
       //   review: reviewText,
       // });
 
-      if(!res) return
+      if (!res) return
       console.log(res);
-      
+
       if (res.data.success) {
         toast.success("Review submitted successfully!");
         setRating(0);
         setReviewText("");
+        setMyReview(res.data.result)
         console.log(res);
-        
+
         const newReview = res.data.review
-        setReview((prev)=>prev ? [...prev , newReview] : newReview)
-      }else if(!res.data.success){
+        setReview((prev) => prev ? [...prev, newReview] : newReview)
+      } else if (!res.data.success) {
         toast.error(res.data.message)
       }
     } catch (error) {
@@ -265,33 +314,51 @@ const ViewMyCourse: React.FC = () => {
                     review.map((r, index) => (
                       <div key={index} className="review-card">
                         <div className="review-header">
-                          <img
-                            src={
-                              r.userImage
-                                ? `${import.meta.env.VITE_API_URL}/assets/${r.userImage}`
-                                : "https://via.placeholder.com/50"
-                            }
-                            alt={r.userName}
-                            className="review-user-img"
-                          />
-                          <small className="review-date">
-                              {new Date(r.createdAt).toLocaleDateString()}
-                            </small>
-                          <div>
-                            <p className="review-user-name">{r.userName}</p>
-                            <div className="review-stars">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <span
-                                  key={star}
-                                  className={star <= r.rating ? "star filled" : "star"}
-                                >
-                                  ★
-                                </span>
-                              ))}
+                          <div className="review-left">
+                            <img
+                              src={
+                                r.userImage
+                                  ? `${import.meta.env.VITE_API_URL}/assets/${r.userImage}`
+                                  : "https://via.placeholder.com/50"
+                              }
+                              alt={r.userName}
+                              className="review-user-img"
+                            />
+
+                            <div className="review-user-info">
+                              <p className="review-user-name">{r.userName}</p>
+
+                              <div className="review-stars">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <span
+                                    key={star}
+                                    className={star <= r.rating ? "star filled" : "star"}
+                                  >
+                                    ★
+                                  </span>
+                                ))}
+                              </div>
+
+                              <small className="review-date">
+                                {new Date(r.createdAt).toLocaleDateString()}
+                              </small>
                             </div>
-                            
                           </div>
+
+                          {/* ✅ Edit button — top right */}
+                          {myReview && r.userId === user?.id && (
+                            <button className="edit-review-btn"
+                              onClick={() => {
+                                setIsEditingReview(true);
+                                setRating(myReview.rating);
+                                setReviewText(myReview.comment);
+                              }
+                              }>
+                              Edit
+                            </button>
+                          )}
                         </div>
+
 
                         <p className="review-comment">"{r.comment}"</p>
                       </div>
@@ -303,38 +370,40 @@ const ViewMyCourse: React.FC = () => {
               )}
 
 
-              {progressPercent === 100 && (
+              {progressPercent === 100 && (!myReview || isEditingReview) &&
+              (
                 <div className="review-section">
-                  <h4>Leave a Review</h4>
-                  {!showCertificate && (
-                    <>
-                      <label>Rating:</label>
-                      <div className="star-rating">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <span
-                            key={star}
-                            onClick={() => setRating(star)}
-                            className={star <= rating ? "star filled" : "star"}
-                          >
-                            ★
-                          </span>
-                        ))}
-                      </div>
+                  <h4>{myReview ? "Edit Your Review" : "Leave a Review"}</h4>
 
-                      <textarea
-                        placeholder="Write your review..."
-                        value={reviewText}
-                        onChange={(e) => setReviewText(e.target.value)}
-                        className="review-textarea"
-                      />
+                  <label>Rating:</label>
+                  <div className="star-rating">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <span
+                        key={star}
+                        onClick={() => setRating(star)}
+                        className={star <= rating ? "star filled" : "star"}
+                      >
+                        ★
+                      </span>
+                    ))}
+                  </div>
 
-                      <button className="submit-review-btn" onClick={handleSubmitReview}>
-                        Submit Review
-                      </button>
-                    </>
-                  )}
+                  <textarea
+                    placeholder="Write your review..."
+                    value={reviewText}
+                    onChange={(e) => setReviewText(e.target.value)}
+                    className="review-textarea"
+                  />
+
+                  <button
+                    className="submit-review-btn"
+                    onClick={handleSubmitReview}
+                  >
+                    {isEditingReview ? "Update Review" : "Submit Review"}
+                  </button>
                 </div>
               )}
+
             </>
           )}
 
@@ -375,7 +444,7 @@ const ViewMyCourse: React.FC = () => {
                         <div className="module-body">
                           <VideoPlayerUser
                             initialUrl={module.videoUrl}
-                            onComplete={() => markAsCompleted(module.title)} 
+                            onComplete={() => markAsCompleted(module.title)}
                           />
 
                           <p>{module.content}</p>

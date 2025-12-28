@@ -221,3 +221,161 @@ export interface RazorpayOptions {
 }
 
 
+
+// ---------- Message Interface ----------
+export interface Message {
+  senderId: string;
+  receiverId?: string;
+  text: string;
+  attachment?: string;
+  timestamp: Date | string;
+  read?: boolean;
+}
+
+// ---------- ChatWindow Props ----------
+export interface ChatWindowProps {
+  userId: string;
+  receiverId?: string;
+  receiverName: string;
+  receiverAvatar?: string;
+  onMessageSent: (receiverId: string, message: string, file?: string) => void;
+  unreadIncrease: (receiverId: string) => void;
+  resetUnread: (receiverId: string) => void;
+}
+
+export interface IInstructorChat {
+  id: string;
+  _id?: string;
+  name: string;
+  avatar?: string;
+  lastMessage?: string;
+  time?: Date | string | null;
+  unreadCount: number;
+}
+
+
+export interface IOption {
+  text: string;
+}
+
+export interface IQuestion {
+  _id: string;
+  question: string;
+  options: IOption[];
+  correctAnswer: string;
+  points: number;
+}
+
+export interface IQuiz {
+  _id: string;
+  courseId: string;
+  title: string;
+  questions: IQuestion[];
+}
+
+
+export interface EditForm {
+    name: string,
+    email: string,
+    phone: string,
+    bio: string,
+    location: string,
+    dob: string,
+    gender: string,
+    profileImage: string,
+}
+
+
+export interface User {
+  id:string
+  name?: string;
+  email?: string;
+  image?: string;
+  bio?: string;
+  gender?: string;
+  dob?: string;
+  location?: string;
+  phone?: string;
+  blocked?: boolean;
+  googleId?: string;
+}
+
+interface CourseData {
+  id: string;
+  _id?: string;
+  title: string;
+  price: number | string;
+  description?: string;
+  thumbnail: string;
+  modules?: { id: string; title: string }[];
+}
+
+export interface EnrolledCourse {
+  course: CourseData;
+  progress: { completedModules: string[] };
+  userId: string;
+}
+
+
+interface Transaction {
+  type: "credit" | "debit";
+  amount: number;
+  courseId?: string;
+  description?: string;
+  createdAt: string;
+}
+
+export interface WalletData {
+  userId: string;
+  balance: number;
+  transactions: Transaction[];
+}
+
+
+export interface UserRegisterForm {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+
+export interface Course {
+  _id: string;
+  title: string;
+  description: string;
+  thumbnail?: string;
+  price?: number;
+  totalEnrolled?: number;
+  duration?: string;
+  instructorName?: string;
+  instructorImage: string;
+  category?: string;
+  level?: string;
+  moduleCount: number;
+}
+
+
+
+export interface RazorpayInstance {
+  open: () => void;
+}
+
+export interface RazorpayOptions {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  handler: (response: {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+  }) => void;
+  modal?: { ondismiss?: () => void };
+  theme?: { color?: string };
+}
+
+
+

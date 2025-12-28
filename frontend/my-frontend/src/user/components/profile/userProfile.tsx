@@ -7,37 +7,9 @@ import {
   getUserMyCourses,
   getUserProfile,
 } from "../../services/profileServices";
-import type { IPayment } from "../../interfaces";
+import type { EnrolledCourse, IPayment, User } from "../../interfaces";
 // import { getPaymentHistory } from "../../services/paymentServices";
 
-interface User {
-  name?: string;
-  email?: string;
-  image?: string;
-  bio?: string;
-  gender?: string;
-  dob?: string;
-  location?: string;
-  phone?: string;
-  blocked?: boolean;
-  googleId?: string;
-}
-
-interface CourseData {
-  id: string;
-  _id?: string;
-  title: string;
-  price: number | string;
-  description?: string;
-  thumbnail: string;
-  modules?: { id: string; title: string }[];
-}
-
-interface EnrolledCourse {
-  course: CourseData;
-  progress: { completedModules: string[] };
-  userId: string;
-}
 
 
 

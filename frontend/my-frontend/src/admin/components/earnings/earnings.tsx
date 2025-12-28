@@ -1,16 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { getEarnings } from "../../../services/admin/adminService";
 import "./earnings.css";
+import type { IEarning } from "../../adminInterfaces";
 
-interface IEarning {
-  _id: string;
-  coursePrice: number;
-  adminEarnings: number;
-  instructorEarnings: number;
-  totalEarnings: number;
-  lastUpdated: string;
-  
-}
 
 
 

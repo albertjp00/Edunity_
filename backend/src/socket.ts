@@ -21,24 +21,38 @@ const messageController = new MessageController(messageService)
 const eventParticipants: Record<string, Participant[]> = {};
 
 export const setupSocket = (io: Server) => {
- 
-  // io.use(socketAuthMiddleware)
+
 
 
 
   // Map of eventId -> participants
   const eventParticipants: Record<string, Participant[]> = {};
+  const onlineUsers = new Map<string, string>(); // userId -> socketId
+
 
   // ----------------- Socket.IO -----------------
   io.on("connection", (socket) => {
-    
+
+
 
     const userData = socket.data.user
-    console.log("Client connected:", socket.id , userData);
-    
+    console.log("Client connected:", socket.id, userData );
+
 
     // ----------------- Chat -----------------
-    
+
+    const userId = socket.handshake.auth?.userId;
+
+    if (userId) {
+      onlineUsers.set(userId, socket.id);
+      socket.join(`user_${userId}`);
+
+      // notify everyone
+      // console.log('user online');
+      
+      io.emit("userOnline", userId);
+    }
+
 
     socket.on("joinRoom", ({ userId, receiverId }) => {
       const room = [userId, receiverId].sort().join("_");
@@ -48,9 +62,17 @@ export const setupSocket = (io: Server) => {
     });
 
     socket.on("sendMessage", (message) => {
-      const room = [message.senderId, message.receiverId].sort().join("_");
+      const { senderId, receiverId } = message;
+      const room = [senderId, receiverId].sort().join("_");
+
+      // chat window (when open)
       io.to(room).emit("receiveMessage", message);
+
+      // sidebar / unread updates (ALWAYS)
+      io.to(`user_${receiverId}`).emit("receiveMessage", message);
+      io.to(`user_${senderId}`).emit("receiveMessage", message);
     });
+
 
     socket.on("messagesRead", async ({ senderId, receiverId }) => {
       const room = [senderId, receiverId].sort().join("_");
@@ -70,6 +92,27 @@ export const setupSocket = (io: Server) => {
       const room = [senderId, receiverId].sort().join("_");
       io.to(room).emit("userStopTyping", { senderId });
     });
+
+
+
+    socket.on("joinPersonalRoom", ({ userId }) => {
+      socket.join(`user_${userId}`);
+      if (userId) {
+      onlineUsers.set(userId, socket.id);
+      socket.join(`user_${userId}`);
+
+      // notify everyone
+      // console.log('user online');
+      
+      io.emit("userOnline", userId);
+    }
+    });
+
+
+
+
+
+
 
 
 
@@ -104,7 +147,7 @@ export const setupSocket = (io: Server) => {
       else socket.to(eventId).emit("offer", { offer, from });
     });
 
-    
+
 
     socket.on("answer", ({ eventId, answer, from, to }: any) => {
       if (to) io.to(to).emit("answer", { answer, from });
@@ -139,10 +182,15 @@ export const setupSocket = (io: Server) => {
 
       console.log(`User ${userId} left event ${eventId}`);
     });
-    
+
     // ----------------- Disconnect -----------------
     socket.on("disconnect", () => {
       console.log("Client disconnected:", socket.id);
+
+      if (userId) {
+        onlineUsers.delete(userId);
+        io.emit("userOffline", userId);
+      }
 
       Object.keys(eventParticipants).forEach((eventId) => {
         const participants = eventParticipants[eventId];

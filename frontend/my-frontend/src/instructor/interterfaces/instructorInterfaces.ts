@@ -63,3 +63,58 @@ export interface QuizData {
   questions: Question[];
 }
 
+
+
+export interface addCourseModule {
+  title: string;
+  video: File | null;
+  content: string;
+  videoFile?: File;
+}
+
+export interface CourseForm {
+  title: string;
+  description: string;
+  skills: string[];
+  price: string;
+  thumbnail: File | null;
+  level: string;
+  modules: addCourseModule[];
+  category: string;
+  accessType: 'subscription' | 'oneTime' | '';
+}
+
+export interface IRegisterForm {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface LocationState {
+  email: string;
+  type: "login" | "forgot";
+}
+
+
+export interface IEvent {
+  id: string;
+  _id: string;
+  instructorId: string;
+  instructorName: string;
+  title: string;
+  description: string;
+  topic: string;
+  date: string;
+  time: string;
+  duration: number;
+  participants: number;
+  participantsList: string[];
+  isLive: boolean;
+  maxParticipants?: number;
+  meetingLink?: string;
+  recordingUrl?: string;
+  createdAt: string;
+  updatedAt: string;
+  isOver: boolean
+}

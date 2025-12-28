@@ -5,18 +5,10 @@ import profilePic from '../../../assets/profilePic.png'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../../components/navbar/navbar'
 import { getEditProfile, getUserProfile } from '../../services/profileServices'
+import type { EditForm } from '../../interfaces'
 
 
-interface EditForm {
-    name: string,
-    email: string,
-    phone: string,
-    bio: string,
-    location: string,
-    dob: string,
-    gender: string,
-    profileImage: string,
-}
+
 
 const EditProfile = () => {
 

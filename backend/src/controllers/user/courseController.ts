@@ -473,7 +473,7 @@ export class UserCourseController
             const userId = req.user?.id;
 
             const result = await this._courseService.addReview(userId as string, courseId, rating, review)
-            console.log('reviewwwwwwwwwwwwwwwwwww',result);
+            // console.log('reviewwwwwwwwwwwwwwwwwww',result);
             
             if(result === 'exists'){
                 res.json({success:false , message : 'Review already added'})

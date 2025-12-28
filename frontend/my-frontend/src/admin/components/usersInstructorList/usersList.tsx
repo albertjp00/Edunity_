@@ -1,25 +1,9 @@
 import React from "react";
 import './userList.css'
+import type { AdminListProps } from "../../adminInterfaces";
 
 
-interface Column<T> {
-  label: string;
-  render: (item: T) => React.ReactNode;
-  width?: string;
-}
 
-interface AdminListProps<T> {
-  title: string;
-  data: T[];
-  columns: Column<T>[];
-  page: number;
-  totalPages: number;
-  onPrev: () => void;
-  onNext: () => void;
-  searchTerm: string;
-  onSearchChange: (value: string) => void;
-  onSearchSubmit: () => void;
-}
 
 const AdminList = <T extends { _id: string }>({
   title,

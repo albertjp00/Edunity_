@@ -64,3 +64,116 @@ export interface ICategory{
   name:string
   skills:string[]
 }
+
+export interface Course {
+  _id: string;
+  id:string;
+  title: string;
+  instructorName: string;
+  category: string;
+  price: number;
+  thumbnail?: string;
+  blocked: boolean; 
+}
+
+export interface Module {
+  title: string;
+  videoUrl?: string;
+  content?: string;
+}
+
+export interface CourseDetails {
+  _id: string;
+  id:string;
+  title: string;
+  description: string;
+  price: number;
+  level: string;
+  thumbnail?: string;
+  skills?: string[];
+  modules: Module[];
+
+}
+
+export interface DashboardStats {
+  totalUsers: number;
+  totalInstructors: number;
+  totalCourses: number;
+  totalEnrolled: number;
+
+  totalEarnings: number;
+  activeUsers: number;
+  statsChange: {
+    instructors: number;
+    courses: number;
+    enrolled: number;
+    events: number;
+    earnings: number;
+  };
+}
+
+export interface IEarning {
+  _id: string;
+  coursePrice: number;
+  adminEarnings: number;
+  instructorEarnings: number;
+  totalEarnings: number;
+  lastUpdated: string;
+  
+}
+
+
+export interface KycDetails {
+  instructorId: string
+  idProof: string
+  addressProof: string
+}
+
+
+export interface Purchase {
+  _id: string;
+  userName: string;
+  userEmail: string;
+  courseTitle: string;
+  coursePrice: number;
+  amountPaid: number;
+  paymentStatus: string;
+  createdAt: string;
+  purchasedAt: string;
+}
+
+
+interface Column<T> {
+  label: string;
+  render: (item: T) => React.ReactNode;
+  width?: string;
+}
+
+export interface AdminListProps<T> {
+  title: string;
+  data: T[];
+  columns: Column<T>[];
+  page: number;
+  totalPages: number;
+  onPrev: () => void;
+  onNext: () => void;
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
+  onSearchSubmit: () => void;
+}
+
+
+export interface Instructor {
+  _id: string;
+  id?:string;
+  name: string;
+  email: string;
+  profileImage?: string;
+  KYCstatus: 'notApplied' | 'verified' | 'pending' | 'rejected';
+}
+
+export interface LoginFormData {
+  email: string;
+  password: string;
+}
+

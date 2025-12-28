@@ -30,7 +30,7 @@ const InstructorChat: React.FC = () => {
         // assuming the backend also returns instructorId
         setInstructorId(response.data.instructorId);
 
-        console.log(response.data);
+        console.log('response data',response.data);
 
         const normalized: IStudent[] = response.data.students.map(
           (item: ApiStudent) => ({
@@ -162,10 +162,9 @@ const InstructorChat: React.FC = () => {
   // console.log("🔗 Socket ID:", socket.id);
 
 
-  //to show typing status in the list 
   useEffect(() => {
     const handleTyping = ({ senderId }: { senderId: string }) => {
-      console.log(`💬 Typing event received from: ${senderId}`);
+      // console.log(`💬 Typing event received from: ${senderId}`);
       setTypingStudents((prev) => ({ ...prev, [senderId]: true }));
 
       // Auto-clear after 2s of inactivity
@@ -175,7 +174,7 @@ const InstructorChat: React.FC = () => {
     };
 
     const handleStopTyping = ({ senderId }: { senderId: string }) => {
-      console.log(`🛑 Stop typing received from: ${senderId}`);
+      // console.log(`🛑 Stop typing received from: ${senderId}`);
       setTypingStudents((prev) => ({ ...prev, [senderId]: false }));
     };
 
@@ -195,6 +194,8 @@ const InstructorChat: React.FC = () => {
       attachment?: string;
       timestamp: Date;
     }) => {
+      console.log('received message', message);
+
       setStudents(prev => {
         const updated = prev.map(stu => {
           if (stu.id === message.senderId) {
@@ -229,9 +230,35 @@ const InstructorChat: React.FC = () => {
     return () => {
       socket.off("receiveMessage", handleReceiveMessage);
     };
-  }, [selected]);
+  }, [instructorId]);
 
 
+  // /to join when message recieves
+  useEffect(() => {
+    if (!instructorId) return;
+
+    console.log("🟢 Instructor joined personal room:", instructorId);
+
+    socket.emit("joinPersonalRoom", { userId: instructorId });
+
+  }, [instructorId]);
+
+
+  //to join when selected and user and instructor id available
+  useEffect(() => {
+    if (!instructorId || !selected) return;
+
+    console.log("🟢 Instructor joining room", instructorId, selected.id);
+
+    socket.emit("joinRoom", {
+      userId: instructorId,
+      receiverId: selected.id,
+    });
+
+  }, [instructorId, selected]);
+
+
+  
 
 
   return (
@@ -285,6 +312,9 @@ const InstructorChat: React.FC = () => {
                   </p>
                 )}
 
+                {stu.unreadCount > 0 && (
+                  <span className="unread-badge">{stu.unreadCount}</span>
+                )}
 
 
 

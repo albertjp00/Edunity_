@@ -1,9 +1,9 @@
 import React, { useState, type FormEvent, type ChangeEvent } from 'react';
-import axios, { type AxiosResponse } from 'axios';
 import './passwordChange.css'; 
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import instructorApi from '../../../api/instructorApi';
+import axios from 'axios';
 
 
 
@@ -67,10 +67,15 @@ const InstructorPasswordChange: React.FC = () => {
       } else {
         toast.error(response.data.message);
       }
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.response?.data?.message || 'Something went wrong');
-    }
+    } catch (error: unknown) {
+  if (axios.isAxiosError(error)) {
+    toast.error(error.response?.data?.message || "Something went wrong");
+  } else if (error instanceof Error) {
+    toast.error(error.message);
+  } else {
+    toast.error("Something went wrong");
+  }
+}
   };
 
   return (

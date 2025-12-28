@@ -4,16 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import registerImage from '../../../assets/authImage.png'
 import { instructorRegister } from "../../services/Instructor/instructorServices";
+import type { IRegisterForm } from "../../interterfaces/instructorInterfaces";
 
-export interface RegisterForm {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
+
 
 const RegisterInstructor = () => {
-  const [formData, setFormData] = useState<RegisterForm>({
+  const [formData, setFormData] = useState<IRegisterForm>({
     name: "",
     email: "",
     password: "",

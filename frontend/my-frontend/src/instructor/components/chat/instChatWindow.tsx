@@ -4,7 +4,7 @@ import "./chatwindow.css";
 import attachmentImage from "../../../assets/documentImage.jpg";
 import { getMessages, sendMessages } from "../../services/Instructor/instructorServices";
 
-const socket = io(import.meta.env.VITE_API_URL);
+// const socket = io(import.meta.env.VITE_API_URL);
 
 interface Message {
   senderId: string;
@@ -40,6 +40,13 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
   const [isTyping, setIsTyping] = useState(false);
 
 
+    console.log('userID',instructorId);
+    const socket = io(import.meta.env.VITE_API_URL, {
+    auth: {
+    
+      userId: instructorId, 
+    },
+  });
 
 
 
@@ -49,7 +56,7 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
     const fetchMessages = async () => {
       try {
         const res = await getMessages(receiverId)
-        if(!res) return
+        if (!res) return
         if (res.data.success) {
           const sorted = res.data.messages.sort(
             (a: Message, b: Message) =>
@@ -85,9 +92,18 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
 
     socket.emit("joinRoom", { userId: instructorId, receiverId });
 
+
+
     const handleReceive = (message: Message) => {
 
       if (message.senderId === instructorId) return;
+
+      const isCurrentChat =
+        (message.senderId === receiverId && message.receiverId === instructorId) ||
+        (message.senderId === instructorId && message.receiverId === receiverId);
+
+      if (!isCurrentChat) return; 
+
       setMessages((prev) => [...prev, message]);
 
       if (message.senderId !== receiverId && unreadIncrease) {
@@ -100,6 +116,8 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
         socket.emit("messagesRead", { senderId: receiverId, receiverId: instructorId });
       }
     };
+
+
 
     const handleReadUpdate = ({ senderId, receiverId }: { senderId: string; receiverId: string }) => {
 
@@ -130,12 +148,12 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
     if (file) formData.append("attachment", file);
 
     try {
-      const res = await sendMessages(receiverId , formData)
-      if(!res) return
+      const res = await sendMessages(receiverId, formData)
+      if (!res) return
       if (res.data.success) {
         const newMessage = res.data.message;
 
-        setMessages((prev) => [...prev, { ...newMessage, read: false }]);
+        // setMessages((prev) => [...prev, { ...newMessage, read: false }]);
 
         // Let socket handle adding the message
         socket.emit("sendMessage", newMessage);
@@ -167,16 +185,16 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
 
-useEffect(() => {
-  if (receiverId && instructorId) {
-    const room = [instructorId, receiverId].sort().join("_");
-    console.log(`🟣 Instructor joining room: ${room}`);
-    socket.emit("joinRoom", { userId: instructorId, receiverId });
-  }
-}, [receiverId, instructorId]);
+  // useEffect(() => {
+  //   if (receiverId && instructorId) {
+  //     const room = [instructorId, receiverId].sort().join("_");
+  //     console.log(`🟣 Instructor joining room: ${room}`);
+  //     socket.emit("joinRoom", { userId: instructorId, receiverId });
+  //   }
+  // }, [receiverId, instructorId]);
 
 
-// console.log("🔗 Socket ID:", socket.id);
+  // console.log("🔗 Socket ID:", socket.id);
 
 
 
@@ -186,8 +204,8 @@ useEffect(() => {
 
     const handleTyping = ({ senderId }: { senderId: string }) => {
       if (senderId === receiverId) {
-        console.log('user is typing',receiverId);
-        
+        console.log('user is typing', receiverId);
+
         setIsTyping(true);
         setTimeout(() => setIsTyping(false), 2000); // auto hide after 2s
       }
@@ -265,7 +283,7 @@ useEffect(() => {
 
             <h4>{receiverName}</h4>
             {isTyping && <small className="typing-text">Typing...</small>}
-          
+
           </div>
         </div>
       </div>

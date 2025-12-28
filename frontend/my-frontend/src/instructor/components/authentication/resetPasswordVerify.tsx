@@ -5,11 +5,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { resendOtpForgotPass, resetPasswordRequest } from "../../services/Instructor/instructorServices";
+import type { LocationState } from "../../interterfaces/instructorInterfaces";
 
-interface LocationState {
-  email: string;
-  type: "login" | "forgot";
-}
+
 
 const OtpVerificationInstructor: React.FC = () => {
   const [otp, setOtp] = useState("");

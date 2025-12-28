@@ -3,17 +3,9 @@ import './adminCourse.css'
 import { getAdminCourses } from "../../services/adminServices";
 import useDebounce from "../debounce/debounce";
 import { useNavigate } from "react-router-dom";
+import type { Course } from "../../adminInterfaces";
 
-interface Course {
-  _id: string;
-  id:string;
-  title: string;
-  instructorName: string;
-  category: string;
-  price: number;
-  thumbnail?: string;
-  blocked: boolean; 
-}
+
 
 const CoursesAdmin: React.FC = () => {
   const navigate =  useNavigate()

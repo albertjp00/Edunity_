@@ -3,21 +3,9 @@ import "./allCourses.css";
 import api from "../../../api/userApi";
 import { useNavigate } from "react-router-dom";
 import useDebounce from "../../../admin/components/debounce/debounce";
+import type { Course } from "../../interfaces";
 
-interface Course {
-  _id: string;
-  title: string;
-  description: string;
-  thumbnail?: string;
-  price?: number;
-  totalEnrolled?: number;
-  duration?: string;
-  instructorName?: string;
-  instructorImage: string;
-  category?: string;
-  level?: string;
-  moduleCount: number;
-}
+
 
 const AllCourses: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);

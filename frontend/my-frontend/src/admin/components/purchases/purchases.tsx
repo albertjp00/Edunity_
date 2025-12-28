@@ -2,18 +2,9 @@ import React, { useEffect, useState, type ChangeEvent } from "react";
 import "./purchases.css";
 import { exportData, getPurchases } from "../../services/adminServices";
 import { toast } from "react-toastify";
+import useDebounce from "../debounce/debounce";
+import type { Purchase } from "../../adminInterfaces";
 
-interface Purchase {
-  _id: string;
-  userName: string;
-  userEmail: string;
-  courseTitle: string;
-  coursePrice: number;
-  amountPaid: number;
-  paymentStatus: string;
-  createdAt: string;
-  purchasedAt: string;
-}
 
 // interface PurchasesPagination {
 //   currentPage: number;
@@ -55,11 +46,25 @@ const Purchases: React.FC = () => {
 
 
 
+  const debouncedSearchTerm = useDebounce(searchTerm, 500)
+
+  useEffect(() => {
+    fetchPurchases(debouncedSearchTerm, currentPage);
+  }, [currentPage, debouncedSearchTerm]);
 
 
   useEffect(() => {
-    fetchPurchases(searchTerm, currentPage);
-  }, [currentPage]);
+    if (currentPage == 1) {
+      fetchPurchases(debouncedSearchTerm, 1)
+    } else {
+      setCurrentPage(1)
+    }
+  }, [debouncedSearchTerm])
+
+
+  // useEffect(() => {
+  //   fetchPurchases(searchTerm, currentPage);
+  // }, [currentPage]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,13 +72,13 @@ const Purchases: React.FC = () => {
     fetchPurchases(searchTerm, 1);
   };
 
-  if (loading)
-    return (
-      <div className="loader-container">
-        <div className="loader"></div>
-        <p>Loading...</p>
-      </div>
-    );
+  // if (loading)
+  //   return (
+  //     <div className="loader-container">
+  //       <div className="loader"></div>
+  //       <p>Loading...</p>
+  //     </div>
+  //   );
 
   const exportDetails = async () => {
     const response = await exportData();
@@ -113,7 +118,15 @@ const Purchases: React.FC = () => {
 
 
 
-      <table className="purchases-table">
+      {loading
+        ?
+        <div className="loader-container">
+          <div className="loader"></div>
+          <p>Loading...</p>
+        </div>
+
+
+       :<table className="purchases-table">
         <thead>
           <tr>
             <th>User</th>
@@ -150,6 +163,8 @@ const Purchases: React.FC = () => {
           )}
         </tbody>
       </table>
+}
+
 
       {/* ✅ Pagination Controls */}
       <div className="pagination">

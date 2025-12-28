@@ -351,6 +351,7 @@
   display: flex;
   align-items: center;
   margin-bottom: 8px;
+  justify-content: space-between;
 }
 
 .review-user-img {
@@ -384,4 +385,47 @@
 .review-comment {
   font-style: italic;
   color: #333;
+}
+
+
+.edit-review-btn{
+    background: #38a5f9;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+
+/* .review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+} */
+
+.review-left {
+  display: flex;
+  gap: 12px;
+}
+
+.review-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.edit-review-btn {
+  background: transparent;
+  border: 1px solid #491aef;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  color: black;
+}
+
+.edit-review-btn:hover {
+  background: #f5f5f5;
 }

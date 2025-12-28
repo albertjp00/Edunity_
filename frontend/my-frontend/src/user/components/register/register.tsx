@@ -7,17 +7,13 @@ import { userRegister } from "../../services/authServices";
 import { toast } from "react-toastify";
 import authImage from '../../../assets/authImage.png'
 import { AxiosError } from "axios";
+import type { UserRegisterForm } from "../../interfaces";
 
 
-interface RegisterForm {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
+
 
 const Register = () => {
-  const [formData, setFormData] = useState<RegisterForm>({
+  const [formData, setFormData] = useState<UserRegisterForm>({
     name: "",
     email: "",
     password: "",
@@ -83,7 +79,7 @@ const Register = () => {
   const validateOnSubmit = () => {
   const newErrors: Record<string, string> = {};
 
-  (Object.keys(formData) as Array<keyof RegisterForm>).forEach((key) => {
+  (Object.keys(formData) as Array<keyof UserRegisterForm>).forEach((key) => {
     const error = validate(key, formData[key]);
     if (error) newErrors[key] = error;
   });

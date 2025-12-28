@@ -3,12 +3,9 @@ import { useNavigate, useParams } from "react-router-dom"
 import "./verifyKyc.css"
 import { toast } from "react-toastify"
 import { getKyc, KycReject, KycVerify } from "../../services/adminServices"
+import type { KycDetails } from "../../adminInterfaces"
 
-interface KycDetails {
-  instructorId: string
-  idProof: string
-  addressProof: string
-}
+
 
 const VerifyKYC: React.FC = () => {
   const { id } = useParams<{ id: string }>()

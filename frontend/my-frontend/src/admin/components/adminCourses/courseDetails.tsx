@@ -3,31 +3,15 @@ import {  useParams } from 'react-router-dom';
 import './courseDetails.css';
 import { viewCourseDetails } from '../../services/adminServices';
 import VideoPlayer from '../../../instructor/components/videoPlayer/videoPlayer';
+import type { CourseDetails } from '../../adminInterfaces';
 
 
 // Define types for Module and Course
-interface Module {
-  title: string;
-  videoUrl?: string;
-  content?: string;
-}
 
-interface Course {
-  _id: string;
-  id:string;
-  title: string;
-  description: string;
-  price: number;
-  level: string;
-  thumbnail?: string;
-  skills?: string[];
-  modules: Module[];
-
-}
 
 const CourseDetailsAdmin: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [course, setCourse] = useState<Course | null>(null);
+  const [course, setCourse] = useState<CourseDetails | null>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   
 

@@ -4,15 +4,9 @@ import { Link } from 'react-router-dom';
 import AdminList from '../../components/usersInstructorList/usersList';
 import useDebounce from '../../components/debounce/debounce';
 import { getInstructorsData } from '../../services/adminServices';
+import type { Instructor } from '../../adminInterfaces';
 
-interface Instructor {
-  _id: string;
-  id?:string;
-  name: string;
-  email: string;
-  profileImage?: string;
-  KYCstatus: 'notApplied' | 'verified' | 'pending' | 'rejected';
-}
+
 
 // interface InstructorsResponse {
 //   mapped: {

@@ -1,5 +1,5 @@
 import { IMyCourses } from '../../interfaces/userInterfaces';
-import { ICourse, IReview } from '../../models/course';
+import { ICourse} from '../../models/course';
 import { IFavourite } from '../../models/favourites';
 import { IInstructor } from '../../models/instructor';
 import { IMyCourse, IProgress } from '../../models/myCourses';
@@ -18,6 +18,7 @@ import { generateCertificate } from '../../utils/certificate';
 import { generateSignedUrl } from '../../utils/getSignedUrl';
 import { IUserCourseService } from '../../interfacesServices.ts/userServiceInterfaces';
 import { StatusMessage } from '../../enums/statusMessage';
+import { IReview } from '../../models/review';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -371,8 +372,8 @@ export class UserCourseService implements IUserCourseService {
     myCourseId: string
   ): Promise<IviewCourse | null> => {
     try {
-      // console.log('service myCourse');
-
+      console.log('service myCourse viewMyCourse');
+      
       const myCourse = await this.userRepository.viewMyCourse(id, myCourseId);
       if (!myCourse) return null;
       const progress = myCourse.progress
@@ -495,16 +496,16 @@ export class UserCourseService implements IUserCourseService {
     try {
       console.log('in servire review');
       
-      const courseReview = await this.userRepository.getCourse(courseId)
-      console.log(courseReview);
+    //   const courseReview = await this.userRepository.getCourse(courseId)
+    //   console.log(courseReview);
       
-      const reviewed = courseReview?.review.some((r:IReview)=>  r.userId === userId )
+    //   const reviewed = courseReview?.review.some((r:IReview)=>  r.userId === userId )
       
-      console.log('reviewdddd',reviewed);
+    //   console.log('reviewdddd',reviewed);
       
-      if (reviewed) {
-      return 'exists'
-    }
+    //   if (reviewed) {
+    //   return 'exists'
+    // }
 
       const user = await this.userRepository.findById(userId)
       console.log(user);

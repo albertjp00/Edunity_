@@ -3,33 +3,15 @@ import "./chatWindow.css";
 import attachmentImage from '../../../assets/documentImage.jpg'
 import { io } from "socket.io-client";
 import { getMessages, sendMessagesToInstructor } from "../../services/instructorServices";
+import type { ChatWindowProps, Message } from "../../interfaces";
 // import { connectSocket } from "../../../api/socketApi";
 
 // const socket = connectSocket()
 // if (!socket) throw new Error("Socket not connected")
 
-const socket = io(import.meta.env.VITE_API_URL);
+// const socket = io(import.meta.env.VITE_API_URL);
 
-// ---------- Message Interface ----------
-interface Message {
-  senderId: string;
-  receiverId?: string;
-  text: string;
-  attachment?: string;
-  timestamp: Date | string;
-  read?: boolean;
-}
 
-// ---------- ChatWindow Props ----------
-interface ChatWindowProps {
-  userId: string;
-  receiverId?: string;
-  receiverName: string;
-  receiverAvatar?: string;
-  onMessageSent: (receiverId: string, message: string, file?: string) => void;
-  unreadIncrease: (receiverId: string) => void;
-  resetUnread: (receiverId: string) => void;
-}
 
 // ---------- ChatWindow Component ----------
 const ChatWindow: React.FC<ChatWindowProps> = ({
@@ -45,6 +27,14 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const [newMsg, setNewMsg] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const [isTyping, setIsTyping] = useState(false);
+  const [isOnline, setIsOnline] = useState(false);  
+
+  const socket = io(import.meta.env.VITE_API_URL, {
+  auth: {
+    userId: userId, 
+  },
+});
+
 
 
 
@@ -140,7 +130,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
     try {
       const res = await sendMessagesToInstructor(formData)
-      if(!res) return
+      if (!res) return
 
       if (res.data.success) {
         const newMessage = res.data.message;
@@ -170,6 +160,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
 
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+
 
   // to 
   useEffect(() => {
@@ -236,6 +228,31 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     };
   }, []);
 
+  useEffect(() => {
+    if (!receiverId) return;
+
+    const handleOnline = (onlineUserId: string) => {
+      if (onlineUserId === receiverId) {
+        setIsOnline(true);
+      }
+    };
+
+    const handleOffline = (offlineUserId: string) => {
+      if (offlineUserId === receiverId) {
+        setIsOnline(false);
+      }
+    };
+
+    socket.on("userOnline", handleOnline);
+    socket.on("userOffline", handleOffline);
+
+    return () => {
+      socket.off("userOnline", handleOnline);
+      socket.off("userOffline", handleOffline);
+    };
+  }, [receiverId]);
+
+
 
 
 
@@ -251,9 +268,16 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           />
           <div>
             <h4>{receiverName}</h4>
-            {isTyping && <small className="typing-text">Typing...</small>}
 
+            {isTyping ? (
+              <small className="typing-text">Typing...</small>
+            ) : (
+              <small className={`status ${isOnline ? "online" : "offline"}`}>
+                {isOnline ? "Online" : "Offline"}
+              </small>
+            )}
           </div>
+
         </div>
         {/* <div className="chat-actions">
           <button>📞</button>

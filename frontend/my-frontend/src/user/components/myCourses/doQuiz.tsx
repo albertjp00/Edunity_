@@ -2,25 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "./doQuiz.css";
 import { getQuiz, submitQuiz } from "../../services/courseServices";
+import type { IQuiz } from "../../interfaces";
 
-interface IOption {
-  text: string;
-}
 
-interface IQuestion {
-  _id: string;
-  question: string;
-  options: IOption[];
-  correctAnswer: string;
-  points: number;
-}
-
-interface IQuiz {
-  _id: string;
-  courseId: string;
-  title: string;
-  questions: IQuestion[];
-}
 
 const DoQuiz: React.FC = () => {
   // const { id } = useParams<{ id: string }>(); // courseId
