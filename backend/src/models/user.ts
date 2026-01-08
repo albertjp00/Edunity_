@@ -24,7 +24,8 @@ interface Subscription {
     startDate:  Date ,
     endDate:  Date ,
     paymentId:  String ,
-    orderId:  String 
+    orderId:  String ,
+    billingCycle: String
 }
 
 
@@ -100,7 +101,8 @@ const UserSchema: Schema = new Schema<IUser>({
     startDate: { type: Date },
     endDate: { type: Date },
     orderId: { type: String },
-    paymentId: { type: String }
+    paymentId: { type: String },
+    billingCycle:{type:String , default:"Monthly"}
   },
 
 });

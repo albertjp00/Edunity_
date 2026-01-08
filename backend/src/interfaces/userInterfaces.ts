@@ -27,7 +27,7 @@ export interface IUserRepository {
 
   getWallet(userId: string): Promise<IWallet | null>
 
-  getPayment(userId: string): Promise<IPayment[] | null>
+  getPayment(userId: string , page:number): Promise<IPaymentDetails | null>
 
   getCourse(id: string): Promise<ICourse | null>
 
@@ -272,4 +272,12 @@ export interface AdminUserCourseDTO {
   id: string;
   title: string;
   thumbnail: string;
+}
+
+
+export interface IPaymentDetails{
+  pay : IPayment[],
+  total:number,
+  totalPages:number,
+  currentPage : number
 }

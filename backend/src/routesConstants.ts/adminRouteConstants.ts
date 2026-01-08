@@ -29,7 +29,7 @@ export const ADMIN_ROUTES = {
   DASHBOARD: {
     STATS: "/stats",
     USER_OVERVIEW: "/userOverview",
-    EARNINGS: "/getEarnings",
+    EARNINGS: "/getEarnings/:page",
   },
 
   CATEGORY:{

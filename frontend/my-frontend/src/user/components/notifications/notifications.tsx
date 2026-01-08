@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./notification.css"; 
 import api from "../../../api/userApi";
 import Navbar from "../navbar/navbar";
+import { fetchNotifications } from "../../services/profileServices";
 
 interface Notification {
   _id: string;
@@ -21,11 +22,11 @@ const UserNotifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
-    const fetchNotifications = async () => {
+    const getNotifications = async () => {
       try {
-        const res = await api.get(`/user/notifications`);
-        console.log(res);
-        
+        const res = await fetchNotifications()
+        // console.log(res);
+        if(!res) return
         setNotifications(res.data.notifications);
 
         await api.put(`/user/notificationsMarkRead`);
@@ -33,7 +34,7 @@ const UserNotifications = () => {
         console.error("Error fetching notifications:", error);
       }
     };
-    fetchNotifications();
+    getNotifications();
   }, []);
 
 

@@ -210,5 +210,96 @@ export const fetchFavourites= async (id:string)=>{
   }
 }
 
+export const allCourses= async (queryParams:string)=>{
+  try {    
+
+    const res = await api.get(
+        `/user/getAllCourses?${queryParams.toString()}`
+      );
+    
+    return res
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
+
+export const courseDetails= async (id:string)=>{
+  try {    
+
+    const res = await api.get(`/user/courseDetails?id=${id}`);
+    
+    return res
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
+export const verifyPayment= async (response: {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+  } , courseId:string)=>{
+  try {    
+
+    const res = await api.post("/user/payment/verify", {
+              response,
+              courseId,
+            });
+    
+    return res
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
+
+export const showCourses= async ()=>{
+  try {    
+
+    const res = await api.get(`/user/getCourses?page=1&limit=6`);
+    
+    return res
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
+
+export const subscriptionVerify= async (response: {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+  })=>{
+  try {    
+
+    const res = await api.post("/user/paymentSubscription/verify", {
+              response,
+            });
+    
+    return res
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
+
+export const refreshKey= async (key:string)=>{
+  try {    
+
+    const res = await api.get(`/user/refresh?key=${key}`);
+    
+    return res
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
 
 

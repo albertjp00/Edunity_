@@ -3,6 +3,10 @@ import profileImage from "../../../assets/profilePic.png";
 import "./navbar.css";
 import logo from "../../../assets/logo.png";
 import notificationImg from '../../../assets/notification.png'
+import { useEffect } from "react";
+import { socket } from "../../../socket/socket";
+import { toast } from "react-toastify";
+import { fetchProfile } from "../../services/Instructor/instructorServices";
 // import NotificationBell from "../notification/notificationBell";
 // import { useEffect, useState } from "react";
 
@@ -40,6 +44,44 @@ const InstructorNavbar = () => {
   const addCourse = () => navigate("/instructor/addCourse");
   const addEvent = () => navigate("/instructor/createEvent");
   const goToMessages = () => navigate("/instructor/messages");
+
+  
+    useEffect(() => {
+    const joinRoom = async () => {
+      const res = await fetchProfile();
+      if (!res) return;
+  
+      const userId = res.data.data._id; 
+  
+      if (userId) {
+        socket.emit("joinPersonalRoom", { userId });
+      }
+    };
+  
+    joinRoom();
+  }, []);
+  
+  
+  
+  
+    useEffect(() => {
+      console.log('notification for message');
+      
+      const handleNotification =  () => {
+        toast.info("📩 New message received");
+  
+        // turn on red dot / badge
+        // setUnread(true);
+      };
+  
+      socket.on("messageNotification", handleNotification);
+  
+      return () => {
+        socket.off("messageNotification", handleNotification);
+      };
+    }, []);
+
+
 
   return (
     <div className="navbar">

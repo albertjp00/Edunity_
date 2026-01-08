@@ -29,7 +29,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const [isTyping, setIsTyping] = useState(false);
   const [isOnline, setIsOnline] = useState(false);  
 
-  const socket = io(import.meta.env.VITE_API_URL, {
+  const socket = io(import.meta.env.VITE_API_URL, { 
   auth: {
     userId: userId, 
   },
@@ -228,6 +228,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     };
   }, []);
 
+
+  //to handle onlin,offline
   useEffect(() => {
     if (!receiverId) return;
 
@@ -251,6 +253,32 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       socket.off("userOffline", handleOffline);
     };
   }, [receiverId]);
+
+  //to check if online or not 
+  useEffect(()=>{
+    socket.emit('checkUserOnline',{userId : receiverId})
+  },[receiverId])
+
+
+  useEffect(()=>{
+    const handleStatus = ({
+      userId ,
+      isOnline,
+    } : {
+      userId : string,
+      isOnline : boolean
+    })=>{
+      if(userId === receiverId){
+        setIsOnline(isOnline)
+      }
+    }
+
+    socket.on('userOnlineStatus',handleStatus)
+
+    return()=>{
+      socket.off('userOnlineStatus',handleStatus)
+    }
+  },[receiverId])
 
 
 

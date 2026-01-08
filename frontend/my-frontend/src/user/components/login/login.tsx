@@ -3,9 +3,10 @@ import "./login.css";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import type { AxiosError } from "axios";
-import api from "../../../api/userApi";
 import GoogleLoginButton from "../googleLogin/googleLogin";
 import eye from '../../../assets/eye-icon.png'
+// import { login } from "../../services/authServices";
+import { useAuth } from "../../../context/useAuth";
 
 interface LoginFormData {
   email: string;
@@ -15,6 +16,8 @@ interface LoginFormData {
 const LoginUser: React.FC = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState<boolean>(false);
+
+  const {userLogin} = useAuth()
 
 
   const [value, setValue] = useState<LoginFormData>({
@@ -32,12 +35,15 @@ const LoginUser: React.FC = () => {
   const onSubmitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await api.post("/user/login", value);
+      
+      await userLogin(value);
+      // if(!response) return
 
-      if (response.status === 200 && response.data.accessToken) {
-        localStorage.setItem("token", response.data.accessToken);
-        navigate("/user/home");
-      }
+      // if (response.status === 200 && response.data.accessToken) {
+      //   localStorage.setItem("token", response.data.accessToken);
+      //   navigate("/user/home");
+      // }
+      navigate('/user/home')
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;
       const message = err.response?.data?.message || "Something went wrong";

@@ -392,11 +392,12 @@ export class UserCourseController
             const result = await this._courseService.viewMyCourseRequest(id, myCourseId)
             console.log('mycourses view', result);
 
-            res.status(HttpStatus.OK).json({ success: true, course: result, instructor: result?.instructor, quiz: result?.quizExists, createdAt: result?.enrolledAt })
+            res.status(HttpStatus.OK).json({ success: true, course: result, review : result?.review , instructor: result?.instructor, quiz: result?.quizExists, createdAt: result?.enrolledAt })
         } catch (error) {
             // console.log(error);
             next(error)
         }
+        
     }
 
 

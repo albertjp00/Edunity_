@@ -3,7 +3,7 @@ import { IAdminRepository } from "../../repositories/adminRepositories";
 import { UserRepository } from "../../repositories/userRepository";
 import jwt from "jsonwebtoken";
 import {  PaginatedUsers } from "../../interfaces/adminInterfaces";
-import { IAdminService } from "../../interfacesServices.ts/adminServiceInterfaces";
+import { IAdminService, IEarningsResult } from "../../interfacesServices.ts/adminServiceInterfaces";
 import { AdminLoginDTO } from "../../dto/adminDTO";
 
 
@@ -135,17 +135,20 @@ export class AdminService implements IAdminService {
     };
 
 
-    getEarningsData = async ()=>{
+    getEarningsData = async (page:number):Promise<IEarningsResult | null>=>{
         try {
-            const earningsData = await this.adminRepository.getEarningsData()
-            const total = earningsData?.map((earning)=>{
+            const earningsData = await this.adminRepository.getEarningsData(page)
+            
+            const earnings = earningsData?.earnings || []
+            const totalPages = earningsData?.totalPages || 0
+            const totalEarnings = earnings?.map((earning)=>{
                 return earning.adminEarnings}).reduce((acc,curr)=>acc+curr)
 
             // console.log('get earnings data',earningsData , total);
-            return {earningsData , total}
+            return {earnings , totalEarnings ,totalPages } 
         } catch (error) {
             console.log(error);
-            
+            return null
         }
     }
 

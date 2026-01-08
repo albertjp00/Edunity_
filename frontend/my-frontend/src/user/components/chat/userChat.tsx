@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ChatWindow from "./chatWindow";
 // import { useParams } from "react-router-dom";
 import profileImage from "../../../assets/profilePic.png";
 import "./userChat.css";
 import Navbar from "../navbar/navbar";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 import { useParams } from "react-router-dom";
 import { getMessagedInstructors, toMessageInstructor } from "../../services/instructorServices";
 import type { IInstructorChat } from "../../interfaces";
 
 
-const socket = io(import.meta.env.VITE_API_URL)
+// const socket = io(import.meta.env.VITE_API_URL)
 
 
 
@@ -20,6 +20,8 @@ const UserChat = () => {
   const [selected, setSelected] = useState<IInstructorChat | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [typingInstructors, setTypingInstructors] = useState<Record<string, boolean>>({});
+
+  const socketRef = useRef<Socket | null>(null) 
 
 
   const sortInstructors = (list: IInstructorChat[]) => {
@@ -176,7 +178,7 @@ const UserChat = () => {
     if (selected && userId) {
       const room = [userId, selected.id].sort().join("_");
       console.log(`🟢 User joining room: ${room}`);
-      socket.emit("joinRoom", { userId, receiverId: selected.id });
+      socketRef.current?.emit("joinRoom", { userId, receiverId: selected.id });
     }
   }, [selected, userId]);
 
@@ -202,12 +204,12 @@ const UserChat = () => {
       setTypingInstructors((prev) => ({ ...prev, [senderId]: false }));
     };
 
-    socket.on("userTyping", handleTyping);
-    socket.on("userStopTyping", handleStopTyping);
+    socketRef.current?.on("userTyping", handleTyping);
+    socketRef.current?.on("userStopTyping", handleStopTyping);
 
     return () => {
-      socket.off("userTyping", handleTyping);
-      socket.off("userStopTyping", handleStopTyping);
+      socketRef.current?.off("userTyping", handleTyping);
+      socketRef.current?.off("userStopTyping", handleStopTyping);
     };
   }, []);
 
@@ -275,22 +277,41 @@ const UserChat = () => {
       });
     };
 
-    socket.on("receiveMessage", handleReceiveMessage);
+    socketRef.current?.on("receiveMessage", handleReceiveMessage);
 
     return () => {
-      socket.off("receiveMessage", handleReceiveMessage);
+      socketRef.current?.off("receiveMessage", handleReceiveMessage);
     };
   }, [userId]);
 
 
+  useEffect(()=>{
+
+  },[userId])
+
+
+  
+  
 
   useEffect(() => {
     if (!userId) return;
 
+    socketRef.current  = io(import.meta.env.VITE_API_URL)
+
     console.log("🟢 User joined personal room:", userId);
-    socket.emit("joinPersonalRoom", { userId });
+    socketRef.current.emit("joinPersonalRoom", { userId });
+
+    console.log('user online',userId);
+
+    return () => {
+    console.log("🔴user offline:", userId);
+    socketRef.current?.disconnect();
+    socketRef.current = null;
+  };
 
   }, [userId]);
+
+
 
 
   

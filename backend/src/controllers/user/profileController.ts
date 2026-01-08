@@ -127,7 +127,8 @@ export class ProfileController implements
     getPayment = async (req: AuthRequest, res: Response) => {
         try {
             const userId = req.user?.id
-            const payment = await this._profileService.getPayment(userId as string)
+            const page = Number(req.params.page)
+            const payment = await this._profileService.getPayment(userId as string , page)
             // console.log(payment);
 
             res.status(HttpStatus.OK).json({ success: true, payments: payment })

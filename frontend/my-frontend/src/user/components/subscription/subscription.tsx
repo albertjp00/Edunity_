@@ -2,8 +2,7 @@ import { toast } from 'react-toastify';
 import './subscription.css'
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import api from '../../../api/userApi';
-import { getSubscription, subscribe } from '../../services/courseServices';
+import { getSubscription, subscribe, subscriptionVerify } from '../../services/courseServices';
 import SubscriptionCourses from './subscriptionCourses';
 import type { RazorpayInstance, RazorpayOptions } from '../../interfaces';
 
@@ -74,9 +73,7 @@ const Subscription = () => {
 
         handler: async function (response) {
           try {
-            await api.post("/user/paymentSubscription/verify", {
-              ...response,
-            });
+            await subscriptionVerify(response)
 
 
             toast.success("Subscription Activated!");

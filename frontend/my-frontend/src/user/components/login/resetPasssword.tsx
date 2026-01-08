@@ -2,7 +2,7 @@ import React, { useState, type FormEvent, type ChangeEvent } from 'react';
 import './resetPassword.css';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
-import publicApi from '../../../api/publicApi';
+import { resetPassword } from '../../services/authServices';
 
 
 interface LocationState {
@@ -53,8 +53,7 @@ const UserResetPassword: React.FC = () => {
     }
 
     try {
-      const response = await publicApi.put('/user/resetPassword',
-        { email, newPassword })
+      const response = await resetPassword(email , newPassword)
       console.log(response);
 
 

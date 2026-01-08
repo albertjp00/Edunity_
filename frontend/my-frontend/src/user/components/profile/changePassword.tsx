@@ -2,8 +2,8 @@ import React, { useState, type FormEvent, type ChangeEvent } from 'react';
 import './changePassword.css'; 
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import api from '../../../api/userApi';
 import { AxiosError } from 'axios';
+import { changePassword } from '../../services/profileServices';
 // import { userPasswordChange } from '../../services/profileServices';
 
 
@@ -52,8 +52,7 @@ const UserPasswordChange: React.FC = () => {
     }
 
     try {
-      const response = await api.put('/user/passwordChange',
-        { oldPassword, newPassword })
+      const response = await changePassword(oldPassword , newPassword)
       console.log(response);
       
 

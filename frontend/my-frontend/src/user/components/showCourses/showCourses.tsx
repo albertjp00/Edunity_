@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./showCourses.css";
-import api from "../../../api/userApi";
+import { showCourses } from "../../services/courseServices";
 
 interface Course {
   _id: string;
@@ -22,7 +22,8 @@ const ShowCourses: React.FC = () => {
 
   const fetchCourses = async (): Promise<void> => {
     try {
-      const res = await api.get(`/user/getCourses?page=1&limit=6`);
+      const res = await showCourses()
+      if(!res) return
       if (res.data.success) {
         console.log(res);
         

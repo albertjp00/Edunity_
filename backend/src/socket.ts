@@ -36,22 +36,25 @@ export const setupSocket = (io: Server) => {
 
 
     const userData = socket.data.user
-    console.log("Client connected:", socket.id, userData );
+    console.log("Client connected:", socket.id, userData);
 
 
     // ----------------- Chat -----------------
 
+
+    let currentUserId: string | null = null;
+
     const userId = socket.handshake.auth?.userId;
 
-    if (userId) {
-      onlineUsers.set(userId, socket.id);
-      socket.join(`user_${userId}`);
+    // if (userId) {
+    //   onlineUsers.set(userId, socket.id);
+    //   socket.join(`user_${userId}`);
 
-      // notify everyone
-      // console.log('user online');
-      
-      io.emit("userOnline", userId);
-    }
+    //   // notify everyone
+    //   // console.log('user online');
+
+    //   io.emit("userOnline", userId);
+    // }
 
 
     socket.on("joinRoom", ({ userId, receiverId }) => {
@@ -71,8 +74,21 @@ export const setupSocket = (io: Server) => {
       // sidebar / unread updates (ALWAYS)
       io.to(`user_${receiverId}`).emit("receiveMessage", message);
       io.to(`user_${senderId}`).emit("receiveMessage", message);
+
+      //notification send
+      
+      
+      io.to(`user_${receiverId}`).emit("messageNotification", {
+        senderId,
+      });
     });
 
+
+    // socket.on("sendMessage", (message) => {
+    //   const { senderId, receiverId } = message;
+
+      
+    // });
 
     socket.on("messagesRead", async ({ senderId, receiverId }) => {
       const room = [senderId, receiverId].sort().join("_");
@@ -96,24 +112,21 @@ export const setupSocket = (io: Server) => {
 
 
     socket.on("joinPersonalRoom", ({ userId }) => {
-      socket.join(`user_${userId}`);
-      if (userId) {
+      if (!userId) return;
+
+      currentUserId = userId;
+
       onlineUsers.set(userId, socket.id);
       socket.join(`user_${userId}`);
 
-      // notify everyone
-      // console.log('user online');
-      
+      console.log("🟢 User online:", userId);
       io.emit("userOnline", userId);
-    }
     });
 
-
-
-
-
-
-
+    socket.on('checkUserOnline', ({ userId }) => {
+      const isOnline = onlineUsers.has(userId)
+      socket.emit('userOnlineStatus', { userId, isOnline })
+    })
 
 
 
@@ -185,12 +198,11 @@ export const setupSocket = (io: Server) => {
 
     // ----------------- Disconnect -----------------
     socket.on("disconnect", () => {
-      console.log("Client disconnected:", socket.id);
+      if (!currentUserId) return;
 
-      if (userId) {
-        onlineUsers.delete(userId);
-        io.emit("userOffline", userId);
-      }
+      onlineUsers.delete(currentUserId);
+      console.log("🔴 User offline:", currentUserId);
+      io.emit("userOffline", currentUserId);
 
       Object.keys(eventParticipants).forEach((eventId) => {
         const participants = eventParticipants[eventId];

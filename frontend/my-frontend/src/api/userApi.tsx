@@ -31,10 +31,10 @@ const refreshAccessToken = async () => {
     const res = await axios.post(
       `${api_url}/user/refresh-token`,
       {},
-      { withCredentials: true } 
+      { withCredentials: true }
     );
-    console.log('refresh token',res.data);
-    
+    console.log('refresh token', res.data);
+
     localStorage.setItem("token", res.data.accessToken);
     return res.data.accessToken;
   } catch {
@@ -68,24 +68,30 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return api(originalRequest);
       } else {
-        // Refresh failed - log out
-        toast.error("Your session has expired. Please log in again.");
+        // toast.error("Your session has expired. Please log in again.");
         localStorage.removeItem("token");
-        localStorage.removeItem("refreshToken");
-        window.location.href = "/user/login";
+        onLogout?.();
       }
     }
 
-    // Case 2: Blocked user or other auth error
     if (error.response?.status === 403) {
       toast.warning("Your account has been blocked. Contact support.");
       localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
-      window.location.href = "/user/login";
+      onLogout?.();
     }
+
 
     return Promise.reject(error);
   }
 );
 
 export default api;
+
+
+
+// userApi.ts
+let onLogout: (() => void) | null = null;
+
+export const setLogoutHandler = (logoutFn: () => void) => {
+  onLogout = logoutFn;
+};

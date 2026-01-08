@@ -111,7 +111,7 @@ const Purchases: React.FC = () => {
           className="search-box"
         />
         <div className="buttons">
-          <button type="submit">Search</button>
+          {/* <button type="submit" >Search</button> */}
           <button onClick={exportDetails} type="submit">Export</button>
         </div>
       </form>

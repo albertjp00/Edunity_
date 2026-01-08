@@ -1,4 +1,5 @@
 import { StatusMessage } from '../../enums/statusMessage';
+import { IPaymentDetails } from '../../interfaces/userInterfaces';
 import { IUserProfileService } from '../../interfacesServices.ts/userServiceInterfaces';
 import { mapUserToDTO } from '../../mapper/user.mapper';
 import { INotification } from '../../models/notification';
@@ -38,7 +39,7 @@ export class ProfileService implements IUserProfileService {
     }
   }
 
-  
+
 
   async editProfileRequest(userId: string, updateData: Partial<any>) {
     try {
@@ -59,11 +60,11 @@ export class ProfileService implements IUserProfileService {
     try {
       const user = await this.userRepository.findById(id);
       if (!user) return false;
-      
+
       const isMatch = await bcrypt.compare(oldPassword, user.password);
 
-      console.log(isMatch , oldPassword , user.password , newPassword);
-      
+      console.log(isMatch, oldPassword, user.password, newPassword);
+
       if (!isMatch) return false;
 
       const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -76,28 +77,28 @@ export class ProfileService implements IUserProfileService {
     }
   }
 
-  async getWallet (userId : string ):Promise<IWallet | null>{
+  async getWallet(userId: string): Promise<IWallet | null> {
     try {
       const wallet = await this.userRepository.getWallet(userId)
-      return wallet 
+      return wallet
     } catch (error) {
       console.log(error);
       return null
     }
   }
 
-  async getPayment (userId : string ):Promise<IPayment[] | null>{
+  async getPayment(userId: string , page:number): Promise<IPaymentDetails | null> {
     try {
-      const pay = await this.userRepository.getPayment(userId)
-      if(!pay) return null
-      return pay 
+      const pay = await this.userRepository.getPayment(userId , page)
+      if (!pay) return null
+      return pay
     } catch (error) {
       console.log(error);
       return null
     }
   }
 
-  async getNotifications (userId : string ):Promise<INotification[] | null>{
+  async getNotifications(userId: string): Promise<INotification[] | null> {
     try {
       const noti = await this.userRepository.getNotifications(userId)
       return noti
@@ -107,7 +108,7 @@ export class ProfileService implements IUserProfileService {
     }
   }
 
-  async notificationsMarkRead (userId : string ):Promise<INotification[] | null>{
+  async notificationsMarkRead(userId: string): Promise<INotification[] | null> {
     try {
       const noti = await this.userRepository.notificationsMarkRead(userId)
       return noti
@@ -117,7 +118,7 @@ export class ProfileService implements IUserProfileService {
     }
   }
 
-  async subscriptionCheckRequest(id:string):Promise<boolean | null>{
+  async subscriptionCheckRequest(id: string): Promise<boolean | null> {
     try {
       const user = await this.userRepository.getSubscriptionActive(id)
       return user

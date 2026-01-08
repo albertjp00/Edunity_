@@ -28,7 +28,7 @@ const ReviewSchema: Schema<IReview> = new Schema({
     userImage:
     {
         type: String
-
+        
     },
     rating: {
         type: Number, required: true, min: 1, max: 5

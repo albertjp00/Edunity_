@@ -1,6 +1,7 @@
 import instructorApi from "../../../api/instructorApi"
 import api from "../../../api/userApi";
-import type { RegisterForm } from "../../components/authentication/instructorRegister";
+import type { UserRegisterForm } from "../../../user/interfaces";
+// import type { RegisterForm } from "../../components/authentication/instructorRegister";
 import type { Ievent } from "../../interterfaces/events";
 import type { QuizData, QuizPayload } from "../../interterfaces/instructorInterfaces";
 
@@ -117,7 +118,7 @@ export const  forgotPassword = async (email:string)=>{
 }
 
 
-export const instructorRegister  = async (formData : RegisterForm)=>{
+export const instructorRegister  = async (formData : UserRegisterForm)=>{
   try {
     const res = await instructorApi.post("/instructor/register", formData);
     return res

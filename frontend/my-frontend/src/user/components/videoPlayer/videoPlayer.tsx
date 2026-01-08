@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import api from "../../../api/userApi";
+import { refreshKey } from "../../services/courseServices";
 
 interface VideoPlayerProps {
   initialUrl: string;
@@ -22,7 +22,8 @@ const VideoPlayerUser: React.FC<VideoPlayerProps> = ({ initialUrl, onComplete })
     const scheduleRefresh = async () => {
       console.log("⏱️ Triggering refresh...");
       try {
-        const res = await api.get(`/user/refresh?key=${key}`);
+        const res = await refreshKey(key)
+        if(!res) return
         if (res.data?.success && res.data?.url) {
           setVideoUrl(res.data.url);
           console.log("🔄 Video URL refreshed!");

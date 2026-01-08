@@ -2,20 +2,24 @@ import './navbar.css';
 import { Link, useNavigate } from 'react-router-dom';
 import profilePic from './../../../assets/profilePic.png';
 import logo from '../../../assets/logo.png';
-import { logout } from '../../services/authServices';
 import notificationImg from '../../../assets/notification.png'
-import api from '../../../api/userApi';
 import { useEffect, useState } from 'react';
+import { fetchNotifications} from '../../services/profileServices';
+import { toast } from 'react-toastify';
+import { socket } from '../../../socket/socket';
+import { useAuth } from '../../../context/useAuth';
 
 const Navbar = () => {
   const navigate = useNavigate();
   // const [searchTerm, setSearchTerm] = useState('');
   const [hasUnread, setUnread] = useState<boolean>()
 
+  const { user , userLogout } = useAuth();
+
   const handleLogout = async () => {
     try {
-      await logout();
-      localStorage.removeItem("token");
+      await userLogout();
+      // localStorage.removeItem("token");
       navigate("/user/login");
     } catch (err) {
       console.error("Logout failed", err);
@@ -27,11 +31,11 @@ const Navbar = () => {
   }
 
   useEffect(() => {
-    
+
     const getNotifications = async () => {
-      const res = await api.get('/user/notifications')
-      console.log(res);
-      
+      const res = await fetchNotifications()
+      if (!res) return
+
       const notifications = res.data.notifications
       const unreadExists = notifications.some((n: { isRead: boolean }) => !n.isRead);
       setUnread(unreadExists);
@@ -40,11 +44,53 @@ const Navbar = () => {
     getNotifications()
   }, [])
 
-  //   const handleSearch = (e) => {
-  //     if (e.key === 'Enter' && searchTerm.trim()) {
-  //       navigate(`/user/home?search=${encodeURIComponent(searchTerm)}`);
-  //     }
-  //   };
+ 
+
+//   useEffect(() => {
+//   const joinRoom = async () => {
+//     const res = await getUserProfile();
+//     if (!res) return;
+
+//     const userId = res.data.data.id; 
+//     // console.log('profile data',res , userId);
+
+//     if (userId) {
+//       socket.emit("joinPersonalRoom", { userId });
+//     }
+//   };
+
+//   joinRoom();
+// }, []);
+
+
+  useEffect(() => {
+    if (user?.id) {
+      socket.emit("joinPersonalRoom", { userId: user.id });
+    }
+  }, [user?.id]);
+
+
+
+
+  useEffect(() => {
+    console.log('notification for message');
+    
+    const handleNotification =  () => {
+      toast.info("📩 New message received");
+
+      // turn on red dot / badge
+      // setUnread(true);
+    };
+
+    socket.on("messageNotification", handleNotification);
+
+    return () => {
+      socket.off("messageNotification", handleNotification);
+    };
+  }, []);
+
+
+
 
   return (
     <div className="navbar">

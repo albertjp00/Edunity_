@@ -173,7 +173,7 @@ export class MessageController implements
     try {
       const instructorId = req.instructor?.id
 
-      console.log('get messaged users ', instructorId);
+      // console.log('get messaged users ', instructorId);
 
       const result = await this.messageService.getStudents(instructorId as string)
 

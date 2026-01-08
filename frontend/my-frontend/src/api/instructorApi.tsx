@@ -1,5 +1,4 @@
 import axios,{  type AxiosInstance } from "axios";
-import { toast } from "react-toastify";
 
 
 const instructorApi: AxiosInstance = axios.create({
@@ -40,9 +39,9 @@ instructorApi.interceptors.response.use(
       return Promise.reject(error);
     }
     if (error.response?.status === 401) {
-      if (error.response.data?.message?.toLowerCase().includes("expired")) {
-        toast.error("Your session has expired. Please log in again.");
-      }
+      // if (error.response.data?.message?.toLowerCase().includes("expired")) {
+      //   // toast.error("Your session has expired. Please log in again.");
+      // }
       localStorage.removeItem("instructor");
       window.location.href = "/instructor/login";
     }

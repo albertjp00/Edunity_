@@ -21,7 +21,7 @@ export const ROUTES = {
     UPDATE: "/profile",
     CHANGE_PASSWORD: "/passwordChange",
     WALLET: "/wallet",
-    PAYMENT: "/payment",
+    PAYMENT: "/payment/:page",
     NOTIFICATIONS: "/notifications",
     MARK_READ: "/notificationsMarkRead",
   },

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import "./allCourses.css";
-import api from "../../../api/userApi";
 import { useNavigate } from "react-router-dom";
 import useDebounce from "../../../admin/components/debounce/debounce";
 import type { Course } from "../../interfaces";
+import { allCourses } from "../../services/courseServices";
 
 
 
@@ -51,11 +51,9 @@ const AllCourses: React.FC = () => {
 
       
 
-      const response = await api.get(
-        `/user/getAllCourses?${queryParams.toString()}`
-      );
-      console.log("response",response);
-      
+      const response = await allCourses(queryParams.toString())
+      // console.log("response",response);
+      if(!response) return
       setCourses(response.data.courses);
       setTotalPages(response.data.totalPages);
     } catch (error) {

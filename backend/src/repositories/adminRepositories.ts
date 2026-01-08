@@ -1,4 +1,5 @@
 import { ICount, IUserOverview, PaginatedInstructors, PaginatedUsers, PurchaseResult } from "../interfaces/adminInterfaces";
+import { IEarningsResult } from "../interfacesServices.ts/adminServiceInterfaces";
 import { CategoryModel, ICategory } from "../models/category";
 import { CourseModel, ICourse } from "../models/course";
 import { EarningModel, IEarnings } from "../models/earnings";
@@ -60,7 +61,7 @@ export interface IAdminRepository {
     getTotalEnrolled(): Promise<number | null>
     getUserOverview(oneYearAgo: Date): Promise<IUserOverview[]>
 
-    getEarningsData(): Promise<IEarnings[] | null>
+    getEarningsData(page:number): Promise<IEarningsResult | null>
 
 }
 
@@ -406,10 +407,14 @@ export class AdminRepository implements IAdminRepository {
         }
     }
 
-    async getEarningsData(): Promise<IEarnings[] | null> {
+    async getEarningsData(page:number): Promise<IEarningsResult | null> {
         try {
-            const earnings = await EarningModel.find()
-            return earnings
+            const limit = 4
+            const total = await EarningModel.countDocuments()
+            const totalPages = Math.ceil(total / limit)
+            const skip = (page  - 1) * limit
+            const earnings = await EarningModel.find().skip(skip).limit(limit)
+            return {earnings , totalPages }
         } catch (error) {
             console.log(error);
             return null

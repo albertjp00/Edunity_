@@ -1,5 +1,4 @@
 import axios,{  type AxiosInstance } from "axios";
-import { toast } from "react-toastify";
 
 
 const adminApi: AxiosInstance = axios.create({
@@ -28,7 +27,7 @@ adminApi.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       if (error.response.data?.message?.toLowerCase().includes("expired")) {
-        toast.error("Your session has expired. Please log in again.");
+        // toast.error("Your session has expired. Please log in again.");
       }
       localStorage.removeItem("admin");
       window.location.href = "/admin/login";

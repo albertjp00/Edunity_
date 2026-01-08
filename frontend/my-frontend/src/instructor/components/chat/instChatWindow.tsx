@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { io } from "socket.io-client";
 import "./chatwindow.css";
 import attachmentImage from "../../../assets/documentImage.jpg";
 import { getMessages, sendMessages } from "../../services/Instructor/instructorServices";
+import { socket } from "../../../socket/socket";
 
 // const socket = io(import.meta.env.VITE_API_URL);
 
@@ -40,13 +40,12 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
   const [isTyping, setIsTyping] = useState(false);
 
 
-    console.log('userID',instructorId);
-    const socket = io(import.meta.env.VITE_API_URL, {
-    auth: {
-    
-      userId: instructorId, 
-    },
-  });
+  //   console.log('userID',instructorId);
+  //   const socket = io(import.meta.env.VITE_API_URL, {
+  //   auth: {
+  //     userId: instructorId, 
+  //   },
+  // });
 
 
 
@@ -85,13 +84,12 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
 
 
 
-
+  
 
   useEffect(() => {
     if (!receiverId) return;
 
     socket.emit("joinRoom", { userId: instructorId, receiverId });
-
 
 
     const handleReceive = (message: Message) => {
@@ -153,7 +151,7 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
       if (res.data.success) {
         const newMessage = res.data.message;
 
-        // setMessages((prev) => [...prev, { ...newMessage, read: false }]);
+        setMessages((prev) => [...prev, { ...newMessage, read: false }]);
 
         // Let socket handle adding the message
         socket.emit("sendMessage", newMessage);
@@ -266,6 +264,55 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
   }, []);
 
 
+  const [isOnline, setIsOnline] = useState(false);  
+  useEffect(()=>{
+
+    const handleOnline = (offlineUserId:string)=>{
+      if(offlineUserId === receiverId){
+        setIsOnline(true)
+      }
+    }
+
+    const handleOffline = (offlineUserId:string)=>{
+      if(offlineUserId === receiverId){
+        setIsOnline(false)
+      }
+    }
+
+    socket.on('userOnline',handleOnline)
+    socket.on("userOffline",handleOffline)
+
+    return ()=>{
+      socket.off("userOnline",handleOnline)
+      socket.off("userOffline",handleOffline)
+    }
+  },[receiverId])
+
+  //to check if online or not 
+    useEffect(()=>{
+      socket.emit('checkUserOnline',{userId : receiverId})
+    },[receiverId])
+  
+  
+    useEffect(()=>{
+      const handleStatus = ({
+        userId ,
+        isOnline,
+      } : {
+        userId : string,
+        isOnline : boolean
+      })=>{
+        if(userId === receiverId){
+          setIsOnline(isOnline)
+        }
+      }
+  
+      socket.on('userOnlineStatus',handleStatus)
+  
+      return()=>{
+        socket.off('userOnlineStatus',handleStatus)
+      }
+    },[receiverId])
 
 
 
@@ -282,7 +329,13 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
           <div>
 
             <h4>{receiverName}</h4>
-            {isTyping && <small className="typing-text">Typing...</small>}
+            {isTyping ? (
+              <small className="typing-text">Typing...</small>
+            ) : (
+              <small className={`status ${isOnline ? "online" : "offline"}`}>
+                {isOnline ? "Online" : "Offline"}
+              </small>
+            )}
 
           </div>
         </div>

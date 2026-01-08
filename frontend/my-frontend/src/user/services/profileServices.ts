@@ -49,12 +49,85 @@ export const userPasswordChange = async(oldPassword:string , newPassword:string)
 
 
 
-export const getPaymentHistory = async()=>{
+export const getPaymentHistory = async(page:number)=>{
     try {
-        const res = await api.get('/user/payment')
+        const res = await api.get(`/user/payment/${page}`)
         return res
     } catch (error) {
         console.log(error);
         
     }
 }
+
+
+export const fetchNotifications = async()=>{
+    try {
+        const res = await api.get('/user/notifications')
+        return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
+
+
+export const changePassword = async(oldPassword : string , newPassword:string)=>{
+    try {
+        const res = await api.put('/user/passwordChange',
+        { oldPassword, newPassword })
+        return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
+
+export const getWallet = async()=>{
+    try {
+        const res = await api.get(`/user/wallet`);
+        return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
+export const isBlocked= async()=>{
+    try {
+        const res = await api.get("/user/isBlocked");
+        return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
+
+
+export const resendOtpProfile = async(email:string)=>{
+    try {
+        const res = await api.post('/user/verifyOtp', {
+        email
+      })
+        return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
+export const otpVerified = async(email:string , otp:string)=>{
+    try {
+        const res = await api.post('/user/verifyOtp', {
+        email,
+        otp
+      })
+        return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+

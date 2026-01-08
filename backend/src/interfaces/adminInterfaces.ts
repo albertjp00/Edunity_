@@ -15,73 +15,73 @@ import { NextFunction, Request, Response } from "express";
 
 
 
-export interface  IAdminCourseReadController {
-  getCourses(req: Request, res: Response,next: NextFunction): Promise<void>;
-  getCourseDetails(req: Request, res: Response,next: NextFunction): Promise<void>;
+export interface IAdminCourseReadController {
+  getCourses(req: Request, res: Response, next: NextFunction): Promise<void>;
+  getCourseDetails(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
 
 
 //Admin Purchase Operations
 export interface IAdminPurchaseController {
-  getAllPurchases(req: AdminAuthRequest, res: Response,next: NextFunction): Promise<void>;
+  getAllPurchases(req: AdminAuthRequest, res: Response, next: NextFunction): Promise<void>;
   // exportPurchasesPDF(req: AdminAuthRequest,res: Response , next : NextFunction):Promise<void>;
 }
 
-export interface IAdminCategoryController{
-  addCategory(req:AdminAuthRequest , res:Response , next:NextFunction):Promise<void>;
-  getCategory(req:AdminAuthRequest , res:Response , next:NextFunction):Promise<void>;
-  deleteCategory(req:AdminAuthRequest , res:Response , next:NextFunction):Promise<void>;
+export interface IAdminCategoryController {
+  addCategory(req: AdminAuthRequest, res: Response, next: NextFunction): Promise<void>;
+  getCategory(req: AdminAuthRequest, res: Response, next: NextFunction): Promise<void>;
+  deleteCategory(req: AdminAuthRequest, res: Response, next: NextFunction): Promise<void>;
 }
 
 //controller.ts
 //  AUTH INTERFACE
 export interface IAdminAuthController {
-  adminLogin(req: AdminAuthRequest, res: Response,next: NextFunction): Promise<void>;
+  adminLogin(req: AdminAuthRequest, res: Response, next: NextFunction): Promise<void>;
 }
 
 
 //  USER MANAGEMENT INTERFACE
 export interface IAdminUserManagementController {
-  getUser(req : Request , res : Response,next: NextFunction):Promise<void>
-  getUserCourses(req : Request , res : Response,next: NextFunction):Promise<void>
-  getUsers(req: Request, res: Response,next: NextFunction): Promise<void>;
-  blockUnblock(req: Request, res: Response,next: NextFunction): Promise<void>;
-  unblockUser(req: Request, res: Response,next: NextFunction): Promise<void>;
+  getUser(req: Request, res: Response, next: NextFunction): Promise<void>
+  getUserCourses(req: Request, res: Response, next: NextFunction): Promise<void>
+  getUsers(req: Request, res: Response, next: NextFunction): Promise<void>;
+  blockUnblock(req: Request, res: Response, next: NextFunction): Promise<void>;
+  unblockUser(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
 
 
 //  INSTRUCTOR MANAGEMENT INTERFACE
 export interface IAdminInstructorController {
-  getInstructors(req: Request, res: Response,next: NextFunction): Promise<void>;
+  getInstructors(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
 
 
 //  KYC MANAGEMENT INTERFACE
 export interface IAdminKycController {
-  getKyc(req: Request, res: Response,next: NextFunction): Promise<void>;
-  verifyKyc(req: Request, res: Response,next: NextFunction): Promise<void>;
-  rejectKyc(req: AdminAuthRequest, res: Response,next: NextFunction): Promise<void>;
+  getKyc(req: Request, res: Response, next: NextFunction): Promise<void>;
+  verifyKyc(req: Request, res: Response, next: NextFunction): Promise<void>;
+  rejectKyc(req: AdminAuthRequest, res: Response, next: NextFunction): Promise<void>;
 }
 
 
 //  DASHBOARD / ANALYTICS INTERFACE
 export interface IAdminDashboardController {
-  dashboardStats(req: AdminAuthRequest, res: Response,next: NextFunction): Promise<void>;
-  getUserOverview(req: Request, res: Response,next: NextFunction): Promise<void>;
-  getEarnings(req: AdminAuthRequest, res: Response,next: NextFunction): Promise<void>;
+  dashboardStats(req: AdminAuthRequest, res: Response, next: NextFunction): Promise<void>;
+  getUserOverview(req: Request, res: Response, next: NextFunction): Promise<void>;
+  getEarnings(req: AdminAuthRequest, res: Response, next: NextFunction): Promise<void>;
 }
 
 
 
 //instructorControleller Admin
 
-export interface IAdminInstructorsController{
-  getInstructor(req: Request, res: Response,next: NextFunction):Promise<void>
-  getInstructors(req : Request , res : Response,next: NextFunction):Promise<void>
-  getInstructorsCourses(req : Request , res : Response,next: NextFunction):Promise<void>
+export interface IAdminInstructorsController {
+  getInstructor(req: Request, res: Response, next: NextFunction): Promise<void>
+  getInstructors(req: Request, res: Response, next: NextFunction): Promise<void>
+  getInstructorsCourses(req: Request, res: Response, next: NextFunction): Promise<void>
 }
 
-export interface IAdminUsersController{
+export interface IAdminUsersController {
 
 }
 
@@ -93,35 +93,35 @@ export interface IAdminUsersController{
 
 
 export interface IAdminCourseService {
-    getInstructorsRequest(id: string): Promise<IInstructor | null>;
+  getInstructorsRequest(id: string): Promise<IInstructor | null>;
 
-    getCoursesRequest(
-        page: number,
-        search: string,
-        limit: number
-    ): Promise<{
-        courses: ICourse[] | null;
-        totalPages: number;
-        currentPage: number;
-    }>;
+  getCoursesRequest(
+    page: number,
+    search: string,
+    limit: number
+  ): Promise<{
+    courses: ICourse[] | null;
+    totalPages: number;
+    currentPage: number;
+  }>;
 
-    getCourseDetailsRequest(courseId: string): Promise<any>;
+  getCourseDetailsRequest(courseId: string): Promise<any>;
 
-    getPurchaseDetails(search: string, page: number): Promise<any>;
+  getPurchaseDetails(search: string, page: number): Promise<any>;
 
-    generatePurchasesPDF(purchases: any[]): Promise<Buffer>;
+  generatePurchasesPDF(purchases: any[]): Promise<Buffer>;
 
-    addCategoryRequest(category:string , skills:string[]):Promise<ICategory | null>;
-    getCategoryRequest():Promise<any>;
-    getCategoryRequest(category:string):Promise<any>;
-    deleteCategoryRequest(category:string):Promise<any>;
+  addCategoryRequest(category: string, skills: string[]): Promise<ICategory | null>;
+  getCategoryRequest(): Promise<any>;
+  getCategoryRequest(category: string): Promise<any>;
+  deleteCategoryRequest(category: string): Promise<any>;
 }
 
 
 
 export interface IAdminAuthService {
   loginRequest(
-    email: string,password: string): Promise<{ success: boolean; message: string; token?: string }>;
+    email: string, password: string): Promise<{ success: boolean; message: string; token?: string }>;
 }
 
 
@@ -174,12 +174,11 @@ export interface PurchaseResult {
 
 
 export interface ICount {
-  count : number
+  count: number
 }
 
 export interface IUserOverview {
   name: string;  // "Oct 2025"
   count: number;
 }
-
 

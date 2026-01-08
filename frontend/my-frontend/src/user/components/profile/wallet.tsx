@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./wallet.css";
-import api from "../../../api/userApi";
 import type { WalletData } from "../../interfaces";
+import { getWallet } from "../../services/profileServices";
 
 
 
@@ -14,9 +14,8 @@ const Wallet: React.FC = () => {
       try {
         setLoading(true);
   
-        const res = await api.get(`/user/wallet`);
-        console.log(res);
-        
+        const res = await getWallet()
+        if(!res) return
         setWallet(res.data.wallet);
       } catch (err) {
         console.log(err);

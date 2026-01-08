@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./courseDetailsUser.css";
-import api from "../../../api/userApi";
 import { toast } from "react-toastify";
 import buyNowImage from '../../../assets/buyCourse.png'
 import VideoPlayerUser from "../videoPlayer/videoPlayer";
-import { addToFavourites, buyCourseService, fetchFavourites, paymentCancel } from "../../services/courseServices";
+import { addToFavourites, buyCourseService, courseDetails, fetchFavourites, paymentCancel, verifyPayment } from "../../services/courseServices";
 import type {  IInstructor, IModule, IReview, RazorpayInstance, RazorpayOptions } from "../../interfaces";
 
 
@@ -48,8 +47,10 @@ const CourseDetailsUser: React.FC = () => {
 
   const fetchCourse = async () => {
     try {
-      const res = await api.get(`/user/courseDetails?id=${id}`);
-      console.log(res);
+      if(!id) return
+      const res = await courseDetails(id)
+      // console.log(res);
+      if(!res) return
       if(res.data.success=='exists'){
         navigate(`/user/viewMyCourse/${id}`,{replace:true})
         return
@@ -94,10 +95,7 @@ const CourseDetailsUser: React.FC = () => {
         order_id: data.orderId,
         handler: async function (response) {
           try {
-            await api.post("/user/payment/verify", {
-              ...response,
-              courseId,
-            });
+            await verifyPayment(response  , courseId)
             toast.success("Payment Successful! Course Unlocked.");
             navigate("/user/myCourses");
           } finally {

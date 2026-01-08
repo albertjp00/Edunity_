@@ -1,9 +1,9 @@
 import React, { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import './verifyotp.css'
 import { useNavigate } from "react-router-dom";
-import api from "../../../api/userApi";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { otpVerified, resendOtpProfile } from "../../services/profileServices";
 
 const VerifyOtp : React.FC = () => {
   const [otp, setOtp] = useState('');
@@ -16,13 +16,9 @@ const VerifyOtp : React.FC = () => {
     e.preventDefault();
 
     try {
-      const email = localStorage.getItem('otpEmail')
-      const res = await api.post('/user/verifyOtp', {
-        email,
-        otp
-      })
-      console.log(res);
-
+      const email = localStorage.getItem('otpEmail')!
+      const res = await otpVerified(email , otp)
+      if(!res) return
       if (res.data.success) {
         //     localStorage.setItem('token',res.data.result.token)
         //   alert("Verified and Registered!");
@@ -41,10 +37,10 @@ const VerifyOtp : React.FC = () => {
     }
   };
 
-  const resendOtp = async () => {
-    const email = localStorage.getItem('otpEmail')
-    const res = await api.post('/user/resendOtp',{email})
-
+  const resendotp = async () => {
+    const email = localStorage.getItem('otpEmail')!
+    const res = await resendOtpProfile(email)
+    if(!res) return
     if (res.data.success) {
       toast.success('Otp resend to your mail')
         setTimeLeft(60)
@@ -103,7 +99,7 @@ const VerifyOtp : React.FC = () => {
           </button>
 
         </form>
-        <button onClick={resendOtp} className="button-resend" disabled={!isDisabled}>
+        <button onClick={resendotp} className="button-resend" disabled={!isDisabled}>
         Resend OTP
       </button>
       </div>

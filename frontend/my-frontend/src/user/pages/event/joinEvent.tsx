@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import MeetingRoom from "../../../eventMeeting/meetingRoom";
-import api from "../../../api/userApi";
 import { toast } from "react-toastify";
+import { eventJoin } from "../../services/eventServices";
+import { getUserProfile } from "../../services/profileServices";
 
 const UserEvent: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
@@ -23,7 +24,8 @@ const UserEvent: React.FC = () => {
     const joinEvent = async () => {
       if (!eventId) return;
       try {
-        const res = await api.get(`/user/joinEvent/${eventId}`);
+        const res = await eventJoin(eventId)
+        if(!res) return
         console.log(res);
         setUserId(res.data.userId)
         
@@ -44,7 +46,7 @@ const UserEvent: React.FC = () => {
 
     const userInfo = async ()=>{
       try {
-        const userDetails  = await api.get('/user/profile')
+        const userDetails  = await getUserProfile()
         console.log(userDetails);
         // setUsername( userDetails.data.user.name)
         

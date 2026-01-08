@@ -1,9 +1,10 @@
 // src/pages/OtpVerification.tsx
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import api from "../../../api/userApi";
 import "./forgotPassMail.css";
 import { toast } from "react-toastify";
+import { resendOtp, verifyOtp } from "../../services/authServices";
+import axios from "axios";
 
 interface LocationState {
   email: string;
@@ -43,8 +44,8 @@ const OtpVerification: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await api.post("/user/otpVerify", { email, otp });
-
+      const response = await verifyOtp(email,otp)
+      if(!response) return
       if (response.data.success) {
         if (type === "forgot") {
           navigate("/user/resetPassword", { state: { email } });
@@ -52,10 +53,10 @@ const OtpVerification: React.FC = () => {
           navigate("/user/login");
         }
       }
-    } catch (error:any) {
+    } catch (error:unknown) {
       console.error(error);
-      if (error.response) {
-      toast.error(error.response.data.message || "Invalid OTP. Try again.");
+      if (axios.isAxiosError(error)) {
+      toast.error(error.response?.data.message || "Invalid OTP. Try again.");
     } else {
       toast.error("Network error, please try again later");
     }
@@ -64,7 +65,8 @@ const OtpVerification: React.FC = () => {
 
   const handleResend = async () => {
     try {
-      const response = await api.post("/user/resendOtpForgotPass", { email });
+      const response = await resendOtp(email)
+      if(!response) return
       if (response.data.success) {
         setIsResendDisabled(true);
         setTimer(60); // reset countdown

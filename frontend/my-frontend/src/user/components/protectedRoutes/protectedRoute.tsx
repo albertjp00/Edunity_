@@ -1,7 +1,7 @@
 // ProtectedRoute.tsx
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import api from "../../../api/userApi";
+import { isBlocked } from "../../services/profileServices";
 
 interface Props {
   children: React.ReactNode;
@@ -14,7 +14,8 @@ const ProtectedRoute: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     const checkBlocked = async () => {
       try {
-        const res = await api.get("/user/isBlocked");
+        const res = await isBlocked()
+        if(!res) return
         setBlocked(res.data.blocked);
       } catch (error) {
         console.error("Error checking blocked status:", error);

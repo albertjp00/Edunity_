@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import profileImage from "../../../assets/profilePic.png";
 import "./instructorChat.css";
 import InstructorChatWindow from "./instChatWindow";
 import InstructorNavbar from "../navbar/navbar";
 import type { ApiStudent, IStudent } from "../../interterfaces/chat";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 import { fetchMessagedStudents } from "../../services/Instructor/instructorServices";
 
 
-const socket = io(import.meta.env.VITE_API_URL)
+// const socket = io(import.meta.env.VITE_API_URL)
 
 const InstructorChat: React.FC = () => {
   const { id: userId } = useParams<{ id?: string }>();
@@ -20,6 +20,7 @@ const InstructorChat: React.FC = () => {
   // const [isTyping, setIsTyping] = useState(false);
 
 
+  const socketRef = useRef<Socket | null>(null);
 
   const getMessagedStudents = async () => {
     try {
@@ -30,7 +31,7 @@ const InstructorChat: React.FC = () => {
         // assuming the backend also returns instructorId
         setInstructorId(response.data.instructorId);
 
-        console.log('response data',response.data);
+        console.log('response data', response.data);
 
         const normalized: IStudent[] = response.data.students.map(
           (item: ApiStudent) => ({
@@ -148,12 +149,12 @@ const InstructorChat: React.FC = () => {
       setTypingStudents((prev) => ({ ...prev, [senderId]: false }));
     };
 
-    socket.on("userTyping", handleTyping);
-    socket.on("userStopTyping", handleStopTyping);
+    socketRef.current?.on("userTyping", handleTyping);
+    socketRef.current?.on("userStopTyping", handleStopTyping);
 
     return () => {
-      socket.off("userTyping", handleTyping);
-      socket.off("userStopTyping", handleStopTyping);
+      socketRef.current?.off("userTyping", handleTyping);
+      socketRef.current?.off("userStopTyping", handleStopTyping);
     };
   }, [userId]);
 
@@ -178,12 +179,12 @@ const InstructorChat: React.FC = () => {
       setTypingStudents((prev) => ({ ...prev, [senderId]: false }));
     };
 
-    socket.on("userTyping", handleTyping);
-    socket.on("userStopTyping", handleStopTyping);
+    socketRef.current?.on("userTyping", handleTyping);
+    socketRef.current?.on("userStopTyping", handleStopTyping);
 
     return () => {
-      socket.off("userTyping", handleTyping);
-      socket.off("userStopTyping", handleStopTyping);
+      socketRef.current?.off("userTyping", handleTyping);
+      socketRef.current?.off("userStopTyping", handleStopTyping);
     };
   }, []);
 
@@ -225,10 +226,10 @@ const InstructorChat: React.FC = () => {
       });
     };
 
-    socket.on("receiveMessage", handleReceiveMessage);
+    socketRef.current?.on("receiveMessage", handleReceiveMessage);
 
     return () => {
-      socket.off("receiveMessage", handleReceiveMessage);
+      socketRef.current?.off("receiveMessage", handleReceiveMessage);
     };
   }, [instructorId]);
 
@@ -239,7 +240,7 @@ const InstructorChat: React.FC = () => {
 
     console.log("🟢 Instructor joined personal room:", instructorId);
 
-    socket.emit("joinPersonalRoom", { userId: instructorId });
+    socketRef.current?.emit("joinPersonalRoom", { userId: instructorId });
 
   }, [instructorId]);
 
@@ -250,7 +251,7 @@ const InstructorChat: React.FC = () => {
 
     console.log("🟢 Instructor joining room", instructorId, selected.id);
 
-    socket.emit("joinRoom", {
+    socketRef.current?.emit("joinRoom", {
       userId: instructorId,
       receiverId: selected.id,
     });
@@ -258,8 +259,32 @@ const InstructorChat: React.FC = () => {
   }, [instructorId, selected]);
 
 
+
   
 
+  useEffect(() => {
+  if (!instructorId) return;
+
+  socketRef.current = io(import.meta.env.VITE_API_URL);
+
+  socketRef.current.emit("joinPersonalRoom", {
+    userId: instructorId,
+  });
+
+  console.log("🟢 Instructor online:", instructorId);
+
+  return () => {
+    console.log("🔴 Instructor offline:", instructorId);
+    socketRef.current?.disconnect();
+    socketRef.current = null;
+  };
+}, [instructorId]);
+
+
+
+
+
+  
 
   return (
     <>

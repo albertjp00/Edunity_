@@ -14,7 +14,7 @@ import type { EnrolledCourse, IPayment, User } from "../../interfaces";
 
 
 const Profile: React.FC = () => {
-  const [user, setUser] = useState<User>({});
+  const [user, setUser] = useState<User>({} as User);
   const [courses, setCourses] = useState<EnrolledCourse[]>([]);
   const [payments, setPayments] = useState<IPayment[]>([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
@@ -52,11 +52,13 @@ const Profile: React.FC = () => {
 
 const fetchPayments = async () => {
   try {
-    const res = await getPaymentHistory();
+    const res = await getPaymentHistory(1);
+    // console.log(res);
+    
     if (!res) return;
 
     if (res.data.success) {
-      const paymentsData = res.data.payments;
+      const paymentsData = res.data.payments.pay;
 
       // ✅ Convert to array if backend sends only one object
       const normalizedPayments = Array.isArray(paymentsData)

@@ -62,12 +62,12 @@ export class AdminDashboardController implements
 
     getEarnings = async (req: AdminAuthRequest, res: Response,next: NextFunction) => {
         try {
-            const result = await this._adminService.getEarningsData()
-            // console.log('earnings dtooo',result);
-            const dto = mapEarningsToDTO(result);
+            const page = Number(req.params.page) || 1
+            const result = await this._adminService.getEarningsData(page)
+            console.log('earnings dtooo',result);
+            const dto = mapEarningsToDTO(result?.earnings);
 
-
-            res.status(HttpStatus.OK).json({ success: true, earnings: result })
+            res.status(HttpStatus.OK).json({ success: true, earnings: result ,totalPages : result?.totalPages  })
         } catch (error) {
             console.log(error);
             next(error)

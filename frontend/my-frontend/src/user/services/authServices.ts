@@ -93,3 +93,35 @@ export const forgotPassword = async(email:string)=>{
         
     }
 }
+
+
+export const resetPassword = async(email:string , newPassword:string)=>{
+    try {
+        const res = await api.put('/user/resetPassword',
+        { email, newPassword })
+        return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
+export const verifyOtp = async(email:string , otp:string)=>{
+    try {
+        const res = await api.post("/user/otpVerify", { email, otp });
+        return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
+export const resendOtp = async(email:string)=>{
+    try {
+        const res = await api.post("/user/resendOtpForgotPass", { email });
+        return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}

@@ -10,16 +10,20 @@ const AdminEarnings: React.FC = () => {
   const [earnings, setEarnings] = useState<IEarning[]>();
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState<number>();
+  const [page , setPage] = useState<number>(1)
+  const [totalPages , setTotalPages]  = useState<number>(1)
 
 
   useEffect(() => {
-    const fetchEarnings = async () => {
+    const fetchEarnings = async (page:number) => {
       try {
-        const res = await getEarnings();
+        const res = await getEarnings(page);
         console.log(res);
         if (res.data.success) {
-          setEarnings(res.data.earnings.earningsData);
-          setTotal(res.data.earnings.total)
+          setEarnings(res.data.earnings.earnings);
+          setTotal(res.data.earnings.totalEarnings)
+          setPage(page)
+          setTotalPages(res.data.totalPages)
         }
       } catch (error) {
         console.error("Error fetching earnings:", error);
@@ -28,8 +32,8 @@ const AdminEarnings: React.FC = () => {
       }
     };
 
-    fetchEarnings();
-  }, []);
+    fetchEarnings(page);
+  }, [page]);
 
 
 
@@ -75,6 +79,38 @@ const AdminEarnings: React.FC = () => {
             ))}
           </tbody>
         </table>
+
+        {totalPages > 1 && (
+  <div className="pagination">
+    <button
+      disabled={page === 1}
+      onClick={() => setPage((prev) => prev - 1)}
+    >
+      Prev
+    </button>
+
+    {[...Array(totalPages)].map((_, index) => {
+      const pageNumber = index + 1;
+      return (
+        <button
+          key={pageNumber}
+          className={page === pageNumber ? "active" : ""}
+          onClick={() => setPage(pageNumber)}
+        >
+          {pageNumber}
+        </button>
+      );
+    })}
+
+    <button
+      disabled={page === totalPages}
+      onClick={() => setPage((prev) => prev + 1)}
+    >
+      Next
+    </button>
+  </div>
+)}
+
       </div>
     </div>
   );

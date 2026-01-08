@@ -47,3 +47,13 @@ export const eventEnroll = async(id:string)=>{
 }
 
 
+
+export const eventJoin = async(eventId : string)=>{
+    try {
+        const res = await api.get(`/user/joinEvent/${eventId}`);
+        return res
+    } catch (error) {
+        console.log(error);
+        
+    }
+}

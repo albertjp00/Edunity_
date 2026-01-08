@@ -1,4 +1,4 @@
-import { googleLoginResult, IMyCourses } from "../interfaces/userInterfaces";
+import { googleLoginResult, IMyCourses, IPaymentDetails } from "../interfaces/userInterfaces";
 import { ICourse } from "../models/course";
 import { IEvent } from "../models/events";
 import { IFavourite } from "../models/favourites";
@@ -210,7 +210,7 @@ export interface IUserProfileService {
   editProfileRequest(userId: string, updateData: Partial<any>): Promise<any | null>;
   passwordChange(id: string, newPassword: string, oldPassword: string): Promise<boolean>;
   getWallet(userId: string): Promise<IWallet | null>;
-  getPayment(userId: string): Promise<IPayment[] | null>;
+  getPayment(userId: string , page:number): Promise<IPaymentDetails | null>;
   getNotifications(userId: string): Promise<INotification[] | null>;
   notificationsMarkRead(userId: string): Promise<INotification[] | null>;
   subscriptionCheckRequest(id:string):Promise<boolean | null>;

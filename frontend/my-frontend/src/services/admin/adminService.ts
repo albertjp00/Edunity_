@@ -34,7 +34,7 @@ export const blockUser = async (userId: string) => {
 
 //earnings 
 
-export const getEarnings= async ()=>{
-  const res = await adminApi.get('/admin/getEarnings')
+export const getEarnings= async (page = 1)=>{
+  const res = await adminApi.get(`/admin/getEarnings/${page}`)
   return res
 }

@@ -17,8 +17,9 @@ export interface IUserOverviewItem {
 }
 
 export interface IEarningsResult {
-    earningsData: IEarnings[] | null;
-    total: number | undefined;
+    earnings: IEarnings[] | null;
+    totalEarnings?:number  | null
+    totalPages: number;
 }
 
 
@@ -38,7 +39,7 @@ export interface IAdminService {
 
     getUserOverview(): Promise<IUserOverviewItem[]>;
 
-    getEarningsData(): Promise<IEarningsResult | undefined>;
+    getEarningsData(page:number): Promise<IEarningsResult | null>;
 }
 
 

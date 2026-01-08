@@ -7,14 +7,17 @@ import Navbar from "../navbar/navbar";
 const AllPayments = () => {
   const [payments, setPayments] = useState<IPayment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page , setPage] = useState<number>(1)
+  const [totalPages , setTotalPages] = useState<number>(1)
 
-  const fetchPayments = async () => {
+  const fetchPayments = async (page:number) => {
     try {
-      const res = await getPaymentHistory();
-      console.log(res);
+      setLoading(true)
+      const res = await getPaymentHistory(page);
       
       if (res?.data.success) {
-        const paymentsData = res.data.payments;
+        
+        const paymentsData = res.data.payments.pay;
 
         // Normalize single object → array
         const normalizedPayments = Array.isArray(paymentsData) 
@@ -22,6 +25,7 @@ const AllPayments = () => {
           : [paymentsData];
 
         setPayments(normalizedPayments);
+        setTotalPages(res.data.payments.totalPages)
       }
     } catch (err) {
       console.error("Error fetching payments:", err);
@@ -30,9 +34,11 @@ const AllPayments = () => {
     }
   };
 
+
+
   useEffect(() => {
-    fetchPayments();
-  }, []);
+    fetchPayments(page);
+  }, [page]);
 
   return (
     <>
@@ -66,9 +72,28 @@ const AllPayments = () => {
               ))}
             </tbody>
           </table>
+
+          
         ) : (
           <p>No payment records found.</p>
         )}
+
+        <div className="pagination">
+             <button disabled={page===1} onClick={()=>setPage((prev)=>prev - 1)}>
+              prev
+              </button>
+
+              <span>
+                Page {page} of {totalPages}  
+              </span> 
+
+              <button
+                  disabled={page === totalPages}
+                  onClick={() => setPage((prev) => prev + 1)}
+                >
+                  Next
+                </button>  
+        </div>
       </div>
     </div>
     </>

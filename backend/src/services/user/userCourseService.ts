@@ -39,6 +39,7 @@ export interface IviewCourse {
   cancelCourse: boolean
   quizExists: boolean
   enrolledAt: Date
+  review:IReview[] | null
 }
 
 
@@ -373,7 +374,7 @@ export class UserCourseService implements IUserCourseService {
   ): Promise<IviewCourse | null> => {
     try {
       console.log('service myCourse viewMyCourse');
-      
+
       const myCourse = await this.userRepository.viewMyCourse(id, myCourseId);
       if (!myCourse) return null;
       const progress = myCourse.progress
@@ -422,9 +423,11 @@ export class UserCourseService implements IUserCourseService {
         quizExists = true
       }
 
+      const review = await this.userRepository.getReview(id,course.id)
 
+      
 
-      return { course, instructor, progress, cancelCourse, quizExists, enrolledAt };
+      return { course, review , instructor, progress, cancelCourse, quizExists, enrolledAt };
     } catch (error) {
       console.log(error);
       return null;
@@ -508,7 +511,6 @@ export class UserCourseService implements IUserCourseService {
     // }
 
       const user = await this.userRepository.findById(userId)
-      console.log(user);
       if (user) {
         const userName = user.name
         const userImage = user.profileImage || ''

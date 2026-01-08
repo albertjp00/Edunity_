@@ -10,7 +10,7 @@ import { IQuiz, QuizModel } from '../models/quiz';
 import { IInstructor, InstructorModel } from '../models/instructor';
 import { BaseRepository } from './baseRepository';
 
-import { IMyCourses, IUserRepository, WalletTransaction } from '../interfaces/userInterfaces';
+import { IMyCourses, IPaymentDetails, IUserRepository, WalletTransaction } from '../interfaces/userInterfaces';
 import { IWallet, WalletModel } from '../models/wallet';
 import { log } from 'winston';
 import { IPayment, PaymentModel } from '../models/payment';
@@ -74,11 +74,14 @@ export class UserRepository extends BaseRepository<IUser>
     return await WalletModel.findOne({ userId: userId })
   }
 
-  async getPayment(userId: string): Promise<IPayment[] | null> {
-    const pay = await PaymentModel.find({ userId: userId })
-    console.log("payyyy", pay);
-    return pay
-
+  async getPayment(userId: string , page:number): Promise<IPaymentDetails | null> {
+    const limit = 6
+    const skip = (page-1)*limit
+    
+    const total = await PaymentModel.countDocuments()
+    const totalPages = Math.ceil(total / limit)
+    const pay = await PaymentModel.find({ userId: userId }).skip(skip).limit(limit)
+    return {pay , total ,  totalPages , currentPage :page  }
   }
 
   async getCourse(id: string): Promise<ICourse | null> {
@@ -107,6 +110,7 @@ export class UserRepository extends BaseRepository<IUser>
 
   async updateSubscription(id: string, data: any): Promise<boolean> {
     await UserModel.findByIdAndUpdate(id, { subscription: data }, { new: true })
+    
     return true
   }
 
@@ -399,20 +403,24 @@ async updateProgress(userId: string,courseId: string,moduleTitle: string): Promi
   async addReview(userId: string, userName: string, userImage: string, courseId: string, rating: number, comment: string): Promise<IReview> {
     try {
       // const course = await CourseModel.findById(courseId);
-
-      const review = await ReviewModel.findOneAndUpdate({userId , courseId}, {$set:{ rating , comment}},{new:true , upsert:true})
-
-      if(!review){
-        const review = await ReviewModel.create({userId ,courseId , userName , userImage , rating , comment})
-        return review
-      }
+      console.log('name =---------------- im age',userName, userImage);
       
-
+      const review = await ReviewModel.findOneAndUpdate({userId , courseId}, 
+        {$set:{ rating , comment} , $setOnInsert:{userId , courseId , userName , userImage}},{new:true , upsert:true})
 
       return review
     } catch (error) {
       console.error("Error adding review:", error);
       throw new Error("Unable to add review");
+    }
+  }
+
+  async getReview(userId :string , courseId : string): Promise<IReview[] | null> {
+    try {
+      return await ReviewModel.find({courseId})
+    } catch (error) {
+      console.log(error);
+      return null
     }
   }
 

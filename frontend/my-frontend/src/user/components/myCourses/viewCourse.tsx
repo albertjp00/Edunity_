@@ -53,14 +53,14 @@ const ViewMyCourse: React.FC = () => {
       setInstructor(fetchedInstructor);
       setCompletedModules(fetchedMyCourse.progress?.completedModules || []);
       setQuiz(res.data.quiz);
-      setReview(fetchedMyCourse.course?.review)
+      setReview(res.data.review)
 
 
 
 
-      const reviews = fetchedMyCourse.course?.review || [];
+      const reviews = res.data.review || [];
       if (!user) return
-      const hasMyReview = reviews.find((r) => r.userId === user.id
+      const hasMyReview = reviews.find((r: IReview) => r.userId === user.id
       );
 
       if (hasMyReview) {
@@ -224,10 +224,19 @@ const ViewMyCourse: React.FC = () => {
         setRating(0);
         setReviewText("");
         setMyReview(res.data.result)
-        console.log(res);
+  
 
         const newReview = res.data.review
-        setReview((prev) => prev ? [...prev, newReview] : newReview)
+        
+        setReview((prev)=>{
+          if(isEditingReview){
+            return prev ? prev.map((r)=> r.userId === newReview.userId ? newReview : r) : newReview
+          }
+
+          return prev ? [...prev , newReview] : [newReview]
+        })
+        setIsEditingReview(false)
+        setMyReview(newReview)
       } else if (!res.data.success) {
         toast.error(res.data.message)
       }
@@ -371,38 +380,38 @@ const ViewMyCourse: React.FC = () => {
 
 
               {progressPercent === 100 && (!myReview || isEditingReview) &&
-              (
-                <div className="review-section">
-                  <h4>{myReview ? "Edit Your Review" : "Leave a Review"}</h4>
+                (
+                  <div className="review-section">
+                    <h4>{myReview ? "Edit Your Review" : "Leave a Review"}</h4>
 
-                  <label>Rating:</label>
-                  <div className="star-rating">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <span
-                        key={star}
-                        onClick={() => setRating(star)}
-                        className={star <= rating ? "star filled" : "star"}
-                      >
-                        ★
-                      </span>
-                    ))}
+                    <label>Rating:</label>
+                    <div className="star-rating">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <span
+                          key={star}
+                          onClick={() => setRating(star)}
+                          className={star <= rating ? "star filled" : "star"}
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </div>
+
+                    <textarea
+                      placeholder="Write your review..."
+                      value={reviewText}
+                      onChange={(e) => setReviewText(e.target.value)}
+                      className="review-textarea"
+                    />
+
+                    <button
+                      className="submit-review-btn"
+                      onClick={handleSubmitReview}
+                    >
+                      {isEditingReview ? "Update Review" : "Submit Review"}
+                    </button>
                   </div>
-
-                  <textarea
-                    placeholder="Write your review..."
-                    value={reviewText}
-                    onChange={(e) => setReviewText(e.target.value)}
-                    className="review-textarea"
-                  />
-
-                  <button
-                    className="submit-review-btn"
-                    onClick={handleSubmitReview}
-                  >
-                    {isEditingReview ? "Update Review" : "Submit Review"}
-                  </button>
-                </div>
-              )}
+                )}
 
             </>
           )}
