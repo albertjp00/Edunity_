@@ -7,7 +7,7 @@ import { IMyCourse } from "../models/myCourses";
 import { IMyEvent } from "../models/myEvents";
 import { INotification } from "../models/notification";
 import { IPayment } from "../models/payment";
-import { IUser } from "../models/user";
+import { ISubscription, IUser } from "../models/user";
 import { IWallet } from "../models/wallet";
 import { ISkills } from "../repositories/instructorRepository";
 import { UserRepository } from "../repositories/userRepository";
@@ -77,7 +77,7 @@ export interface IUserRepository {
 
   addParticipant(eventId: string, userId: string): Promise<IEvent | null>
 
-  getSubscriptionActive(id: string): Promise<boolean>
+  getSubscriptionActive(id: string): Promise<ISubscription | boolean>
 
   getSubscriptionCourses(id:string , page:number):Promise<any>
 

@@ -4,23 +4,12 @@ import "./instructorDashboard.css";
 import EarningsChart from "./earningsChart";
 import RecentStudents from "./recentStudents";
 import StatsCard from "./statsCard";
-import CourseList from "./courseList";
+// import CourseList from "./courseList";
 import InstructorNavbar from "../navbar/navbar";
 import { getStats } from "../../services/Instructor/instructorServices";
+import type { Stats } from "../../interterfaces/instructorInterfaces";
 
-interface Student {
-  name: string;
-  email: string;
-  course: string;
-  date: string;
-}
 
-interface Stats {
-  totalCourses: number;
-  totalStudents: number;
-  totalEarnings: number;
-  recentStudents: Student[];
-}
 
 const InstructorDashboard: React.FC = () => {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -60,7 +49,7 @@ const InstructorDashboard: React.FC = () => {
         </div>
 
         {/* Course List */}
-        <CourseList />
+        {/* <CourseList /> */}
       </div>
     </>
   );

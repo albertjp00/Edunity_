@@ -3,26 +3,11 @@ import "./chatwindow.css";
 import attachmentImage from "../../../assets/documentImage.jpg";
 import { getMessages, sendMessages } from "../../services/Instructor/instructorServices";
 import { socket } from "../../../socket/socket";
+import type { ChatWindowProps, Message } from "../../interterfaces/chat";
 
 // const socket = io(import.meta.env.VITE_API_URL);
 
-interface Message {
-  senderId: string;
-  receiverId?: string;
-  text: string;
-  attachment?: string;
-  timestamp: Date | string;
-  read?: boolean;
-}
 
-interface ChatWindowProps {
-  instructorId: string;
-  receiverId?: string;
-  receiverName: string;
-  receiverAvatar?: string;
-  onMessageSent?: (receiverId: string, messageText: string, attachment: string) => void;
-  unreadIncrease?: (senderId: string) => void
-}
 
 
 

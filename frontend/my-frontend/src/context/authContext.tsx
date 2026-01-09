@@ -38,7 +38,7 @@ export const AuthProvider = ({children} : {children:ReactNode}) =>{
       try {
         const res = await getUserProfile()
         if(!res) return
-        setUser(res.data.user ?? res.data);
+        setUser(res.data.data);
       } catch {
         setUser(null);
       } finally {

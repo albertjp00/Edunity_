@@ -4,6 +4,7 @@ import { IUserProfileService } from '../../interfacesServices.ts/userServiceInte
 import { mapUserToDTO } from '../../mapper/user.mapper';
 import { INotification } from '../../models/notification';
 import { IPayment } from '../../models/payment';
+import { ISubscription } from '../../models/user';
 import { IWallet } from '../../models/wallet';
 import { UserRepository } from '../../repositories/userRepository';
 import bcrypt from 'bcrypt'
@@ -118,7 +119,7 @@ export class ProfileService implements IUserProfileService {
     }
   }
 
-  async subscriptionCheckRequest(id: string): Promise<boolean | null> {
+  async subscriptionCheckRequest(id: string): Promise<ISubscription | boolean | null> {
     try {
       const user = await this.userRepository.getSubscriptionActive(id)
       return user

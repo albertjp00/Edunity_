@@ -4,7 +4,7 @@ import { EventModel, IEvent } from '../models/events';
 import { FavouritesModel, IFavourite } from '../models/favourites';
 import { IMyCourse, MyCourseModel } from '../models/myCourses';
 import { IMyEvent, MyEventModel } from '../models/myEvents';
-import { IUser, UserModel } from '../models/user';
+import { ISubscription, IUser, UserModel } from '../models/user';
 import { ISkills } from './instructorRepository';
 import { IQuiz, QuizModel } from '../models/quiz';
 import { IInstructor, InstructorModel } from '../models/instructor';
@@ -564,7 +564,7 @@ async updateProgress(userId: string,courseId: string,moduleTitle: string): Promi
   }
 
 
-  async getSubscriptionActive(id: string): Promise<boolean> {
+  async getSubscriptionActive(id: string): Promise<ISubscription | boolean> {
     const user = await UserModel.findById(id);
 
     if (!user || !user.subscription) return false;
@@ -578,7 +578,7 @@ async updateProgress(userId: string,courseId: string,moduleTitle: string): Promi
       await user.save()
       return false
     }
-    return true;
+    return user.subscription;
   }
 
 

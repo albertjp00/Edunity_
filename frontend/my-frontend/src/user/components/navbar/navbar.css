@@ -4,138 +4,46 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: white;
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
-.fav-course{
-  color: white;
-}
-
-.logo{
+.logo {
   display: flex;
   align-items: center;
-  
+  gap: 10px;
 }
 
-.logo img{
-    width: 50px;
-    margin-right: 10px;
+.logo img {
+  width: 45px;
 }
-
-.logout-btn {
-  margin-left: 10px;
-  margin-right: 10px;
-  padding: 6px 12px;
-  border: none;
-  background-color: #5c10ce;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-
-
-.hamburger {
-  display: none;
-  font-size: 24px;
-  cursor: pointer;
-  padding: 5px;
-}
-
 
 .profile-section {
   display: flex;
-  align-items: center;       /* vertically center everything */
-  justify-content: flex-end; /* push items to the right */
+  align-items: center;
   gap: 20px;
-  padding-right: 20px;
 }
 
-
-/* make each text item look consistent */
 .profile-section p {
   margin: 0;
-  font-size: 16px;
-  color: #080606;
+  font-size: 15px;
   cursor: pointer;
-  transition: color 0.3s ease;
-  text-decoration: none;
+  color: white;
 }
-
-.profile-section p:hover {
-  color: #2563eb;
-}
-
-/* fix image sizes */
 
 .profile-img {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  object-fit: cover;
+}
+
+.hamburger {
+  display: none;
+  font-size: 26px;
   cursor: pointer;
-}
-
-.notification-img {
-  position: relative;
-  cursor: pointer;
-}
-
-.noti-img {
-  width: 28px;
-  height: 28px;
-}
-
-.notification-dot {
-  position: absolute;
-  top: 0px;
-  right: 2px;
-  width: 10px;
-  height: 10px;
-  background-color: red;
-  border-radius: 50%;
-  border: 2px solid white;
-}
-
-
-/* adjust logout button */
-.logout-btn {
-  padding: 6px 14px;
-  font-size: 14px;
-  border: none;
-  border-radius: 6px;
-  background-color: #ef4444;
   color: white;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
 }
-
-.logout-btn:hover {
-  background-color: #dc2626;
-}
-
-/* optional: make the section responsive */
-@media (max-width: 768px) {
-  .profile-section {
-    gap: 12px;
-  }
-
-  .profile-section p {
-    font-size: 14px;
-  }
-
-  .notification-img img,
-  .profile-img {
-    width: 28px;
-    height: 28px;
-  }
-}
-
-
-
 
 
 
@@ -145,6 +53,30 @@
   }
 
   .profile-section {
-    gap: 15px;
+    position: absolute;
+    top: 70px;
+    right: 0;
+    background-color: rgb(88, 163, 249);
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding: 20px;
+    gap: 16px;
+
+    /* hidden by default */
+    display: none;
+  }
+
+  .profile-section.open {
+    display: flex;
+  }
+
+  .profile-section p {
+    font-size: 16px;
+  }
+
+  .logout-btn {
+    width: 100%;
+    text-align: center;
   }
 }

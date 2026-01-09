@@ -1,4 +1,5 @@
 import React from "react";
+import type { DashStudent } from "../../interterfaces/instructorInterfaces";
 
 // const recentStudents = [
 //   { name: "Aarav Mehta", course: "React Basics" },
@@ -6,15 +7,10 @@ import React from "react";
 //   { name: "John Doe", course: "UI Design" },
 // ];
 
-interface Student {
-  name: string;
-  email: string;
-  course: string;
-  date: string;
-}
+
 
 interface RecentStudentsProps {
-  students: Student[];
+  students: DashStudent[];
 }
 
 const RecentStudents: React.FC<RecentStudentsProps> = ({students}) => (

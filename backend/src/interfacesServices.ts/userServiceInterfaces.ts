@@ -8,7 +8,7 @@ import { IMyEvent } from "../models/myEvents";
 import { INotification } from "../models/notification";
 import { IPayment } from "../models/payment";
 import { IReview } from "../models/review";
-import { IUser } from "../models/user";
+import { ISubscription, IUser } from "../models/user";
 import { IWallet } from "../models/wallet";
 import { ICourseDetails, IviewCourse } from "../services/user/userCourseService";
 
@@ -213,5 +213,5 @@ export interface IUserProfileService {
   getPayment(userId: string , page:number): Promise<IPaymentDetails | null>;
   getNotifications(userId: string): Promise<INotification[] | null>;
   notificationsMarkRead(userId: string): Promise<INotification[] | null>;
-  subscriptionCheckRequest(id:string):Promise<boolean | null>;
+  subscriptionCheckRequest(id:string):Promise<ISubscription | boolean | null>;
 }

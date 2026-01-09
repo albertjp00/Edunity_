@@ -12,6 +12,7 @@ const EventForm: React.FC = () => {
     date: "",
     time: '',
     // ampm: ''
+    
   });
 
   const [errors, setErrors] = useState<Partial<Ievent>>({});

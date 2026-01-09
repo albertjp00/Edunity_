@@ -6,7 +6,14 @@ import { getSubscription, subscribe, subscriptionVerify } from '../../services/c
 import SubscriptionCourses from './subscriptionCourses';
 import type { RazorpayInstance, RazorpayOptions } from '../../interfaces';
 
-
+export interface ISubscription {
+    isActive: boolean,
+    startDate:  Date ,
+    endDate:  Date ,
+    paymentId:  string ,
+    orderId:  string ,
+    billingCycle: string
+}
 
 declare global {
   interface Window {
@@ -17,6 +24,7 @@ declare global {
 const Subscription = () => {
   const [isActive, setIsActive] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const [subscription, setSubscription] = useState<ISubscription | null>(null);
 
 
   const [activePayment, setActivePayment] = useState(false);
@@ -27,8 +35,10 @@ const Subscription = () => {
     const CheckSubscription = async () => {
       try {
         const res = await getSubscription();
-        
+        console.log(res);
+        if(!res) return
         setIsActive(res?.data.result);
+        setSubscription(res?.data?.result);
       } catch (error) {
         console.log(error);
         setIsActive(false);
@@ -39,6 +49,14 @@ const Subscription = () => {
 
     CheckSubscription();
   }, []);
+
+  const daysLeft = subscription?.endDate
+  ? Math.ceil(
+      (new Date(subscription.endDate).getTime() - Date.now()) /
+        (1000 * 60 * 60 * 24)
+    )
+  : null;
+
 
 
   const handleSubscribe = async () => {
@@ -147,13 +165,50 @@ const Subscription = () => {
         </div>
       )}
 
-      {/* ---- CASE 3: USER IS SUBSCRIBED ---- */}
-      {!loading && isActive && (
-        <div className="courses-section">
-          <h2>Your Subscription Courses</h2>
-          <SubscriptionCourses />
-        </div>
-      )}
+      {!loading && isActive && subscription && (
+  <>
+    {/* SUBSCRIPTION DETAILS */}
+    <div className="subscription-strip">
+  <div className="strip-top">
+    <h2>Premium Subscription</h2>
+    <span className="pill-active">{subscription.isActive ? "Active" : "Expired"}</span>
+  </div>
+
+  <div className="strip-timeline">
+    <div className="timeline-item">
+      <p className="label">Started</p>
+      <p>{new Date(subscription.startDate).toDateString()}</p>
+    </div>
+
+    <div className="timeline-line" />
+
+    <div className="timeline-item">
+      <p className="label">Ends On</p>
+      <p>{new Date(subscription.endDate).toDateString()}</p>
+    </div>
+  </div>
+
+  <div className="strip-footer">
+    <div className="billing-info">
+      <p className="label">Billing</p>
+      <p>{subscription?.billingCycle}</p>
+    </div>
+
+    <div className="days-badge">
+      ⏳ {daysLeft} days left
+    </div>
+  </div>
+</div>
+
+
+    {/* COURSES */}
+    <div className="courses-section">
+      <h2>Your Subscription Courses</h2>
+      <SubscriptionCourses />
+    </div>
+  </>
+)}
+
     </div>
   );
 

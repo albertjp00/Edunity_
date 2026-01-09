@@ -118,3 +118,19 @@ export interface IEvent {
   updatedAt: string;
   isOver: boolean
 }
+
+
+
+export interface DashStudent {
+  name: string;
+  email: string;
+  course: string;
+  date: string;
+}
+
+export interface Stats {
+  totalCourses: number;
+  totalStudents: number;
+  totalEarnings: number;
+  recentStudents: DashStudent[];
+}

@@ -4,7 +4,7 @@ import profilePic from './../../../assets/profilePic.png';
 import logo from '../../../assets/logo.png';
 import notificationImg from '../../../assets/notification.png'
 import { useEffect, useState } from 'react';
-import { fetchNotifications} from '../../services/profileServices';
+import { fetchNotifications } from '../../services/profileServices';
 import { toast } from 'react-toastify';
 import { socket } from '../../../socket/socket';
 import { useAuth } from '../../../context/useAuth';
@@ -14,7 +14,13 @@ const Navbar = () => {
   // const [searchTerm, setSearchTerm] = useState('');
   const [hasUnread, setUnread] = useState<boolean>()
 
-  const { user , userLogout } = useAuth();
+  const { user, userLogout } = useAuth();
+
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggleMenu = () => setMenuOpen(prev => !prev);
+
+
 
   const handleLogout = async () => {
     try {
@@ -44,28 +50,28 @@ const Navbar = () => {
     getNotifications()
   }, [])
 
- 
 
-//   useEffect(() => {
-//   const joinRoom = async () => {
-//     const res = await getUserProfile();
-//     if (!res) return;
 
-//     const userId = res.data.data.id; 
-//     // console.log('profile data',res , userId);
+  //   useEffect(() => {
+  //   const joinRoom = async () => {
+  //     const res = await getUserProfile();
+  //     if (!res) return;
 
-//     if (userId) {
-//       socket.emit("joinPersonalRoom", { userId });
-//     }
-//   };
+  //     const userId = res.data.data.id; 
+  //     // console.log('profile data',res , userId);
 
-//   joinRoom();
-// }, []);
+  //     if (userId) {
+  //       socket.emit("joinPersonalRoom", { userId });
+  //     }
+  //   };
+
+  //   joinRoom();
+  // }, []);
 
 
   useEffect(() => {
     if (user?.id) {
-      socket.emit("joinPersonalRoom", { userId: user.id });
+      socket.emit("joinPersonalRoom", { userId: user?.id });
     }
   }, [user?.id]);
 
@@ -73,9 +79,9 @@ const Navbar = () => {
 
 
   useEffect(() => {
-    console.log('notification for message');
-    
-    const handleNotification =  () => {
+    console.log('notification for message', user);
+
+    const handleNotification = () => {
       toast.info("📩 New message received");
 
       // turn on red dot / badge
@@ -99,37 +105,29 @@ const Navbar = () => {
         <p>EDUNITY</p>
       </div>
 
-
-
-      <div className="profile-section">
+      <div className={`profile-section ${menuOpen ? "open" : ""}`}>
         <div className="notification-img" onClick={gotoNotifications}>
           <img src={notificationImg} alt="Notifications" className="noti-img" />
           {hasUnread && <span className="notification-dot"></span>}
         </div>
 
-        <Link to='/user/subscription'>
-          <p className='fav-course'>Subscription</p>
-        </Link>
-        <Link to="/user/favourites" >
-          <p className='fav-course'>Favourites</p>
-        </Link>
-        <Link to="/user/myCourses">
-          <p className="add-course">My Courses</p>
-        </Link>
-        <Link to='/user/chat'>
-          <p className='add-course'>Messages</p>
-        </Link>
-        {/* <div className="hamburger" onClick={toggleSidebar}>
-          ☰
-        </div> */}
-        <button className="logout-btn" onClick={handleLogout}>
-          Logout
-        </button>
+        <Link to="/user/subscription"><p>Subscription</p></Link>
+        <Link to="/user/favourites"><p>Favourites</p></Link>
+        <Link to="/user/myCourses"><p>My Courses</p></Link>
+        <Link to="/user/chat"><p>Messages</p></Link>
+
+        <button className="logout-btn" onClick={handleLogout}>Logout</button>
+
         <Link to="/user/profile">
           <img src={profilePic} alt="Profile" className="profile-img" />
         </Link>
       </div>
+
+      <div className="hamburger" onClick={toggleMenu}>
+        ☰
+      </div>
     </div>
+
   );
 };
 

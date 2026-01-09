@@ -6,11 +6,6 @@
     "auditLog": "C:\\Edunity_\\app-logs\\.adf7dcb08e12a475b96a7c2b71ebec69bac44233-audit.json",
     "files": [
         {
-            "date": 1767689945366,
-            "name": "C:\\Edunity_\\app-logs\\combined-2026-01-06.log",
-            "hash": "7edd60dcd188a80a1666c1846ea0f6d7d951506187dbf93cbc5b02cbbb7dd8da"
-        },
-        {
             "date": 1767773870466,
             "name": "C:\\Edunity_\\app-logs\\combined-2026-01-07.log",
             "hash": "d8a1a1a9ee5c742db81e5864b649fe0e37a151050ae7133fb6d1222444b1593e"
@@ -19,6 +14,11 @@
             "date": 1767810617549,
             "name": "C:\\Edunity_\\app-logs\\combined-2026-01-08.log",
             "hash": "784c4c5977aa15bb1a4e854bf80aec0ab919a21a668cd8f09d58f46272bc8e04"
+        },
+        {
+            "date": 1767897261914,
+            "name": "C:\\Edunity_\\app-logs\\combined-2026-01-09.log",
+            "hash": "ee9388cb7058a1b25e3baceb2b29eb322183ca063b37369c443d15c1d65f384e"
         }
     ],
     "hashType": "sha256"

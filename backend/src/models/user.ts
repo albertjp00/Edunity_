@@ -16,10 +16,10 @@ export interface IUser extends Document {
   createdAt: Date;
   googleId : string;
   courseCount : number;
-  subscription : Subscription;
+  subscription : ISubscription;
 }
 
-interface Subscription {
+export interface ISubscription {
     isActive: Boolean,
     startDate:  Date ,
     endDate:  Date ,

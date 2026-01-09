@@ -76,6 +76,7 @@ export const setupSocket = (io: Server) => {
       io.to(`user_${senderId}`).emit("receiveMessage", message);
 
       //notification send
+      console.log('send messages to',receiverId);
       
       
       io.to(`user_${receiverId}`).emit("messageNotification", {

@@ -23,3 +23,22 @@ export interface IStudent {
   timestamp?: string;
   unreadCount : number
 }
+
+
+export interface Message {
+  senderId: string;
+  receiverId?: string;
+  text: string;
+  attachment?: string;
+  timestamp: Date | string;
+  read?: boolean;
+}
+
+export interface ChatWindowProps {
+  instructorId: string;
+  receiverId?: string;
+  receiverName: string;
+  receiverAvatar?: string;
+  onMessageSent?: (receiverId: string, messageText: string, attachment: string) => void;
+  unreadIncrease?: (senderId: string) => void
+}
