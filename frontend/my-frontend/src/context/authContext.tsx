@@ -9,6 +9,7 @@ export interface User {
   name: string;
   email: string;
   role: "user" | "admin" | "instructor";
+  image:string
 }
 
 export interface AuthContextType {
@@ -37,6 +38,7 @@ export const AuthProvider = ({children} : {children:ReactNode}) =>{
     const loadProfile = async () => {
       try {
         const res = await getUserProfile()
+        
         if(!res) return
         setUser(res.data.data);
       } catch {

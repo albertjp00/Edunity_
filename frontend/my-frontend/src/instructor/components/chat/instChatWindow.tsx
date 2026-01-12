@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./chatwindow.css";
 import attachmentImage from "../../../assets/documentImage.jpg";
 import { getMessages, sendMessages } from "../../services/Instructor/instructorServices";
@@ -17,7 +17,6 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
   receiverName,
   receiverAvatar,
   onMessageSent,
-  unreadIncrease
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMsg, setNewMsg] = useState<string>("");
@@ -69,56 +68,79 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
 
 
 
-  
-
-  useEffect(() => {
-    if (!receiverId) return;
-
-    socket.emit("joinRoom", { userId: instructorId, receiverId });
-
-
-    const handleReceive = (message: Message) => {
-
-      if (message.senderId === instructorId) return;
-
+    const handleReceive = useCallback(
+    (message: Message) => {
       const isCurrentChat =
-        (message.senderId === receiverId && message.receiverId === instructorId) ||
-        (message.senderId === instructorId && message.receiverId === receiverId);
+        (message.senderId === receiverId &&
+          message.receiverId === instructorId) ||
+        (message.senderId === instructorId &&
+          message.receiverId === receiverId);
 
-      if (!isCurrentChat) return; 
+      if (!isCurrentChat) return;
 
-      setMessages((prev) => [...prev, message]);
+      setMessages((prev) => {
+        
+        if (prev.some((m) => m._id === message._id)) return prev;
+        return [...prev, message];
+      });
 
-      if (message.senderId !== receiverId && unreadIncrease) {
-        unreadIncrease(message.senderId);
+      if (
+        message.senderId === receiverId &&
+        message.receiverId === instructorId
+      ) {
+        socket.emit("messagesRead", {
+          senderId: receiverId,
+          receiverId: instructorId,
+        });
       }
-
-      if (message.senderId === receiverId && message.receiverId === instructorId) {
-
-
-        socket.emit("messagesRead", { senderId: receiverId, receiverId: instructorId });
-      }
-    };
+    },
+    [receiverId, instructorId]
+  );
 
 
 
-    const handleReadUpdate = ({ senderId, receiverId }: { senderId: string; receiverId: string }) => {
-
+    const handleReadUpdate = useCallback(
+    ({ senderId, receiverId }: { senderId: string; receiverId: string }) => {
       setMessages((prev) =>
         prev.map((msg) =>
-          msg.senderId === senderId && msg.receiverId === receiverId ? { ...msg, read: true } : msg
+          msg.senderId === senderId && msg.receiverId === receiverId
+            ? { ...msg, read: true }
+            : msg
         )
       );
-    };
+    },
+    []
+  );
 
-    socket.on("receiveMessage", handleReceive);
-    socket.on("messagesReadUpdate", handleReadUpdate);
 
-    return () => {
-      socket.off("receiveMessage", handleReceive);
-      socket.off("messagesReadUpdate", handleReadUpdate);
-    };
-  }, [instructorId, receiverId]);
+  useEffect(() => {
+  if (!receiverId) return;
+
+  socket.emit("joinRoom", {
+    userId: instructorId,
+    receiverId,
+  });
+
+  // 🔥 IMPORTANT: off before on
+  socket.off("receiveMessage", handleReceive);
+  socket.off("messagesReadUpdate", handleReadUpdate);
+
+  socket.on("receiveMessage", handleReceive);
+  socket.on("messagesReadUpdate", handleReadUpdate);
+
+  return () => {
+    socket.off("receiveMessage", handleReceive);
+    socket.off("messagesReadUpdate", handleReadUpdate);
+  };
+}, [receiverId, instructorId, handleReceive, handleReadUpdate]);
+
+
+
+
+
+
+
+
 
   // ---------------- Send message ----------------
   const sendMessage = async (file?: File) => {
@@ -136,7 +158,7 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
       if (res.data.success) {
         const newMessage = res.data.message;
 
-        setMessages((prev) => [...prev, { ...newMessage, read: false }]);
+        // setMessages((prev) => [...prev, { ...newMessage, read: false }]);
 
         // Let socket handle adding the message
         socket.emit("sendMessage", newMessage);
@@ -249,55 +271,55 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
   }, []);
 
 
-  const [isOnline, setIsOnline] = useState(false);  
-  useEffect(()=>{
+  const [isOnline, setIsOnline] = useState(false);
+  useEffect(() => {
 
-    const handleOnline = (offlineUserId:string)=>{
-      if(offlineUserId === receiverId){
+    const handleOnline = (offlineUserId: string) => {
+      if (offlineUserId === receiverId) {
         setIsOnline(true)
       }
     }
 
-    const handleOffline = (offlineUserId:string)=>{
-      if(offlineUserId === receiverId){
+    const handleOffline = (offlineUserId: string) => {
+      if (offlineUserId === receiverId) {
         setIsOnline(false)
       }
     }
 
-    socket.on('userOnline',handleOnline)
-    socket.on("userOffline",handleOffline)
+    socket.on('userOnline', handleOnline)
+    socket.on("userOffline", handleOffline)
 
-    return ()=>{
-      socket.off("userOnline",handleOnline)
-      socket.off("userOffline",handleOffline)
+    return () => {
+      socket.off("userOnline", handleOnline)
+      socket.off("userOffline", handleOffline)
     }
-  },[receiverId])
+  }, [receiverId])
 
   //to check if online or not 
-    useEffect(()=>{
-      socket.emit('checkUserOnline',{userId : receiverId})
-    },[receiverId])
-  
-  
-    useEffect(()=>{
-      const handleStatus = ({
-        userId ,
-        isOnline,
-      } : {
-        userId : string,
-        isOnline : boolean
-      })=>{
-        if(userId === receiverId){
-          setIsOnline(isOnline)
-        }
+  useEffect(() => {
+    socket.emit('checkUserOnline', { userId: receiverId })
+  }, [receiverId])
+
+
+  useEffect(() => {
+    const handleStatus = ({
+      userId,
+      isOnline,
+    }: {
+      userId: string,
+      isOnline: boolean
+    }) => {
+      if (userId === receiverId) {
+        setIsOnline(isOnline)
       }
-  
-      socket.on('userOnlineStatus',handleStatus)
-  
-      return()=>{
-        socket.off('userOnlineStatus',handleStatus)
-      }
-    },[receiverId])
+    }
+
+    socket.on('userOnlineStatus', handleStatus)
+
+    return () => {
+      socket.off('userOnlineStatus', handleStatus)
+    }
+  }, [receiverId])
 
 
 

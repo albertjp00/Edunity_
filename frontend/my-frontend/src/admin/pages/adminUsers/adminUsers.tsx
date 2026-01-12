@@ -3,7 +3,7 @@ import "./adminUsers.css";
 import { toast } from "react-toastify";
 import profilePic from "../../../assets/profilePic.png";
 import { getUsers, blockUser, unblockUser } from "../../../services/admin/adminService";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import ConfirmModal from "../../components/adminUsers/modal";
 import AdminList from "../../components/usersInstructorList/usersList";
 import useDebounce from "../../components/debounce/debounce";
@@ -116,13 +116,15 @@ const UsersAdmin: React.FC = () => {
 
   return (
     <div className="user-list">
+      
     
       <AdminList
   title="Users Management"
   data={users}
   
   columns={[
-    { label: "Name", render: (u) => <Link to={`/admin/user/${u._id}`}>{u.name}</Link> },
+    // { label: "Name", render: (u) => <Link to={`/admin/user/${u._id}`}>{u.name}</Link> },
+    { label: "Name", render: (u) =>u.name },
     { label: "Email", render: (u) => u.email },
     { label: "Picture", render: (u) => <img src={u.profileImage ? `${import.meta.env.VITE_API_URL}/assets/${u.profileImage}` : profilePic} width={40} /> },
     { label: "Status", render: (u) =>

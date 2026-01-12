@@ -33,6 +33,9 @@ export class ProfileController implements
             }
             const profile = await this._profileService.getProfile(userId);
             // console.log(profile);
+
+            
+            
             
 
             if (profile) {

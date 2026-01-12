@@ -109,6 +109,10 @@
   margin-top: 4px;
 }
 
+.message-read{
+  color:white;
+}
+
 /* Input area */
 .chat-input {
   display: flex;

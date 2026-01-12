@@ -45,7 +45,7 @@ interface CourseDetails {
 export class CourseService implements IInstCourseService {
   constructor(private instructorRepository: IInsRepository) { }
 
-  fetchCourses = async (id: string, search : string , page: number, limit: number): Promise<CourseResult> => {
+  fetchCourses = async (id: string, search: string, page: number, limit: number): Promise<CourseResult> => {
     try {
       const skip = (page - 1) * limit;
 
@@ -57,7 +57,7 @@ export class CourseService implements IInstCourseService {
       const instructor = await this.instructorRepository.findById(id)
       const l = courses?.length
 
-      
+
       return {
         courses,
         skills,
@@ -99,7 +99,7 @@ export class CourseService implements IInstCourseService {
               key = rawUrl.split("?")[0]; // fallback for direct key
             }
             console.log("key", key);
-            
+
             if (key) {
               module.videoUrl = await generateSignedUrl(key);
             }
@@ -108,7 +108,7 @@ export class CourseService implements IInstCourseService {
       }
 
       // console.log('course in service',course.modules);
-      
+
       const quiz = await this.instructorRepository.getQuizByCourseId(courseId);
       const quizExists = !!quiz;
 
@@ -134,24 +134,33 @@ export class CourseService implements IInstCourseService {
     }
   }
 
-  // addCourseRequest = async (id: string, data: any): Promise<boolean> => {
-  //   try {
-  //     // data.category = data.trim().toLowerCase();
 
-  //     const create = await this.instructorRepository.addCourse(id, data)
-  //     return true
-  //   } catch (error) {
-  //     console.log(error);
-  //     return false
-  //   }
-  // }
 
 
   addCourseRequest = async (id: string, data: any) => {
     try {
       console.log("service add course data", data);
-      const createdCourse = await this.instructorRepository.addCourse(id, data);
-      return createdCourse;
+
+      const instructor = await this.instructorRepository.findById(id)
+      const limit = instructor?.courseLimit!
+
+      const date = new Date()
+            const d = date.toLocaleDateString('en-US',{
+                month : 'long'
+            })
+            console.log('dataa',d);
+      
+
+
+      if (limit < 5) {
+        const createdCourse = await this.instructorRepository.addCourse(id, data);
+        return createdCourse;
+      }else{
+        return 'limitReached'
+      }
+
+
+      
     } catch (error) {
       console.error("Add Course Error:", error);
       throw error;
@@ -204,7 +213,7 @@ export class CourseService implements IInstCourseService {
     }
   }
 
-  async getCategoryRequest():Promise<ICategory[] | null>{
+  async getCategoryRequest(): Promise<ICategory[] | null> {
     try {
       const category = await this.instructorRepository.getCategory()
       return category

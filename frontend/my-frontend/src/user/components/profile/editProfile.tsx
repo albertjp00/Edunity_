@@ -22,7 +22,8 @@ const EditProfile = () => {
         location: '',
         dob: '',
         gender: '',
-        profileImage: '',
+        image: '',
+        
     });
 
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -100,7 +101,6 @@ const EditProfile = () => {
     const getProfile = async () => {
         const response = await getUserProfile()
 
-        console.log(response?.data.data);
         setData(response?.data.data)
     }
 
@@ -120,8 +120,8 @@ const EditProfile = () => {
                     src={
                         selectedFile
                             ? URL.createObjectURL(selectedFile)
-                            : data.profileImage
-                                ? `${import.meta.env.VITE_API_URL}/assets/${data.profileImage}`
+                            : data.image
+                                ? `${import.meta.env.VITE_API_URL}/assets/${data.image}`
                                 : profilePic
                     }
                     alt="Profile"

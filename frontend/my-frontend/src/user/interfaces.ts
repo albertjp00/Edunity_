@@ -282,7 +282,8 @@ export interface EditForm {
     location: string,
     dob: string,
     gender: string,
-    profileImage: string,
+    image: string,
+    
 }
 
 

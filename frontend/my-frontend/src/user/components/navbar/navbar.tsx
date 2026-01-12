@@ -1,6 +1,5 @@
 import './navbar.css';
 import { Link, useNavigate } from 'react-router-dom';
-import profilePic from './../../../assets/profilePic.png';
 import logo from '../../../assets/logo.png';
 import notificationImg from '../../../assets/notification.png'
 import { useEffect, useState } from 'react';
@@ -18,7 +17,12 @@ const Navbar = () => {
 
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+
+
   const toggleMenu = () => setMenuOpen(prev => !prev);
+  
 
 
 
@@ -116,17 +120,45 @@ const Navbar = () => {
         <Link to="/user/myCourses"><p>My Courses</p></Link>
         <Link to="/user/chat"><p>Messages</p></Link>
 
-        <button className="logout-btn" onClick={handleLogout}>Logout</button>
+        <button className="logout-btn" onClick={()=>setShowLogoutModal(true)}>Logout</button>
 
         <Link to="/user/profile">
-          <img src={profilePic} alt="Profile" className="profile-img" />
+          <img src={`${import.meta.env.VITE_API_URL}/assets/${user?.image}`} alt="Profile" className="profile-img" />
         </Link>
       </div>
 
       <div className="hamburger" onClick={toggleMenu}>
         ☰
       </div>
+
+      {showLogoutModal &&
+      <div className="logout-modal-overlay">
+        <div className="logout-modal">
+          <h3>Confirm Logout</h3>
+          <p>Are you sure you want to logout?</p>
+
+          <div className="logout-actions">
+            <div className="cancel-btn" onClick={()=>setShowLogoutModal(false)}>
+              Cancel
+            </div>
+
+            <button className='confirm-btn' onClick={()=> {
+              setShowLogoutModal(false); 
+              handleLogout();
+              }}>
+              
+              logout
+            </button>
+
+          </div>
+        </div>
+      </div>
+      }
+      
+          
+
     </div>
+            
 
   );
 };

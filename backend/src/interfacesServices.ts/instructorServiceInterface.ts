@@ -68,7 +68,7 @@ export interface IInstCourseService {
 
     getPurchaseDetails(id: string): Promise<IPurchaseDetails[] | null>;
 
-    addCourseRequest(id: string, data: any): Promise<ICourse | null>;
+    addCourseRequest(id: string, data: any): Promise<ICourse | string | null>;
 
     editCourseRequest(id: string, data: Partial<ICourse>): Promise<ICourse | null>;
 
