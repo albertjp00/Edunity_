@@ -81,15 +81,25 @@ import InstructorDashboard from './instructor/components/dashboard/instructorDas
 import UserWallet from './instructor/components/profile/wallet'
 import InstructorAllCoursesPage from './instructor/pages/course/allCoursesPage'
 import SubscriptionPage from './user/pages/subscription/subscriptionPage'
-import { AuthProvider } from './context/authContext'
+import { useEffect } from 'react'
+import { fetchUserProfile } from './redux/slices/authSlice'
+import { useAppDispatch, useAppSelector } from './redux/hooks'
 // import PurchasesAdmin from './admin/pages/purchases/purchasesAdmin'
 
 function App() {
 
+  const dispatch = useAppDispatch()
+  const {user  , isAuthenticated} = useAppSelector((state)=>state.auth)
+
+  useEffect(()=>{
+    if (isAuthenticated && !user) {
+    dispatch(fetchUserProfile());
+  }
+  },[])
+
   return (
     <>
       <div>
-        <AuthProvider>
         <ToastContainer />
 
         <Router>
@@ -205,7 +215,6 @@ function App() {
           </Routes>
         </Router>
 
-        </AuthProvider>
       </div>
 
     </>

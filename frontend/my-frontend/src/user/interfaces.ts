@@ -282,7 +282,7 @@ export interface EditForm {
     location: string,
     dob: string,
     gender: string,
-    image: string,
+    profileImage: string,
     
 }
 
@@ -299,6 +299,7 @@ export interface User {
   phone?: string;
   blocked?: boolean;
   googleId?: string;
+  profileImage : string;
 }
 
 interface CourseData {

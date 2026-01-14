@@ -6,7 +6,9 @@ import type { AxiosError } from "axios";
 import GoogleLoginButton from "../googleLogin/googleLogin";
 import eye from '../../../assets/eye-icon.png'
 // import { login } from "../../services/authServices";
-import { useAuth } from "../../../context/useAuth";
+import { login } from "../../services/authServices";
+import { fetchUserProfile } from "../../../redux/slices/authSlice";
+import { useAppDispatch } from "../../../redux/hooks";
 
 interface LoginFormData {
   email: string;
@@ -17,8 +19,8 @@ const LoginUser: React.FC = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  const {userLogin} = useAuth()
 
+  const dispatch = useAppDispatch()
 
   const [value, setValue] = useState<LoginFormData>({
     email: "",
@@ -36,13 +38,23 @@ const LoginUser: React.FC = () => {
     e.preventDefault();
     try {
       
-      await userLogin(value);
-      // if(!response) return
+      const response = await login(value)
 
-      // if (response.status === 200 && response.data.accessToken) {
-      //   localStorage.setItem("token", response.data.accessToken);
-      //   navigate("/user/home");
+      
+
+      if(!response) return
+      if (response.status === 200 && response.data.accessToken) {
+        localStorage.setItem("token", response.data.accessToken);
+        navigate("/user/home");
+      }
+      
+      // if(response){
+      // const res = await getUserProfile()
+      // console.log('login user data',res);
       // }
+      
+      dispatch(fetchUserProfile())
+      
       navigate('/user/home')
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;

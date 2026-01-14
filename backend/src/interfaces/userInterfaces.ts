@@ -212,7 +212,7 @@ export interface UserDTO {
   id: string;
   name: string;
   email: string;
-  profileImage: string;
+  profileImage: string | undefined;
   blocked: boolean;
 
   bio?: string | undefined;

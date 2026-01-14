@@ -22,7 +22,7 @@ const EditProfile = () => {
         location: '',
         dob: '',
         gender: '',
-        image: '',
+        profileImage: '',
         
     });
 
@@ -120,8 +120,8 @@ const EditProfile = () => {
                     src={
                         selectedFile
                             ? URL.createObjectURL(selectedFile)
-                            : data.image
-                                ? `${import.meta.env.VITE_API_URL}/assets/${data.image}`
+                            : data.profileImage
+                                ? `${import.meta.env.VITE_API_URL}/assets/${data.profileImage}`
                                 : profilePic
                     }
                     alt="Profile"

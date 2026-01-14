@@ -5,36 +5,24 @@ import "./userProfile.css";
 import {
   getPaymentHistory,
   getUserMyCourses,
-  getUserProfile,
+  // getUserProfile,
 } from "../../services/profileServices";
-import type { EnrolledCourse, IPayment, User } from "../../interfaces";
+import type { EnrolledCourse, IPayment } from "../../interfaces";
+import { useAppSelector } from "../../../redux/hooks";
 // import { getPaymentHistory } from "../../services/paymentServices";
 
 
 
 
 const Profile: React.FC = () => {
-  const [user, setUser] = useState<User>({} as User);
   const [courses, setCourses] = useState<EnrolledCourse[]>([]);
   const [payments, setPayments] = useState<IPayment[]>([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
   const navigate = useNavigate();
 
-  const fetchProfile = async () => {
-    try {
-      const response = await getUserProfile();
-      console.log(response);
-      
-      setUser(response?.data.data);
+  
+  const {user } = useAppSelector((state)=>state.auth)
 
-      if (response?.data.data.blocked) {
-        localStorage.removeItem("token");
-        navigate("/user/login");
-      }
-    } catch (error) {
-      console.error("Error fetching profile:", error);
-    }
-  };
 
   const fetchCourses = async () => {
     try {
@@ -90,7 +78,7 @@ const fetchPayments = async () => {
   }
 
   useEffect(() => {
-    fetchProfile();
+    // fetchProfile();
     fetchCourses();
     fetchPayments();
   }, []);
@@ -103,22 +91,22 @@ const fetchPayments = async () => {
           <div className="user-name-card-image">
             <img
               src={
-                user.image
-                  ? `${import.meta.env.VITE_API_URL}/assets/${user.image}`
+                user?.profileImage
+                  ? `${import.meta.env.VITE_API_URL}/assets/${user.profileImage}`
                   : profilePic
               }
               alt="Profile"
               className="profile-avatar"
             />
             <div className="user-name-card">
-              <h2>{user.name}</h2>
-              <h5>Email: {user.email}</h5>
+              <h2>{user?.name}</h2>
+              <h5>Email: {user?.email}</h5>
             </div>
           </div>
 
           <div className="about-me-box">
             <h4>About Me</h4>
-            <p>{user.bio || "No bio available."}</p>
+            <p>{user?.bio || "No bio available."}</p>
           </div>
 
           <div className="user-details-box">
@@ -127,19 +115,19 @@ const fetchPayments = async () => {
             </p>
             <p>
               <i className="fas fa-venus-mars"></i> <strong>Gender:</strong>{" "}
-              {user.gender || "Not specified"}
+              {user?.gender || "Not specified"}
             </p>
             <p>
               <i className="fas fa-birthday-cake"></i> <strong>DOB:</strong>{" "}
-              {user.dob || "Not provided"}
+              {user?.dob || "Not provided"}
             </p>
             <p>
               <i className="fas fa-map-marker-alt"></i>{" "}
-              <strong>Location:</strong> {user.location || "Not specified"}
+              <strong>Location:</strong> {user?.location || "Not specified"}
             </p>
             <p>
               <i className="fas fa-phone"></i> <strong>Phone:</strong>{" "}
-              {user.phone || "Not provided"}
+              {user?.phone || "Not provided"}
             </p>
           </div>
 
@@ -148,7 +136,7 @@ const fetchPayments = async () => {
               <button>Edit</button>
             </Link>
 
-            {!user.googleId && (
+            {!user?.googleId && (
               <Link to="/user/changePassword">
                 <button className="change-password-btn">Change Password</button>
               </Link>

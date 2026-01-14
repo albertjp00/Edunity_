@@ -68,6 +68,9 @@ const InstructorNavbar = () => {
       console.log('notification for message');
       
       const handleNotification =  () => {
+
+        if(location.pathname.startsWith('/instructor/messages')) return
+
         toast.info("📩 New message received");
   
         // turn on red dot / badge

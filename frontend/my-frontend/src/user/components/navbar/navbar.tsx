@@ -6,14 +6,24 @@ import { useEffect, useState } from 'react';
 import { fetchNotifications } from '../../services/profileServices';
 import { toast } from 'react-toastify';
 import { socket } from '../../../socket/socket';
-import { useAuth } from '../../../context/useAuth';
+import { useAppSelector } from '../../../redux/hooks';
+import { useDispatch } from 'react-redux';
+import { logoutSuccess } from '../../../redux/slices/authSlice';
+import { logout } from '../../services/authServices';
+// import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
+// import { logoutSuccess } from '../../../redux/slices/authSlice';
 
 const Navbar = () => {
+
+  // const userData = useAppSelector((state)=>state.auth.user)
+  // const dispatch = useAppDispatch()
+
   const navigate = useNavigate();
-  // const [searchTerm, setSearchTerm] = useState('');
+
   const [hasUnread, setUnread] = useState<boolean>()
 
-  const { user, userLogout } = useAuth();
+  const user = useAppSelector((state) => state.auth.user);
+  const dispatch = useDispatch()
 
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -28,8 +38,9 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await userLogout();
+      await logout();
       // localStorage.removeItem("token");
+      dispatch(logoutSuccess())
       navigate("/user/login");
     } catch (err) {
       console.error("Logout failed", err);
@@ -56,22 +67,6 @@ const Navbar = () => {
 
 
 
-  //   useEffect(() => {
-  //   const joinRoom = async () => {
-  //     const res = await getUserProfile();
-  //     if (!res) return;
-
-  //     const userId = res.data.data.id; 
-  //     // console.log('profile data',res , userId);
-
-  //     if (userId) {
-  //       socket.emit("joinPersonalRoom", { userId });
-  //     }
-  //   };
-
-  //   joinRoom();
-  // }, []);
-
 
   useEffect(() => {
     if (user?.id) {
@@ -86,6 +81,9 @@ const Navbar = () => {
     console.log('notification for message', user);
 
     const handleNotification = () => {
+
+      if(location.pathname.startsWith('/user/chat')) return
+
       toast.info("📩 New message received");
 
       // turn on red dot / badge
@@ -123,7 +121,7 @@ const Navbar = () => {
         <button className="logout-btn" onClick={()=>setShowLogoutModal(true)}>Logout</button>
 
         <Link to="/user/profile">
-          <img src={`${import.meta.env.VITE_API_URL}/assets/${user?.image}`} alt="Profile" className="profile-img" />
+          <img src={`${import.meta.env.VITE_API_URL}/assets/${user?.profileImage}`} alt="Profile" className="profile-img" />
         </Link>
       </div>
 

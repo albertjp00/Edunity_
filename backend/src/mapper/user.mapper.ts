@@ -10,12 +10,14 @@ export const mapUserToDTO = (user: IUser): UserDTO => {
     name: user.name,
     email: user.email,
     bio: user.bio,
-    image: user.profileImage,
+    profileImage: user.profileImage,
     gender : user.gender,
     dob : user.dob,
+    blocked : user.blocked,
     location : user.location,
     phone : user.phone,
     createdAt: user.createdAt.toISOString()
+    
   };
 };
 
