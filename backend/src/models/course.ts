@@ -24,9 +24,9 @@ export interface ICourse extends Document {
   totalEnrolled?: number;
   category: string;
   onPurchase:boolean;
-  averageRating?: number
-  accessType : string
-  
+  averageRating?: number;
+  accessType : string;
+  blocked : boolean
 }
 
 
@@ -84,6 +84,11 @@ const CourseSchema: Schema = new Schema<ICourse>({
     type:String,
     default : 'oneTime'
   },
+
+  blocked:{
+    type : Boolean,
+    default : false
+  }
 
 
 });

@@ -6,19 +6,34 @@
     "auditLog": "C:\\Edunity_\\app-logs\\.adf7dcb08e12a475b96a7c2b71ebec69bac44233-audit.json",
     "files": [
         {
-            "date": 1768188084205,
-            "name": "C:\\Edunity_\\app-logs\\combined-2026-01-12.log",
-            "hash": "f4e3196c31fecd96d54e254cbd326acbb03305928c37be10b100db3799dfb7fd"
-        },
-        {
-            "date": 1768274649567,
-            "name": "C:\\Edunity_\\app-logs\\combined-2026-01-13.log",
-            "hash": "3d02cd727c1e5ba7400728420249218cd44385e3bad8c1e068a72034970feb4f"
-        },
-        {
             "date": 1768329803447,
             "name": "C:\\Edunity_\\app-logs\\combined-2026-01-14.log",
             "hash": "3616b437c39a7778865a416af1a87dfd6158015d05f5a798e8641c494432742f"
+        },
+        {
+            "date": 1768406421225,
+            "name": "C:\\Edunity_\\app-logs\\combined-2026-01-14.log.1",
+            "hash": "ae27b4c762cbc2b77bb4a0b8c7abcdeb38b9d994891fb5e9f75e1c9d80768e8a"
+        },
+        {
+            "date": 1768415410543,
+            "name": "C:\\Edunity_\\app-logs\\combined-2026-01-15.log",
+            "hash": "a01cf911600fbe6f9f71fe2908b55fb90a1bb2de29563dfd51d518d7c82f7bac"
+        },
+        {
+            "date": 1768460526151,
+            "name": "C:\\Edunity_\\app-logs\\combined-2026-01-15.log.1",
+            "hash": "265b026956bbb8ec6eafd41977bc4f9701e0fbb045d7d362144ee22ea855fb12"
+        },
+        {
+            "date": 1768461557260,
+            "name": "C:\\Edunity_\\app-logs\\combined-2026-01-15.log.2",
+            "hash": "b02633e73807fb5085b1d0c316556b926a2538dd11aad12053fdccb828df4451"
+        },
+        {
+            "date": 1768465795678,
+            "name": "C:\\Edunity_\\app-logs\\combined-2026-01-15.log.3",
+            "hash": "1b3a5d6d09e50e8904f9c7b84811c5e9e84c32a46594bf392e4f299274196820"
         }
     ],
     "hashType": "sha256"

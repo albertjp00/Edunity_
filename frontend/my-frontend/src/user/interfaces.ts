@@ -201,6 +201,7 @@ export interface IReview {
 
 
 export interface RazorpayInstance {
+  on(arg0: string, arg1: () => Promise<void>): unknown;
   open: () => void;
 }
 

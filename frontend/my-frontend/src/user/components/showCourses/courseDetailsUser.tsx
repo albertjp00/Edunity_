@@ -95,12 +95,18 @@ const CourseDetailsUser: React.FC = () => {
         order_id: data.orderId,
         handler: async function (response) {
           try {
-            await verifyPayment(response  , courseId)
+            const res = await verifyPayment(response  , courseId)
+            if(!res) return
+            console.log('respionse ', res);
+            
+            if(res.data.success){
             toast.success("Payment Successful! Course Unlocked.");
             navigate("/user/myCourses");
+            }
           } finally {
             setActivePayment(null);
             localStorage.removeItem("payment_in_progress");
+            navigate('/user/paymentSuccess')
           }
         },
         modal: {
@@ -110,6 +116,7 @@ const CourseDetailsUser: React.FC = () => {
             } finally {
               setActivePayment(null);
               localStorage.removeItem("payment_in_progress");
+              navigate('/user/paymentFailed')
             }
           },
         },

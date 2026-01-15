@@ -9,7 +9,8 @@ export const mapCourseToDTO = (course: any): CourseDTO => ({
   price: course.price,
   instructorName: course.instructorName,
   createdAt: course.createdAt,
-  category: course.category
+  category: course.category,
+  blocked : course.blocked
 });
 
 export const mapCourseDetailsToDTO = (data: any): CourseDetailsDTO => ({
@@ -91,7 +92,7 @@ export const mapKycToDTO = (kyc: any): KycDTO => {
 
 export const mapUserToDTO = (user: any): UserDTO => {
     return {
-        _id: user.id,
+        id: user.id,
         name: user.name,
         email: user.email,
         profileImage: user.profileImage,

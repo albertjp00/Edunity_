@@ -237,24 +237,21 @@ export const courseDetails= async (id:string)=>{
   }
 }
 
-export const verifyPayment= async (response: {
+export const verifyPayment = async (
+  response: {
     razorpay_payment_id: string;
     razorpay_order_id: string;
     razorpay_signature: string;
-  } , courseId:string)=>{
-  try {    
-
-    const res = await api.post("/user/payment/verify", {
-              response,
-              courseId,
-            });
-    
-    return res
-  } catch (error) {
-    console.log(error);
-    
-  }
-}
+  },
+  courseId: string
+) => {
+  return api.post("/user/payment/verify", {
+    razorpay_payment_id: response.razorpay_payment_id,
+    razorpay_order_id: response.razorpay_order_id,
+    razorpay_signature: response.razorpay_signature,
+    courseId,
+  });
+};
 
 
 export const showCourses= async ()=>{

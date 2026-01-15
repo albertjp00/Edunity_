@@ -198,7 +198,7 @@ export class UserRepository extends BaseRepository<IUser>
       {
         $addFields: {
           instructorIdObj: { $toObjectId: "$instructorId" },
-          moduleCount: { $size: { $ifNull: ["$modules", []] } }
+          moduleCount: { $size: { $ifNull: ["$modules", []] } } 
         }
       },
       {
@@ -224,6 +224,7 @@ export class UserRepository extends BaseRepository<IUser>
           instructorName: "$instructor.name",
           instructorImage: "$instructor.profileImage",
           moduleCount: 1,
+          blocked : 1
         },
       }
     );
@@ -261,6 +262,8 @@ export class UserRepository extends BaseRepository<IUser>
   async addMyCourse(userId: string, courseData: Partial<ICourse>): Promise<IMyCourse | null> {
     try {
 
+      console.log('added to my course');
+      
       const existingCourse = await MyCourseModel.findOne({
         userId,
         courseId: courseData._id,

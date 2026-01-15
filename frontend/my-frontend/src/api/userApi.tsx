@@ -1,5 +1,7 @@
 import axios, { type AxiosInstance } from "axios";
 import { toast } from "react-toastify";
+import { logoutSuccess } from "../redux/slices/authSlice";
+import { store } from "../redux/store";
 
 const api_url = import.meta.env.VITE_API_URL
 
@@ -70,7 +72,9 @@ api.interceptors.response.use(
       } else {
         // toast.error("Your session has expired. Please log in again.");
         localStorage.removeItem("token");
+        
         onLogout?.();
+        forceLogout()
       }
     }
 
@@ -78,6 +82,7 @@ api.interceptors.response.use(
       toast.warning("Your account has been blocked. Contact support.");
       localStorage.removeItem("token");
       onLogout?.();
+      forceLogout()
     }
 
 
@@ -87,6 +92,11 @@ api.interceptors.response.use(
 
 export default api;
 
+
+const forceLogout = () => {
+  localStorage.removeItem("token");
+  store.dispatch(logoutSuccess());
+};
 
 
 // userApi.ts

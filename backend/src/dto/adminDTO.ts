@@ -13,6 +13,7 @@ export interface CourseDTO {
   instructorName: string;
   createdAt: Date;
   category : string;
+  blocked:boolean
 }
 
 export interface CourseDetailsDTO {

@@ -84,6 +84,8 @@ import SubscriptionPage from './user/pages/subscription/subscriptionPage'
 import { useEffect } from 'react'
 import { fetchUserProfile } from './redux/slices/authSlice'
 import { useAppDispatch, useAppSelector } from './redux/hooks'
+import PaymentSuccess from './user/components/showCourses/paymentSuccess'
+import PaymentFailed from './user/components/showCourses/paymentFailed'
 // import PurchasesAdmin from './admin/pages/purchases/purchasesAdmin'
 
 function App() {
@@ -127,6 +129,9 @@ function App() {
 
             <Route path='/user/courseDetails/:id' element={<ProtectedRoute><UserCourseDetails /></ProtectedRoute>} />
             <Route path='/user/myCourses' element={<ProtectedRoute><ShowUserMyCourses /></ProtectedRoute>} />
+            <Route path='/user/paymentSuccess' element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
+            <Route path='/user/paymentFailed' element={<ProtectedRoute><PaymentFailed /></ProtectedRoute>} />
+
             <Route path='/user/viewMyCourse/:id' element={<ProtectedRoute><UserViewMyCourse /></ProtectedRoute>} />
             <Route path='/user/allCourses' element={<ProtectedRoute><AllCoursesPage /></ProtectedRoute>} />
 

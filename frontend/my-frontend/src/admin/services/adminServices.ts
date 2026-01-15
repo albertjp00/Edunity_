@@ -1,5 +1,5 @@
 import adminApi from "../../api/adminApi";
-import type { LoginFormData } from "../pages/login/adminLogin";
+import type { LoginFormData } from "../adminInterfaces";
 
 export const adminLogin = async (value :LoginFormData) => {
     try {
@@ -65,6 +65,18 @@ export const getAdminCourses = async (page: number,search : string ,  limit: num
     throw error;
   }
 };
+
+
+export const blockCourse = async (id:string) => {
+  try {
+    const res = await adminApi.get(`/admin/blockCourse/${id}`)
+    return res; 
+  } catch (error) {
+    console.error("Error fetching admin courses:", error);
+    throw error;
+  }
+};
+
 
 
 

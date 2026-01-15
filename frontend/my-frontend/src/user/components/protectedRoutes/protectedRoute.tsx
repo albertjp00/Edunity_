@@ -17,6 +17,7 @@ const ProtectedRoute: React.FC<Props> = ({ children }) => {
   if (loading) {
     return <div>Loading...</div>;
   }
+  
 
   if (!isAuthenticated) {
     return <Navigate to="/user/login" replace />;
@@ -27,6 +28,7 @@ const ProtectedRoute: React.FC<Props> = ({ children }) => {
     localStorage.removeItem('token')
     return <Navigate to='/user/login' replace />;
   }
+
 
   return <>{children}</>;
 };

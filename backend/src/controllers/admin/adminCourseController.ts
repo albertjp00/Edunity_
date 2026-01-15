@@ -30,6 +30,8 @@ export class AdminCourseController implements
             const data = await this._courseService.getCoursesRequest(page, search, limit);
 
             const courseDTOs = (data.courses ?? []).map(mapCourseToDTO);
+            // console.log("courses  admin",courseDTOs);
+            
             res.status(HttpStatus.OK).json({
                 success: true,
                 courses: courseDTOs,
@@ -158,6 +160,19 @@ export class AdminCourseController implements
 
             const categories = await this._courseService.deleteCategoryRequest(category)
             // console.log(categories);
+
+            res.json({ success: true })
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+        blockCourse= async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
+        try {
+            const courseId = req.params.id!
+
+            const categories = await this._courseService.blockCourseRequest(courseId)
 
             res.json({ success: true })
         } catch (error) {

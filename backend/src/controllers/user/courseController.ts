@@ -219,7 +219,7 @@ export class UserCourseController
         try {
             const { razorpay_order_id, razorpay_payment_id, razorpay_signature, courseId } = req.body;
             const userId = req.user?.id!;
-            console.log('verify pay', userId);
+            console.log('verify pay', razorpay_order_id, razorpay_payment_id, razorpay_signature, courseId);
 
             const key = `verifyPayment_${userId}_${courseId}`;
 
@@ -323,17 +323,16 @@ export class UserCourseController
     myCourses = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             const id = req.user?.id!
-            console.log('courses mine');
+            // console.log('courses mine');
 
             const page = parseInt(req.params.page as string) || 1
             console.log(id, page);
 
 
             const result = await this._courseService.myCoursesRequest(id, page)
-            console.log('my courses result ', result);
+            // console.log('my courses result ', result);
 
             if (!result) return
-
 
             const { populatedCourses, result: paginationData } = result;
 

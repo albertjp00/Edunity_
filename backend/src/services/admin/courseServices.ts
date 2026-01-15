@@ -43,6 +43,9 @@ export class AdminCourseService implements IAdminCourseService {
             }
 
             const courses = await this.userRepository.getAllCourses(query, skip, limit, { createdAt: -1 }) || [];
+
+            console.log('get all course ',courses);
+            
             const totalCourses = await this.userRepository.countCourses();
 
 
@@ -160,6 +163,18 @@ export class AdminCourseService implements IAdminCourseService {
         } catch (error) {
             console.log(error);
 
+        }
+    }
+
+        blockCourseRequest = async (courseId: string) => {
+        try {
+
+            const data = await this.adminRepository.blockCourse(courseId)
+
+            return data
+        } catch (error) {
+            console.log(error);
+            return null
         }
     }
 

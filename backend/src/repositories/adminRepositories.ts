@@ -63,6 +63,8 @@ export interface IAdminRepository {
 
     getEarningsData(page:number): Promise<IEarningsResult | null>
 
+
+    blockCourse(courseId:string): Promise<boolean | null>
 }
 
 
@@ -418,6 +420,25 @@ export class AdminRepository implements IAdminRepository {
         } catch (error) {
             console.log(error);
             return null
+        }
+    }
+
+    async blockCourse(courseId:string): Promise<boolean | null>{
+        try {
+            const course = await CourseModel.findById(courseId)
+            console.log(course);
+            
+            if(!course?.blocked){
+                await CourseModel.findByIdAndUpdate(courseId,{blocked : true},{new : true})
+            }else{
+                await CourseModel.findByIdAndUpdate(courseId,{blocked : false},{new : true})
+            }
+
+            return true
+        } catch (error) {
+            console.log(error);
+            return null
+            
         }
     }
 

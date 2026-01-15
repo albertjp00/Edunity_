@@ -66,14 +66,13 @@ export interface ICategory{
 }
 
 export interface Course {
-  _id: string;
   id:string;
   title: string;
   instructorName: string;
   category: string;
   price: number;
   thumbnail?: string;
-  blocked: boolean; 
+  blocked: boolean | undefined; 
 }
 
 export interface Module {

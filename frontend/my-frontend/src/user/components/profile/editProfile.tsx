@@ -39,12 +39,6 @@ const EditProfile = () => {
 
 
 
-        // if(!number.trim()){
-        //     setMessage('please fill all the fileds')
-        // }
-
-
-
         return true
 
     }

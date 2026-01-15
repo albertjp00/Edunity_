@@ -40,7 +40,7 @@ const UserMyCourses: React.FC = () => {
     try {
       const res = await getSubscriptionCourses(page);
       if (res?.data.success) {
-        console.log("📦 My Courses Result:", res.data);
+        // console.log("📦 My Courses Result:", res.data);
 
         const rawCourses =
           res.data.courses ;

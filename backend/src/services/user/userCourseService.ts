@@ -214,14 +214,22 @@ export class UserCourseService implements IUserCourseService {
   verifyPaymentRequest = async (razorpay_order_id: string, razorpay_payment_id: string,
     razorpay_signature: string, courseId: string, userId: string): Promise<{ success: boolean; message: string }> => {
     try {
+
+      console.log('verify payment ',courseId , userId);
+      
       const sign = razorpay_order_id + "|" + razorpay_payment_id;
       const expectedSign = crypto
         .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
         .update(sign.toString())
         .digest("hex");
 
+        console.log('check equal ',expectedSign , razorpay_signature);
+        
+
       if (razorpay_signature === expectedSign) {
         const course = await this.userRepository.getCourse(courseId)
+        console.log('buyin course ',course);
+      
         if (!course) {
           return { success: false, message: StatusMessage.COURSE_NOT_FOUND };
         }
@@ -596,14 +604,13 @@ export class UserCourseService implements IUserCourseService {
       const myCourse = await this.userRepository.getCourseDetails(userId, courseId);
       console.log(myCourse);
       const favCourse = await this.userRepository.getFavCourseDetails(userId, courseId);
-      console.log("service get course details",favCourse);
       if(!favCourse){
         return false
       }
 
 
       const course: any = await this.userRepository.getCourse(courseId);
-      console.log('myCoursessss', course);
+      // console.log('myCoursessss', course);
 
 
       if (myCourse) {
