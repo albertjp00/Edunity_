@@ -15,6 +15,7 @@ export interface IUser extends Document {
   blocked: boolean;
   createdAt: Date;
   googleId : string;
+  provider : string;
   courseCount : number;
   subscription : ISubscription;
 }
@@ -92,9 +93,15 @@ const UserSchema: Schema = new Schema<IUser>({
     type:String
   },
 
+  provider :{
+    type : String,
+    default : 'local'
+  },
+
   courseCount :{
     type : Number,
   },
+
 
   subscription: {
     isActive: { type: Boolean, default: false },

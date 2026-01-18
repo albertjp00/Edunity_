@@ -81,6 +81,8 @@ export interface IUserRepository {
 
   getSubscriptionCourses(id:string , page:number):Promise<any>
 
+  reportCourse(userId :string , courseId : string , report :IReport):Promise<boolean | null>
+
 }
 
 
@@ -90,6 +92,7 @@ export interface IUserRepository {
 import { Request, Response, NextFunction } from "express";
 import { AuthRequest } from "../middleware/authMiddleware.js";
 import { IReview } from "../models/review";
+import { IReport } from "../models/report";
 
 
 //authController
@@ -169,6 +172,7 @@ export interface IUserMyCourseController {
   refreshVideoUrl(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
   updateProgress(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
   getCertificate(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+  reportCourse(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
 }
 
 export interface IUserCourseReviewController {
@@ -222,7 +226,7 @@ export interface UserDTO {
   location?: string | undefined;
   phone?: string | undefined;
   createdAt?: string;
-
+  provider : string;
 }
 
 

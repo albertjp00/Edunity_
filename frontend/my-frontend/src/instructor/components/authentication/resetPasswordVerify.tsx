@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 // import "./forgotPassMail.css";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { resendOtpForgotPass, resetPasswordRequest } from "../../services/Instructor/instructorServices";
+import { resendOtpForgotPass, resetPasswordRequest } from "../../services/instructorServices";
 import type { LocationState } from "../../interterfaces/instructorInterfaces";
 
 

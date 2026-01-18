@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./notifications.css"; 
 import InstructorNavbar from "../navbar/navbar";
-import { getNotification } from "../../services/Instructor/instructorServices";
+import { getNotification } from "../../services/instructorServices";
 
 interface Notification {
   _id: string;

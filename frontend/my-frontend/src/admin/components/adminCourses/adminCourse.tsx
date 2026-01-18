@@ -220,7 +220,7 @@ const CoursesAdmin: React.FC = () => {
       <ConfirmModal
         isOpen={showModal}
         title={isBlocking ? "Block Course" : "Unblock Course"}
-        message={`Are you sure you want to ${isBlocking ? "block" : "unblock"} this user?`}
+        message={`Are you sure you want to ${isBlocking ? "block" : "unblock"} this course?`}
         onConfirm={confirmAction}
         onCancel={() => setShowModal(false)}
       />

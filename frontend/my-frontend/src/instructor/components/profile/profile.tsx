@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
 import profilePic from './../../../assets/profilePic.png';
 import { Link } from 'react-router-dom';
 import './profile.css'
-import { fetchProfile } from '../../services/Instructor/instructorServices';
-import type { IUser } from '../../interterfaces/instructorInterfaces';
+import type { IInstructor } from '../../interterfaces/instructorInterfaces';
+import { useAppSelector } from '../../../redux/hooks';
 
 
 
@@ -16,22 +15,26 @@ import type { IUser } from '../../interterfaces/instructorInterfaces';
 // }
 
 const InstructorProfile: React.FC = () => {
-  const [user, setUser] = useState<IUser>({});
+  // const [user, setUser] = useState<IInstructor>({});
   // const [courses, setCourses] = useState<ICourse[]>([]);
 
   // const navigate = useNavigate();
 
-  const getProfile = async () => {
-    try {
-      const response = await fetchProfile()
-      if(!response) return
-      console.log(response);
+  const user = useAppSelector((state)=>
+    state.auth.role === 'instructor' ? state.auth.user  : null
+  ) as IInstructor | null
+
+  // const getProfile = async () => {
+  //   try {
+  //     const response = await fetchProfile()
+  //     if(!response) return
+  //     console.log(response);
       
-      setUser(response.data.data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    }
-  };
+  //     setUser(response.data.data);
+  //   } catch (error) {
+  //     console.error('Error fetching profile:', error);
+  //   }
+  // };
 
   // const getCourses = async () => {
   //   try {
@@ -50,10 +53,10 @@ const InstructorProfile: React.FC = () => {
   //   navigate(`/instructor/courseDetails/${id}`);
   // };
 
-  useEffect(() => {
-    getProfile();
-    // getCourses();
-  }, []);
+  // useEffect(() => {
+  //   getProfile();
+  //   // getCourses();
+  // }, []);
 
   return (
       <>
@@ -66,7 +69,7 @@ const InstructorProfile: React.FC = () => {
             <div className="user-name-card">
               <img
                 src={
-                  user.profileImage
+                  user?.profileImage
                     ? `${import.meta.env.VITE_API_URL}/assets/${user.profileImage}`
                     : profilePic
                 }
@@ -74,8 +77,8 @@ const InstructorProfile: React.FC = () => {
                 className="profile-avatar"
               />
               <div>
-                <h2>{user.name}</h2>
-                <h5>Email: {user.email}</h5>
+                <h2>{user?.name}</h2>
+                <h5>Email: {user?.email}</h5>
                 <Link to="/instructor/editProfile">
                   <button className="edit-btn">Edit</button>
                 </Link>
@@ -84,7 +87,7 @@ const InstructorProfile: React.FC = () => {
 
             <div className="about-me">
               <h4>Bio</h4>
-              <p>{user.bio}</p>
+              <p>{user?.bio}</p>
             </div>
 
             <div className="user-details-box">
@@ -93,15 +96,15 @@ const InstructorProfile: React.FC = () => {
               </p>
               <p>
                 <i className="fas fa-certificate"></i>{' '}
-                <strong>Expertise:</strong> {user.expertise}
+                <strong>Expertise:</strong> {user?.expertise}
               </p>
               <p>
                 <i className="fas fa-check-circle"></i> <strong>KYC:</strong>
-                {user.KYCstatus === 'verified' ? (
+                {user?.KYCstatus === 'verified' ? (
                   <span style={{ color: 'green', fontWeight: 'bold' }}> Verified</span>
-                ) : user.KYCstatus === 'pending' ? (
+                ) : user?.KYCstatus === 'pending' ? (
                   <span style={{ color: 'orange', fontWeight: 'bold' }}> Pending</span>
-                ) : user.KYCstatus === 'rejected' ? (
+                ) : user?.KYCstatus === 'rejected' ? (
                   <>
                     <span style={{ color: 'red', fontWeight: 'bold' }}> Rejected</span>
                     <Link to="/instructor/kyc" style={{ marginLeft: '10px' }}>
@@ -117,7 +120,7 @@ const InstructorProfile: React.FC = () => {
             </div>
 
             <div className="user-details-box">
-              <span>skills : {user.skills?.join(', ')}</span>
+              <span>skills : {user?.skills?.join(', ')}</span>
             </div>
 
 
@@ -134,10 +137,10 @@ const InstructorProfile: React.FC = () => {
         <div className="profile-right">
           <div className="education-box">
             <h3>Education</h3>
-            <p>{user.education || 'Not added yet'}</p>
+            <p>{user?.education || 'Not added yet'}</p>
 
             <h3>Experience</h3>
-            <p>{user.work}</p>
+            <p>{user?.work}</p>
           </div>
 
 

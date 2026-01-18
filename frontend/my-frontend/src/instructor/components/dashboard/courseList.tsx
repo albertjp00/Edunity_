@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getCourse } from "../../services/Instructor/instructorServices";
+import { getCourse } from "../../services/instructorServices";
 
 interface Course {
   _id: string;

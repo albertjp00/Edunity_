@@ -6,7 +6,7 @@ import InstructorChatWindow from "./instChatWindow";
 import InstructorNavbar from "../navbar/navbar";
 import type { ApiStudent, IStudent } from "../../interterfaces/chat";
 import { io, Socket } from "socket.io-client";
-import { fetchMessagedStudents } from "../../services/Instructor/instructorServices";
+import { fetchMessagedStudents } from "../../services/instructorServices";
 
 
 // const socket = io(import.meta.env.VITE_API_URL)

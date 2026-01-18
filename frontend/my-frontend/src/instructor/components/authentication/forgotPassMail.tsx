@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import './forgotPassMail.css'
 import { toast } from "react-toastify";
-import { forgotPassword } from "../../services/Instructor/instructorServices";
+import { forgotPassword } from "../../services/instructorServices";
 import axios from "axios";
 
 const InstructorForgotPassword: React.FC = () => {

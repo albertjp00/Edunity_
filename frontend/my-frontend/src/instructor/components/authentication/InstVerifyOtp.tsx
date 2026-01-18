@@ -3,7 +3,7 @@ import './instVerifyotp.css'
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { resendOtpRequest, verifyOtp } from "../../services/Instructor/instructorServices";
+import { resendOtpRequest, verifyOtp } from "../../services/instructorServices";
 
 const InstructorVerifyOtp : React.FC = () => {
   const [otp, setOtp] = useState('');

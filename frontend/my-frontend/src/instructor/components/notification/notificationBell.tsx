@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Bell } from "lucide-react";
-import { notificationMarkAsRead } from "../../services/Instructor/instructorServices";
+import { notificationMarkAsRead } from "../../services/instructorServices";
 
 interface Notification {
   _id: string;

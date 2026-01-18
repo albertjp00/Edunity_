@@ -23,6 +23,7 @@ const Navbar = () => {
   const [hasUnread, setUnread] = useState<boolean>()
 
   const user = useAppSelector((state) => state.auth.user);
+  
   const dispatch = useDispatch()
 
   const [menuOpen, setMenuOpen] = useState(false);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "./purchaseDetails.css";
-import { purchaseDetails } from "../../services/Instructor/instructorServices";
+import { purchaseDetails } from "../../services/instructorServices";
 
 export interface IPurchaseDetails {
   name: string;

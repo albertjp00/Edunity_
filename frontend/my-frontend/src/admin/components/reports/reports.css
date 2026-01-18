@@ -1,0 +1,75 @@
+.report-container {
+  padding: 24px;
+  color: #000000;
+}
+
+.report-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.report-loading,
+.report-empty {
+  text-align: center;
+  margin-top: 40px;
+  color: #9ca3af;
+}
+
+
+/* Table wrapper for horizontal scroll */
+.report-table-wrapper {
+  overflow-x: auto;
+}
+
+
+/* Table */
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Header */
+.report-table thead {
+  background-color: #ffffff;
+}
+
+.report-table th {
+  padding: 14px;
+  text-align: left;
+  font-weight: 500;
+  font-size: 14px;
+  color: #000000;
+}
+
+/* Body */
+.report-table td {
+  padding: 14px;
+  font-size: 14px;
+  border-top: 1px solid #374151;
+}
+
+.report-courseId{
+    cursor: pointer;
+    text-decoration: none;
+}
+
+
+/* Reason highlight */
+.report-reason {
+  font-weight: 600;
+  color: #fbbf24;
+}
+
+/* Message */
+.report-message {
+  color: #9ca3af;
+  font-size: 13px;
+  max-width: 280px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

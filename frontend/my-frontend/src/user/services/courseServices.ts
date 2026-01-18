@@ -1,4 +1,5 @@
 import api from "../../api/userApi";
+import type { IReport } from "../interfaces";
 
 
 
@@ -198,6 +199,8 @@ export const addToFavourites= async (id : string)=>{
 }
 
 
+
+
 export const fetchFavourites= async (id:string)=>{
   try {    
 
@@ -209,6 +212,15 @@ export const fetchFavourites= async (id:string)=>{
     
   }
 }
+
+export const  submitReport = async(courseId:string , report : IReport)=>{
+  const res = await api.post('/user/reportCourse',{
+    courseId,
+    report
+  })
+  return res
+}
+
 
 export const allCourses= async (queryParams:string)=>{
   try {    

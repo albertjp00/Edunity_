@@ -56,6 +56,8 @@ export const ROUTES = {
     SUBMIT_QUIZ: "/quiz/:courseId/:quizId",
 
     CANCEL_COURSE: "/cancelCourse/:id",
+    REPORT_COURSE:"/reportCourse",
+    
   },
 
   EVENTS: {

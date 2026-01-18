@@ -8,6 +8,7 @@ import { IInstructor, InstructorModel } from "../models/instructor";
 import { KycModel } from "../models/kyc";
 import { IMyCourse, MyCourseModel } from "../models/myCourses";
 import { INotification, NotificationModel } from "../models/notification";
+import { IReport, ReportModel } from "../models/report";
 import { IUser, UserModel } from "../models/user";
 
 
@@ -65,6 +66,8 @@ export interface IAdminRepository {
 
 
     blockCourse(courseId:string): Promise<boolean | null>
+
+    getReports(): Promise<IReport[] | null>
 }
 
 
@@ -439,6 +442,16 @@ export class AdminRepository implements IAdminRepository {
             console.log(error);
             return null
             
+        }
+    }
+
+    async getReports(): Promise<IReport[] | null>{
+        try {
+            const report = await ReportModel.find()
+            return report
+        } catch (error) {
+            console.log(error);
+            return null
         }
     }
 

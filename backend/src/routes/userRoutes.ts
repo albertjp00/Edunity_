@@ -130,7 +130,7 @@ router.get(ROUTES.COURSES.QUIZ, authMiddleware, courseController.getQuiz);
 router.post(ROUTES.COURSES.SUBMIT_QUIZ, authMiddleware, courseController.submitQuiz);
 
 router.delete(ROUTES.COURSES.CANCEL_COURSE, authMiddleware, courseController.cancelCourse);
-
+router.post(ROUTES.COURSES.REPORT_COURSE, authMiddleware, courseController.reportCourse);
 
 // Events
 router.get(ROUTES.EVENTS.LIST, authMiddleware, eventController.getEvents);

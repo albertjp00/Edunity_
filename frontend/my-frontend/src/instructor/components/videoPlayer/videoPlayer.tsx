@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { refreshVideo } from "../../services/Instructor/instructorServices";
+import { refreshVideo } from "../../services/instructorServices";
 
 interface VideoPlayerProps {
   initialUrl: string;

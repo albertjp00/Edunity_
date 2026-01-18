@@ -11,7 +11,7 @@ export interface IEventFormData {
 
 
 
-export interface IUser {
+export interface IInstructor {
   _id?: string;
   name?: string;
   email?: string;

@@ -171,3 +171,10 @@ export const deleteCategory = async(category:string) => {
   });
   return res
 };
+
+
+
+export const getReports = async() => {
+  const res =  await adminApi.get(`/admin/getReports`);
+  return res
+};

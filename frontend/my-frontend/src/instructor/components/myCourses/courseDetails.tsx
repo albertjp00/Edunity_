@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import './courseDetails.css';
 import Navbar from '../../components/navbar/navbar';
 import VideoPlayer from '../videoPlayer/videoPlayer';
-import { getCourseDetails } from '../../services/Instructor/instructorServices';
+import { getCourseDetails } from '../../services/instructorServices';
 
 // Define types for Module and Course
 interface Module {

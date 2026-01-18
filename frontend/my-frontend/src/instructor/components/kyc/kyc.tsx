@@ -2,7 +2,7 @@ import React, { useState, type ChangeEvent, type FormEvent } from 'react'
 import './kyc.css'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
-import { kycSubmit } from '../../services/Instructor/instructorServices'
+import { kycSubmit } from '../../services/instructorServices'
 
 interface KycFiles {
   idProof: File | null

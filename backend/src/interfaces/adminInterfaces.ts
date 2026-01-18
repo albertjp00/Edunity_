@@ -2,6 +2,7 @@ import { AdminAuthRequest } from "../middleware/authMiddleware";
 import { ICategory } from "../models/category";
 import { ICourse } from "../models/course";
 import { IInstructor } from "../models/instructor";
+import { IReport } from "../models/report";
 import { IUser } from "../models/user";
 
 
@@ -19,6 +20,7 @@ export interface IAdminCourseReadController {
   getCourses(req: Request, res: Response, next: NextFunction): Promise<void>;
   getCourseDetails(req: Request, res: Response, next: NextFunction): Promise<void>;
   blockCourse(req: Request, res: Response, next: NextFunction): Promise<void>;
+  getReports(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
 
 
@@ -117,6 +119,7 @@ export interface IAdminCourseService {
   getCategoryRequest(category: string): Promise<any>;
   deleteCategoryRequest(category: string): Promise<any>;
   blockCourseRequest(courseId:string): Promise<boolean | null>;
+  getReportsRequest(): Promise<IReport[] | null>;
 }
 
 

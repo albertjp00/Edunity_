@@ -12,8 +12,8 @@ import { StatusMessage } from "../../enums/statusMessage";
 
 dotenv.config();
 
-const secret: string = process.env.SECRET_KEY || "";
-const refresh: string = process.env.REFRESH_KEY || "";
+const secret: string = process.env.SECRET_KEY!;
+const refresh: string = process.env.REFRESH_KEY!;
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const SECRET_KEY = process.env.SECRET_KEY || "access_secret";
@@ -79,8 +79,8 @@ export class AuthService implements IUserAuthService {
                 return { success: false, message: StatusMessage.INCORRECT_PASSWORD };
             }
 
-            const accessToken = jwt.sign({ id: user._id }, secret, { expiresIn: "3h" });
-            const refreshToken = jwt.sign({ id: user._id }, refresh, { expiresIn: "1d" });
+            const accessToken = jwt.sign({ id: user._id }, secret, { expiresIn: "15m" });
+            const refreshToken = jwt.sign({ id: user._id }, refresh, { expiresIn: "30m" });
 
             return {
                 success: true,
@@ -235,13 +235,14 @@ export class AuthService implements IUserAuthService {
         let user = await this.userRepository.findByEmail(email as string);
         if (!user) {
             data.googleId = data.sub
+            data.provider = 'google'
             user = await this.userRepository.create(data);
         }
 
         const accessToken = jwt.sign({ id: user._id, email: user.email }, SECRET_KEY, { expiresIn: "1h" });
-        const refreshToken = jwt.sign({ id: user._id }, refresh, { expiresIn: "7d" });
+        const refreshToken = jwt.sign({ id: user._id }, refresh, { expiresIn: "1d" });
 
-        return { accessToken, refreshToken, user };
+        return { accessToken, refreshToken, user  };
     };
 
 

@@ -7,6 +7,7 @@ import { IMyCourse } from "../models/myCourses";
 import { IMyEvent } from "../models/myEvents";
 import { INotification } from "../models/notification";
 import { IPayment } from "../models/payment";
+import { IReport } from "../models/report";
 import { IReview } from "../models/review";
 import { ISubscription, IUser } from "../models/user";
 import { IWallet } from "../models/wallet";
@@ -181,6 +182,12 @@ export interface IUserCourseService {
         userId: string,
         courseId: string
     ): Promise<void>;
+
+    reportCourseRequest(
+        userId : string,
+        courseId : string,
+        report : IReport
+    ):Promise<void>;
 }
 
 

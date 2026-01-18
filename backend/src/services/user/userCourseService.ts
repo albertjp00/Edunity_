@@ -19,6 +19,7 @@ import { generateSignedUrl } from '../../utils/getSignedUrl';
 import { IUserCourseService } from '../../interfacesServices.ts/userServiceInterfaces';
 import { StatusMessage } from '../../enums/statusMessage';
 import { IReview } from '../../models/review';
+import { IReport } from '../../models/report';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -81,16 +82,11 @@ export class UserCourseService implements IUserCourseService {
 
   async getAllCourses(query: any, page: number, limit: number, sortOption: any) {
     const skip = (page - 1) * limit;
-    // console.log('all course ', query);
+
 
     const courses = await this.userRepository.getAllCourses(query, skip, limit, sortOption);
-    // const totalCount = await this.userRepository.countCourses(query);
+
     const totalCount = await this.userRepository.countAllCourses(query);
-    // const totalCount = courses.length
-
-    // console.log(courses);
-
-
 
     return {
       courses,
@@ -718,6 +714,18 @@ export class UserCourseService implements IUserCourseService {
 
     // Decrease total enrolled count
     await this.userRepository.decreaseCourseEnrollment(courseId);
+  }
+
+
+    reportCourseRequest = async (userId:string , courseId: string , report : IReport ) => {
+    try {
+      
+      const res  = await this.userRepository.reportCourse(userId , courseId , report)
+
+          } catch (error) {
+      console.log(error);
+
+    }
   }
 
 }

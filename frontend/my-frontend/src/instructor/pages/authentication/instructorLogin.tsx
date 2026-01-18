@@ -5,6 +5,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import instructorApi from '../../../api/instructorApi'
 import eye from '../../../assets/eye-icon.png'
+import { useAppDispatch } from '../../../redux/hooks'
+import { fetchInstructorProfile } from '../../../redux/slices/authSlice'
 
 const InstructorLogin = () => {
 
@@ -15,6 +17,8 @@ const InstructorLogin = () => {
     password: ''
   })
 
+  const dispatch = useAppDispatch()
+
   const onSubmitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault() 
     console.log("Ui ", value)
@@ -23,7 +27,7 @@ const InstructorLogin = () => {
       const response = await instructorApi.post('/instructor/login', value);
 
       localStorage.setItem('instructor', response.data.token);
-      // localStorage.setItem('instructorId', response.data.instructor._id);
+      dispatch(fetchInstructorProfile())
       navigate('/instructor/home');
     } catch (error: unknown) {
   if (axios.isAxiosError(error)) {

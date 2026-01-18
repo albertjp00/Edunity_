@@ -3,7 +3,7 @@ import "./addQuiz.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { addQuiz } from "../../services/Instructor/instructorServices";
+import { addQuiz } from "../../services/instructorServices";
 
 interface QuestionForm {
   id: string;

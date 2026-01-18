@@ -70,10 +70,8 @@ import OtpVerificationInstructor from './instructor/components/authentication/re
 import InstructorVerifyOtp from './instructor/components/authentication/InstVerifyOtp'
 import InstructorEvent from './instructor/pages/events/joinEvent'
 import UserEvent from './user/pages/event/joinEvent'
-import EventDetails from './instructor/pages/events/eventDetails'
 import CoursePurchaseDetails from './instructor/pages/course/purchaseDetails'
 import Wallet from './user/components/profile/wallet'
-import InstructorAllEventList from './instructor/components/events/allEvents'
 import InstructorNotifications from './instructor/components/notification/notifications'
 import AllPayments from './user/components/payments/payments'
 import UserNotifications from './user/components/notifications/notifications'
@@ -86,6 +84,8 @@ import { fetchUserProfile } from './redux/slices/authSlice'
 import { useAppDispatch, useAppSelector } from './redux/hooks'
 import PaymentSuccess from './user/components/showCourses/paymentSuccess'
 import PaymentFailed from './user/components/showCourses/paymentFailed'
+import EventDetailsPage from './instructor/pages/events/eventDetails'
+import AllEventsPage from './instructor/pages/events/allEvents'
 // import PurchasesAdmin from './admin/pages/purchases/purchasesAdmin'
 
 function App() {
@@ -180,11 +180,12 @@ function App() {
             <Route path='/instructor/createEvent' element={<InstProtectedRoute><CreateEvents /></InstProtectedRoute>}></Route>
             <Route path='/instructor/editEvent/:id' element={<InstProtectedRoute><InstructorEditEvents /></InstProtectedRoute>}></Route>
 
-            <Route path='/instructor/eventDetails/:eventId' element={<InstProtectedRoute><EventDetails /></InstProtectedRoute>} />
+            <Route path='/instructor/eventDetails/:eventId' element={<InstProtectedRoute><EventDetailsPage /></InstProtectedRoute>} />
 
             <Route path='/instructor/joinEvent/:eventId' element={<InstProtectedRoute><InstructorEvent /></InstProtectedRoute>} />
 
-            <Route path='/instructor/allEvents' element={<InstProtectedRoute><InstructorAllEventList /></InstProtectedRoute>} />
+            <Route path='/instructor/allEvents' element={<InstProtectedRoute><AllEventsPage /></InstProtectedRoute>} />
+
 
             <Route path='/instructor/addQuiz/:id' element={<InstProtectedRoute><AddQuiz /></InstProtectedRoute>}></Route>
             <Route path='/instructor/quiz/:courseId' element={<InstProtectedRoute><Quiz /></InstProtectedRoute>}></Route>
@@ -205,7 +206,7 @@ function App() {
             <Route path='/admin/user/:id' element={<AdminProtectedRoute><UserDetails /></AdminProtectedRoute>} />
             <Route path='/admin/courses' element={<AdminProtectedRoute><AdminCourses /></AdminProtectedRoute>} />
             <Route path='/admin/courseDetails/:id' element={<AdminProtectedRoute><AdminCourseDetails /></AdminProtectedRoute>} />
-
+            {/* <Route path='/admin/reports' element={<AdminProtectedRoute><Reports /></AdminProtectedRoute>} /> */}
             {/* <Route path='/admin/purchases' element={<AdminProtectedRoute><PurchasesAdmin /></AdminProtectedRoute>} /> */}
 
 

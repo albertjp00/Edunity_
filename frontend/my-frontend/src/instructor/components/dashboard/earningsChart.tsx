@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import StatsCard from "./statsCard";
-import { getEarnings } from "../../services/Instructor/instructorServices";
+import { getEarnings } from "../../services/instructorServices";
 
 // const data = [
 //   { month: "Jan", earnings: 2000 },

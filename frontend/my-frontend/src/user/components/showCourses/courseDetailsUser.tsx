@@ -217,6 +217,9 @@ const CourseDetailsUser: React.FC = () => {
 
 
 
+
+
+
   useEffect(() => {
     fetchCourse();
   }, []);
@@ -227,6 +230,7 @@ const CourseDetailsUser: React.FC = () => {
     <div className="contain">
 
       <header className="course-header">
+
 
         <h1>COURSE DETAILS</h1>
         <p>Home / Course</p>
@@ -269,6 +273,13 @@ const CourseDetailsUser: React.FC = () => {
               onClick={() => setActiveTab("reviews")}
             >
               Reviews
+            </button>
+
+            <button
+              className={activeTab === "report" ? "active" : ""}
+              onClick={() => setActiveTab("report")}
+            >
+              Report
             </button>
           </div>
 
@@ -354,6 +365,8 @@ const CourseDetailsUser: React.FC = () => {
                 <p>No reviews yet.</p>
               )}
 
+              
+
               {/* Add Review Form */}
               {/* {hasAccess && (
                 <div className="add-review">
@@ -385,6 +398,9 @@ const CourseDetailsUser: React.FC = () => {
               )} */}
             </div>
           )}
+
+          
+
 
 
         </div>

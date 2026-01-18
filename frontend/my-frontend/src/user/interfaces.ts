@@ -301,6 +301,7 @@ export interface User {
   blocked?: boolean;
   googleId?: string;
   profileImage : string;
+  provider : "google" | "local"
 }
 
 interface CourseData {
@@ -382,3 +383,7 @@ export interface RazorpayOptions {
 
 
 
+export interface IReport{
+  reason :string | undefined;
+  message: string | undefined;
+}

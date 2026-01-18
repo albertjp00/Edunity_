@@ -14,10 +14,10 @@ export const mapUserToDTO = (user: IUser): UserDTO => {
     gender : user.gender,
     dob : user.dob,
     blocked : user.blocked,
+    provider : user.provider,
     location : user.location,
     phone : user.phone,
     createdAt: user.createdAt.toISOString()
-    
   };
 };
 

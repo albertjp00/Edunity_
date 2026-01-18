@@ -6,7 +6,7 @@ import RecentStudents from "./recentStudents";
 import StatsCard from "./statsCard";
 // import CourseList from "./courseList";
 import InstructorNavbar from "../navbar/navbar";
-import { getStats } from "../../services/Instructor/instructorServices";
+import { getStats } from "../../services/instructorServices";
 import type { Stats } from "../../interterfaces/instructorInterfaces";
 
 

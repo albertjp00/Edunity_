@@ -1,9 +1,9 @@
-import instructorApi from "../../../api/instructorApi"
-import api from "../../../api/userApi";
-import type { UserRegisterForm } from "../../../user/interfaces";
+import instructorApi from "../../api/instructorApi"
+import api from "../../api/userApi";
+import type { UserRegisterForm } from "../../user/interfaces";
 // import type { RegisterForm } from "../../components/authentication/instructorRegister";
-import type { Ievent } from "../../interterfaces/events";
-import type { QuizData, QuizPayload } from "../../interterfaces/instructorInterfaces";
+import type { Ievent } from "../interterfaces/events";
+import type { QuizData, QuizPayload } from "../interterfaces/instructorInterfaces";
 
 
 

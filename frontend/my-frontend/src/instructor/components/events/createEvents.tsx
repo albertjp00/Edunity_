@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { addEvent } from "../../services/Instructor/instructorServices";
+import { addEvent } from "../../services/instructorServices";
 import type { Ievent } from "../../interterfaces/events";
 import "./createEvents.css";
 import { toast } from "react-toastify";

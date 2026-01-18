@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCourses } from "../../services/Instructor/instructorServices";
+import { getCourses } from "../../services/instructorServices";
 import useDebounce from "../../../admin/components/debounce/debounce";
 
 interface Course {

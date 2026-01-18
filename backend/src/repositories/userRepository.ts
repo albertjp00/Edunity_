@@ -16,6 +16,7 @@ import { log } from 'winston';
 import { IPayment, PaymentModel } from '../models/payment';
 import { INotification, NotificationModel } from '../models/notification';
 import { IReview, ReviewModel } from '../models/review';
+import { IReport, ReportModel } from '../models/report';
 
 
 
@@ -74,14 +75,14 @@ export class UserRepository extends BaseRepository<IUser>
     return await WalletModel.findOne({ userId: userId })
   }
 
-  async getPayment(userId: string , page:number): Promise<IPaymentDetails | null> {
+  async getPayment(userId: string, page: number): Promise<IPaymentDetails | null> {
     const limit = 6
-    const skip = (page-1)*limit
-    
+    const skip = (page - 1) * limit
+
     const total = await PaymentModel.countDocuments()
     const totalPages = Math.ceil(total / limit)
     const pay = await PaymentModel.find({ userId: userId }).skip(skip).limit(limit)
-    return {pay , total ,  totalPages , currentPage :page  }
+    return { pay, total, totalPages, currentPage: page }
   }
 
   async getCourse(id: string): Promise<ICourse | null> {
@@ -97,10 +98,12 @@ export class UserRepository extends BaseRepository<IUser>
     return await CourseModel.findByIdAndUpdate(id, { onPurchase: false }, { new: true })
   }
 
-  async getMyCoursesCount(id:string):Promise<number>{
-    return MyCourseModel.countDocuments({userId : id , date :{
-      
-    }})
+  async getMyCoursesCount(id: string): Promise<number> {
+    return MyCourseModel.countDocuments({
+      userId: id, date: {
+
+      }
+    })
   }
 
   async buyCourse(id: string): Promise<ICourse | null> {
@@ -110,13 +113,14 @@ export class UserRepository extends BaseRepository<IUser>
 
   async updateSubscription(id: string, data: any): Promise<boolean> {
     await UserModel.findByIdAndUpdate(id, { subscription: data }, { new: true })
-    
+
     return true
   }
 
 
 
   async getCourses(skip: number, limit: number) {
+
     return CourseModel.aggregate([
       { $skip: skip },
       { $limit: limit },
@@ -182,25 +186,23 @@ export class UserRepository extends BaseRepository<IUser>
       { $match: query },
     ];
 
-    // ✅ Sort before pagination
     if (sortOption && typeof sortOption === "object" && Object.keys(sortOption).length > 0) {
       pipeline.push({ $sort: sortOption });
     } else {
-      // fallback default sort
       pipeline.push({ $sort: { createdAt: -1 } });
     }
 
 
-    // ✅ Pagination after sorting
     pipeline.push(
       { $skip: skip },
       { $limit: limit },
       {
         $addFields: {
           instructorIdObj: { $toObjectId: "$instructorId" },
-          moduleCount: { $size: { $ifNull: ["$modules", []] } } 
+          moduleCount: { $size: { $ifNull: ["$modules", []] } }
         }
       },
+      { $match: { blocked: false } },
       {
         $lookup: {
           from: "instructors",
@@ -224,7 +226,7 @@ export class UserRepository extends BaseRepository<IUser>
           instructorName: "$instructor.name",
           instructorImage: "$instructor.profileImage",
           moduleCount: 1,
-          blocked : 1
+          blocked: 1
         },
       }
     );
@@ -237,7 +239,7 @@ export class UserRepository extends BaseRepository<IUser>
 
 
   async countAllCourses(query: any): Promise<number> {
-    return CourseModel.countDocuments(query);
+    return CourseModel.countDocuments(query)
   }
 
 
@@ -263,7 +265,7 @@ export class UserRepository extends BaseRepository<IUser>
     try {
 
       console.log('added to my course');
-      
+
       const existingCourse = await MyCourseModel.findOne({
         userId,
         courseId: courseData._id,
@@ -364,27 +366,27 @@ export class UserRepository extends BaseRepository<IUser>
   }
 
 
-async updateProgress(userId: string,courseId: string,moduleTitle: string): Promise<IMyCourse | null> {
-  try {
-    const course = await MyCourseModel.findOne({ userId, courseId });
+  async updateProgress(userId: string, courseId: string, moduleTitle: string): Promise<IMyCourse | null> {
+    try {
+      const course = await MyCourseModel.findOne({ userId, courseId });
 
-    if (!course) return null;
+      if (!course) return null;
 
-    const alreadyCompleted =
-      course.progress?.completedModules?.includes(moduleTitle);
+      const alreadyCompleted =
+        course.progress?.completedModules?.includes(moduleTitle);
 
-    if (!alreadyCompleted) {
-      course.progress.completedModules.push(moduleTitle);
-      course.cancelCourse = false; 
-      await course.save();
+      if (!alreadyCompleted) {
+        course.progress.completedModules.push(moduleTitle);
+        course.cancelCourse = false;
+        await course.save();
+      }
+
+      return course;
+    } catch (error) {
+      console.error("Update progress error:", error);
+      return null;
     }
-
-    return course;
-  } catch (error) {
-    console.error("Update progress error:", error);
-    return null;
   }
-}
 
 
   async getCertificate(userId: string, courseId: string, certificate: string): Promise<IMyCourse | null> {
@@ -406,10 +408,10 @@ async updateProgress(userId: string,courseId: string,moduleTitle: string): Promi
   async addReview(userId: string, userName: string, userImage: string, courseId: string, rating: number, comment: string): Promise<IReview> {
     try {
       // const course = await CourseModel.findById(courseId);
-      console.log('name =---------------- im age',userName, userImage);
-      
-      const review = await ReviewModel.findOneAndUpdate({userId , courseId}, 
-        {$set:{ rating , comment} , $setOnInsert:{userId , courseId , userName , userImage}},{new:true , upsert:true})
+      console.log('name =---------------- im age', userName, userImage);
+
+      const review = await ReviewModel.findOneAndUpdate({ userId, courseId },
+        { $set: { rating, comment }, $setOnInsert: { userId, courseId, userName, userImage } }, { new: true, upsert: true })
 
       return review
     } catch (error) {
@@ -418,9 +420,9 @@ async updateProgress(userId: string,courseId: string,moduleTitle: string): Promi
     }
   }
 
-  async getReview(userId :string , courseId : string): Promise<IReview[] | null> {
+  async getReview(userId: string, courseId: string): Promise<IReview[] | null> {
     try {
-      return await ReviewModel.find({courseId})
+      return await ReviewModel.find({ courseId })
     } catch (error) {
       console.log(error);
       return null
@@ -465,7 +467,7 @@ async updateProgress(userId: string,courseId: string,moduleTitle: string): Promi
   async addtoFavourites(userId: string, courseId: string): Promise<string | null> {
     const existing = await FavouritesModel.findOne({ userId, courseId });
     if (existing) {
-      await FavouritesModel.deleteOne({userId , courseId})
+      await FavouritesModel.deleteOne({ userId, courseId })
       return "removed"
     }
     await FavouritesModel.create({ userId, courseId });
@@ -600,7 +602,7 @@ async updateProgress(userId: string,courseId: string,moduleTitle: string): Promi
       const courses = await CourseModel.find({ accessType: "subscription" })
         .skip(skip)
         .limit(limit)
-        // .select("title thumbnail price skills level instructorId");
+      // .select("title thumbnail price skills level instructorId");
 
       const total = await CourseModel.countDocuments({ accessType: "subscription" });
 
@@ -617,7 +619,24 @@ async updateProgress(userId: string,courseId: string,moduleTitle: string): Promi
 
 
 
-
+  async reportCourse(userId: string, courseId: string, report: IReport): Promise<boolean | null> {
+    try {
+      const reportData:any = {
+        userId,
+        courseId,
+        reason: report.reason,
+        
+      };
+      if (report.message) {
+        reportData.message = report.message;
+      }
+      const reported = await ReportModel.create(reportData);
+      return true
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+  }
 
 
 

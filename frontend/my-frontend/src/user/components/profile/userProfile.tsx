@@ -7,7 +7,7 @@ import {
   getUserMyCourses,
   // getUserProfile,
 } from "../../services/profileServices";
-import type { EnrolledCourse, IPayment } from "../../interfaces";
+import type { EnrolledCourse, IPayment, User } from "../../interfaces";
 import { useAppSelector } from "../../../redux/hooks";
 // import { getPaymentHistory } from "../../services/paymentServices";
 
@@ -21,7 +21,9 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
 
   
-  const {user } = useAppSelector((state)=>state.auth)
+  const user = useAppSelector((state) =>
+  state.auth.role === "user" ? state.auth.user : null
+) as User | null;
 
 
   const fetchCourses = async () => {
@@ -83,10 +85,11 @@ const fetchPayments = async () => {
     fetchPayments();
   }, []);
 
+
   return (
     <div className="profile-container1">
       {/* Left Side - Profile Info */}
-      <div className="profile-left">
+      <div className="profile-left1">
         <div className="profile-card-one">
           <div className="user-name-card-image">
             <img
@@ -136,7 +139,7 @@ const fetchPayments = async () => {
               <button>Edit</button>
             </Link>
 
-            {!user?.googleId && (
+            {user?.provider!='google' && (
               <Link to="/user/changePassword">
                 <button className="change-password-btn">Change Password</button>
               </Link>

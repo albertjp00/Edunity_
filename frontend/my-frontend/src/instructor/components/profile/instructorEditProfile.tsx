@@ -3,7 +3,9 @@ import './instructorEditProfile.css';
 import { toast } from 'react-toastify';
 import profilePic from './../../../assets/profilePic.png';
 import { useNavigate } from 'react-router-dom';
-import { fetchProfile, profileEdit } from '../../services/Instructor/instructorServices';
+import { fetchProfile, profileEdit } from '../../services/instructorServices';
+import { fetchInstructorProfile } from '../../../redux/slices/authSlice';
+import { useAppDispatch } from '../../../redux/hooks';
 
 interface InstructorProfile {
   name: string;
@@ -21,6 +23,8 @@ interface InstructorProfile {
 const InstructorProfileEdit: React.FC = () => {
   const navigate = useNavigate();
   const [skillInput, setSkillInput] = useState('');
+
+  const dispatch = useAppDispatch()
 
   const [data, setData] = useState<InstructorProfile>({
     name: '',
@@ -68,6 +72,7 @@ const InstructorProfileEdit: React.FC = () => {
 
       if (response.data.success) {
         toast.success('Profile updated', { autoClose: 1500 });
+        dispatch(fetchInstructorProfile()).unwrap()
         navigate('/instructor/profile');
       }
     } catch (error) {

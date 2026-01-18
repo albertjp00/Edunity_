@@ -7,7 +7,7 @@ import {
   editCourse,
   getCategory,
   getCourseDetails,
-} from "../../services/Instructor/instructorServices";
+} from "../../services/instructorServices";
 
 import type { ICategory } from "../../../admin/adminInterfaces";
 

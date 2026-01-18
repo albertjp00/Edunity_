@@ -2,7 +2,7 @@ import React, { useEffect, useState, type ChangeEvent, type FormEvent } from "re
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import "./addCourse.css";
-import { addCourse, getCategory } from "../../services/Instructor/instructorServices";
+import { addCourse, getCategory } from "../../services/instructorServices";
 import type { ICategory } from "../../../admin/adminInterfaces";
 import type { addCourseModule, CourseForm } from "../../interterfaces/instructorInterfaces";
 

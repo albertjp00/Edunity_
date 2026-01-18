@@ -3,7 +3,7 @@ import "./instructorRegister.css";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import registerImage from '../../../assets/authImage.png'
-import { instructorRegister } from "../../services/Instructor/instructorServices";
+import { instructorRegister } from "../../services/instructorServices";
 import type { IRegisterForm } from "../../interterfaces/instructorInterfaces";
 
 

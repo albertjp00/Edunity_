@@ -34,7 +34,7 @@ export class UserEventController implements
     getEvents = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void | null> => {
         try {
             const result = await this._userEventService.getEventsRequest()
-            console.log(result);
+            // console.log(result);
 
 
             res.status(HttpStatus.OK).json({ success: true, events: result })
@@ -65,7 +65,7 @@ export class UserEventController implements
         try {
             const id = req.user?.id!
             const eventId = req.params.id
-            logger.info('enroll events ', id, eventId)
+            // logger.info('enroll events ', id, eventId)
             if (!eventId) {
                 res.status(400).json({ success: false, message: StatusMessage.NO_EVENT_ID });
                 return;
@@ -82,13 +82,9 @@ export class UserEventController implements
 
     getMyEvents = async (req: AuthRequest, res: Response) => {
         try {
-            // logger.info('getting my eventss ')
             const userId = req.user?.id!
-            console.log(userId);
 
             const events = await this._userEventService.getMyEvents(userId)
-            logger.info('evetnssss', events)
-            console.log(events);
 
             res.status(HttpStatus.OK).json({ success: true, events: events })
         } catch (error) {
@@ -102,7 +98,7 @@ export class UserEventController implements
         try {
             const userId = req.user?.id!
             const eventId = req.params.eventId!;
-            console.log('join event', eventId, userId);
+            // console.log('join event', eventId, userId);
 
             // if (!userId) {
             //     return res.status(401).json({ message: "Unauthorized" });

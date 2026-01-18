@@ -1,12 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
-import profileImage from "../../../assets/profilePic.png";
 import "./navbar.css";
 import logo from "../../../assets/logo.png";
 import notificationImg from '../../../assets/notification.png'
 import { useEffect } from "react";
 import { socket } from "../../../socket/socket";
 import { toast } from "react-toastify";
-import { fetchProfile } from "../../services/Instructor/instructorServices";
+import { fetchProfile } from "../../services/instructorServices";
+import { logoutSuccess } from "../../../redux/slices/authSlice";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "../../../redux/hooks";
 // import NotificationBell from "../notification/notificationBell";
 // import { useEffect, useState } from "react";
 
@@ -16,6 +18,10 @@ const InstructorNavbar = () => {
 
   // const storedInstructor = localStorage.getItem("instructor");
   // const instructor = storedInstructor
+
+  const dispatch = useDispatch()
+
+  const user = useAppSelector((state)=>state.auth.user)
 
   const gotoNotifications = () => {
     navigate('/instructor/notifications')
@@ -37,8 +43,10 @@ const InstructorNavbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("instructor");
+    dispatch(logoutSuccess())
     navigate("/instructor/login");
   };
+
 
 
   const addCourse = () => navigate("/instructor/addCourse");
@@ -116,7 +124,7 @@ const InstructorNavbar = () => {
           <p className="logout" onClick={handleLogout}>Logout</p>
 
           <Link to="/instructor/profile">
-            <img src={profileImage} alt="Profile" className="profile-img" />
+            <img src={`${import.meta.env.VITE_API_URL}/assets/${user?.profileImage}`} alt="Profile" className={"profile-img"} />
           </Link>
         </div>
       </div>

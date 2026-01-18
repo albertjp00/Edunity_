@@ -180,4 +180,16 @@ export class AdminCourseController implements
 
         }
     }
+
+
+    getReports= async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
+        try {
+            const reports = await this._courseService.getReportsRequest()
+
+            res.json({ success: true , reports : reports })
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
 }

@@ -86,6 +86,8 @@ admin.get(ADMIN_ROUTES.CATEGORY.GET_CATEGORY, adminAuthMiddleware, courseControl
 
 admin.patch(ADMIN_ROUTES.CATEGORY.DELETE_CATEGORY, adminAuthMiddleware, courseController.deleteCategory);
 
+admin.get(ADMIN_ROUTES.COURSES.GET_REPORTS, adminAuthMiddleware, courseController.getReports);
+
 // admin.post('/login',authController.adminLogin)
 
 // admin.get('/getUsers',adminAuthMiddleware,userController.getUsers)

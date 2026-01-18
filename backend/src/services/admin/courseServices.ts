@@ -178,6 +178,18 @@ export class AdminCourseService implements IAdminCourseService {
         }
     }
 
+    getReportsRequest = async () => {
+        try {
+
+            const report = await this.adminRepository.getReports()
+
+            return report
+        } catch (error) {
+            console.log(error);
+            return null
+        }
+    }
+
 
 
 

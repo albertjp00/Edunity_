@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import "./quiz.css";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { getQuiz, quizSave } from "../../services/Instructor/instructorServices";
+import { getQuiz, quizSave } from "../../services/instructorServices";
 import type { Question, QuizData } from "../../interterfaces/instructorInterfaces";
 
 

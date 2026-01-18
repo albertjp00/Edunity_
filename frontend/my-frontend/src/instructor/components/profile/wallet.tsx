@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./wallet.css";
-import { getWallet } from "../../services/Instructor/instructorServices";
+import { getWallet } from "../../services/instructorServices";
 
 interface Transaction {
   type: "credit" | "debit";

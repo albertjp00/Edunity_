@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./myCourses.css";
 import { useNavigate } from "react-router-dom";
-import { getCourses } from "../../services/Instructor/instructorServices";
+import { getCourses } from "../../services/instructorServices";
 
 interface Course {
   _id: string;

@@ -59,7 +59,7 @@ export class AuthController
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
           sameSite: "strict",
-          maxAge: 24 * 60 * 60 * 1000, // 1 day
+          maxAge: 24 * 60 * 60 * 1000, 
         });
 
         
@@ -86,14 +86,15 @@ export class AuthController
 
   refreshToken = (req: Request, res: Response, next: NextFunction): void => {
     try {
-      logger.info('refresh token ');
+      console.log('refresh token ');
       const token = req.cookies.refreshToken;
-      logger.info('refresh token ', token);
+      console.log('refresh token ', token);
 
       if (!token) {
         res.status(HttpStatus.UNAUTHORIZED).json({ message: StatusMessage.TOKEN_REQUIRED });
         return;
       }
+
 
       jwt.verify(token, REFRESH_KEY, (err: any, user: any) => {
         if (err) {
@@ -101,13 +102,13 @@ export class AuthController
           return;
         }
 
-        if (!process.env.ACCESS_SECRET) throw new Error("ACCESS_SECRET not set");
-        if (!process.env.REFRESH_TIME) throw new Error("REFRESH_TIME not set");
+        if (!process.env.SECRET_KEY) throw new Error("ACCESS_SECRET not set");
+        if (!process.env.REFRESH_KEY) throw new Error("REFRESH_TIME not set");
 
       
 
         const newAccessToken = jwt.sign({ id: user.id }, SECRET_KEY, {
-          expiresIn: Number(process.env.REFRESH_TIME),
+          expiresIn: '15m',
         });
 
         res.json({ accessToken: newAccessToken });
@@ -224,18 +225,18 @@ export class AuthController
         res.status(HttpStatus.BAD_REQUEST).json({ message: StatusMessage.TOKEN_REQUIRED });
         return;
       }
-      const { accessToken, refreshToken, user } = await this._authService.googleLogin(token);
+      const { accessToken, refreshToken } = await this._authService.googleLogin(token);
       // console.log(accessToken);
       if (refreshToken) {
         res.cookie("refreshToken", refreshToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
-          maxAge: 2 * 24 * 60 * 60 * 1000, // 1 day
+          sameSite:"strict",
+          maxAge: 60 * 60 * 1000, 
         });
       }
 
-      res.json({ success: true, token: accessToken });
+      res.json({ success: true, token: accessToken  });
     } catch (error: any) {
       // console.error("Google Sign-In error:", error);
       next(error)

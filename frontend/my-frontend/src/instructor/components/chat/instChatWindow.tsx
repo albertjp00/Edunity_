@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./chatwindow.css";
 import attachmentImage from "../../../assets/documentImage.jpg";
-import { getMessages, sendMessages } from "../../services/Instructor/instructorServices";
+import { getMessages, sendMessages } from "../../services/instructorServices";
 import { socket } from "../../../socket/socket";
 import type { ChatWindowProps, Message } from "../../interterfaces/chat";
 

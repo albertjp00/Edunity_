@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./viewMyCourse.css";
-import { cancelCourse, submitReview, updateProgress, viewMyCourse } from "../../services/courseServices";
+import { cancelCourse, submitReport, submitReview, updateProgress, viewMyCourse } from "../../services/courseServices";
 import VideoPlayerUser from "../videoPlayer/videoPlayer";
 import { toast } from "react-toastify";
 import ConfirmModal from "../modal/modal";
 import { getCertificate } from "../../../services/user/userServices";
-import type { ICourse, IInstructor, IMyCourse, IReview, User } from "../../interfaces";
+import type { ICourse, IInstructor, IMyCourse, IReport, IReview, User } from "../../interfaces";
 import { getUserProfile } from "../../services/profileServices";
 
 
@@ -31,6 +31,11 @@ const ViewMyCourse: React.FC = () => {
   const [rating, setRating] = useState<number>(0);
   const [reviewText, setReviewText] = useState<string>("");
   // const [loadingReview, setLoadingReview] = useState<boolean>(false);
+  const [report, setReport] = useState<IReport>({
+  reason: "",
+  message: "",
+});
+
   const navigate = useNavigate();
 
 
@@ -224,16 +229,16 @@ const ViewMyCourse: React.FC = () => {
         setRating(0);
         setReviewText("");
         setMyReview(res.data.result)
-  
+
 
         const newReview = res.data.review
-        
-        setReview((prev)=>{
-          if(isEditingReview){
-            return prev ? prev.map((r)=> r.userId === newReview.userId ? newReview : r) : newReview
+
+        setReview((prev) => {
+          if (isEditingReview) {
+            return prev ? prev.map((r) => r.userId === newReview.userId ? newReview : r) : newReview
           }
 
-          return prev ? [...prev , newReview] : [newReview]
+          return prev ? [...prev, newReview] : [newReview]
         })
         setIsEditingReview(false)
         setMyReview(newReview)
@@ -249,6 +254,19 @@ const ViewMyCourse: React.FC = () => {
   };
 
 
+  const reportSubmit = async (e:React.FormEvent) => {
+    e.preventDefault()
+    try {
+      if(!id || !report.reason) return
+      await submitReport(id , report);
+
+      toast.success("report submitted")
+      setReport({reason : '' , message : ''})
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
 
 
 
@@ -260,6 +278,7 @@ const ViewMyCourse: React.FC = () => {
 
   return (
     <div className="course-details-wrapper">
+
       <div className="course-header">
         <h2>Course Details</h2>
         <p className="breadcrumb">Home / My Course</p>
@@ -296,6 +315,13 @@ const ViewMyCourse: React.FC = () => {
               onClick={() => setActiveTab("instructor")}
             >
               Instructor
+            </button>
+
+            <button
+              className={activeTab === "report" ? "active" : ""}
+              onClick={() => setActiveTab("report")}
+            >
+             Report
             </button>
           </div>
 
@@ -541,6 +567,46 @@ const ViewMyCourse: React.FC = () => {
               >
                 💬 Chat with Instructor
               </button>
+            </div>
+          )}
+
+
+          {activeTab === "report" && (
+            <div className="tab-content report-tab">
+              <h3>Report this course</h3>
+
+              <p className="report-subtext">
+                Help us keep the platform safe by reporting issues with this course.
+              </p>
+
+              <form className="report-form">
+                <label>Reason for reporting</label>
+
+                <select name="reason" value={report.reason} onChange={(e)=>setReport((prev)=>({...prev , reason:e.target.value}))} required>
+                  <option value="" >Select a reason</option>
+
+                  <option value="misleading">Misleading course description</option>
+                  <option value="scam">Scam or fake course</option>
+                  <option value="copyright">Copyright violation</option>
+                  <option value="inappropriate">Inappropriate or offensive content</option>
+                  <option value="spam">Spam or promotional content</option>
+
+
+                </select>
+
+                <label>Additional details (optional)</label>
+                <textarea
+                  name="message"
+                  value={report.message}
+                  placeholder="Provide more details to help us review this course"
+                  rows={4}
+                  onChange={(e)=>setReport((prev)=>({...prev , message:e.target.value}))}
+                />
+
+                <button type="submit" onClick={reportSubmit} className="report-btn">
+                  Submit Report
+                </button>
+              </form>
             </div>
           )}
         </div>

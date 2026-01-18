@@ -176,3 +176,12 @@ export interface LoginFormData {
   password: string;
 }
 
+
+export interface IReportAdmin{
+  _id : string,
+  reason:string,
+  message?:string,
+  courseId : string;
+  userId : string;
+  createdAt : Date
+}
