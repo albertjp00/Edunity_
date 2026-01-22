@@ -144,22 +144,12 @@ export class CourseService implements IInstCourseService {
       const instructor = await this.instructorRepository.findById(id)
       const limit = instructor?.courseLimit!
 
-      const date = new Date()
-            const d = date.toLocaleDateString('en-US',{
-                month : 'long'
-            })
-            console.log('dataa',d);
+
+      const course = await this.instructorRepository.addCourse(id, data)
+
       
 
-
-      if (limit < 5) {
-        const createdCourse = await this.instructorRepository.addCourse(id, data);
-        return createdCourse;
-      }else{
-        return 'limitReached'
-      }
-
-
+      return course
       
     } catch (error) {
       console.error("Add Course Error:", error);

@@ -288,6 +288,9 @@ export class UserCourseController
             const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
             const userId = req.user?.id!;
 
+            console.log( 'dubscriptoin verify',razorpay_order_id, razorpay_payment_id, razorpay_signature);
+            
+
             const key = `verifySubscription_${userId}`;
 
             const result = await debounceCall(key, 2000, async () => {

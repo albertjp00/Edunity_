@@ -98,15 +98,28 @@ export class AdminInstructorController implements
     getInstructors = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const id = req.params.id!
-            console.log('get instructorssssss ', id);
 
             const result = await this._adminInstructorService.getInstructorsRequest(id)
+            
             res.status(HttpStatus.OK).json({ success: true, instructor: result })
         } catch (error) {
             console.log(error);
             next(error)
         }
     }
+
+    blockInstructor = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const id = req.params.id!
+
+            const result = await this._adminInstructorService.blockInstructorRequest(id)
+            res.status(HttpStatus.OK).json({ success: result})
+        } catch (error) {
+            console.log(error);
+            next(error)
+        }
+    }
+
 
     getInstructorsCourses = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {

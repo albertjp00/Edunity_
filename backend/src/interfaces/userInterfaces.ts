@@ -51,7 +51,7 @@ export interface IUserRepository {
 
   sendNotification(userId: string, title: string, message: string): Promise<INotification | null>
 
-  getNotifications(userId: string): Promise<INotification[] | null>
+  getNotifications(userId: string , page : number): Promise<INotifications | null>
 
   notificationsMarkRead(userId: string): Promise<INotification[] | null>
 
@@ -93,6 +93,7 @@ import { Request, Response, NextFunction } from "express";
 import { AuthRequest } from "../middleware/authMiddleware.js";
 import { IReview } from "../models/review";
 import { IReport } from "../models/report";
+import { INotifications } from "../interfacesServices.ts/userServiceInterfaces";
 
 
 //authController
@@ -225,8 +226,8 @@ export interface UserDTO {
   dob?: string | undefined;
   location?: string | undefined;
   phone?: string | undefined;
-  createdAt?: string;
-  provider : string;
+  createdAt?: Date;
+  provider? : string;
 }
 
 

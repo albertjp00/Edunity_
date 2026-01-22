@@ -1,6 +1,6 @@
 import { StatusMessage } from '../../enums/statusMessage';
 import { IPaymentDetails } from '../../interfaces/userInterfaces';
-import { IUserProfileService } from '../../interfacesServices.ts/userServiceInterfaces';
+import { INotifications, IUserProfileService } from '../../interfacesServices.ts/userServiceInterfaces';
 import { mapUserToDTO } from '../../mapper/user.mapper';
 import { INotification } from '../../models/notification';
 import { IPayment } from '../../models/payment';
@@ -99,9 +99,10 @@ export class ProfileService implements IUserProfileService {
     }
   }
 
-  async getNotifications(userId: string): Promise<INotification[] | null> {
+  async getNotifications(userId: string , page :number): Promise<INotifications | null> {
     try {
-      const noti = await this.userRepository.getNotifications(userId)
+      const noti = await this.userRepository.getNotifications(userId , page)
+      
       return noti
     } catch (error) {
       console.log(error);

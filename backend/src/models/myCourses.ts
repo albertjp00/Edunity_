@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
-import { IReview } from "./course";
+import { IReview } from "./review";
 
 export interface IModule {
   title: string;
@@ -30,7 +30,8 @@ export interface IMyCourse extends Document {
   amountPaid:number
   paymentStatus:string
   cancelCourse : boolean
-  review:IReview[]
+  review:IReview[],
+  blocked : boolean
 }
 
 
@@ -67,6 +68,10 @@ const myCourseSchema: Schema<IMyCourse> = new Schema({
   cancelCourse:{
     type:Boolean,
     default:true
+  },
+  blocked:{
+    type :Boolean,
+    default : false
   }
 });
 

@@ -61,6 +61,8 @@ admin.put(ADMIN_ROUTES.INSTRUCTORS.REJECT_KYC, adminAuthMiddleware, instructorCo
 
 admin.get(ADMIN_ROUTES.INSTRUCTORS.GET_BY_ID, adminAuthMiddleware, instructorController.getInstructors);
 
+admin.put(ADMIN_ROUTES.INSTRUCTORS.BLOCK_INSTRUCTOR, adminAuthMiddleware, instructorController.blockInstructor);
+
 admin.get(ADMIN_ROUTES.INSTRUCTORS.GET_COURSES, adminAuthMiddleware, instructorController.getInstructorsCourses);
 
 admin.get(ADMIN_ROUTES.COURSES.GET_ALL, adminAuthMiddleware, courseController.getCourses);

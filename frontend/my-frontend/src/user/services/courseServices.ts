@@ -287,7 +287,10 @@ export const subscriptionVerify= async (response: {
   try {    
 
     const res = await api.post("/user/paymentSubscription/verify", {
-              response,
+              razorpay_payment_id: response.razorpay_payment_id,
+    razorpay_order_id: response.razorpay_order_id,
+    razorpay_signature: response.razorpay_signature,
+    
             });
     
     return res

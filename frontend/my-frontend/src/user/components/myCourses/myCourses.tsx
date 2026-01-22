@@ -28,6 +28,7 @@ interface IMyCourse {
     completedModules: string[];
   };
   createdAt: string;
+  blocked : boolean
 }
 
 const UserMyCourses: React.FC = () => {
@@ -46,8 +47,11 @@ const UserMyCourses: React.FC = () => {
           res.data.courses || res.data.populatedCourses || [];
 
         const validCourses = rawCourses.filter(
-          (item: IMyCourse) => item.course !== null
+          (item: IMyCourse) => item.course !== null && !item.blocked
         );
+
+        console.log(validCourses);
+        
 
         setCourses(validCourses);
         setCurrentPage(res.data.currentPage || 1);

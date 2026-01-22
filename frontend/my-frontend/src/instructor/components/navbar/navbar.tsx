@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./navbar.css";
 import logo from "../../../assets/logo.png";
 import notificationImg from '../../../assets/notification.png'
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { socket } from "../../../socket/socket";
 import { toast } from "react-toastify";
 import { fetchProfile } from "../../services/instructorServices";
@@ -22,6 +22,9 @@ const InstructorNavbar = () => {
   const dispatch = useDispatch()
 
   const user = useAppSelector((state)=>state.auth.user)
+
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
+  
 
   const gotoNotifications = () => {
     navigate('/instructor/notifications')
@@ -121,13 +124,37 @@ const InstructorNavbar = () => {
             <p>Messages</p>
           </div>
 
-          <p className="logout" onClick={handleLogout}>Logout</p>
+          <p className="logout" onClick={()=>setShowLogoutModal(true)}>Logout</p>
 
           <Link to="/instructor/profile">
             <img src={`${import.meta.env.VITE_API_URL}/assets/${user?.profileImage}`} alt="Profile" className={"profile-img"} />
           </Link>
         </div>
       </div>
+
+      {showLogoutModal &&
+      <div className="logout-modal-overlay">
+        <div className="logout-modal">
+          <h3>Confirm Logout</h3>
+          <p>Are you sure you want to logout?</p>
+
+          <div className="logout-actions">
+            <div className="cancel-btn" onClick={()=>setShowLogoutModal(false)}>
+              Cancel
+            </div>
+
+            <button className='confirm-btn' onClick={()=> {
+              setShowLogoutModal(false); 
+              handleLogout();
+              }}>
+              
+              logout
+            </button>
+
+          </div>
+        </div>
+      </div>
+      }
     </div>
   );
 };

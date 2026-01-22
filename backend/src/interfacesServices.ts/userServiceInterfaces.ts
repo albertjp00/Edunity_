@@ -218,7 +218,13 @@ export interface IUserProfileService {
   passwordChange(id: string, newPassword: string, oldPassword: string): Promise<boolean>;
   getWallet(userId: string): Promise<IWallet | null>;
   getPayment(userId: string , page:number): Promise<IPaymentDetails | null>;
-  getNotifications(userId: string): Promise<INotification[] | null>;
+  getNotifications(userId: string , page : number): Promise<INotifications | null>;
   notificationsMarkRead(userId: string): Promise<INotification[] | null>;
   subscriptionCheckRequest(id:string):Promise<ISubscription | boolean | null>;
+}
+
+
+export interface INotifications {
+    notifications : INotification[]
+    total : number
 }

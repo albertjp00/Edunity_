@@ -10,7 +10,7 @@ import useDebounce from "../../components/debounce/debounce";
 
 interface User {
   _id: string;
-  id?:string;
+  id:string;
   name: string;
   email: string;
   profileImage?: string;
@@ -63,6 +63,8 @@ const UsersAdmin: React.FC = () => {
 
 
   const handleBlock = (userId: string): void => {
+    console.log('block');
+    
     setSelectedUserId(userId);
     setIsBlocking(true);
     setShowModal(true);
@@ -76,16 +78,17 @@ const UsersAdmin: React.FC = () => {
   };
 
   const confirmAction = async () => {
-    if (!selectedUserId) return;
 
+    if (!selectedUserId) return;
 
     try {
       if (isBlocking) {
         const res = await blockUser(selectedUserId);
-        if (res.success) toast.success("User Blocked", { autoClose: 1500 });
+        
+        if (res.data.success) toast.success("User Blocked", { autoClose: 1500 });
       } else {
         const res = await unblockUser(selectedUserId);
-        if (res.success) toast.success("User Unblocked", { autoClose: 1500 });
+        if (res.data.success) toast.success("User Unblocked", { autoClose: 1500 });
       }
       loadUsers(currentPage, searchTerm);
     } catch (error) {
@@ -96,6 +99,7 @@ const UsersAdmin: React.FC = () => {
     }
   };
 
+  
   
   useEffect(() => {
     loadUsers(currentPage, searchTerm);
@@ -116,7 +120,6 @@ const UsersAdmin: React.FC = () => {
 
   return (
     <div className="user-list">
-      
     
       <AdminList
   title="Users Management"
@@ -129,8 +132,8 @@ const UsersAdmin: React.FC = () => {
     { label: "Picture", render: (u) => <img src={u.profileImage ? `${import.meta.env.VITE_API_URL}/assets/${u.profileImage}` : profilePic} width={40} /> },
     { label: "Status", render: (u) =>
         u.blocked ?
-          <button onClick={() => handleUnblock(u._id)}>Unblock</button> :
-          <button onClick={() => handleBlock(u._id)}>Block</button>
+          <button onClick={() => handleUnblock(u.id)}>Unblock</button> :
+          <button onClick={() => handleBlock(u.id)}>Block</button>
     },
   ]}
   page={currentPage}

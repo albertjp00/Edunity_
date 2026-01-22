@@ -1,57 +1,91 @@
-
+/* Page Wrapper */
+.favourites h2{
+  margin: 30px;
+}
 
 .favourites-container {
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 20px;
 }
 
-.favourites-list {
+/* Page Heading */
+.favourites-container h2 {
+  margin-bottom: 20px;
+  font-size: 26px;
+  font-weight: 600;
+  color: #222;
+}
+
+/* Empty State */
+.favourites-container p {
+  font-size: 16px;
+  color: #777;
+}
+
+/* Cards Grid */
+.favourite-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 20px;
 }
 
+/* Favourite Card */
 .favourite-card {
-  display: flex;
-  align-items: flex-start;
-  background: #fff;
+  background: #dcd9d9d4;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
-  padding: 16px;
-  gap: 16px;
-  width: 100%;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  padding: 14px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 50px;
 }
 
-.favourite-card:hover {
-  transform: translateY(-5px);
-}
 
-.favourite-thumbnail {
-  width: 160px;
-  height: 120px;
+
+/* Thumbnail */
+.img-thumbnail {
+  width: 100px;
+  height: 60px;
   object-fit: cover;
-  border-radius: 8px;
-  flex-shrink: 0;
+  border-radius: 10px;
+  margin-bottom: 12px;
 }
 
-.favourite-details {
-  flex: 1;
-}
-
-.favourite-title {
+/* Title */
+.favourite-card h3 {
   font-size: 18px;
-  font-weight: 600;
-  margin: 0 0 8px 0;
+  margin-bottom: 6px;
+  color: #111;
 }
 
-.favourite-description {
+/* Description */
+.favourite-card p {
   font-size: 14px;
   color: #555;
-  margin-bottom: 8px;
+  flex-grow: 1;
 }
 
-.favourite-date {
-  font-size: 13px;
-  color: #444;
-  margin-top: 6px;
+/* Button Section */
+.button-section {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+/* Remove Button */
+.button-section button {
+  background-color: #ff4d4f;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.button-section button:hover {
+  background-color: #d9363e;
 }

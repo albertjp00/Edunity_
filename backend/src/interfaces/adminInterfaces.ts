@@ -56,6 +56,7 @@ export interface IAdminUserManagementController {
 //  INSTRUCTOR MANAGEMENT INTERFACE
 export interface IAdminInstructorController {
   getInstructors(req: Request, res: Response, next: NextFunction): Promise<void>;
+  blockInstructor(req: AdminAuthRequest, res: Response, next: NextFunction): Promise<void>;
 }
 
 
@@ -64,6 +65,7 @@ export interface IAdminKycController {
   getKyc(req: Request, res: Response, next: NextFunction): Promise<void>;
   verifyKyc(req: Request, res: Response, next: NextFunction): Promise<void>;
   rejectKyc(req: AdminAuthRequest, res: Response, next: NextFunction): Promise<void>;
+  
 }
 
 
@@ -147,7 +149,10 @@ export interface IAdminInstructorService {
 
   getInstructorsRequest(id: string): Promise<IInstructor | null>;
 
+  blockInstructorRequest(id: string): Promise<boolean | null>;
+
   getInstructorsCoursesRequest(id: string): Promise<ICourse[] | null>;
+
 }
 
 

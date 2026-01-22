@@ -68,6 +68,8 @@ export interface IAdminRepository {
     blockCourse(courseId:string): Promise<boolean | null>
 
     getReports(): Promise<IReport[] | null>
+
+    blockUnblockInstructor(id:string):Promise<boolean>
 }
 
 
@@ -433,8 +435,11 @@ export class AdminRepository implements IAdminRepository {
             
             if(!course?.blocked){
                 await CourseModel.findByIdAndUpdate(courseId,{blocked : true},{new : true})
+                await MyCourseModel.updateMany({courseId : courseId },{$set:{ blocked : true}})
+                
             }else{
                 await CourseModel.findByIdAndUpdate(courseId,{blocked : false},{new : true})
+                await MyCourseModel.updateMany({courseId : courseId} ,{$set:{ blocked : false}})
             }
 
             return true
@@ -453,6 +458,18 @@ export class AdminRepository implements IAdminRepository {
             console.log(error);
             return null
         }
+    }
+
+    async blockUnblockInstructor(id:string):Promise<boolean>{
+
+        const instructor = await InstructorModel.findById(id)
+
+        if(instructor?.blocked){
+            await InstructorModel.findByIdAndUpdate(id , {blocked : false},{new :true})
+        }else{
+            await InstructorModel.findByIdAndUpdate(id , {blocked : true} , {new : true})
+        }
+        return true
     }
 
 

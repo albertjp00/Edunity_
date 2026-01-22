@@ -7,16 +7,16 @@ import { StatusMessage } from '../../enums/statusMessage';
 // import { ProfileService } from '../../services/user/profileService';
 
 
-export class ProfileController implements 
-        IProfileReadController,
-        IProfileWriteController,
-        IPasswordController,
-        IWalletController,
-        IPaymentController,
-        INotificationController {
+export class ProfileController implements
+    IProfileReadController,
+    IProfileWriteController,
+    IPasswordController,
+    IWalletController,
+    IPaymentController,
+    INotificationController {
     private _profileService: IUserProfileService;
 
-    constructor(profileService: IUserProfileService) { 
+    constructor(profileService: IUserProfileService) {
         // const repo = new UserRepository(); 
         this._profileService = profileService
     }
@@ -127,7 +127,7 @@ export class ProfileController implements
         try {
             const userId = req.user?.id
             const page = Number(req.params.page)
-            const payment = await this._profileService.getPayment(userId as string , page)
+            const payment = await this._profileService.getPayment(userId as string, page)
             // console.log(payment);
 
             res.status(HttpStatus.OK).json({ success: true, payments: payment })
@@ -142,13 +142,13 @@ export class ProfileController implements
     notifications = async (req: AuthRequest, res: Response) => {
         try {
             const userId = req.user?.id
-            const notifications = await this._profileService.getNotifications(userId as string)
+            const page = Number(req.params.page)
+            const noti = await this._profileService.getNotifications(userId as string , page)
 
-            res.status(HttpStatus.OK).json({ success: true, notifications })
+            res.status(HttpStatus.OK).json({ success: true, notifications : noti?.notifications , total : noti?.total })
 
         } catch (error) {
             console.log(error);
-
         }
     }
 
@@ -166,16 +166,30 @@ export class ProfileController implements
     }
 
 
-    subscriptionCheck = async(req:AuthRequest , res : Response , next:NextFunction)=>{
+    subscriptionCheck = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             const id = req.user?.id!
             const result = await this._profileService.subscriptionCheckRequest(id)
-            console.log('subscription',result);
+            // console.log('subscription check', result);
             
-            res.status(HttpStatus.OK).json({result})
+
+            const start = new Date()
+            start.setDate(1)
+            start.setHours(0,0,0,0)
+
+            const endDate = new Date();
+            endDate.setMonth(endDate.getMonth() + 1)
+            endDate.setDate(0)
+            endDate.setHours(23, 59 , 59 , 999)
+
+            console.log('date',start , endDate);
+            
+
+
+            res.status(HttpStatus.OK).json({ result })
         } catch (error) {
             console.log(error);
-            
+
         }
     }
 }

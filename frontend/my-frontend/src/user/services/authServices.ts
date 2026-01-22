@@ -10,7 +10,7 @@ export const login = async(value:IUser)=>{
         return res
     } catch (error) {
         console.log(error);
-        
+        throw error
     }
 }
 

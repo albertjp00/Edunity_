@@ -1,5 +1,5 @@
 import { IMyCourses } from '../../interfaces/userInterfaces';
-import { ICourse} from '../../models/course';
+import { ICourse } from '../../models/course';
 import { IFavourite } from '../../models/favourites';
 import { IInstructor } from '../../models/instructor';
 import { IMyCourse, IProgress } from '../../models/myCourses';
@@ -40,7 +40,7 @@ export interface IviewCourse {
   cancelCourse: boolean
   quizExists: boolean
   enrolledAt: Date
-  review:IReview[] | null
+  review: IReview[] | null
 }
 
 
@@ -118,7 +118,7 @@ export class UserCourseService implements IUserCourseService {
 
       const completedModules = myCourse?.progress?.completedModules || [];
 
-      if(myCourse){
+      if (myCourse) {
         return 'myCourseExists'
       }
 
@@ -133,7 +133,7 @@ export class UserCourseService implements IUserCourseService {
         }
       }
 
-      
+
 
       if (myCourse) {
         hasAccess = true
@@ -163,32 +163,34 @@ export class UserCourseService implements IUserCourseService {
     try {
       console.log('buy course service');
 
-      const courseCount = await this.userRepository.getMyCoursesCount(userId)
-      if (courseCount < 5) {
-        const course = await this.userRepository.getCourse(courseId);
-        if (!course) {
-          throw new Error(StatusMessage.COURSE_NOT_FOUND);
-        }
-        if (course.onPurchase) {
-          throw new Error(StatusMessage.PAYMENT_ALREADY_PROGRESS)
-        }
+      
+
+      const course = await this.userRepository.getCourse(courseId);
 
 
-
-        const options = {
-          amount: course.price! * 100,
-          currency: "INR",
-          receipt: `receipt_${Date.now()}`,
-          notes: { userId, courseId },
-        };
-
-
-        const order = await razorpay.orders.create(options);
-
-        const onPurchase = await this.userRepository.onPurchase(courseId, true)
-
-        return order;
+      if (!course) {
+        throw new Error(StatusMessage.COURSE_NOT_FOUND);
       }
+      if (course.onPurchase) {
+        throw new Error(StatusMessage.PAYMENT_ALREADY_PROGRESS)
+      }
+
+
+
+      const options = {
+        amount: course.price! * 100,
+        currency: "INR",
+        receipt: `receipt_${Date.now()}`,
+        notes: { userId, courseId },
+      };
+
+
+      const order = await razorpay.orders.create(options);
+
+      const onPurchase = await this.userRepository.onPurchase(courseId, true)
+
+      return order;
+
 
     } catch (error) {
       console.error(error);
@@ -211,21 +213,21 @@ export class UserCourseService implements IUserCourseService {
     razorpay_signature: string, courseId: string, userId: string): Promise<{ success: boolean; message: string }> => {
     try {
 
-      console.log('verify payment ',courseId , userId);
-      
+      console.log('verify payment ', courseId, userId);
+
       const sign = razorpay_order_id + "|" + razorpay_payment_id;
       const expectedSign = crypto
         .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
         .update(sign.toString())
         .digest("hex");
 
-        console.log('check equal ',expectedSign , razorpay_signature);
-        
+      console.log('check equal ', expectedSign, razorpay_signature);
+
 
       if (razorpay_signature === expectedSign) {
         const course = await this.userRepository.getCourse(courseId)
-        console.log('buyin course ',course);
-      
+        console.log('buyin course ', course);
+
         if (!course) {
           return { success: false, message: StatusMessage.COURSE_NOT_FOUND };
         }
@@ -427,11 +429,11 @@ export class UserCourseService implements IUserCourseService {
         quizExists = true
       }
 
-      const review = await this.userRepository.getReview(id,course.id)
+      const review = await this.userRepository.getReview(id, course.id)
 
-      
 
-      return { course, review , instructor, progress, cancelCourse, quizExists, enrolledAt };
+
+      return { course, review, instructor, progress, cancelCourse, quizExists, enrolledAt };
     } catch (error) {
       console.log(error);
       return null;
@@ -502,17 +504,17 @@ export class UserCourseService implements IUserCourseService {
 
     try {
       console.log('in servire review');
-      
-    //   const courseReview = await this.userRepository.getCourse(courseId)
-    //   console.log(courseReview);
-      
-    //   const reviewed = courseReview?.review.some((r:IReview)=>  r.userId === userId )
-      
-    //   console.log('reviewdddd',reviewed);
-      
-    //   if (reviewed) {
-    //   return 'exists'
-    // }
+
+      //   const courseReview = await this.userRepository.getCourse(courseId)
+      //   console.log(courseReview);
+
+      //   const reviewed = courseReview?.review.some((r:IReview)=>  r.userId === userId )
+
+      //   console.log('reviewdddd',reviewed);
+
+      //   if (reviewed) {
+      //   return 'exists'
+      // }
 
       const user = await this.userRepository.findById(userId)
       if (user) {
@@ -526,7 +528,7 @@ export class UserCourseService implements IUserCourseService {
       }
 
 
-      
+
     } catch (error) {
       console.log(error);
       return null
@@ -549,23 +551,23 @@ export class UserCourseService implements IUserCourseService {
 
 
 
-    async addtoFavourites(userId: string, courseId: string): Promise<string | null> {
-      try {
-        // console.log('add to fav');
+  async addtoFavourites(userId: string, courseId: string): Promise<string | null> {
+    try {
+      // console.log('add to fav');
 
-        const result = await this.userRepository.addtoFavourites(userId, courseId);
+      const result = await this.userRepository.addtoFavourites(userId, courseId);
 
-        // if (result == 'existing') {
-        //   return result;
-        // }
+      // if (result == 'existing') {
+      //   return result;
+      // }
 
-        return result
-      } catch (error) {
-        console.log(error);
-        return null
-        // return { success: false, message: StatusMessage.INTERNAL_SERVER_ERROR };
-      }
+      return result
+    } catch (error) {
+      console.log(error);
+      return null
+      // return { success: false, message: StatusMessage.INTERNAL_SERVER_ERROR };
     }
+  }
 
   async getFavourites(userId: string): Promise<IFavourite[] | null> {
     try {
@@ -600,7 +602,7 @@ export class UserCourseService implements IUserCourseService {
       const myCourse = await this.userRepository.getCourseDetails(userId, courseId);
       console.log(myCourse);
       const favCourse = await this.userRepository.getFavCourseDetails(userId, courseId);
-      if(!favCourse){
+      if (!favCourse) {
         return false
       }
 
@@ -717,12 +719,12 @@ export class UserCourseService implements IUserCourseService {
   }
 
 
-    reportCourseRequest = async (userId:string , courseId: string , report : IReport ) => {
+  reportCourseRequest = async (userId: string, courseId: string, report: IReport) => {
     try {
-      
-      const res  = await this.userRepository.reportCourse(userId , courseId , report)
 
-          } catch (error) {
+      const res = await this.userRepository.reportCourse(userId, courseId, report)
+
+    } catch (error) {
       console.log(error);
 
     }

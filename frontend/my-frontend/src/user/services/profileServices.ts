@@ -60,9 +60,9 @@ export const getPaymentHistory = async(page:number)=>{
 }
 
 
-export const fetchNotifications = async()=>{
+export const fetchNotifications = async(page : number)=>{
     try {
-        const res = await api.get('/user/notifications')
+        const res = await api.get(`/user/notifications/${page}`)
         return res
     } catch (error) {
         console.log(error);

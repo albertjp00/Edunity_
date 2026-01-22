@@ -38,25 +38,22 @@ const LoginUser: React.FC = () => {
     e.preventDefault();
     try {
       
-      const response = await login(value)
-
+      const response = await login(value)     
+       
       
-
       if(!response) return
+      
       if (response.status === 200 && response.data.accessToken) {
         localStorage.setItem("token", response.data.accessToken);
-        navigate("/user/home");
-      }
-      
-      // if(response){
-      // const res = await getUserProfile()
-      // console.log('login user data',res);
-      // }
-      
-      dispatch(fetchUserProfile())
+        dispatch(fetchUserProfile())
       
       navigate('/user/home')
-    } catch (error) {
+      }
+      
+      
+    } catch (error) {      
+      console.log('responseeee',error);
+      
       const err = error as AxiosError<{ message: string }>;
       const message = err.response?.data?.message || "Something went wrong";
       toast.error(message);

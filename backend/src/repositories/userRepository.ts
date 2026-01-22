@@ -17,6 +17,7 @@ import { IPayment, PaymentModel } from '../models/payment';
 import { INotification, NotificationModel } from '../models/notification';
 import { IReview, ReviewModel } from '../models/review';
 import { IReport, ReportModel } from '../models/report';
+import { INotifications } from '../interfacesServices.ts/userServiceInterfaces';
 
 
 
@@ -86,7 +87,7 @@ export class UserRepository extends BaseRepository<IUser>
   }
 
   async getCourse(id: string): Promise<ICourse | null> {
-    return await CourseModel.findById(id)
+    return await CourseModel.findById(id);
   }
 
 
@@ -98,13 +99,7 @@ export class UserRepository extends BaseRepository<IUser>
     return await CourseModel.findByIdAndUpdate(id, { onPurchase: false }, { new: true })
   }
 
-  async getMyCoursesCount(id: string): Promise<number> {
-    return MyCourseModel.countDocuments({
-      userId: id, date: {
-
-      }
-    })
-  }
+  
 
   async buyCourse(id: string): Promise<ICourse | null> {
     return await CourseModel.findByIdAndUpdate(id, { $inc: { totalEnrolled: 1 } })
@@ -202,7 +197,6 @@ export class UserRepository extends BaseRepository<IUser>
           moduleCount: { $size: { $ifNull: ["$modules", []] } }
         }
       },
-      { $match: { blocked: false } },
       {
         $lookup: {
           from: "instructors",
@@ -316,14 +310,21 @@ export class UserRepository extends BaseRepository<IUser>
   }
 
 
-  async getNotifications(userId: string): Promise<INotification[] | null> {
+
+  async getNotifications(userId: string , page : number): Promise<INotifications | null> {
     try {
-      return await NotificationModel.find({ recipientId: userId }).sort({ createdAt: -1 })
+      const total = await NotificationModel.countDocuments({recipientId : userId})
+      const limit = 5
+      const skip = (page-1)*limit
+      const notifications =  await NotificationModel.find({ recipientId: userId }).sort({ createdAt: -1 }).skip(skip).limit(limit)
+      return {notifications , total}
     } catch (error) {
       console.log(error);
       return null
     }
   }
+
+
 
   async notificationsMarkRead(userId: string): Promise<INotification[] | null> {
     try {
@@ -342,11 +343,11 @@ export class UserRepository extends BaseRepository<IUser>
   async findMyCourses(id: string, page: number): Promise<IMyCourses> {
 
     const limit = 3
-    const count = await MyCourseModel.countDocuments({ userId: id })
+    const count = await MyCourseModel.countDocuments({ userId: id , blocked : false})
     const totalPages = Math.ceil(count / limit)
 
     const skip = (page - 1) * limit
-    const myCourses = await MyCourseModel.find({ userId: id }).sort({ createdAt: -1 }).skip(skip).limit(limit)
+    const myCourses = await MyCourseModel.find({ userId: id ,blocked:false  }).sort({ createdAt: -1 }).skip(skip).limit(limit)
 
     return { myCourses, totalCount: count, totalPages: totalPages, currentPage: page }
   }
@@ -359,6 +360,7 @@ export class UserRepository extends BaseRepository<IUser>
     const data = await MyCourseModel.findOne({
       courseId: myCourseId,
       userId: id,
+      
     });
     console.log(data);
 

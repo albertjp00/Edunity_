@@ -1,10 +1,13 @@
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import './adminInstructors.css';
 import { Link } from 'react-router-dom';
 import AdminList from '../../components/usersInstructorList/usersList';
 import useDebounce from '../../components/debounce/debounce';
 import { getInstructorsData } from '../../services/adminServices';
 import type { Instructor } from '../../adminInterfaces';
+import ConfirmModal from '../../components/adminUsers/modal';
+import { toast } from 'react-toastify';
+import { blockInstructor } from '../../../services/admin/adminService';
 
 
 
@@ -25,11 +28,15 @@ const InstructorsAdmin: React.FC = () => {
   const [pages, setPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState<string>('')
 
-  const debouncedSearchTerm = useDebounce(searchTerm , 500)
+  const [showModal, setShowModal] = useState<boolean>(false)
+  const [isBlocked, setIsBlocked] = useState<boolean>(false)
+  const [selectecdId, setSelectedId] = useState<string | null>('')
+
+  const debouncedSearchTerm = useDebounce(searchTerm, 500)
 
   const getInstructors = async (currentPage: number, search: string = ''): Promise<void> => {
     try {
-      const response  = await getInstructorsData(search , currentPage)
+      const response = await getInstructorsData(search, currentPage)
       console.log(response);
       const resData = response.data
       setInstructors(resData.mapped.instructors);
@@ -47,6 +54,47 @@ const InstructorsAdmin: React.FC = () => {
   //   getInstructors(1, searchTerm);
   // };
 
+  const handleBlock = (id: string): void => {
+    console.log('block block', id);
+
+    setIsBlocked(true)
+    setSelectedId(id)
+    setShowModal(true)
+  }
+
+  const handleUnBlock = (id: string): void => {
+    setIsBlocked(false)
+    setSelectedId(id)
+    setShowModal(true)
+  }
+
+
+  const confirmAction = async () => {
+
+    if (!selectecdId) return
+    try {
+
+      const res = await blockInstructor(selectecdId)
+      if (!res) return
+
+        if (res.data.success) {
+          if (isBlocked) {
+            toast.success("Instructor blocked")
+          } else {
+            toast.success('Instructor UnBlocked')
+          }
+        
+      }
+      getInstructors(page, debouncedSearchTerm)
+
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setShowModal(false)
+      setSelectedId(null)
+    }
+  }
+
 
   useEffect(() => {
     getInstructors(page, searchTerm);
@@ -61,17 +109,18 @@ const InstructorsAdmin: React.FC = () => {
   };
 
 
-  useEffect(()=>{
+  useEffect(() => {
 
-    if(page === 1){
-      getInstructors(1 , debouncedSearchTerm)
-    }else{
+    if (page === 1) {
+      getInstructors(1, debouncedSearchTerm)
+    } else {
       setPage(1)
     }
-  },[debouncedSearchTerm])
+  }, [debouncedSearchTerm])
 
   return (
     <div className="instructor-list">
+
       <AdminList
         title="Instructors"
         data={instructors}
@@ -87,6 +136,10 @@ const InstructorsAdmin: React.FC = () => {
               if (i.KYCstatus === "rejected") return <span>Rejected</span>;
             }
           },
+          {
+            label: "Status", render: (i) =>
+              i.blocked ? <button onClick={() => handleUnBlock(i.id)}>UnBlock</button> : <button onClick={() => handleBlock(i.id)}>Block</button>
+          }
         ]}
         page={page}
         totalPages={pages}
@@ -95,6 +148,15 @@ const InstructorsAdmin: React.FC = () => {
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
         onSearchSubmit={() => getInstructors(1, searchTerm)}
+      />
+
+      <ConfirmModal
+        isOpen={showModal}
+        title={isBlocked ? 'Block Instructor' : 'Unblock Instructor'}
+        message={`Are you sure you want ${isBlocked ? 'Block' : 'Unblock'} this instructor `}
+        onConfirm={confirmAction}
+        onCancel={() => setShowModal(false)}
+
       />
 
     </div>

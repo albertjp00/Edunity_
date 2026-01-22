@@ -74,6 +74,8 @@ const EditCourse: React.FC = () => {
         if (!id) return;
         const res = await getCourseDetails(id);
         if (!res?.data?.success) return;
+        console.log(res);
+        
 
         const course = res.data.course;
 
@@ -174,12 +176,20 @@ const EditCourse: React.FC = () => {
       }
 
       form.modules.forEach((mod, i) => {
-        formData.append(`modules[${i}][title]`, mod.title);
-        formData.append(`modules[${i}][content]`, mod.content);
-        if (mod.videoFile) {
-          formData.append(`modules[${i}][video]`, mod.videoFile);
-        }
-      });
+  formData.append(`modules[${i}][title]`, mod.title);
+  formData.append(`modules[${i}][content]`, mod.content);
+
+  // ✅ send existing videoUrl
+  if (mod.videoUrl) {
+    formData.append(`modules[${i}][videoUrl]`, mod.videoUrl);
+  }
+
+  // ✅ overwrite only if new video selected
+  if (mod.videoFile) {
+    formData.append(`modules[${i}][video]`, mod.videoFile);
+  }
+});
+
 
       const res = await editCourse(id, formData);
       if (res?.data?.success) {
@@ -269,22 +279,36 @@ const EditCourse: React.FC = () => {
 
         <h3>Modules</h3>
         {form.modules.map((mod, i) => (
-          <div key={i} className="module-card">
-            <input
-              placeholder="Module title"
-              value={mod.title}
-              onChange={(e) => updateModule(i, "title", e.target.value)}
-            />
-            <textarea
-              placeholder="Module content"
-              value={mod.content}
-              onChange={(e) => updateModule(i, "content", e.target.value)}
-            />
-            <button type="button" onClick={() => removeModule(i)}>
-              Remove
-            </button>
-          </div>
-        ))}
+  <div key={i} className="module-card">
+    <input
+      placeholder="Module title"
+      value={mod.title}
+      onChange={(e) => updateModule(i, "title", e.target.value)}
+    />
+
+    <textarea
+      placeholder="Module content"
+      value={mod.content}
+      onChange={(e) => updateModule(i, "content", e.target.value)}
+    />
+
+    {/* ✅ ADD VIDEO INPUT */}
+    <input
+      type="file"
+      accept="video/*"
+      onChange={(e) => {
+        if (e.target.files) {
+          updateModule(i, "videoFile", e.target.files[0]);
+        }
+      }}
+    />
+
+    <button type="button" onClick={() => removeModule(i)}>
+      Remove
+    </button>
+  </div>
+))}
+
 
         <button type="button" onClick={addModule}>
           + Add Module

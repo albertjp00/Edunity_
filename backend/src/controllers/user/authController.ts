@@ -68,17 +68,16 @@ export class AuthController
           message: loginMapped.message,
           accessToken: loginMapped.accessToken,
         });
-      } else {
+      
+      }else {
         let status = HttpStatus.UNAUTHORIZED;
         if (result.message === "Your account is blocked") status = HttpStatus.FORBIDDEN;
         if (result.message === "User not found") status = HttpStatus.NOT_FOUND;
-
+        
         res.status(HttpStatus.UNAUTHORIZED).json({ message: result.message });
       }
     } catch (error) {
-      // console.error("Login error:", error);
       next(error)
-      // res.status(HttpStatus.UNAUTHORIZED).json({ message: "Invalid credentials" });
     }
   };
 

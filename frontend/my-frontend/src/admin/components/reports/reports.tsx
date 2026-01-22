@@ -51,10 +51,10 @@ const Reports: React.FC = () => {
             </thead>
 
             <tbody>
-              {reports.map((report) => (
+              {reports.map((report , index) => (
                 <tr key={report._id}>
-                  <td>{report.userId}</td>
-                  <td> <Link   to={`/admin/courseDetails/${report.courseId}`} 
+                  <td>{`User `+ (index + 1)}</td>
+                  <td> <Link   to={`/admin/courseDetails/${report.courseId}`}
                     className="report-courseId">{report.courseId}</Link></td>
                   <td className="report-reason">{report.reason}</td>
                   <td className="report-message">

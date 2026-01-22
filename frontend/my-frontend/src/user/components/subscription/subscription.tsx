@@ -1,7 +1,6 @@
 import { toast } from 'react-toastify';
 import './subscription.css'
 import { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
 import { getSubscription, subscribe, subscriptionVerify } from '../../services/courseServices';
 import SubscriptionCourses from './subscriptionCourses';
 import type { RazorpayInstance, RazorpayOptions } from '../../interfaces';
@@ -28,10 +27,9 @@ const Subscription = () => {
 
 
   const [activePayment, setActivePayment] = useState(false);
-  const navigate = useNavigate();
 
 
-  useEffect(() => {
+
     const CheckSubscription = async () => {
       try {
         const res = await getSubscription();
@@ -47,6 +45,8 @@ const Subscription = () => {
       }
     };
 
+    
+      useEffect(() => {
     CheckSubscription();
   }, []);
 
@@ -95,7 +95,7 @@ const Subscription = () => {
 
 
             toast.success("Subscription Activated!");
-            navigate("/user/mySubscriptions");
+            CheckSubscription()
 
           } finally {
             setLoading(false);
@@ -203,7 +203,6 @@ const Subscription = () => {
 
     {/* COURSES */}
     <div className="courses-section">
-      <h2>Your Subscription Courses</h2>
       <SubscriptionCourses />
     </div>
   </>

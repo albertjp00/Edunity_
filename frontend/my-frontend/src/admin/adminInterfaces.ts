@@ -164,11 +164,12 @@ export interface AdminListProps<T> {
 
 export interface Instructor {
   _id: string;
-  id?:string;
+  id:string;
   name: string;
   email: string;
   profileImage?: string;
   KYCstatus: 'notApplied' | 'verified' | 'pending' | 'rejected';
+  blocked : boolean
 }
 
 export interface LoginFormData {

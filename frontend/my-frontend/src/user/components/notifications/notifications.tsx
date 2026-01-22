@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./notification.css"; 
+import "./notification.css";
 import api from "../../../api/userApi";
 import Navbar from "../navbar/navbar";
 import { fetchNotifications } from "../../services/profileServices";
@@ -20,22 +20,26 @@ interface Notification {
 
 const UserNotifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [page, setPage] = useState<number>(1)
+  const [totalPages, setTotalPages] = useState<number>(0)
+  const limit = 5
 
   useEffect(() => {
-    const getNotifications = async () => {
+    const getNotifications = async (page:number) => {
       try {
-        const res = await fetchNotifications()
-        // console.log(res);
-        if(!res) return
+        const res = await fetchNotifications(page)
+        console.log(res);
+        if (!res) return
         setNotifications(res.data.notifications);
+        setTotalPages(Math.ceil(res.data.total / limit))
 
         await api.put(`/user/notificationsMarkRead`);
       } catch (error) {
         console.error("Error fetching notifications:", error);
       }
     };
-    getNotifications();
-  }, []);
+    getNotifications(page);
+  }, [page]);
 
 
 
@@ -44,36 +48,63 @@ const UserNotifications = () => {
 
   return (
     <>
-    <Navbar />
-    <div className="notifications-container">
-      <h2 className="notifications-title">All Notifications</h2>
+      <Navbar />
+      <div className="notifications-container">
+        <h2 className="notifications-title">All Notifications</h2>
 
-      {notifications.length === 0 ? (
-        <p className="notifications-empty">No notifications yet.</p>
-      ) : (
-        notifications.map((n) => (
-          <div
-            key={n._id}
-            className={`notification-card ${
-              n.isRead ? "true" : "false"
-            }`}
-          >
-            <h3 className="notification-title">{n.title}</h3>
-            <p className="notification-message">{n.message}</p>
+        {notifications.length === 0 ? (
+          <p className="notifications-empty">No notifications yet.</p>
+        ) : (
+          notifications.map((n) => (
+            <div
+              key={n._id}
+              className={`notification-card ${n.isRead ? "true" : "false"
+                }`}
+            >
+              <h3 className="notification-title">{n.title}</h3>
+              <p className="notification-message">{n.message}</p>
 
-            {n.link && (
-              <a href={n.link} className="notification-link">
-                View
-              </a>
-            )}
+              {n.link && (
+                <a href={n.link} className="notification-link">
+                  View
+                </a>
+              )}
 
-            <p className="notification-date">
-              {new Date(n.createdAt).toLocaleString()}
-            </p>
+              <p className="notification-date">
+                {new Date(n.createdAt).toLocaleString()}
+              </p>
+            </div>
+          ))
+        )}
+
+        <div className="pagination-controls">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+            >
+              Prev
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => ( 
+              <button
+                key={i + 1}
+                className={page === i + 1 ? "active" : ""}
+                onClick={() => setPage(i + 1)}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            <button
+              disabled={page === totalPages}
+              onClick={() =>
+                setPage((prev) => Math.min(prev + 1, totalPages))
+              }
+            >
+              Next
+            </button>
           </div>
-        ))
-      )}
-    </div>
+      </div>
     </>
   );
 };

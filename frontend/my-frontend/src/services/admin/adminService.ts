@@ -21,14 +21,21 @@ export const unblockUser = async (userId: string) => {
   console.log("unblock");
   
   const res = await adminApi.put(`/admin/blockUser/${userId}`);
-  return res.data;
+  return res;
 };
 
 
 export const blockUser = async (userId: string) => {
   const res = await adminApi.put(`/admin/blockUser/${userId}`);
-  return res.data;
+  return res;
 };
+
+
+export const blockInstructor = async (instructorId: string) => {
+  const res = await adminApi.put(`/admin/blockInstructor/${instructorId}`);
+  return res;
+};
+
 
 
 

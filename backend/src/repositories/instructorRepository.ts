@@ -38,6 +38,7 @@ export interface IInsRepository {
 
   addCourse(id: string, data: Partial<ICourse>): Promise<ICourse | null>
 
+
   getCourses(id: string, search : string , skip: number, limit: number): Promise<ICourse[] | null>
 
   getCourseDetails(courseId: string): Promise<ICourse | null>
@@ -125,6 +126,8 @@ export class InstructorRepository implements IInsRepository {
   async addCourse(id: string, data: Partial<ICourse>): Promise<ICourse | null> {
     return await CourseModel.create({ instructorId: id, ...data, });
   }
+
+  
 
 
   async getCourses(id: string, search : string , skip: number, limit: number): Promise<ICourse[]> {

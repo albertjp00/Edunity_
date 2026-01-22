@@ -367,35 +367,7 @@ const CourseDetailsUser: React.FC = () => {
 
               
 
-              {/* Add Review Form */}
-              {/* {hasAccess && (
-                <div className="add-review">
-                  <h4>Leave a Review</h4>
-                  <div className="rating-input">
-                    {[1, 2, 3, 4, 5].map((num) => ( 
-                      <span
-                        key={num}
-                        className={`star ${rating >= num ? "filled" : ""}`}
-                        onClick={() => setRating(num)}
-                      >
-                        ★
-                      </span>
-                    ))}
-                  </div>
-                  <textarea
-                    placeholder="Write your review..."
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                  ></textarea>
-                  <button
-                    onClick={submitReview}
-                    disabled={loadingReview}
-                    className="submit-review-btn"
-                  >
-                    {loadingReview ? "Submitting..." : "Submit Review"}
-                  </button>
-                </div>
-              )} */}
+              
             </div>
           )}
 

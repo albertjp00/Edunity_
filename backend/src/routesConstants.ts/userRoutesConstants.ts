@@ -22,7 +22,7 @@ export const ROUTES = {
     CHANGE_PASSWORD: "/passwordChange",
     WALLET: "/wallet",
     PAYMENT: "/payment/:page",
-    NOTIFICATIONS: "/notifications",
+    NOTIFICATIONS: "/notifications/:page",
     MARK_READ: "/notificationsMarkRead",
   },
 

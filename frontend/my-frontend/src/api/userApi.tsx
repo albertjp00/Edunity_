@@ -1,5 +1,4 @@
 import axios, { type AxiosInstance } from "axios";
-import { toast } from "react-toastify";
 import { logoutSuccess } from "../redux/slices/authSlice";
 import { store } from "../redux/store";
 
@@ -79,7 +78,6 @@ api.interceptors.response.use(
     }
 
     if (error.response?.status === 403) {
-      toast.warning("Your account has been blocked. Contact support.");
       localStorage.removeItem("token");
       onLogout?.();
       forceLogout()

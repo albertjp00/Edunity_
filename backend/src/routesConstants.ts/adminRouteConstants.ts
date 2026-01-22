@@ -17,6 +17,7 @@ export const ADMIN_ROUTES = {
     REJECT_KYC: "/rejectKyc/:id",
     GET_BY_ID: "/instructors/:id",
     GET_COURSES: "/instructorsCourses/:id",
+    BLOCK_INSTRUCTOR:"/blockInstructor/:id"
   },
 
   COURSES: {

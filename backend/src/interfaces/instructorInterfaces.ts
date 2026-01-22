@@ -95,6 +95,7 @@ export interface IInstCourseViewController {
   myCourses(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
   courseDetails(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
   purchaseDetails(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;
+  
 }
 
 //  Course Management Interfaces 

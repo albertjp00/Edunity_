@@ -1,6 +1,7 @@
 import { CourseDetailsDTO, CourseDTO, EarningsDTO, InstructorAdminDTO, KycDTO, PurchaseDTO, StatsDTO, UserOverviewDTO } from "../dto/adminDTO";
 import { AdminUserCourseDTO, UserDTO } from "../interfaces/userInterfaces";
 import { ICourse } from "../models/course";
+import { IUser } from "../models/user";
 
 export const mapCourseToDTO = (course: any): CourseDTO => ({
   id: course._id,
@@ -68,6 +69,7 @@ export const mapInstructorToAdminDTO = (instructor: any): InstructorAdminDTO => 
     email: instructor.email,
     profileImage: instructor.profileImage,
     KYCstatus: instructor.KYCstatus,
+    blocked : instructor.blocked
     // totalPages: 1,
     // currentPage: 1,
     // totalInstructors: 3
@@ -90,7 +92,7 @@ export const mapKycToDTO = (kyc: any): KycDTO => {
 
 
 
-export const mapUserToDTO = (user: any): UserDTO => {
+export const mapUserToDTO = (user: IUser): UserDTO => {
     return {
         id: user.id,
         name: user.name,

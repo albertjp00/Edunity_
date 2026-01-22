@@ -39,7 +39,7 @@ export class InstAuthController implements
       } else {
         res.status(response.statusCode || HttpStatus.UNAUTHORIZED).json({
           success: false,
-          message: StatusMessage.LOGIN_FAILED
+          message: response.message
         });
       }
     } catch (error) {

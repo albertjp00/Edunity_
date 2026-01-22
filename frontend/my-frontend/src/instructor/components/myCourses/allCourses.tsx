@@ -36,7 +36,7 @@ const InstructorAllCourses: React.FC = () => {
 
             if (res.data.success) {
                 setCourses(res.data.course);
-                setTotalPages(res.data.totalPages); 
+                setTotalPages(res.data.totalPages);
             }
         } catch (err) {
             console.error("Error fetching courses:", err);
@@ -100,7 +100,7 @@ const InstructorAllCourses: React.FC = () => {
                     <form className="search-form" onSubmit={handleSearch}>
                         <input
                             type="text"
-                            placeholder="Search events..."
+                            placeholder="Search courses..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />

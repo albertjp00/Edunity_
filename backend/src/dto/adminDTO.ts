@@ -69,6 +69,7 @@ export interface InstructorAdminDTO {
     email: string;
     profileImage?: string;
     KYCstatus: string;
+    blocked : boolean
 }
 
 export interface KycDTO {

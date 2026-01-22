@@ -73,6 +73,16 @@ export class AdminInstructorService implements IAdminInstructorService{
         }
     }
 
+    blockInstructorRequest = async(id:string):Promise<boolean | null>=>{
+        try {
+            const result = await this.adminRepository.blockUnblockInstructor(id)
+            return true
+        } catch (error) {
+            console.log(error); 
+            return null
+        }
+    }
+
     getInstructorsCoursesRequest = async(id:string):Promise<ICourse[] | null>=>{
         try {
             const result = await this.adminRepository.getInstructorCourses(id)
