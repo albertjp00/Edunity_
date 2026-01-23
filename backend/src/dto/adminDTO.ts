@@ -1,3 +1,5 @@
+import { ITotalEnrolled } from "../interfacesServices.ts/adminServiceInterfaces";
+
 export interface AdminLoginDTO {
   success: boolean;
   message: string;
@@ -48,6 +50,7 @@ export interface StatsDTO {
   totalInstructors: number;
   totalCourses: number;
   totalEarnings: number;
+  totalEnrolled : ITotalEnrolled[]
 }
 
 // Bar/Chart overview of users

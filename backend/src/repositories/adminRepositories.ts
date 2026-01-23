@@ -1,5 +1,5 @@
 import { ICount, IUserOverview, PaginatedInstructors, PaginatedUsers, PurchaseResult } from "../interfaces/adminInterfaces";
-import { IEarningsResult } from "../interfacesServices.ts/adminServiceInterfaces";
+import { IEarningsResult, ITotalEnrolled } from "../interfacesServices.ts/adminServiceInterfaces";
 import { CategoryModel, ICategory } from "../models/category";
 import { CourseModel, ICourse } from "../models/course";
 import { EarningModel, IEarnings } from "../models/earnings";
@@ -8,6 +8,7 @@ import { IInstructor, InstructorModel } from "../models/instructor";
 import { KycModel } from "../models/kyc";
 import { IMyCourse, MyCourseModel } from "../models/myCourses";
 import { INotification, NotificationModel } from "../models/notification";
+import { IQuiz, QuizModel } from "../models/quiz";
 import { IReport, ReportModel } from "../models/report";
 import { IUser, UserModel } from "../models/user";
 
@@ -50,26 +51,28 @@ export interface IAdminRepository {
         totalEnrolled: number;
     } | null>;
 
+    getQuiz(courseId:string): Promise<IQuiz[] | null>
+
     getPurchases(search: string, page: number): Promise<PurchaseResult | null>
 
-    addCategory(category:string , skills:string[]):Promise<ICategory | null>
+    addCategory(category: string, skills: string[]): Promise<ICategory | null>
     getCategory(): Promise<ICategory[] | null>
-    deleteCategory(category:string): Promise<boolean>
+    deleteCategory(category: string): Promise<boolean>
 
     getTotalUsers(): Promise<number | null>
     getTotalInstructors(): Promise<number | null>
     getCourses(): Promise<number | null>
-    getTotalEnrolled(): Promise<number | null>
+    getTotalEnrolled(): Promise<ITotalEnrolled[] | null>
     getUserOverview(oneYearAgo: Date): Promise<IUserOverview[]>
 
-    getEarningsData(page:number): Promise<IEarningsResult | null>
+    getEarningsData(page: number): Promise<IEarningsResult | null>
 
 
-    blockCourse(courseId:string): Promise<boolean | null>
+    blockCourse(courseId: string): Promise<boolean | null>
 
     getReports(): Promise<IReport[] | null>
 
-    blockUnblockInstructor(id:string):Promise<boolean>
+    blockUnblockInstructor(id: string): Promise<boolean>
 }
 
 
@@ -234,6 +237,16 @@ export class AdminRepository implements IAdminRepository {
         };
     }
 
+     async getQuiz(courseId:string): Promise<IQuiz[] | null>{
+        try {
+            const quiz = await QuizModel.find({courseId : courseId})
+            return quiz
+        } catch (error) {
+            console.log(error);
+            return null
+        }
+     }
+
 
     async getPurchases(search: string = "", page: number = 1): Promise<PurchaseResult | null> {
         try {
@@ -301,17 +314,17 @@ export class AdminRepository implements IAdminRepository {
     }
 
 
-    async addCategory(category: string , skills:string[]): Promise<ICategory | null> {
-        return await CategoryModel.create({name:category , skills:skills})
-        
+    async addCategory(category: string, skills: string[]): Promise<ICategory | null> {
+        return await CategoryModel.create({ name: category, skills: skills })
+
     }
 
-    async getCategory(): Promise<ICategory[] | null>{
+    async getCategory(): Promise<ICategory[] | null> {
         return await CategoryModel.find()
     }
 
-     async deleteCategory(category:string): Promise<boolean>{
-        await CategoryModel.findOneAndDelete({name:category})
+    async deleteCategory(category: string): Promise<boolean> {
+        await CategoryModel.findOneAndDelete({ name: category })
         return true
     }
 
@@ -381,15 +394,71 @@ export class AdminRepository implements IAdminRepository {
 
 
 
-    async getTotalEnrolled(): Promise<number | null> {
+    async getTotalEnrolled(): Promise<ITotalEnrolled[] | null
+    > {
         try {
-            const enrolled = await MyCourseModel.countDocuments()
-            return enrolled
+
+            const startDate = new Date("2025-01-01T00:00:00.000Z");
+            const endDate = new Date("2026-12-31T23:59:59.999Z");
+
+            const result = await MyCourseModel.aggregate([
+                {
+                    $match: {
+                        createdAt: {
+                            $gte: startDate,
+                            $lte: endDate,
+                        },
+                        paymentStatus: "completed",
+                        blocked: false,
+                        // cancelCourse: false,
+                    },
+                },
+                {
+                    $group: {
+                        _id: {
+                            year: { $year: "$createdAt" },
+                            month: { $month: "$createdAt" },
+                        },
+                        enrolled: { $sum: 1 },
+                    },
+                },
+                {
+                    $sort: {
+                        "_id.year": -1,
+                        "_id.month": 1,
+                    },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        month: {
+                            $concat: [
+                                { $toString: "$_id.year" },
+                                "-",
+                                {
+                                    $cond: [
+                                        { $lt: ["$_id.month", 10] },
+                                        { $concat: ["0", { $toString: "$_id.month" }] },
+                                        { $toString: "$_id.month" },
+                                    ],
+                                },
+                            ],
+                        },
+                        enrolled: 1,
+                    },
+                },
+            ]);
+
+            console.log('monthy',result);
+            
+
+            return result;
         } catch (error) {
-            console.log(error);
-            return null
+            console.error(error);
+            return null;
         }
     }
+
 
 
 
@@ -414,43 +483,43 @@ export class AdminRepository implements IAdminRepository {
         }
     }
 
-    async getEarningsData(page:number): Promise<IEarningsResult | null> {
+    async getEarningsData(page: number): Promise<IEarningsResult | null> {
         try {
             const limit = 4
             const total = await EarningModel.countDocuments()
             const totalPages = Math.ceil(total / limit)
-            const skip = (page  - 1) * limit
+            const skip = (page - 1) * limit
             const earnings = await EarningModel.find().skip(skip).limit(limit)
-            return {earnings , totalPages }
+            return { earnings, totalPages }
         } catch (error) {
             console.log(error);
             return null
         }
     }
 
-    async blockCourse(courseId:string): Promise<boolean | null>{
+    async blockCourse(courseId: string): Promise<boolean | null> {
         try {
             const course = await CourseModel.findById(courseId)
             console.log(course);
-            
-            if(!course?.blocked){
-                await CourseModel.findByIdAndUpdate(courseId,{blocked : true},{new : true})
-                await MyCourseModel.updateMany({courseId : courseId },{$set:{ blocked : true}})
-                
-            }else{
-                await CourseModel.findByIdAndUpdate(courseId,{blocked : false},{new : true})
-                await MyCourseModel.updateMany({courseId : courseId} ,{$set:{ blocked : false}})
+
+            if (!course?.blocked) {
+                await CourseModel.findByIdAndUpdate(courseId, { blocked: true }, { new: true })
+                await MyCourseModel.updateMany({ courseId: courseId }, { $set: { blocked: true } })
+
+            } else {
+                await CourseModel.findByIdAndUpdate(courseId, { blocked: false }, { new: true })
+                await MyCourseModel.updateMany({ courseId: courseId }, { $set: { blocked: false } })
             }
 
             return true
         } catch (error) {
             console.log(error);
             return null
-            
+
         }
     }
 
-    async getReports(): Promise<IReport[] | null>{
+    async getReports(): Promise<IReport[] | null> {
         try {
             const report = await ReportModel.find()
             return report
@@ -460,14 +529,14 @@ export class AdminRepository implements IAdminRepository {
         }
     }
 
-    async blockUnblockInstructor(id:string):Promise<boolean>{
+    async blockUnblockInstructor(id: string): Promise<boolean> {
 
         const instructor = await InstructorModel.findById(id)
 
-        if(instructor?.blocked){
-            await InstructorModel.findByIdAndUpdate(id , {blocked : false},{new :true})
-        }else{
-            await InstructorModel.findByIdAndUpdate(id , {blocked : true} , {new : true})
+        if (instructor?.blocked) {
+            await InstructorModel.findByIdAndUpdate(id, { blocked: false }, { new: true })
+        } else {
+            await InstructorModel.findByIdAndUpdate(id, { blocked: true }, { new: true })
         }
         return true
     }

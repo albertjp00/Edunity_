@@ -2,6 +2,7 @@ import { AdminAuthRequest } from "../middleware/authMiddleware";
 import { ICategory } from "../models/category";
 import { ICourse } from "../models/course";
 import { IInstructor } from "../models/instructor";
+import { IQuiz } from "../models/quiz";
 import { IReport } from "../models/report";
 import { IUser } from "../models/user";
 
@@ -65,7 +66,7 @@ export interface IAdminKycController {
   getKyc(req: Request, res: Response, next: NextFunction): Promise<void>;
   verifyKyc(req: Request, res: Response, next: NextFunction): Promise<void>;
   rejectKyc(req: AdminAuthRequest, res: Response, next: NextFunction): Promise<void>;
-  
+
 }
 
 
@@ -112,6 +113,9 @@ export interface IAdminCourseService {
 
   getCourseDetailsRequest(courseId: string): Promise<any>;
 
+  getQuizRequest(courseId: string): Promise<IQuiz[] | null>;
+
+
   getPurchaseDetails(search: string, page: number): Promise<any>;
 
   generatePurchasesPDF(purchases: any[]): Promise<Buffer>;
@@ -120,7 +124,7 @@ export interface IAdminCourseService {
   getCategoryRequest(): Promise<any>;
   getCategoryRequest(category: string): Promise<any>;
   deleteCategoryRequest(category: string): Promise<any>;
-  blockCourseRequest(courseId:string): Promise<boolean | null>;
+  blockCourseRequest(courseId: string): Promise<boolean | null>;
   getReportsRequest(): Promise<IReport[] | null>;
 }
 

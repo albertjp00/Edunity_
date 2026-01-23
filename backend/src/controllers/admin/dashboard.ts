@@ -26,8 +26,9 @@ export class AdminDashboardController implements
         try {
 
             const result = await this._adminService.getStats()
-            // console.log(result);
              const dto = mapStatsToDTO(result);
+             console.log('dto----',dto);
+             
 
             res.status(HttpStatus.OK).json({ success: true, stats: dto })
         } catch (error) {

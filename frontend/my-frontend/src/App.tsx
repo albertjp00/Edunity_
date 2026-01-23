@@ -61,9 +61,7 @@ import ForgotPassword from './user/components/login/forgotPassMail'
 import OtpVerification from './user/components/login/resetPassVerify'
 import UserResetPassword from './user/components/login/resetPasssword'
 import InstructorChat from './instructor/components/chat/instructorChat'
-import AddQuiz from './instructor/components/quiz/addQuiz'
 import DoQuiz from './user/components/myCourses/doQuiz'
-import Quiz from './instructor/components/quiz/quiz'
 import InstructorResetPassword from './instructor/components/authentication/resetPassword'
 import InstructorForgotPassword from './instructor/components/authentication/forgotPassMail'
 import OtpVerificationInstructor from './instructor/components/authentication/resetPasswordVerify'
@@ -86,6 +84,8 @@ import PaymentSuccess from './user/components/showCourses/paymentSuccess'
 import PaymentFailed from './user/components/showCourses/paymentFailed'
 import EventDetailsPage from './instructor/pages/events/eventDetails'
 import AllEventsPage from './instructor/pages/events/allEvents'
+import AddQuizPage from './instructor/pages/course/addQuiz'
+import EditQuizPage from './instructor/pages/course/editQuizPage'
 // import PurchasesAdmin from './admin/pages/purchases/purchasesAdmin'
 
 function App() {
@@ -187,8 +187,10 @@ function App() {
             <Route path='/instructor/allEvents' element={<InstProtectedRoute><AllEventsPage /></InstProtectedRoute>} />
 
 
-            <Route path='/instructor/addQuiz/:id' element={<InstProtectedRoute><AddQuiz /></InstProtectedRoute>}></Route>
-            <Route path='/instructor/quiz/:courseId' element={<InstProtectedRoute><Quiz /></InstProtectedRoute>}></Route>
+            <Route path='/instructor/addQuiz/:id' element={<InstProtectedRoute><AddQuizPage /></InstProtectedRoute>}></Route>
+
+
+            <Route path='/instructor/editQuiz/:id' element={<InstProtectedRoute><EditQuizPage /></InstProtectedRoute>}></Route>
 
 
             <Route path='/instructor/messages' element={<InstProtectedRoute><InstructorChat /></InstProtectedRoute>}></Route>

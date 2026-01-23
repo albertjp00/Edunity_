@@ -73,6 +73,17 @@ export class AdminCourseService implements IAdminCourseService {
         }
     };
 
+        getQuizRequest = async (courseId: string) => {
+        try {
+            const details = await this.adminRepository.getQuiz(courseId);
+            return details;
+        } catch (err) {
+            console.error("Error fetching    course details:", err);
+            throw err;
+        }
+    };
+
+
 
 
 
@@ -82,6 +93,7 @@ export class AdminCourseService implements IAdminCourseService {
             const data = await this.adminRepository.getPurchases(search, page)
 
             console.log('getting purchase detaislssssssssssssssssss', data);
+        
 
             return data
         } catch (error) {

@@ -49,6 +49,7 @@ export interface Option {
 }
 
 export interface Question {
+  id: string;
   _id?: string; // make optional since new questions won't have one yet
   question: string;
   options: Option[];
@@ -58,11 +59,22 @@ export interface Question {
 
 export interface QuizData {
   _id: string;
+  id?:string;
   courseId: string;
   title: string;
   questions: Question[];
 }
 
+
+export interface IQuizSaveDTO {
+  title: string;
+  questions: {
+    question: string;
+    options: { text: string }[];
+    correctAnswer: string;
+    points: number;
+  }[];
+}
 
 
 export interface addCourseModule {

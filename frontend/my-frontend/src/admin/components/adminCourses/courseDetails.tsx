@@ -65,7 +65,7 @@ const CourseDetailsAdmin: React.FC = () => {
 
   return (
     <div className="details">
-
+      
       <div className="course-detail-page">
         <div className="course-title">
           <h2>{course.title}</h2>

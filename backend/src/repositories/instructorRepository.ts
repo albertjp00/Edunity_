@@ -275,12 +275,20 @@ export class InstructorRepository implements IInsRepository {
   async editQuiz(id: string, data: Partial<IQuiz>): Promise<IQuiz> {
     console.log(data);
 
-    const updatedQuiz = await QuizModel.findByIdAndUpdate(
+    const updatedQuiz = await QuizModel.findOneAndUpdate(
+  {courseId : id},
+  {
+    $set: {
+      title: data.title,
+      questions: data.questions,
+    },
+  },
+  {
+    new: true,
+    runValidators: true,
+  }
+);
 
-      id,
-      { ...data },
-      { new: true }
-    );
     console.log('updated ', updatedQuiz);
 
 

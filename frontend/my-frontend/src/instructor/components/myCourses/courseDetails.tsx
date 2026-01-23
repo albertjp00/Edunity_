@@ -41,7 +41,7 @@ const InstructorCourseDetails: React.FC = () => {
         console.log(res);
         
         setCourse(res.data.course as Course);
-        setQuizExists(res.data.course.quizExists);
+        setQuizExists(res.data.quiz);
       }
     } catch (err) {
       console.error('Error fetching course:', err);
@@ -93,7 +93,7 @@ const InstructorCourseDetails: React.FC = () => {
             </button>
           ) : (
             <>
-              <button onClick={() => navigate(`/instructor/quiz/${course.id}`)} className="edit-button">
+              <button onClick={() => navigate(`/instructor/editQuiz/${course.id}`)} className="edit-button">
                 📘 View Quiz
               </button>
               {/* <button onClick={() => editQuiz(course.id)} className="edit-button">

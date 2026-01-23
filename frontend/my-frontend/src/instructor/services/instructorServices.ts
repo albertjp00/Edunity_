@@ -3,7 +3,7 @@ import api from "../../api/userApi";
 import type { UserRegisterForm } from "../../user/interfaces";
 // import type { RegisterForm } from "../../components/authentication/instructorRegister";
 import type { Ievent } from "../interterfaces/events";
-import type { QuizData, QuizPayload } from "../interterfaces/instructorInterfaces";
+import type { IQuizSaveDTO, QuizData, QuizPayload } from "../interterfaces/instructorInterfaces";
 
 
 
@@ -255,7 +255,7 @@ export const editCourse =  async (id:string , formData : FormData)=>{
 
 export const purchaseDetails =  async (id:string)=>{
   try {
-    const res = await api.get(`/instructor/purchaseDetails/${id}`);
+    const res = await instructorApi.get(`/instructor/purchaseDetails/${id}`);
     return res
   } catch (error) {
     console.log(error);
@@ -331,9 +331,15 @@ export const addQuiz =  async (id:string , payload:QuizPayload)=>{
 }
 
 
+interface GetQuizResponse {
+  success: boolean;
+  quiz: QuizData;
+}
+
+
 export const getQuiz =  async (courseId : string)=>{
   try {
-    const res = await instructorApi.get(`/instructor/quiz/${courseId}`);
+    const res = await instructorApi.get<GetQuizResponse>(`/instructor/quiz/${courseId}`);
     return res
   } catch (error) {
     console.log(error);
@@ -342,9 +348,9 @@ export const getQuiz =  async (courseId : string)=>{
 }
 
 
-export const quizSave =  async (quizId : string , quiz:QuizData)=>{
+export const quizSave =  async (quizId : string , quiz:IQuizSaveDTO)=>{
   try {
-    const res = await instructorApi.put(`/instructor/quiz/${quizId}`, quiz);
+    const res = await instructorApi.put(`/instructor/quiz/${quizId}`, {quiz});
     return res
   } catch (error) {
     console.log(error);
@@ -373,5 +379,8 @@ export const getCategory =  async ()=>{
     
   }
 }
+
+
+
 
 

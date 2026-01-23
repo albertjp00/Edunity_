@@ -69,6 +69,8 @@ admin.get(ADMIN_ROUTES.COURSES.GET_ALL, adminAuthMiddleware, courseController.ge
 
 admin.get(ADMIN_ROUTES.COURSES.GET_DETAILS, adminAuthMiddleware, courseController.getCourseDetails);
 
+
+
 admin.get(ADMIN_ROUTES.COURSES.BLOCK_COURSE, adminAuthMiddleware, courseController.blockCourse);
 
 admin.get(ADMIN_ROUTES.COURSES.GET_PURCHASES, adminAuthMiddleware, courseController.getAllPurchases);

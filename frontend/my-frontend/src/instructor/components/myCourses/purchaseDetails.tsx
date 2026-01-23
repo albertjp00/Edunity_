@@ -23,6 +23,8 @@ const PurchaseDetails: React.FC = () => {
     const getPurchaseDetails = async () => {
       try {
         const res = await purchaseDetails(id)
+        console.log(res);
+        
         if(!res)  return
         if (res.data.success) {
           setDetails(res.data.details); 

@@ -122,7 +122,7 @@ export class InstCourseController implements
       const courseId = req.params.id!;
       const data = await this._courseService.getPurchaseDetails(courseId);
 
-      console.log(data);
+      console.log('purchase data',data);
 
       if (!data) {
         res.status(404).json({ success: false, message: StatusMessage.PURCHASE_NOT_FOUND });
@@ -332,11 +332,10 @@ export class InstCourseController implements
 
   getQuiz = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log('get Quiz');
+      
 
       const { courseId } = req.params;
       console.log(courseId);
-
 
       const result = await this._courseService.getQuiz(courseId as string)
 
@@ -344,9 +343,9 @@ export class InstCourseController implements
         res.json({ success: false, message: StatusMessage.QUIZ_NOT_FOUND });
         return;
       }
+      console.log('get Quiz',result);
 
-      const quiz = 'quiz'
-      res.status(HttpStatus.OK).json({ success: true, quiz });
+      res.status(HttpStatus.OK).json({ success: true, quiz : result });
     } catch (error) {
       console.error("Error fetching quiz:", error);
       next(error)
@@ -359,9 +358,9 @@ export class InstCourseController implements
       console.log('edit Quiz');
 
       const { quizId } = req.params;
-      const data = req.body
-      console.log("quizId", quizId, req.body);
-
+      const data = req.body.quiz
+      console.log("quizId", quizId, data);
+      
       await this._courseService.updateQuiz(quizId as string, data)
 
       res.status(HttpStatus.OK).json({ success: true });

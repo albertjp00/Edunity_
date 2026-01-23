@@ -47,6 +47,7 @@ export const mapStatsToDTO = (stats: any): StatsDTO => ({
   totalInstructors: stats.totalInstructors ?? 0,
   totalCourses: stats.totalCourses ?? 0,
   totalEarnings: stats.totalEarnings ?? 0,
+  totalEnrolled : stats.totalEnrolled ?? 0
 });
 
 export const mapUserOverviewToDTO = (data: any): UserOverviewDTO => ({

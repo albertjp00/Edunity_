@@ -126,101 +126,129 @@ const AddQuiz: React.FC<AddQuizProps> = ({
   }
 
   return (
-    <div className="add-quiz-container">
-      <h2>Add Quiz</h2>
+    <div className="quiz-page">
+  <div className="quiz-header">
+    <h2>Create Quiz</h2>
+    <p>Add questions, options, and correct answers</p>
+  </div>
 
-      <form className="quiz-form" onSubmit={handleSubmit}>
+  <form className="quiz-form" onSubmit={handleSubmit}>
+    {/* Quiz Title */}
+    <div className="card">
+      <label className="label">
+        Quiz Title
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="input"
+          placeholder="Enter quiz title"
+        />
+      </label>
+    </div>
+
+    {/* Questions */}
+    {questions.map((q, idx) => (
+      <div key={q.id} className="card question-card">
+        <div className="question-header">
+          <h3>Question {idx + 1}</h3>
+          <button
+            type="button"
+            className="icon-btn danger"
+            onClick={() => removeQuestion(q.id)}
+            disabled={questions.length === 1}
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Question Text */}
         <label className="label">
-          Quiz Title
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="input"
-            placeholder="Quiz title"
+          Question
+          <textarea
+            value={q.question}
+            onChange={(e) =>
+              updateQuestion(q.id, { question: e.target.value })
+            }
+            className="textarea"
+            placeholder="Type your question here..."
           />
         </label>
 
-        <div className="questions-wrapper">
-          {questions.map((q, idx) => (
-            <div key={q.id} className="question-card">
-              <div className="question-header">
-                <strong>Q{idx + 1}</strong>
-                <button
-                  type="button"
-                  className="small-btn danger"
-                  onClick={() => removeQuestion(q.id)}
-                  disabled={questions.length === 1}
-                >
-                  Remove
-                </button>
-              </div>
+        {/* Options */}
+        <div className="options-box">
+          <p className="section-title">Options</p>
 
-              <label className="label" >
-                Question
-                <textarea
-                  value={q.question}
-                  onChange={(e) =>
-                    updateQuestion(q.id, { question: e.target.value })
-                  }
-                  placeholder="Type the question"
-                  className="textarea"
-                />
-              </label>
+          {q.options.map((opt, i) => (
+            <div key={i} className="option-row">
+              <input
+                type="text"
+                value={opt}
+                onChange={(e) =>
+                  updateOption(q.id, i, e.target.value)
+                }
+                className="input option-input"
+                placeholder={`Option ${i + 1}`}
+              />
 
-              <div className="options-block">
-                <strong>Options</strong>
-                {q.options.map((opt, i) => (
-                  <div key={i} className="option-row">
-                    <input
-                      type="text"
-                      value={opt}
-                      onChange={(e) => updateOption(q.id, i, e.target.value)}
-                      placeholder={`Option ${i + 1}`}
-                      className="input option-input"
-                    />
-                    <label>
-                      <input
-                        type="radio"
-                        name={`correct-${q.id}`}
-                        checked={q.correctAnswer === opt}
-                        onChange={() => updateQuestion(q.id, { correctAnswer: opt })}
-                      />
-                      Correct
-                    </label>
-                  </div>
-                ))}
-              </div>
-
-              <label className="label small">
-                Points
+              <label className="radio-label">
                 <input
-                  type="number"
-                  min={1}
-                  value={q.points}
-                  onChange={(e) =>
-                    updateQuestion(q.id, { points: Number(e.target.value) })
+                  type="radio"
+                  name={`correct-${q.id}`}
+                  checked={q.correctAnswer === opt}
+                  onChange={() =>
+                    updateQuestion(q.id, { correctAnswer: opt })
                   }
-                  className="input"
                 />
+                Correct
               </label>
             </div>
           ))}
         </div>
 
-        <div className="form-actions">
-          <button type="button" className="primary-btn" onClick={addQuestion}>
-            + Add Question
-          </button>
-          <button type="submit" className="primary-btn" disabled={submitting}>
-            {submitting ? "Submitting..." : "Create Quiz"}
-          </button>
+        {/* Footer */}
+        <div className="question-footer">
+          <label className="label small">
+            Points
+            <input
+              type="number"
+              min={1}
+              value={q.points}
+              onChange={(e) =>
+                updateQuestion(q.id, { points: Number(e.target.value) })
+              }
+              className="input points-input"
+            />
+          </label>
         </div>
+      </div>
+    ))}
 
-        {message && <div className="success">{message}</div>}
-        {error && <div className="error">{error}</div>}
-      </form>
+    {/* Actions */}
+    <div className="sticky-actions">
+      <button
+        type="button"
+        className="secondary-btn"
+        onClick={addQuestion}
+      >
+        + Add Question
+      </button>
+
+{error && <div className="error">{error}</div>}
+      <button
+        type="submit"
+        className="primary-btn"
+        disabled={submitting}
+      >
+        {submitting ? "Creating..." : "Create Quiz"}
+      </button>
     </div>
+
+    {message && <div className="success">{message}</div>}
+    
+  </form>
+</div>
+
   );
 };
 

@@ -121,7 +121,9 @@ instructor.get(INSTRUCTOR_ROUTES.COURSE.PURCHASE_DETAILS, instAuthMiddleware, co
 
 // Quiz
 instructor.post(INSTRUCTOR_ROUTES.COURSE.ADD_QUIZ, instAuthMiddleware, courseController.addQuiz);
+
 instructor.get(INSTRUCTOR_ROUTES.COURSE.GET_QUIZ, instAuthMiddleware, courseController.getQuiz);
+
 instructor.put(INSTRUCTOR_ROUTES.COURSE.EDIT_QUIZ, instAuthMiddleware, courseController.editQuiz);
 
 // Events

@@ -23,6 +23,10 @@ export interface IEarningsResult {
 }
 
 
+export interface ITotalEnrolled {
+    month : string;
+    enrolled : string;
+}
 
 
 
@@ -34,7 +38,7 @@ export interface IAdminService {
         totalUsers: number | null;
         totalInstructors: number | null;
         totalCourses: number | null;
-        totalEnrolled: number | null;
+        totalEnrolled: ITotalEnrolled[] | null;
     } | undefined>;
 
     getUserOverview(): Promise<IUserOverviewItem[]>;

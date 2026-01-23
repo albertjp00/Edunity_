@@ -81,21 +81,32 @@ export interface IUserOverview {
 }
 
 
+export interface IMonthlyOverview {
+  month: string;
+  enrolled: number;
+}
+
+
+
 const AdminDashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [monthlyOverview, setmonthlyOverview] = useState<IUserOverview[]>();
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await getStats()
-        console.log(res);
-
+        const res = await getStats();
         const data = res.data.stats;
+
+        console.log(res);
+        
+
+        // ---------- summary cards ----------
         setStats({
           totalUsers: data.totalUsers ?? 0,
           totalInstructors: data.totalInstructors ?? 0,
           totalCourses: data.totalCourses ?? 0,
-          totalEnrolled: data.totalEnrolled ?? 0,
+          totalEnrolled: data.totalEnrolled.length ?? 0,
           totalEarnings: data.totalEarnings ?? 0,
           activeUsers: data.activeUsers ?? 0,
           statsChange: data.statsChange ?? {
@@ -106,12 +117,36 @@ const AdminDashboard: React.FC = () => {
             earnings: 0,
           },
         });
-      } catch (err) {
-        console.error("Error fetching dashboard data:", err);
+
+        const monthlyData = data.totalEnrolled
+          .filter((item: IMonthlyOverview) => {
+            const year = Number(item.month.split("-")[0]);
+            return year === 2025 || year === 2026;
+          })
+          .map((item: IMonthlyOverview) => {
+            const [year, month] = item.month.split("-");
+            const date = new Date(Number(year), Number(month) - 1);
+
+            return {
+              name: date.toLocaleString("default", {
+                month: "short",
+                year: "numeric",
+              }), // Sep 2025
+              count: item.enrolled,
+            };
+          });
+          console.log('mponthy',monthlyData.reverse());
+          
+
+        setmonthlyOverview(monthlyData);
+      } catch (error) {
+        console.error(error);
       }
     };
+
     fetchStats();
   }, []);
+
 
 
   const [userOverview, setUserOverview] = useState<IUserOverview[]>([]);
@@ -121,7 +156,8 @@ const AdminDashboard: React.FC = () => {
     const fetchUserOverview = async () => {
       try {
         const res = await getOverview()
-        console.log(res);
+        // console.log(res);
+
 
         setUserOverview(res.data.data)
 
@@ -143,7 +179,7 @@ const AdminDashboard: React.FC = () => {
   //     setTotal(res)
   //   } catch (error) {
   //     console.log(error);
-      
+
   //   }
   // }
 
@@ -281,6 +317,7 @@ const AdminDashboard: React.FC = () => {
           borderRadius: "16px",
           boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
           marginTop: "40px",
+          margin: "40px"
         }}
       >
         <h3
@@ -297,6 +334,53 @@ const AdminDashboard: React.FC = () => {
         <ResponsiveContainer width="100%" height={300}>
           <AreaChart
             data={userOverview}
+            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+          >
+            <defs>
+              <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
+                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.05} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis
+              dataKey="name"
+              tick={{ fill: "#6b7280", fontSize: 12 }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis
+              tick={{ fill: "#6b7280", fontSize: 12 }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "#fff",
+                borderRadius: "8px",
+                border: "1px solid #e5e7eb",
+              }}
+              labelStyle={{ color: "#111827", fontWeight: 600 }}
+            />
+            <Area
+              type="monotone"
+              dataKey="count"
+              stroke="#3b82f6"
+              strokeWidth={3}
+              fillOpacity={1}
+              fill="url(#colorCount)"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+
+
+        <br />
+        <br />
+
+        <h3>Monthly Course  Overview</h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <AreaChart
+            data={monthlyOverview}
             margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
           >
             <defs>

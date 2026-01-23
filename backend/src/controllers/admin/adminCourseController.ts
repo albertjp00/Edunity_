@@ -30,7 +30,6 @@ export class AdminCourseController implements
             const data = await this._courseService.getCoursesRequest(page, search, limit);
 
             const courseDTOs = (data.courses ?? []).map(mapCourseToDTO);
-            // console.log("courses  admin",courseDTOs);
             
             res.status(HttpStatus.OK).json({
                 success: true,
@@ -49,11 +48,7 @@ export class AdminCourseController implements
         try {
             const id = req.params.id!;
             const data = await this._courseService.getCourseDetailsRequest(id);
-            console.log('admin course details', id, data);
-
-            // const courseDetailsDTO = mapCourseDetailsToDTO(data);
-
-            // console.log(courseDetailsDTO);
+            console.log('admin course details', id, data)
 
 
             res.status(HttpStatus.OK).json({
@@ -65,6 +60,27 @@ export class AdminCourseController implements
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.FAILED_TO_GET_COURSE_DETAILS });
         }
     };
+
+
+        getQuiz = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const id = req.params.id!;
+            console.log(id);
+            
+            const data = await this._courseService.getQuizRequest(id);
+            console.log('admin quiz details', id, data);
+
+
+            res.status(HttpStatus.OK).json({success: true,course: data,});
+        } catch (error) {
+            next(error);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.FAILED_TO_GET_COURSE_DETAILS });
+        }
+    };
+
+
+
+
 
 
     getAllPurchases = async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
@@ -177,7 +193,6 @@ export class AdminCourseController implements
             res.json({ success: true })
         } catch (error) {
             console.log(error);
-
         }
     }
 

@@ -125,7 +125,8 @@ export class CourseService implements IInstCourseService {
   getPurchaseDetails = async (id: string): Promise<IPurchaseDetails[] | null> => {
     try {
       const details = await this.instructorRepository.purchaseDetails(id)
-
+      console.log("purchaase",details);
+      
 
       return details
     } catch (error) {
