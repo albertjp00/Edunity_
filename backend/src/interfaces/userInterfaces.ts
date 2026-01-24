@@ -94,6 +94,7 @@ import { AuthRequest } from "../middleware/authMiddleware.js";
 import { IReview } from "../models/review";
 import { IReport } from "../models/report";
 import { INotifications } from "../interfacesServices.ts/userServiceInterfaces";
+import { JwtPayload } from "jsonwebtoken";
 
 
 //authController
@@ -230,6 +231,9 @@ export interface UserDTO {
   provider? : string;
 }
 
+export interface RefreshTokenPayload extends JwtPayload {
+  id: string;
+}
 
 
 

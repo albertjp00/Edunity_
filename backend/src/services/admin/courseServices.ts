@@ -4,8 +4,7 @@ import { ICategory } from "../../models/category";
 import { ICourse } from "../../models/course";
 import { IInstructor } from "../../models/instructor";
 import { IAdminRepository } from "../../repositories/adminRepositories";
-import { IInsRepository, InstructorRepository } from "../../repositories/instructorRepository";
-import { UserRepository } from "../../repositories/userRepository";
+import { IInsRepository } from "../../repositories/instructorRepository";
 import PDFDocument from "pdfkit";
 import { once } from "events";
 

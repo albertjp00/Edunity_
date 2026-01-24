@@ -2,31 +2,11 @@ import { IPurchaseDetails } from "../../interfaces/instructorInterfaces";
 import { IInstCourseService } from "../../interfacesServices.ts/instructorServiceInterface";
 import { ICategory } from "../../models/category";
 import { ICourse } from "../../models/course";
-import { IInsRepository, InstructorRepository, ISkills } from "../../repositories/instructorRepository";
+import { IInsRepository,  ISkills } from "../../repositories/instructorRepository";
 import { generateSignedUrl } from "../../utils/getSignedUrl";
-import { uploadToS3 } from "../../utils/s3Upload";
-import fs from 'fs'
 
 
-// Define what a single course looks like
-interface ICourseDetails {
-  _id: string;
-  instructorId: string;
-  title: string;
-  description?: string;
-  thumbnail?: string;
-  price?: number;
-  skills?: string[];
-  level?: string;
-  modules?: {
-    title?: string;
-    videoUrl?: string;
-    content?: string;
-  }[];
-  createdAt: Date;
-  totalEnrolled: number;
-  quiz: boolean
-}
+
 
 // Define the structure for paginated results
 interface CourseResult {
@@ -38,9 +18,7 @@ interface CourseResult {
   instructor: any
 }
 
-interface CourseDetails {
-  course: ICourse | null;
-}
+
 
 export class CourseService implements IInstCourseService {
   constructor(private instructorRepository: IInsRepository) { }
@@ -51,13 +29,14 @@ export class CourseService implements IInstCourseService {
 
       const [courses, totalItems, skills] = await Promise.all([
         this.instructorRepository.getCourses(id, search, skip, limit),
-        this.instructorRepository.countCourses(),
+        this.instructorRepository.countCourses(id),
         this.instructorRepository.findSkills()
       ]);
       const instructor = await this.instructorRepository.findById(id)
       const l = courses?.length
 
-
+      console.log('my courses ', l , totalItems);
+      
       return {
         courses,
         skills,

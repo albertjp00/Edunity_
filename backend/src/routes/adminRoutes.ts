@@ -11,7 +11,7 @@ import { AdminCourseService } from '../services/admin/courseServices'
 import { AdminInstructorService } from '../services/admin/instructorServices'
 import { AdminUserService } from '../services/admin/userServices'
 import { AdminAuthController } from '../controllers/admin/authController'
-import { AdminDashboardController } from '../controllers/admin/dashboard'
+import { AdminDashboardController } from '../controllers/admin/dashboardController'
 import { ADMIN_ROUTES } from '../routesConstants.ts/adminRouteConstants'
 
 const admin = express.Router()

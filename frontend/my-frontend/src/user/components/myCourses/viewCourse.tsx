@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./viewMyCourse.css";
-import { cancelCourse, submitReport, submitReview, updateProgress, viewMyCourse } from "../../services/courseServices";
+import { cancelCourse, getCertificate, submitReport, submitReview, updateProgress, viewMyCourse } from "../../services/courseServices";
 import VideoPlayerUser from "../videoPlayer/videoPlayer";
 import { toast } from "react-toastify";
 import ConfirmModal from "../modal/modal";
-import { getCertificate } from "../../../services/user/userServices";
 import type { ICourse, IInstructor, IMyCourse, IReport, IReview, User } from "../../interfaces";
 import { getUserProfile } from "../../services/profileServices";
 

@@ -5,11 +5,11 @@ import notificationImg from '../../../assets/notification.png'
 import { useEffect, useState } from 'react';
 import { fetchNotifications } from '../../services/profileServices';
 import { toast } from 'react-toastify';
-import { socket } from '../../../socket/socket';
 import { useAppSelector } from '../../../redux/hooks';
 import { useDispatch } from 'react-redux';
 import { logoutSuccess } from '../../../redux/slices/authSlice';
 import { logout } from '../../services/authServices';
+import { socket } from '../../../socket/socket';
 // import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 // import { logoutSuccess } from '../../../redux/slices/authSlice';
 
@@ -55,7 +55,7 @@ const Navbar = () => {
   useEffect(() => {
 
     const getNotifications = async () => {
-      const res = await fetchNotifications()
+      const res = await fetchNotifications(1)
       if (!res) return
 
       const notifications = res.data.notifications

@@ -1,6 +1,7 @@
 import { CourseDetailsDTO, CourseDTO, EarningsDTO, InstructorAdminDTO, KycDTO, PurchaseDTO, StatsDTO, UserOverviewDTO } from "../dto/adminDTO";
 import { AdminUserCourseDTO, UserDTO } from "../interfaces/userInterfaces";
 import { ICourse } from "../models/course";
+import { IEarnings } from "../models/earnings";
 import { IUser } from "../models/user";
 
 export const mapCourseToDTO = (course: any): CourseDTO => ({
@@ -50,15 +51,23 @@ export const mapStatsToDTO = (stats: any): StatsDTO => ({
   totalEnrolled : stats.totalEnrolled ?? 0
 });
 
-export const mapUserOverviewToDTO = (data: any): UserOverviewDTO => ({
-  name: data.name,
-  count: data.count,
-});
+export const mapUserOverviewToDTO = (data: {name : string , count : number}[]): UserOverviewDTO[] => {
+  return data.map(item =>({
+    name : item.name,
+    count : item.count
+  }))
+};
 
 
-export const mapEarningsToDTO = (data: any): EarningsDTO => ({
-  total: data.total
-});
+export const mapEarningsToDTO = (data: any[]): EarningsDTO[] => {
+  return data.map(item => ({
+    adminEarnings: Number(item.adminEarnings) || 0,
+    instructorEarnings: Number(item.instructorEarnings) || 0,
+    totalSales: Number(item.totalSales) || 0,
+    lastUpdated: new Date(item.lastUpdated).toISOString(),
+  }));
+};
+
 
 
 

@@ -3,11 +3,10 @@ import './adminInstructors.css';
 import { Link } from 'react-router-dom';
 import AdminList from '../../components/usersInstructorList/usersList';
 import useDebounce from '../../components/debounce/debounce';
-import { getInstructorsData } from '../../services/adminServices';
+import { blockInstructor, getInstructorsData } from '../../services/adminServices';
 import type { Instructor } from '../../adminInterfaces';
 import ConfirmModal from '../../components/adminUsers/modal';
 import { toast } from 'react-toastify';
-import { blockInstructor } from '../../../services/admin/adminService';
 
 
 

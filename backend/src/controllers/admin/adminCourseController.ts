@@ -2,7 +2,7 @@ import { Response, Request, NextFunction } from "express";
 import { AdminAuthRequest } from "../../middleware/authMiddleware";
 import { HttpStatus } from "../../enums/httpStatus.enums";
 import { IAdminCategoryController, IAdminCourseReadController, IAdminCourseService, IAdminPurchaseController } from "../../interfaces/adminInterfaces";
-import { mapCourseDetailsToDTO, mapCourseToDTO, mapPurchaseToDTO } from "../../mapper/admin.mapper";
+import { mapCourseToDTO, mapPurchaseToDTO } from "../../mapper/admin.mapper";
 import { StatusMessage } from "../../enums/statusMessage";
 
 
@@ -26,11 +26,9 @@ export class AdminCourseController implements
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 6;
             const search = req.query.search as string;
-
             const data = await this._courseService.getCoursesRequest(page, search, limit);
-
             const courseDTOs = (data.courses ?? []).map(mapCourseToDTO);
-            
+
             res.status(HttpStatus.OK).json({
                 success: true,
                 courses: courseDTOs,
@@ -38,8 +36,8 @@ export class AdminCourseController implements
                 currentPage: data.currentPage,
             });
         } catch (error) {
-            next(error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.FAILED_TO_GET_COURSES });
+            next(error);
         }
     };
 
@@ -56,25 +54,25 @@ export class AdminCourseController implements
                 course: data,
             });
         } catch (error) {
-            next(error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.FAILED_TO_GET_COURSE_DETAILS });
+            next(error)
         }
     };
 
 
-        getQuiz = async (req: Request, res: Response, next: NextFunction) => {
+    getQuiz = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const id = req.params.id!;
             console.log(id);
-            
+
             const data = await this._courseService.getQuizRequest(id);
             console.log('admin quiz details', id, data);
 
 
-            res.status(HttpStatus.OK).json({success: true,course: data,});
+            res.status(HttpStatus.OK).json({ success: true, course: data, });
         } catch (error) {
-            next(error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.FAILED_TO_GET_COURSE_DETAILS });
+            next(error)
         }
     };
 
@@ -98,7 +96,6 @@ export class AdminCourseController implements
 
 
             const purchaseDTOs = (purchases.purchases ?? []).map(mapPurchaseToDTO);
-            // console.log('dto result -------------', purchaseDTOs);
 
 
             res.status(HttpStatus.OK).json({
@@ -131,7 +128,7 @@ export class AdminCourseController implements
             );
 
             console.log(pdfBuffer);
-        
+
             res.send(pdfBuffer);
         } catch (error) {
             console.log(error);
@@ -149,12 +146,11 @@ export class AdminCourseController implements
             console.log(category, skills);
 
             const categories = await this._courseService.addCategoryRequest(category, skills)
-            console.log('adding ------', categories);
 
             res.json({ success: true, category: categories })
         } catch (error) {
             console.log(error);
-
+            next(error)
         }
     }
 
@@ -166,7 +162,7 @@ export class AdminCourseController implements
             res.json({ success: true, category: categories })
         } catch (error) {
             console.log(error);
-
+            next(error)
         }
     }
 
@@ -174,37 +170,37 @@ export class AdminCourseController implements
         try {
             const category = req.body.category
 
-            const categories = await this._courseService.deleteCategoryRequest(category)
-            // console.log(categories);
+            await this._courseService.deleteCategoryRequest(category)
 
             res.json({ success: true })
         } catch (error) {
             console.log(error);
-
+            next(error)
         }
     }
 
-        blockCourse= async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
+    blockCourse = async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
         try {
             const courseId = req.params.id!
 
-            const categories = await this._courseService.blockCourseRequest(courseId)
+            await this._courseService.blockCourseRequest(courseId)
 
             res.json({ success: true })
         } catch (error) {
             console.log(error);
+            next(error)
         }
     }
 
 
-    getReports= async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
+    getReports = async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
         try {
             const reports = await this._courseService.getReportsRequest()
 
-            res.json({ success: true , reports : reports })
+            res.json({ success: true, reports: reports })
         } catch (error) {
             console.log(error);
-
+            next(error)
         }
     }
 }

@@ -98,6 +98,9 @@ export interface IInstCourseViewController {
   
 }
 
+
+
+
 //  Course Management Interfaces 
 export interface IInstCourseManageController {
   addCourse(req: InstAuthRequest, res: Response,next: NextFunction): Promise<void>;

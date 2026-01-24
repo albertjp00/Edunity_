@@ -6,7 +6,7 @@ import {
     IInstProfileReadController, IInstProfileUpdateController
 } from '../../interfaces/instructorInterfaces';
 import { IInstructorProfileService } from '../../interfacesServices.ts/instructorServiceInterface';
-import { mapDashboardToDTO, mapEarningsToDTO, mapInstructorProfileToDTO, mapNotificationToDTO, walleToDto } from '../../mapper/instructor.mapper';
+import { mapEarningsToDTO, mapInstructorProfileToDTO, mapNotificationToDTO, walleToDto } from '../../mapper/instructor.mapper';
 import { INotification } from '../../models/notification';
 import { StatusMessage } from '../../enums/statusMessage';
 // import { InstructorProfileService } from '../../services/instructor/profileServices';
@@ -29,7 +29,6 @@ export class InstProfileController implements
     getProfile = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
         try {
             const userId = req.instructor?.id
-            console.log('instructor get profile');
 
 
             if (!userId) {
@@ -58,7 +57,6 @@ export class InstProfileController implements
 
     editProfile = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
         try {
-            console.log('user profile ', req.instructor?.id, req.file)
             const userId = req.instructor?.id; // Assuming `req.user` is set by auth middleware
             // const updateData = req.body;
 
@@ -77,9 +75,6 @@ export class InstProfileController implements
                 res.status(401).json({ error: 'Unauthorized' });
                 return;
             }
-
-            console.log('editing-------', data);
-
 
             const updatedProfile = await this._profileService.editProfileRequest(userId, data);
 
@@ -136,7 +131,7 @@ export class InstProfileController implements
                 return
             }
 
-            const result = await this._profileService.kycSubmit(id, idProofFile.filename, addressProofFile.filename)
+            await this._profileService.kycSubmit(id, idProofFile.filename, addressProofFile.filename)
 
             res.status(HttpStatus.OK).json({ success: true })
         } catch (error) {
@@ -153,7 +148,6 @@ export class InstProfileController implements
             console.log(id);
 
             const notifications = await this._profileService.getNotifications(id as string)
-            console.log('dto---', notifications);
             const notificationDto = notifications?.map((n: INotification) =>
                 mapNotificationToDTO(n))
 
@@ -172,7 +166,6 @@ export class InstProfileController implements
         try {
             const instructorId = req.instructor?.id
             const result = await this._profileService.getDashboard(instructorId as string)
-            console.log("dashboard", result);
             // const dashboardDTO = mapDashboardToDTO(result);
 
             res.status(HttpStatus.OK).json({ success: true, dashboard: result })
@@ -187,7 +180,6 @@ export class InstProfileController implements
         try {
             const instructorId = req.instructor?.id
             const result = await this._profileService.getEarnings(instructorId as string)
-            console.log("earnings", result);
             const earningsDTO = mapEarningsToDTO(result);
 
 
@@ -203,7 +195,6 @@ export class InstProfileController implements
         try {
             const id = req.instructor?.id
             const result = await this._profileService.getWallet(id as string)
-            console.log('wallet', result);
             if (!result) return
             const wallet = walleToDto(result)
 

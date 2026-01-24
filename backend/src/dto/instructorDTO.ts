@@ -1,3 +1,5 @@
+import { IReview } from "../models/review";
+
 export interface InstructorCourseDTO {
   id: string;
   instructorId: string;
@@ -44,7 +46,7 @@ export interface ICourseDetailsDTO {
   level: string;
   category: string;
   modules: IModuleDTO[];
-  reviews: any[];
+  reviews: IReview[];
   createdAt: Date;
   instructorId: string;
 }

@@ -12,7 +12,7 @@ const AddCourse: React.FC = () => {
   const navigate = useNavigate();
   const [categories , setCategories] = useState<ICategory[]>([])
   const [skills , setSkills ] = useState<string[]>([])
-  const [subscription , setSubscription] = useState<boolean>(false)
+  const [subscription , setSubscription] = useState<boolean>(true)
 
   const [form, setForm] = useState<CourseForm>({
     title: "",

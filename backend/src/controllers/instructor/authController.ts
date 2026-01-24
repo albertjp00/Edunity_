@@ -1,29 +1,28 @@
 import { HttpStatus } from "../../enums/httpStatus.enums";
 import { StatusMessage } from "../../enums/statusMessage";
-import {  IInstLoginController, IInstPasswordResetController,
-   IInstRegisterController } from "../../interfaces/instructorInterfaces";
+import {
+  IInstLoginController, IInstPasswordResetController,
+  IInstRegisterController
+} from "../../interfaces/instructorInterfaces";
 
 import { InstAuthService } from "../../services/instructor/authService";
 import { NextFunction, Request, Response } from 'express';
 
 
-
-
-
 export class InstAuthController implements
-    IInstLoginController,
-    IInstRegisterController,
-    IInstPasswordResetController {
+  IInstLoginController,
+  IInstRegisterController,
+  IInstPasswordResetController {
   private _instAuthService: InstAuthService
 
-  
-  constructor(instAuthService : InstAuthService) {
+
+  constructor(instAuthService: InstAuthService) {
     // const repo = new InstructorRepository();
     this._instAuthService = instAuthService
   }
 
 
-  login = async (req: Request, res: Response,next: NextFunction): Promise<void> => {
+  login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { email, password } = req.body;
       const response = await this._instAuthService.instructorLogin(email, password);
@@ -53,31 +52,29 @@ export class InstAuthController implements
   };
 
 
-  register = async (req: Request, res: Response,next: NextFunction) => {
+  register = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { name, email, password } = req.body;
-      console.log('inst register', name, email);
 
       const result = await this._instAuthService.instructorRegister(name, email, password);
 
       if (result.success) {
         res.status(HttpStatus.OK).json(result); // OK
       } else {
-        console.log('result', result);
 
         res.status(HttpStatus.BAD_REQUEST).json(result); // Failure
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Register error:", error);
       res
         .status(HttpStatus.BAD_REQUEST)
         .json({ success: false, message: StatusMessage.REGISTRATION_FAILED });
-        next(error)
+      next(error)
     }
   };
 
 
-  resendOtp = async (req: Request, res: Response,next: NextFunction) => {
+  resendOtp = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email } = req.body;
 
@@ -96,7 +93,7 @@ export class InstAuthController implements
     }
   };
 
-  verifyOtp = async (req: Request, res: Response,next: NextFunction) => {
+  verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { otp, email } = req.body;
       const result = await this._instAuthService.verifyOtpRequest(otp, email);
@@ -119,12 +116,12 @@ export class InstAuthController implements
 
   // reset password 
 
-  forgotPassword = async (req: Request, res: Response,next: NextFunction) => {
+  forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
     try {
 
       const { email } = req.body;
-      console.log(email);
 
+      console.log(email);
 
       const result = await this._instAuthService.forgotPassword(email);
 
@@ -141,14 +138,12 @@ export class InstAuthController implements
     }
   };
 
-  verifyOtpForgotPass = async (req: Request, res: Response,next: NextFunction) => {
+  verifyOtpForgotPass = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log('verify password');
 
       const { email, otp } = req.body;
 
       const result = await this._instAuthService.verifyForgotPasswordOtp(otp, email);
-      console.log('verification ', result.success);
 
       if (!result.success) {
         res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: result.message });
@@ -163,10 +158,9 @@ export class InstAuthController implements
     }
   };
 
-  resendOtpForgotPassword = async (req: Request, res: Response,next: NextFunction) => {
+  resendOtpForgotPassword = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email } = req.body;
-      console.log('resend', email);
 
 
       if (!email) {
@@ -179,22 +173,14 @@ export class InstAuthController implements
       res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.OTP_SENT });
     } catch (error) {
       console.error(error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message:StatusMessage.OTP_RESEND_FAILED });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.OTP_RESEND_FAILED });
       next(error)
     }
   };
 
-  resetPassword = async (req: Request, res: Response,next: NextFunction) => {
+  resetPassword = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, newPassword } = req.body;
-      console.log('reset pass ', email, newPassword);
-
-
-
-      // if (!req.user) {
-      //   res.status(401).json({ success: false, message: "Unauthorized" });
-      //   return;
-      // }
 
       const result = await this._instAuthService.resetPassword(
         email,
@@ -213,10 +199,4 @@ export class InstAuthController implements
       next(error)
     }
   };
-
-
-
-
-
-
 }

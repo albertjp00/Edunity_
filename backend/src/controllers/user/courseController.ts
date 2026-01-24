@@ -1,7 +1,6 @@
-
 import dotenv from "dotenv";
 dotenv.config();
-import { NextFunction, RequestHandler, Response } from "express";
+import { NextFunction, Response } from "express";
 import { AuthRequest } from "../../middleware/authMiddleware";
 import { debounceCall } from "../../utils/debounce";
 import { generateSignedUrl } from "../../utils/getSignedUrl";
@@ -13,7 +12,8 @@ import {
 import { HttpStatus } from "../../enums/httpStatus.enums";
 import { IUserCourseService } from "../../interfacesServices.ts/userServiceInterfaces";
 import { StatusMessage } from "../../enums/statusMessage";
-// import { UserCourseService } from "../../services/user/userCourseService";
+import { ICourse } from "../../models/course";
+import { FilterQuery, SortOrder } from "mongoose";
 
 
 
@@ -40,7 +40,6 @@ export class UserCourseController
 
     showCourses = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
-            const fron = parseInt(process.env.REFRESH_TIME!, 10)
 
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 6;
@@ -55,7 +54,7 @@ export class UserCourseController
                 currentPage: data.currentPage,
             });
         } catch (error) {
-            // console.error(error);
+            console.error(error);
             next(error)
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, messaage: StatusMessage.FAILED_TO_GET_COURSES });
         }
@@ -79,7 +78,7 @@ export class UserCourseController
             // console.log("search ", search); 
 
 
-            const query: any = {};
+            const query :FilterQuery<ICourse> = {};
 
             if (categories) {
                 query.category = { $in: (categories as string).split(",") };
@@ -90,7 +89,7 @@ export class UserCourseController
             if (price === "free") query.price = 0;
             if (price === "paid") query.price = { $gt: 0 };
 
-            let sortOption: any = {};
+            const sortOption : {price? : SortOrder} = {};
             if (sortBy === "priceLowToHigh") sortOption.price = 1;
             if (sortBy === "priceHighToLow") sortOption.price = -1;
 
@@ -136,47 +135,30 @@ export class UserCourseController
 
 
 
-    
+
 
     courseDetails = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            // console.log('details');
 
-            const id = req.user?.id!
+            const id = req.user?.id as string
             const courseId = req.query.id as string
             const result = await this._courseService.fetchCourseDetails(id, courseId)
-            if(result === 'myCourseExists'){
-                res.status(HttpStatus.OK).json({success:"exists"})
+            if (result === 'myCourseExists') {
+                res.status(HttpStatus.OK).json({ success: "exists" })
             }
 
             res.status(HttpStatus.OK).json({ success: true, course: result })
         } catch (error) {
-            // console.log(error);
+            console.log(error);
             next(error)
 
         }
     }
 
 
-
-    // buyCourse = async (req: AuthRequest, res: Response): Promise<void> => {
-    //     try {
-    //         const id = req.user?.id!
-
-    //         const courseId = req.params.id
-    //         console.log('buying course', courseId);
-
-
-    //         const response = await this._courseService.buy_courseService(id, courseId)
-    //         res.json({ success: true })
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
-    // controller
     buyCourse = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const userId = req.user?.id!;
+            const userId = req.user?.id as string;
             const courseId = req.params.id!;
 
             // Key for debouncing (user + course)
@@ -197,14 +179,8 @@ export class UserCourseController
             });
 
         } catch (error) {
-            // console.error("Error in buyCourse:", error);
             next(error)
-            //     if (error.message) {
-            //     res.status(400).json({
-            //         success: false,
-            //         message: error.message,  
-            //     });
-            // }
+
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.PAYMENT_FAILURE });
         }
     };
@@ -214,7 +190,7 @@ export class UserCourseController
     verifyPayment = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { razorpay_order_id, razorpay_payment_id, razorpay_signature, courseId } = req.body;
-            const userId = req.user?.id!;
+            const userId = req.user?.id as string
 
             const key = `verifyPayment_${userId}_${courseId}`;
 
@@ -236,7 +212,6 @@ export class UserCourseController
             }
 
         } catch (error) {
-            // console.error("Payment verification failed:", error);
             next(error)
             res.status(500).json({ success: false, message: StatusMessage.PAYMENT_VERIFICATION_FAILURE });
         }
@@ -246,7 +221,7 @@ export class UserCourseController
         try {
             const { courseId } = req.params
 
-            const result = await this._courseService.cancelPayment(courseId as string)
+            await this._courseService.cancelPayment(courseId as string)
             res.status(HttpStatus.OK).json({ success: true });
 
         } catch (error) {
@@ -258,7 +233,7 @@ export class UserCourseController
 
     buySubscription = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const userId = req.user?.id!;
+            const userId = req.user?.id as string
 
             // Key for debouncing (user + course)
             const key = `buyCourse_${userId}`;
@@ -286,10 +261,8 @@ export class UserCourseController
     verifySubscriptionPayment = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-            const userId = req.user?.id!;
 
-            console.log( 'dubscriptoin verify',razorpay_order_id, razorpay_payment_id, razorpay_signature);
-            
+            const userId = req.user?.id as string
 
             const key = `verifySubscription_${userId}`;
 
@@ -303,7 +276,7 @@ export class UserCourseController
             });
 
             if (result.success) {
-                res.status(200).json({success:true,result});
+                res.status(200).json({ success: true, result });
             } else {
                 res.status(400).json(result);
             }
@@ -313,19 +286,17 @@ export class UserCourseController
     };
 
 
-    
+
 
 
     myCourses = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
-            const id = req.user?.id!
-            // console.log('courses mine');
+            const id = req.user?.id as string
 
             const page = parseInt(req.params.page as string) || 1
 
 
             const result = await this._courseService.myCoursesRequest(id, page)
-            // console.log('my courses result ', result);
 
             if (!result) return
 
@@ -340,15 +311,15 @@ export class UserCourseController
             });
 
         } catch (error) {
-            // console.log(error);
+            console.log(error);
             next(error)
         }
     }
 
 
-        mySubscriptionCourses = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    mySubscriptionCourses = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
-            const id = req.user?.id!
+            const id = req.user?.id as string
 
             const page = parseInt(req.params.page as string) || 1
 
@@ -356,8 +327,8 @@ export class UserCourseController
             const result = await this._courseService.mySubscriptionCoursesRequest(id, page)
             if (!result) return
 
-        
-            
+
+
             res.status(HttpStatus.OK).json({
                 success: true,
                 courses: result.courses,
@@ -367,7 +338,7 @@ export class UserCourseController
             });
 
         } catch (error) {
-            // console.log(error);
+            console.log(error);
             next(error)
         }
     }
@@ -376,18 +347,18 @@ export class UserCourseController
 
     viewMyCourse = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
-            const id = req.user?.id!
+            const id = req.user?.id as string
             const myCourseId = req.params.id!
 
 
             const result = await this._courseService.viewMyCourseRequest(id, myCourseId)
 
-            res.status(HttpStatus.OK).json({ success: true, course: result, review : result?.review , instructor: result?.instructor, quiz: result?.quizExists, createdAt: result?.enrolledAt })
+            res.status(HttpStatus.OK).json({ success: true, course: result, review: result?.review, instructor: result?.instructor, quiz: result?.quizExists, createdAt: result?.enrolledAt })
         } catch (error) {
-            // console.log(error);
+            console.log(error);
             next(error)
         }
-        
+
     }
 
 
@@ -438,7 +409,7 @@ export class UserCourseController
     getCertificate = async (req: AuthRequest, res: Response) => {
         try {
 
-            const userId = req.user?.id
+            const userId = req.user?.id as string
             const { courseId } = req.params
 
 
@@ -458,16 +429,16 @@ export class UserCourseController
     addReview = async (req: AuthRequest, res: Response) => {
         try {
             const { courseId, rating, review } = req.body;
-            const userId = req.user?.id;
+
+            const userId = req.user?.id as string
 
             const result = await this._courseService.addReview(userId as string, courseId, rating, review)
-            // console.log('reviewwwwwwwwwwwwwwwwwww',result);
-            
-            if(result === 'exists'){
-                res.json({success:false , message : 'Review already added'})
+
+            if (result === 'exists') {
+                res.json({ success: false, message: 'Review already added' })
             }
 
-            res.status(HttpStatus.OK).json({ success: true , review :result})
+            res.status(HttpStatus.OK).json({ success: true, review: result })
         } catch (error) {
             console.log(error);
 
@@ -502,17 +473,17 @@ export class UserCourseController
             //     return
             // }
 
-            res.status(HttpStatus.OK).json({success:true, fav:result});
+            res.status(HttpStatus.OK).json({ success: true, fav: result });
         } catch (error) {
-            // console.log(error);
+            console.log(error);
             next(error)
-            res.status(500).json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR  });
+            res.status(500).json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
         }
     };
 
     getFavourites = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
-            const userId = req.user?.id!
+            const userId = req.user?.id as string
             const data = await this._courseService.getFavourites(userId)
             // console.log(data);
 
@@ -527,12 +498,12 @@ export class UserCourseController
 
     favCourseDetails = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
-            const id = req.user?.id!
+            const id = req.user?.id as string
             const courseId = req.params.id as string
             const result = await this._courseService.favCourseDetails(id, courseId)
             // console.log("course", result);
-            if(result == false){
-                res.json({success:false})
+            if (result == false) {
+                res.json({ success: false })
             }
 
             res.json({ success: true, course: result })
@@ -546,19 +517,14 @@ export class UserCourseController
     getQuiz = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             const { courseId } = req.params
-            const userId = req.user?.id
-            // console.log("quiz", courseId);
-
-
 
             const quiz = await this._courseService.getQuiz(courseId as string)
-            // console.log(quiz);
-            
+
             res.status(HttpStatus.OK).json({ success: true, quiz })
         } catch (error) {
-            // console.log(error);
+            console.log(error);
             next(error)
-            
+
 
         }
     }
@@ -566,59 +532,53 @@ export class UserCourseController
 
     submitQuiz = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
-            const userId = req.user?.id!
+            const userId = req.user?.id as string
 
             const { courseId, quizId } = req.params
+
             const answers = req.body
 
-
-            // console.log("submit quiz ",userId , courseId , quizId);
-            // console.log(answers);
-
             const data = await this._courseService.submitQuiz(userId, courseId as string, quizId as string, answers)
-            // console.log('submitted ', data);
 
             res.status(HttpStatus.OK).json({ success: true, data })
         } catch (error) {
-            // console.log(error);
+            console.log(error);
             next(error)
         }
     }
 
 
 
-    cancelCourse = async (req: AuthRequest, res: Response,next: NextFunction) => {
+    cancelCourse = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
-            const userId = req.user?.id
+            const userId = req.user?.id as string
             const courseId = req.params.id
 
-            const result = await this._courseService.cancelCourseRequest(userId as string, courseId as string)
+            await this._courseService.cancelCourseRequest(userId as string, courseId as string)
 
 
             res.status(HttpStatus.OK).json({ success: true })
         } catch (error) {
             console.log(error);
-
+            next(error)
         }
     }
 
-    reportCourse = async (req: AuthRequest, res: Response,next: NextFunction) => {
+    reportCourse = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
-            const userId = req.user?.id!
+            const userId = req.user?.id as string
 
             const courseId = req.body.courseId
+
             const report = req.body.report
 
-            const result = await this._courseService.reportCourseRequest(userId , courseId as string , report)
-
+            await this._courseService.reportCourseRequest(userId, courseId as string, report)
 
             res.status(HttpStatus.OK).json({ success: true })
         } catch (error) {
             console.log(error);
-
+            next(error)
         }
     }
-
-
 
 }

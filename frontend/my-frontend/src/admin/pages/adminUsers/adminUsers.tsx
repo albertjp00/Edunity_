@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import "./adminUsers.css";
 import { toast } from "react-toastify";
 import profilePic from "../../../assets/profilePic.png";
-import { getUsers, blockUser, unblockUser } from "../../../services/admin/adminService";
 // import { Link } from "react-router-dom";
 import ConfirmModal from "../../components/adminUsers/modal";
 import AdminList from "../../components/usersInstructorList/usersList";
 import useDebounce from "../../components/debounce/debounce";
+import { blockUser, getUsers, unblockUser } from "../../services/adminServices";
 
 interface User {
   _id: string;

@@ -1,22 +1,14 @@
 import { NextFunction, Request, Response } from "express";
-
 import { InstAuthRequest } from "../../middleware/authMiddleware";
-
 import { uploadToS3 } from "../../utils/s3Upload";
 import fs from 'fs'
 import { generateSignedUrl } from "../../utils/getSignedUrl";
-import { ICourse, IModule } from "../../models/course";
+import { ICourse , IModule } from "../../models/course";
 import { HttpStatus } from "../../enums/httpStatus.enums";
 import { IInstCourseManageController, IInstCourseViewController, IInstQuizController } from "../../interfaces/instructorInterfaces";
 import { IInstCourseService } from "../../interfacesServices.ts/instructorServiceInterface";
 import { mapCourseDetailsToDTO, mapInstructorCourseToDTO } from "../../mapper/instructor.mapper";
 import { StatusMessage } from "../../enums/statusMessage";
-// import { CourseService } from "../../services/instructor/courseServices";
-
-
-// interface MulterFiles {
-//   [fieldname: string]: Express.Multer.File[];
-// }
 
 
 export class InstCourseController implements
@@ -210,31 +202,15 @@ export class InstCourseController implements
   };
 
 
-
-
-
-
-
-  // interface MulterFiles {
-  //   [fieldname: string]: Express.Multer.File[];
-  // }
-
-
-
-
-
-
   addCourse = async (req: InstAuthRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
       const id = req.instructor?.id;
-      console.log("Add Course", id, req.body, req.body.modules);
-      console.log("Multer Files:", req.files);
 
       const files = Array.isArray(req.files) ? req.files : [];
 
-      const moduleIndexes = req.body.modules.map((_: any, i: number) => i);
+      const moduleIndexes = (req.body.modules as IModule[]).map((_, i) => i);
 
-      const modules = [];
+      const modules  = [];
 
       for (const index of moduleIndexes) {
         const title = req.body.modules?.[index]?.title;
@@ -253,7 +229,6 @@ export class InstCourseController implements
             videoFile.originalname,
             videoFile.mimetype
           );
-          console.log(`✅ Uploaded video for module ${index}: ${videoUrl}`);
         }
 
         modules.push({
@@ -279,11 +254,9 @@ export class InstCourseController implements
         thumbnail: thumbnailFile ? thumbnailFile.filename : undefined,
       };
 
-      console.log('final data to save to db', data);
 
 
-      const result = await this._courseService.addCourseRequest(id as string, data);
-
+      await this._courseService.addCourseRequest(id as string, data);
 
       res.status(HttpStatus.OK).json({ success: true });
     } catch (error) {
@@ -304,7 +277,6 @@ export class InstCourseController implements
     try {
       const { id } = req.params;
       const { title, questions } = req.body;
-      console.log('add quiz');
 
 
       if (!id || !title || !questions) {
@@ -318,7 +290,6 @@ export class InstCourseController implements
 
       res.status(HttpStatus.OK).json({ success: true });
     } catch (error) {
-      console.error("Error adding quiz:", error);
 
       const message =
         error instanceof Error ? error.message : StatusMessage.SOMETHING_WRONG;
@@ -343,7 +314,6 @@ export class InstCourseController implements
         res.json({ success: false, message: StatusMessage.QUIZ_NOT_FOUND });
         return;
       }
-      console.log('get Quiz',result);
 
       res.status(HttpStatus.OK).json({ success: true, quiz : result });
     } catch (error) {
@@ -355,11 +325,9 @@ export class InstCourseController implements
 
   editQuiz = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log('edit Quiz');
 
       const { quizId } = req.params;
       const data = req.body.quiz
-      console.log("quizId", quizId, data);
       
       await this._courseService.updateQuiz(quizId as string, data)
 

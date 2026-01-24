@@ -44,7 +44,6 @@ export interface PurchaseDTO {
 
 
 
-// Dashboard summary numbers
 export interface StatsDTO {
   totalUsers: number;
   totalInstructors: number;
@@ -53,15 +52,16 @@ export interface StatsDTO {
   totalEnrolled : ITotalEnrolled[]
 }
 
-// Bar/Chart overview of users
 export interface UserOverviewDTO {
   name: string;
   count: number;
 }
 
-// Earnings chart
 export interface EarningsDTO {
-  total : number
+  adminEarnings: number;
+  instructorEarnings: number;
+  totalSales: number;
+  lastUpdated: string;
 }
 
 
@@ -83,18 +83,6 @@ export interface KycDTO {
     submittedAt: Date;
 }
 
-// export interface CourseDTO {
-//     id: string;
-//     title: string;
-//     description: string;
-//     thumbnail: string;
-//     price: number;
-//     level: string;
-//     category: string;
-//     isPublished: boolean;
-//     createdAt: Date;
-//     updatedAt: Date;
-// }
 
 
 

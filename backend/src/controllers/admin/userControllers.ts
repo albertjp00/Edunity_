@@ -10,15 +10,13 @@ import { StatusMessage } from "../../enums/statusMessage";
 export class AdminUserController implements IAdminUserManagementController {
     private _userService: IAdminUserServices
 
-    constructor(adminUserService: IAdminUserServices) 
-    {
+    constructor(adminUserService: IAdminUserServices) {
         this._userService = adminUserService
     }
 
     getUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const id = req.params.id!
-            console.log('get user ', id);
 
             const result = await this._userService.getUserRequest(id)
             // const mapped = mapUserToDTO(result)
@@ -35,19 +33,20 @@ export class AdminUserController implements IAdminUserManagementController {
             const { search, page } = req.query;
             // let limit = 4
 
-        
-            
+
+
             const data = await this._userService.getUsers(
                 String(search),
                 Number(page),
             );
-            
-            if(!data) return 
+
+            if (!data) return
             const mappedUsers = data.users.map(mapUserToDTO);
 
-            
 
-            res.status(HttpStatus.OK).json({ success: true,
+
+            res.status(HttpStatus.OK).json({
+                success: true,
                 users: mappedUsers,
                 totalPages: data.totalPages,
                 currentPage: data.currentPage,
@@ -64,7 +63,6 @@ export class AdminUserController implements IAdminUserManagementController {
         try {
             const id = req.params.id!
             console.log(id);
-            console.log('block / unblock');
 
 
             const result = await this._userService.blockUnblockUser(id)
@@ -82,7 +80,6 @@ export class AdminUserController implements IAdminUserManagementController {
 
     unblockUser = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            console.log('unblock user');
 
             const id = req.params.id!
             const result = await this._userService.unblockUser(id)
@@ -102,14 +99,13 @@ export class AdminUserController implements IAdminUserManagementController {
     getUserCourses = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const id = req.params.id!
-            console.log('get user courses ', id);
 
             const result = await this._userService.getUsersCoursesRequest(id)
             // console.log(result);
-            if(!result) return
+            if (!result) return
             const mapped = result.map(mapAdminUserCourseToDTO)
-            
-            
+
+
 
             res.status(HttpStatus.OK).json({ success: true, courses: mapped })
         } catch (error) {

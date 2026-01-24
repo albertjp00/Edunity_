@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction,  Response } from 'express';
 import { AuthRequest } from '../../middleware/authMiddleware';
 import { HttpStatus } from '../../enums/httpStatus.enums';
 import { INotificationController, IPasswordController, IPaymentController, IProfileReadController, IProfileWriteController, IWalletController } from '../../interfaces/userInterfaces';
@@ -50,11 +50,10 @@ export class ProfileController implements
 
     editProfile = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            // console.log('user profiel ', req.user?.id, req.file)
-            const userId = req.user?.id; // Assuming `req.user` is set by auth middleware
-            const updateData = req.body;
+            const userId = req.user?.id; 
 
             const data = { ...req.body }
+            
             const file = req.file?.filename
 
             data.profileImage = file
@@ -168,28 +167,14 @@ export class ProfileController implements
 
     subscriptionCheck = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
-            const id = req.user?.id!
-            const result = await this._profileService.subscriptionCheckRequest(id)
-            // console.log('subscription check', result);
+            const id = req.user?.id as  string
+
+            const result = await this._profileService.subscriptionCheckRequest(id) 
             
-
-            const start = new Date()
-            start.setDate(1)
-            start.setHours(0,0,0,0)
-
-            const endDate = new Date();
-            endDate.setMonth(endDate.getMonth() + 1)
-            endDate.setDate(0)
-            endDate.setHours(23, 59 , 59 , 999)
-
-            console.log('date',start , endDate);
-            
-
-
             res.status(HttpStatus.OK).json({ result })
         } catch (error) {
             console.log(error);
-
+            next(error)
         }
     }
 }

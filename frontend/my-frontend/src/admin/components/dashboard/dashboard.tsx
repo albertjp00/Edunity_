@@ -16,8 +16,8 @@ import {
 
 
 
-import { getOverview, getStats } from "../../services/adminServices";
 import type { DashboardStats } from "../../adminInterfaces";
+import { getOverview, getStats } from "../../services/adminServices";
 
 
 
@@ -90,7 +90,7 @@ export interface IMonthlyOverview {
 
 const AdminDashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [monthlyOverview, setmonthlyOverview] = useState<IUserOverview[]>();
+  const [monthlyOverview, setmonthlyOverview] = useState<IUserOverview[]>([]);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -98,8 +98,7 @@ const AdminDashboard: React.FC = () => {
         const res = await getStats();
         const data = res.data.stats;
 
-        console.log(res);
-        
+
 
         // ---------- summary cards ----------
         setStats({
@@ -135,8 +134,8 @@ const AdminDashboard: React.FC = () => {
               count: item.enrolled,
             };
           });
-          console.log('mponthy',monthlyData.reverse());
-          
+        console.log('mponthy', monthlyData.reverse());
+
 
         setmonthlyOverview(monthlyData);
       } catch (error) {
@@ -156,10 +155,20 @@ const AdminDashboard: React.FC = () => {
     const fetchUserOverview = async () => {
       try {
         const res = await getOverview()
-        // console.log(res);
+        console.log(res);
 
 
-        setUserOverview(res.data.data)
+        const raw = res.data.data;
+
+        const formatted = Array.isArray(raw)
+          ? raw.map((item: {name:string , count:number}) => ({
+            name: item.name,
+            count: Number(item.count) || 0,
+          }))
+          : [];
+
+        setUserOverview(formatted);
+
 
       } catch (error) {
         console.log(error);
@@ -171,23 +180,7 @@ const AdminDashboard: React.FC = () => {
   }, [])
 
 
-  // const [total , setTotal ]= useState<number>()
 
-  // const getTotal = async() =>{
-  //   try {
-  //     const res = await adminApi.get('/admin/getEarnings')
-  //     setTotal(res)
-  //   } catch (error) {
-  //     console.log(error);
-
-  //   }
-  // }
-
-  // useEffect(()=>{
-  //   getTotal()
-  // },[])
-
-  // Dummy sparkline data for charts
   const sparkData = Array.from({ length: 7 }, (_, i) => ({
     name: `Day ${i + 1}`,
     value: Math.floor(Math.random() * 100) + 20,
@@ -236,12 +229,7 @@ const AdminDashboard: React.FC = () => {
           change={stats.statsChange.enrolled}
           data={sparkData}
         />
-        {/* <StatCard
-          title="Total Events"
-          value={stats.totalEvents}
-          change={stats.statsChange.events}
-          data={sparkData}
-        /> */}
+
         <StatCard
           title="Total Earnings"
           value={stats.totalEarnings}
@@ -250,7 +238,6 @@ const AdminDashboard: React.FC = () => {
         />
       </div>
 
-      {/* Bottom Stats */}
       <div
         style={{
           display: "flex",
@@ -309,7 +296,6 @@ const AdminDashboard: React.FC = () => {
       </div>
 
 
-      {/* User Overview Chart */}
       <div
         style={{
           background: "#fff",
@@ -384,7 +370,7 @@ const AdminDashboard: React.FC = () => {
             margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
           >
             <defs>
-              <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="monthlyCount" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
                 <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.05} />
               </linearGradient>

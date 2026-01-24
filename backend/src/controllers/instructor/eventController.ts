@@ -5,7 +5,6 @@ import { IEventManageController, IEventParticipationController, IEventReadContro
 import { IInstEventService } from "../../interfacesServices.ts/instructorServiceInterface"
 import { mapEventToDTO } from "../../mapper/instructor.mapper"
 import { IEvent } from "../../models/events"
-import { IEventDTO } from "../../dto/instructorDTO"
 import { StatusMessage } from "../../enums/statusMessage"
 // import { InstEventService } from "../../services/instructor/eventService"
 
@@ -27,7 +26,6 @@ export class EventController implements
         try {
             const id = req.instructor?.id
             const data = { ...req.body.formData }
-            console.log("event creation", data);
 
 
             await this._eventService.createEventRequest(id as string, data)
@@ -83,12 +81,11 @@ export class EventController implements
     getEvent = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
         try {
             const id = req.params.id!
-            // console.log("getEvent");
 
-            // console.log(id);
             const result = await this._eventService.getEventRequest(id)
-            console.log('dto -- result',result);
             const event = mapEventToDTO(result)
+            console.log( event , result);
+            
 
             res.status(HttpStatus.OK).json({ success: true, event: result })
         } catch (error) {
@@ -120,7 +117,6 @@ export class EventController implements
                 });
                 return;
             }
-            // console.log(data, id);
             await this._eventService.updateEventRequest(id, data)
 
             res.status(HttpStatus.OK).json({ success: true })
@@ -140,7 +136,6 @@ export class EventController implements
         try {
             const instructorId = req.instructor?.id;
             const eventId = req.params.eventId!
-            console.log('join event', eventId, instructorId);
 
 
             if (!instructorId) {

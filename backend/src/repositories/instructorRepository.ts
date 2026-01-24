@@ -47,7 +47,7 @@ export interface IInsRepository {
 
   editCourse(id: string, data: Partial<ICourse>): Promise<ICourse | null>
 
-  countCourses(): Promise<number>;
+  countCourses(id : string): Promise<number>;
 
   findSkills(): Promise<ISkills>;
 
@@ -137,7 +137,6 @@ export class InstructorRepository implements IInsRepository {
     filter.title = { $regex: search, $options: "i" };
   }
     const courses = await CourseModel.find(filter).skip(skip).limit(limit);
-    // console.log(courses);
     return courses || [];
   }
 
@@ -193,8 +192,8 @@ export class InstructorRepository implements IInsRepository {
 
 
 
-  async countCourses(): Promise<number> {
-    return await CourseModel.countDocuments();
+  async countCourses(id : string): Promise<number> {
+    return await CourseModel.countDocuments({instructorId : id});
 
   }
 

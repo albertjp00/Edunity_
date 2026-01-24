@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { getEarnings } from "../../../services/admin/adminService";
 import "./earnings.css";
 import type { IEarning } from "../../adminInterfaces";
+import { getEarnings } from "../../services/adminServices";
 
 
 
@@ -19,9 +19,10 @@ const AdminEarnings: React.FC = () => {
       try {
         const res = await getEarnings(page);
         console.log(res);
+        
         if (res.data.success) {
-          setEarnings(res.data.earnings.earnings);
-          setTotal(res.data.earnings.totalEarnings)
+          setEarnings(res.data.earnings);
+          setTotal(res.data.totalEarnings)
           setPage(page)
           setTotalPages(res.data.totalPages)
         }

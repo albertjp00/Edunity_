@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload, VerifyErrors } from "jsonwebtoken";
 import { AuthRequest } from "../../middleware/authMiddleware";
 import { OAuth2Client } from "google-auth-library";
 import { HttpStatus } from "../../enums/httpStatus.enums";
 import logger from "../../utils/logger";
 import { IAuthBasicController, IAuthForgotPasswordController,
-   IAuthGoogleController, IAuthRegisterController } from "../../interfaces/userInterfaces";
+   IAuthGoogleController, IAuthRegisterController, 
+   RefreshTokenPayload} from "../../interfaces/userInterfaces";
 import { IUserAuthService } from "../../interfacesServices.ts/userServiceInterfaces";
 import { LoginMapper } from "../../mapper/user.mapper";
 import { StatusMessage } from "../../enums/statusMessage";
@@ -17,7 +18,7 @@ const SECRET_KEY = process.env.SECRET_KEY || "access_secret";
 const REFRESH_KEY = process.env.REFRESH_KEY || "refresh_secret";
 // const REFRESH_TIME = process.env.REFRESH_TIME
 
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || "");
+new OAuth2Client(process.env.GOOGLE_CLIENT_ID || "");
 
 
 export class AuthController 
@@ -50,7 +51,6 @@ export class AuthController
 
       const result = await this._authService.loginRequest(email, password);
 
-      console.log('dto ---',result);
       const loginMapped = LoginMapper(result)
     
 
@@ -74,7 +74,7 @@ export class AuthController
         if (result.message === "Your account is blocked") status = HttpStatus.FORBIDDEN;
         if (result.message === "User not found") status = HttpStatus.NOT_FOUND;
         
-        res.status(HttpStatus.UNAUTHORIZED).json({ message: result.message });
+        res.status(status).json({ message: result.message });
       }
     } catch (error) {
       next(error)
@@ -85,9 +85,7 @@ export class AuthController
 
   refreshToken = (req: Request, res: Response, next: NextFunction): void => {
     try {
-      console.log('refresh token ');
       const token = req.cookies.refreshToken;
-      console.log('refresh token ', token);
 
       if (!token) {
         res.status(HttpStatus.UNAUTHORIZED).json({ message: StatusMessage.TOKEN_REQUIRED });
@@ -95,18 +93,16 @@ export class AuthController
       }
 
 
-      jwt.verify(token, REFRESH_KEY, (err: any, user: any) => {
+      jwt.verify(token, REFRESH_KEY, (err: VerifyErrors | null, decoded : JwtPayload | string | undefined ) => {
         if (err) {
           res.status(HttpStatus.FORBIDDEN).json({ message: StatusMessage.INVALID_REFRESH_TOKEN });
           return;
         }
-
         if (!process.env.SECRET_KEY) throw new Error("ACCESS_SECRET not set");
         if (!process.env.REFRESH_KEY) throw new Error("REFRESH_TIME not set");
 
-      
-
-        const newAccessToken = jwt.sign({ id: user.id }, SECRET_KEY, {
+        const payload = decoded as RefreshTokenPayload;
+        const newAccessToken = jwt.sign({ id: payload.id }, SECRET_KEY, {
           expiresIn: '15m',
         });
 
@@ -141,7 +137,8 @@ export class AuthController
 
   checkBlocked = async (req: AuthRequest, res: Response) => {
     try {
-      const id = req.user?.id!
+      if(!req.user) return
+      const id = req.user?.id
       
       const isBlocked = await this._authService.isBlocked(id)
       // console.log('blocked or not',isBlocked);
@@ -162,16 +159,15 @@ export class AuthController
       if (result.success) {
         res.status(HttpStatus.OK).json(result); // OK
       } else {
-        logger.info('result', result);
 
         res.status(HttpStatus.BAD_REQUEST).json(result); // Failure
       }
-    } catch (error: any) {
+    } catch (error) {
       // console.error("Register error:", error);
       next(error)
       res
         .status(HttpStatus.BAD_REQUEST)
-        .json({ success: false, message: error.message || StatusMessage.REGISTRATION_FAILED });
+        .json({ success: false, message: StatusMessage.REGISTRATION_FAILED });
     }
   };
 
@@ -218,14 +214,13 @@ export class AuthController
   googleSignIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { token } = req.body;
-      // console.log(req.body);
+    
 
       if (!token) {
         res.status(HttpStatus.BAD_REQUEST).json({ message: StatusMessage.TOKEN_REQUIRED });
         return;
       }
       const { accessToken, refreshToken } = await this._authService.googleLogin(token);
-      // console.log(accessToken);
       if (refreshToken) {
         res.cookie("refreshToken", refreshToken, {
           httpOnly: true,
@@ -236,10 +231,9 @@ export class AuthController
       }
 
       res.json({ success: true, token: accessToken  });
-    } catch (error: any) {
-      // console.error("Google Sign-In error:", error);
+    } catch (error) {
       next(error)
-      res.status(500).json({ message: error.message || StatusMessage.GOOGLE_SIGN_IN_FALIED });
+      res.status(500).json({ message:  StatusMessage.GOOGLE_SIGN_IN_FALIED });
     }
   };
 
@@ -256,7 +250,7 @@ export class AuthController
 
       res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.OTP_SENT });
     } catch (error) {
-      // console.error(error);
+      console.error(error);
       next(error)
       res.status(500).json({ message: StatusMessage.INTERNAL_SERVER_ERROR });
     }
@@ -264,12 +258,10 @@ export class AuthController
 
   verifyOtpForgotPass = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
-      console.log('verify password');
 
       const { email, otp } = req.body;
 
       const result = await this._authService.verifyForgotPasswordOtp(otp, email);
-      logger.info('verification ', result.success);
 
       if (!result.success) {
         res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: result.message });
@@ -287,7 +279,6 @@ export class AuthController
   resendOtpForgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { email } = req.body;
-      logger.info('resend', email);
 
 
       if (!email) {
@@ -308,14 +299,6 @@ export class AuthController
   resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { email, newPassword } = req.body;
-      logger.info('reset pass ', email, newPassword);
-
-
-
-      // if (!req.user) {
-      //   res.status(401).json({ success: false, message: "Unauthorized" });
-      //   return;
-      // }
 
       const result = await this._authService.resetPassword(
         email,
@@ -329,7 +312,7 @@ export class AuthController
 
       res.json({ success: true, message: StatusMessage.PASSWORD_CHANGED });
     } catch (error) {
-      // console.error(error);
+      console.error(error);
       next(error)
       res.json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
     }
