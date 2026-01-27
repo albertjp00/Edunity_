@@ -1,11 +1,9 @@
 import { PaginatedUsers } from "../../interfaces/adminInterfaces";
-import { IMyCourses, IUserRepository } from "../../interfaces/userInterfaces";
+import {  IUserRepository } from "../../interfaces/userInterfaces";
 import { IAdminUserServices } from "../../interfacesServices.ts/adminServiceInterfaces";
 import { ICourse } from "../../models/course";
-import { IMyCourse } from "../../models/myCourses";
 import { IUser } from "../../models/user";
 import { IAdminRepository } from "../../repositories/adminRepositories";
-import {  UserRepository } from "../../repositories/userRepository";
 
 
 
@@ -63,13 +61,12 @@ export class AdminUserService implements IAdminUserServices {
 
     getUsersCoursesRequest = async(id:string):Promise<ICourse[] | null>=>{
         try {
-        const page = 1
-            const result = await this.adminRepository.findUserCourses(id , page)
+        // const page = 1
+            const result = await this.adminRepository.findUserCourses(id )
             return result
         } catch (error) {
             console.log(error); 
             return null
-            
         }
     }
 

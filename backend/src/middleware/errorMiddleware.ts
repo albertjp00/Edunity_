@@ -12,11 +12,10 @@ export function errorHandler(
   err: CustomError,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) {
   const status = err.statusCode || HttpStatus.INTERNAL_SERVER_ERROR;
 
-  // Correct way to log an error object
   logger.error(err.message, {
     stack: err.stack,
     route: req.originalUrl,

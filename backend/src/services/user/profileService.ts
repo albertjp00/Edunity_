@@ -1,10 +1,10 @@
 import { StatusMessage } from '../../enums/statusMessage';
-import { IPaymentDetails } from '../../interfaces/userInterfaces';
+import { IPaymentDetails, UserDTO } from '../../interfaces/userInterfaces';
 import { INotifications, IUserProfileService } from '../../interfacesServices.ts/userServiceInterfaces';
 import { mapUserToDTO } from '../../mapper/user.mapper';
 import { INotification } from '../../models/notification';
 import { IPayment } from '../../models/payment';
-import { ISubscription } from '../../models/user';
+import { ISubscription, IUser } from '../../models/user';
 import { IWallet } from '../../models/wallet';
 import { UserRepository } from '../../repositories/userRepository';
 import bcrypt from 'bcrypt'
@@ -23,15 +23,12 @@ export class ProfileService implements IUserProfileService {
   //     role: string,
   //   }
 
-  async getProfile(userId: string) {
+  async getProfile(userId: string):Promise<UserDTO | null> {
     try {
-      console.log("profile services ", userId);
-
       const user = await this.userRepository.findById(userId);
       if (!user) return null;
 
       const dto = mapUserToDTO(user)
-      //   console.log(userWithoutPassword);
 
       return dto
     } catch (error) {
@@ -42,10 +39,8 @@ export class ProfileService implements IUserProfileService {
 
 
 
-  async editProfileRequest(userId: string, updateData: Partial<any>) {
+  async editProfileRequest(userId: string, updateData: Partial<IUser>):Promise<UserDTO | null> {
     try {
-      console.log('id data', userId, updateData);
-
       const updatedUser = await this.userRepository.updateProfile(userId, updateData);
       if (!updatedUser) return null;
 

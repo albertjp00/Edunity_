@@ -5,10 +5,10 @@ import { otpStore } from "../../utils/otpStore";
 import { generateOtp } from "../../utils/otp";
 import { sendOtp } from "../../utils/sendMail";
 import { OAuth2Client } from "google-auth-library";
-import { IUser } from "../../models/user";
 import { googleLoginResult, IUserRepository } from "../../interfaces/userInterfaces";
 import { IUserAuthService } from "../../interfacesServices.ts/userServiceInterfaces";
 import { StatusMessage } from "../../enums/statusMessage";
+import { IUser } from "../../models/user";
 
 dotenv.config();
 
@@ -22,7 +22,7 @@ const SECRET_KEY = process.env.SECRET_KEY || "access_secret";
 interface LoginResult {
     success: boolean;
     message: string;
-    user?: any;
+    user?: IUser;
     accessToken?: string;
     refreshToken?: string;
 }
@@ -32,29 +32,7 @@ interface RegisterResult {
     message: string;
 }
 
-interface OtpData {
-    name?: string;
-    email?: string;
-    password?: string;
-    otp: string;
-    expiresAt: string;
-}
 
-interface ResetOtpData {
-    otp: string;
-    expiresAt: number;
-}
-
-interface RegisterRequestPayload {
-    name: string;
-    email: string;
-    password: string;
-}
-
-
-interface Iforgot {
-    message: string
-}
 
 // Main Auth Service
 export class AuthService implements IUserAuthService {
@@ -249,8 +227,6 @@ export class AuthService implements IUserAuthService {
 
     forgotPassword = async (email: string): Promise<{ success: boolean; message: string }> => {
         try {
-            console.log("forgotPassword user service");
-
             const user = await this.userRepository.findByEmail(email);
             if (!user) {
                 return { success: false, message: StatusMessage.EMAIL_NOT_EXISTS };
@@ -267,7 +243,6 @@ export class AuthService implements IUserAuthService {
                 otp,
                 expiresAt: Date.now() + 5 * 60 * 1000,
             });
-
 
             return { success: true, message: StatusMessage.OTP_SENT };
         } catch (error) {

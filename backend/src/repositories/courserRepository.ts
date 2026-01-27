@@ -1,4 +1,3 @@
-import { IUserRepository } from "../interfaces/userInterfaces";
 import { CourseModel, ICourse } from "../models/course";
 import logger from "../utils/logger";
 import { BaseCourseRepository } from "./baseRepository";

@@ -2,8 +2,11 @@ import { IEventResult, IPurchaseDetails } from "../interfaces/instructorInterfac
 import { ICategory } from "../models/category";
 import { ICourse } from "../models/course";
 import { IEvent } from "../models/events";
+import { IInstructor } from "../models/instructor";
 import { INotification } from "../models/notification";
+import { IQuestion, IQuiz } from "../models/quiz";
 import { IWallet } from "../models/wallet";
+import { ISkills } from "../repositories/instructorRepository";
 import { LoginResult, RegisterResult } from "./userServiceInterfaces";
 
 
@@ -54,11 +57,11 @@ export interface IInstAuthService {
 export interface IInstCourseService {
     fetchCourses(id: string, search: string, page: number, limit: number): Promise<{
         courses: ICourse[] | null;
-        skills: any;
+        skills: ISkills;
         totalPages: number;
         currentPage: number;
         totalItems: number;
-        instructor: any;
+        instructor: IInstructor;
     }>;
 
     fetchCourseDetails(courseId: string): Promise<{
@@ -66,17 +69,17 @@ export interface IInstCourseService {
         quizExists: boolean;
     } | null>;
 
-    getPurchaseDetails(id: string): Promise<IPurchaseDetails[] | null>;
+    getPurchaseDetails(id: string):Promise<IPurchaseDetails[] | null>;
 
-    addCourseRequest(id: string, data: any): Promise<ICourse | string | null>;
+    addCourseRequest(id: string, data: Partial<ICourse>):Promise<ICourse | string | null>;
 
-    editCourseRequest(id: string, data: Partial<ICourse>): Promise<ICourse | null>;
+    editCourseRequest(id: string, data: Partial<ICourse>):Promise<ICourse | null>;
 
-    addQuiz(courseId: string, title: string, questions: any[]): Promise<any>;
+    addQuiz(courseId: string, title: string, questions: IQuestion[]):Promise<void>;
 
-    getQuiz(courseId: string): Promise<any>;
+    getQuiz(courseId: string): Promise<IQuiz | null>;
 
-    updateQuiz(id: string, data: any): Promise<any>;
+    updateQuiz(id: string, data: Partial<IQuiz>): Promise<void>;
 
     getCategoryRequest():Promise<ICategory[] | null>;
 }
@@ -84,13 +87,13 @@ export interface IInstCourseService {
 
 
 export interface IInstEventService {
-    createEventRequest(id: string, data: any): Promise<IEvent | null>;
+    createEventRequest(id: string, data: Partial<IEvent>): Promise<IEvent | null>;
 
     getMyEventsRequest(id: string, search: string, page: string): Promise<IEventResult | null>;
 
     getEventRequest(id: string): Promise<IEvent | null>;
 
-    updateEventRequest(id: string, data: any): Promise<IEvent | null>;
+    updateEventRequest(id: string, data: Partial<IEvent>): Promise<IEvent | null>;
 
     joinEventRequest(eventId: string, instructorId: string): Promise<{ success: boolean; message: string; meetingLink?: string } | null>;
 
@@ -101,8 +104,8 @@ export interface IInstEventService {
 
 
 export interface IInstructorProfileService {
-  getProfile(userId: string): Promise<any | null>;
-  editProfileRequest(id: string, updateData: Partial<any>): Promise<boolean | null>;
+  getProfile(userId: string): Promise<IInstructor | null>;
+  editProfileRequest(id: string, updateData: Partial<IInstructor>): Promise<boolean | null>;
   passwordChange(id: string, newPassword: string, oldPassword: string): Promise<boolean>;
   kycSubmit(id: string, idProof: string, addressProof: string): Promise<boolean | null>;
   getNotifications(id: string): Promise<INotification[] | null>;

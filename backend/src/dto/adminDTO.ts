@@ -15,7 +15,7 @@ export interface CourseDTO {
   instructorName: string;
   createdAt: Date;
   category : string;
-  blocked:boolean
+  blocked:boolean 
 }
 
 export interface CourseDetailsDTO {
@@ -83,6 +83,13 @@ export interface KycDTO {
     submittedAt: Date;
 }
 
+export interface DTOKyc {
+  id: string;
+  instructorId: string;
+  idProof: string;
+  addressProof: string;
+}
+
 
 
 
@@ -102,4 +109,24 @@ export interface UserCourseDTO {
     thumbnail?: string;
     progress?: number;
     purchasedAt: Date;
+}
+
+
+export interface CourseListAggregation {
+  _id: string;
+  title: string;
+  description?: string;
+  price: number;
+  skills: string[];
+  level: string;
+  category: string;
+  totalEnrolled: number;
+  createdAt: Date;
+  thumbnail: string;
+  blocked: boolean;
+
+  // derived fields
+  moduleCount: number;
+  instructorName: string;
+  instructorImage: string;
 }

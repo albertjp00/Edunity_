@@ -1,3 +1,4 @@
+import { CourseDTO, CourseListAggregation } from "../dto/adminDTO";
 import { AdminAuthRequest } from "../middleware/authMiddleware";
 import { ICategory } from "../models/category";
 import { ICourse } from "../models/course";
@@ -5,16 +6,8 @@ import { IInstructor } from "../models/instructor";
 import { IQuiz } from "../models/quiz";
 import { IReport } from "../models/report";
 import { IUser } from "../models/user";
-
-
-
 import { NextFunction, Request, Response } from "express";
-
-
-
-// Admin Course Read Operations 
-
-
+import { IKyc } from "../models/kyc";
 
 
 export interface IAdminCourseReadController {
@@ -87,13 +80,6 @@ export interface IAdminInstructorsController {
   getInstructorsCourses(req: Request, res: Response, next: NextFunction): Promise<void>
 }
 
-export interface IAdminUsersController {
-
-}
-
-
-
-
 
 // ------------AdminServicess interfaces-------------------
 
@@ -106,24 +92,24 @@ export interface IAdminCourseService {
     search: string,
     limit: number
   ): Promise<{
-    courses: ICourse[] | null;
+    courses: CourseDTO[] | null;
     totalPages: number;
     currentPage: number;
   }>;
 
-  getCourseDetailsRequest(courseId: string): Promise<any>;
+  getCourseDetailsRequest(courseId: string): Promise<IAdminCourseDetails | null>;
 
   getQuizRequest(courseId: string): Promise<IQuiz[] | null>;
 
 
-  getPurchaseDetails(search: string, page: number): Promise<any>;
+  getPurchaseDetails(search: string, page: number):Promise<PurchaseResult | null | undefined>
 
-  generatePurchasesPDF(purchases: any[]): Promise<Buffer>;
+
+  generatePurchasesPDF(purchases: IPurchase[]): Promise<Buffer>;
 
   addCategoryRequest(category: string, skills: string[]): Promise<ICategory | null>;
-  getCategoryRequest(): Promise<any>;
-  getCategoryRequest(category: string): Promise<any>;
-  deleteCategoryRequest(category: string): Promise<any>;
+  getCategoryRequest(): Promise<ICategory[] | null>;
+  deleteCategoryRequest(category: string): Promise<boolean | null>;
   blockCourseRequest(courseId: string): Promise<boolean | null>;
   getReportsRequest(): Promise<IReport[] | null>;
 }
@@ -145,7 +131,7 @@ export interface IAdminInstructorService {
     search: string
   ): Promise<PaginatedInstructors | null>;
 
-  getKycDetails(id: string): Promise<void | null>;
+  getKycDetails(id: string): Promise<IKyc | null>;
 
   verifyKyc(id: string): Promise<void | null>;
 
@@ -180,7 +166,7 @@ export interface PaginatedInstructors {
 
 
 export interface PurchaseResult {
-  purchases: any[];
+  purchases: IPurchase[];
   totalPurchases: number;
   totalPages: number;
   currentPage: number;
@@ -196,3 +182,57 @@ export interface IUserOverview {
   count: number;
 }
 
+
+export interface PurchaseDTO {
+  id: string;           
+  userId: string;
+  userName: string;
+  userEmail: string;
+  courseId: string;
+  courseTitle: string;
+  coursePrice: number;
+  amountPaid: number;
+  paymentStatus: "completed" | "pending" | "failed";
+  createdAt: string;      
+
+}
+
+export interface PaginatedPurchasesDTO {
+  purchases: PurchaseDTO[];
+  totalPurchases: number;
+  totalPages: number;
+  currentPage: number;
+}
+
+
+export interface IPurchase {
+  _id: string; 
+  userId: string;
+  userName: string;
+  userEmail: string;
+  courseId: string;
+  courseTitle: string;
+  coursePrice: number;
+  amountPaid: number;
+  paymentStatus: 'completed' | 'pending' | 'failed';
+  createdAt: Date;
+}
+
+
+export interface IAdminCourseDetails{
+  course:ICourse,
+  instructor : IInstructor | null,
+  enrolledUsers : IUser[],
+  totalEnrolled : number
+}
+
+
+export interface CourseDetailsServiceResult {
+  course: ICourse;
+  instructor: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  enrolledUsers: number; // or IUser[] if needed
+}

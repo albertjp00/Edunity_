@@ -3,14 +3,13 @@ import { CourseModel, ICourse } from "../models/course";
 import { EventModel, IEvent } from "../models/events";
 import { IInstructor, InstructorModel } from "../models/instructor";
 import { IKyc, KycModel } from "../models/kyc";
-import { IMyCourse, MyCourseModel } from "../models/myCourses";
+import {  MyCourseModel } from "../models/myCourses";
 import { IQuiz, QuizModel } from "../models/quiz";
-import { IUser, UserModel } from "../models/user";
+import {  UserModel } from "../models/user";
 import { IEventResult, IPurchaseDetails } from "../interfaces/instructorInterfaces";
 import { INotification, NotificationModel } from "../models/notification";
-import { EarningModel, IEarnings } from "../models/earnings";
+import { EarningModel } from "../models/earnings";
 import { IWallet, WalletModel } from "../models/wallet";
-import { WalletTransaction } from "../interfaces/userInterfaces";
 import { CategoryModel, ICategory } from "../models/category";
 // import { IInsRepository } from "../interfaces/instructorInterfaces";
 
@@ -272,8 +271,6 @@ export class InstructorRepository implements IInsRepository {
 
 
   async editQuiz(id: string, data: Partial<IQuiz>): Promise<IQuiz> {
-    console.log(data);
-
     const updatedQuiz = await QuizModel.findOneAndUpdate(
   {courseId : id},
   {
@@ -288,13 +285,9 @@ export class InstructorRepository implements IInsRepository {
   }
 );
 
-    console.log('updated ', updatedQuiz);
-
-
     if (!updatedQuiz) {
       throw new Error("Quiz not found");
     }
-
     return updatedQuiz;
   }
 

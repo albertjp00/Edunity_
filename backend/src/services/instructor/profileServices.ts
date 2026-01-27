@@ -1,6 +1,5 @@
 import { IInstructorProfileService } from "../../interfacesServices.ts/instructorServiceInterface";
-import { mapInstructorToDTO } from "../../mapper/instructor.mapper";
-import { IEarnings } from "../../models/earnings";
+import { IInstructor } from "../../models/instructor";
 import { INotification } from "../../models/notification";
 import { IWallet } from "../../models/wallet";
 import { InstructorRepository } from "../../repositories/instructorRepository";
@@ -16,14 +15,11 @@ export class InstructorProfileService implements IInstructorProfileService {
   }
   async getProfile(userId: string) {
     try {
-      // console.log("profile services instructor " ,userId);
-
       const user = await this.instructorRepository.findById(userId);
       if (!user) return null;
 
-      const { password, ...userWithoutPassword } = user.toObject();
-      //   console.log(userWithoutPassword);
-      // const dto = mapInstructorToDTO(user)
+      // const { password, ...userWithoutPassword } = user.toObject();
+
 
       return user;
     } catch (error) {
@@ -32,7 +28,7 @@ export class InstructorProfileService implements IInstructorProfileService {
     }
   }
 
-  async editProfileRequest(id: string, updateData: Partial<any>) {
+  async editProfileRequest(id: string, updateData: Partial<IInstructor>) {
     try {
       console.log('id data', id, updateData);
 
@@ -68,7 +64,7 @@ export class InstructorProfileService implements IInstructorProfileService {
 
   kycSubmit = async(id : string , idProof:string,addressProof:string):Promise<boolean | null>=>{
     try {
-      const save = await this.instructorRepository.kycSubmit(id , idProof,addressProof)
+      await this.instructorRepository.kycSubmit(id , idProof,addressProof)
       return true
     } catch (error) {
       console.log(error);

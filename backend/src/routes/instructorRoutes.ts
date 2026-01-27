@@ -6,7 +6,6 @@ import { InstProfileController } from "../controllers/instructor/profileControll
 import multer from "multer"
 import { EventController } from "../controllers/instructor/eventController"
 import { MessageController } from "../controllers/messaage/messageController"
-import path from "path"
 import { MessageRepository } from "../repositories/messageRepositories"
 import { MessageService } from "../services/message/messageService"
 import { InstructorRepository } from "../repositories/instructorRepository"

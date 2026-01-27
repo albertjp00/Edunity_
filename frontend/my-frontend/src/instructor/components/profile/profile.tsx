@@ -5,59 +5,13 @@ import type { IInstructor } from '../../interterfaces/instructorInterfaces';
 import { useAppSelector } from '../../../redux/hooks';
 
 
-
-// interface ICourse {
-//   _id: string;
-//   title: string;
-//   thumbnail?: string;
-//   level?: string;
-//   price?: number;
-// }
-
 const InstructorProfile: React.FC = () => {
-  // const [user, setUser] = useState<IInstructor>({});
-  // const [courses, setCourses] = useState<ICourse[]>([]);
 
-  // const navigate = useNavigate();
 
   const user = useAppSelector((state)=>
     state.auth.role === 'instructor' ? state.auth.user  : null
   ) as IInstructor | null
-
-  // const getProfile = async () => {
-  //   try {
-  //     const response = await fetchProfile()
-  //     if(!response) return
-  //     console.log(response);
-      
-  //     setUser(response.data.data);
-  //   } catch (error) {
-  //     console.error('Error fetching profile:', error);
-  //   }
-  // };
-
-  // const getCourses = async () => {
-  //   try {
-  //     const res = await instructorApi.get(
-  //       `/instructor/getCourse`
-  //     );
-  //     if (res.data.success) {
-  //       // setCourses(res.data.course.slice(0,4));
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching courses:', error);
-  //   }
-  // };
-
-  // const courseDetails = (id: string) => {
-  //   navigate(`/instructor/courseDetails/${id}`);
-  // };
-
-  // useEffect(() => {
-  //   getProfile();
-  //   // getCourses();
-  // }, []);
-
+  
   return (
       <>
       
@@ -120,7 +74,8 @@ const InstructorProfile: React.FC = () => {
             </div>
 
             <div className="user-details-box">
-              <span>skills : {user?.skills?.join(', ')}</span>
+              {user?.skills  ? <span>skills : {user?.skills?.join(', ')}</span>
+               : 'No skills added'}
             </div>
 
 
@@ -162,34 +117,6 @@ const InstructorProfile: React.FC = () => {
 
 
           </div>
-
-          {/* <div className="enrolled-courses">
-            <h3>Courses You Teach</h3>
-            
-            {courses.length === 0 ? (
-              <p>No courses yet.</p>
-            ) : (
-              courses.map((course) => (
-                <div
-                  className="course-card-mini"
-                  key={course._id}
-                  onClick={() => courseDetails(course._id)}
-                >
-                  <img
-                    src={`${import.meta.env.VITE_API_URL}/assets/${course.thumbnail}`}
-                    alt={course.title}
-                    className="course-thumb-mini"
-                  />
-                  <div>
-                    <h4>{course.title}</h4>
-                    <p>
-                      {course.level} | ₹{course.price}
-                    </p>
-                  </div>
-                </div>
-              ))
-            )}
-          </div> */}
         </div>
       </div>
     </>

@@ -83,7 +83,6 @@ export class MessageController implements
     try {
       const userId = req.user?.id
       const { instructorId } = req.params!
-
       const result = await this.messageService.getUnreadMessages(userId as string, instructorId as string)
       res.status(HttpStatus.OK).json({ success: true, message: result })
     } catch (error) {
@@ -97,10 +96,8 @@ export class MessageController implements
     try {
       const { receiverId, text = '' } = req.body;
       const userId = req.user?.id as string;
-      // console.log("sendMessage",req.body);
 
       const file = req.file ? req.file.filename : null;
-
 
       const message = await this.messageService.sendMessage(
         userId,
@@ -127,15 +124,10 @@ export class MessageController implements
 
       console.log(userId);
 
-
       const messages = await this.messageService.getChatHistory(
         userId as string,
         receiverId as string
       );
-
-      // const updateAsRead = await this.messageService.markMessagesAsRead(userId as string, receiverId as string)
-
-
 
       res.status(HttpStatus.OK).json({ success: true, messages });
     } catch (error) {
@@ -146,30 +138,13 @@ export class MessageController implements
   };
 
 
-
-  //common to update messages as readd
-
-  // markAsRead = async (senderId:string , receiverId:string) : Promise<void>=>{
-  //   try {
-  //     console.log('message read ', senderId , receiverId);
-
-  //     await this.messageService.markMessagesAsRead(senderId , receiverId)
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
-
-
   // Instructor side -------------------------------
 
   getMessagedStudents = async (req: InstAuthRequest, res: Response,next: NextFunction) => {
     try {
       const instructorId = req.instructor?.id
 
-
-      const result = await this.messageService.getStudents(instructorId as string)
-
-      console.log(result);
+      const result = await this.messageService.getStudents(instructorId as string)      
 
       res.status(HttpStatus.OK).json({ success: true, students: result, instructorId })
 

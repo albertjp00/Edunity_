@@ -14,7 +14,7 @@ export interface IInstructor extends Document {
   work?: string;
   education?: string;
   skills?:[];
-  blocked?:boolean,
+  blocked:boolean,
   courseLimit:number
 }
 
@@ -63,8 +63,7 @@ const InstructorSchema: Schema<IInstructor> = new Schema({
     type: String
   },
   skills:{
-    Type:[String],
-    default:[]
+    type:Array,
   },
   blocked:{
     type:Boolean,

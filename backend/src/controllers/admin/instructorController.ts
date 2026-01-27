@@ -1,134 +1,150 @@
 import { Response, Request, NextFunction } from "express";
 import { HttpStatus } from "../../enums/httpStatus.enums";
-import { IAdminInstructorController, IAdminInstructorService, IAdminKycController } from "../../interfaces/adminInterfaces";
+import {
+  IAdminInstructorController,
+  IAdminInstructorService,
+  IAdminKycController,
+} from "../../interfaces/adminInterfaces";
 import { AdminAuthRequest } from "../../middleware/authMiddleware";
-import { mapInstructorToAdminDTO } from "../../mapper/admin.mapper";
-// import { AdminInstructorService } from "../../services/admin/instructorServices";
+import {
+  mapInstructorToAdminDTO,
+  mapKycToDTO,
+} from "../../mapper/admin.mapper";
 
+export class AdminInstructorController
+  implements IAdminInstructorController, IAdminKycController
+{
+  private _adminInstructorService: IAdminInstructorService;
 
-export class AdminInstructorController implements
-    IAdminInstructorController,
-    IAdminKycController {
-    private _adminInstructorService: IAdminInstructorService
+  constructor(adminInstructorService: IAdminInstructorService) {
+    this._adminInstructorService = adminInstructorService;
+  }
 
-    constructor(adminInstructorService: IAdminInstructorService) {
-        this._adminInstructorService = adminInstructorService
+  getInstructor = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { page, search } = req.query;
+
+      const data = await this._adminInstructorService.getInstructors(
+        page as string,
+        search as string,
+      );
+      if (!data) return;
+
+      const mapped = {
+        instructors: data.instructors.map(mapInstructorToAdminDTO),
+        totalPages: data.totalPages,
+        currentPage: data.currentPage,
+        totalInstructors: data.totalInstructors,
+      };
+
+      res.status(HttpStatus.OK).json({ success: true, mapped });
+    } catch (error) {
+      console.log(error);
+      next(error);
     }
+  };
 
+  getKyc = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = req.params.id!;
+      console.log("get kyc");
 
+      const data = await this._adminInstructorService.getKycDetails(id);
+      if (!data) return;
+      const dto = mapKycToDTO(data);
 
-
-    getInstructor = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            console.log('admin instrusss', req.query);
-            const { page, search } = req.query
-
-            const data = await this._adminInstructorService.getInstructors(page as string, search as string)
-            if (!data) return
-            const mapped = {
-                instructors: data.instructors.map(mapInstructorToAdminDTO),
-                totalPages: data.totalPages,
-                currentPage: data.currentPage,
-                totalInstructors: data.totalInstructors
-            };
-
-
-            res.status(HttpStatus.OK).json({ success: true, mapped })
-        } catch (error) {
-            console.log(error);
-            next(error)
-        }
+      res.status(HttpStatus.OK).json({ success: true, data: dto });
+    } catch (error) {
+      console.log(error);
+      next(error);
     }
+  };
 
-    getKyc = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const id = req.params.id!
+  verifyKyc = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = req.params.id!;
 
-            const data = await this._adminInstructorService.getKycDetails(id)
-            // data: mapKycToDTO(data)
+      const result = await this._adminInstructorService.verifyKyc(id);
 
-
-            res.status(HttpStatus.OK).json({ success: true, data: data })
-        } catch (error) {
-            console.log(error);
-            next(error)
-        }
+      if (result) {
+        res.status(HttpStatus.OK).json({ success: true });
+      } else {
+        res.json({ success: false });
+      }
+    } catch (error) {
+      console.log(error);
+      next(error);
     }
+  };
+  rejectKyc = async (
+    req: AdminAuthRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const id = req.params.id!;
+      const reason = req.body.reason;
 
-    verifyKyc = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const id = req.params.id!
+      await this._adminInstructorService.rejectKyc(id, reason);
 
-            const result = await this._adminInstructorService.verifyKyc(id)
-
-            if (result) {
-                res.status(HttpStatus.OK).json({ success: true })
-            } else {
-                res.json({ success: false })
-            }
-        } catch (error) {
-            console.log(error);
-            next(error)
-
-        }
+      res.status(HttpStatus.OK).json({ success: true });
+    } catch (error) {
+      console.log(error);
+      next(error);
     }
-    rejectKyc = async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
-        try {
-            const id = req.params.id!
-            const reason = req.body.reason
+  };
 
-            await this._adminInstructorService.rejectKyc(id, reason)
+  getInstructors = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const id = req.params.id!;
 
-            res.status(HttpStatus.OK).json({ success: true })
+      const result =
+        await this._adminInstructorService.getInstructorsRequest(id);
 
-        } catch (error) {
-            console.log(error);
-            next(error)
-
-        }
+      res.status(HttpStatus.OK).json({ success: true, instructor: result });
+    } catch (error) {
+      console.log(error);
+      next(error);
     }
+  };
 
+  blockInstructor = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const id = req.params.id!;
 
-    getInstructors = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            const id = req.params.id!
-
-            const result = await this._adminInstructorService.getInstructorsRequest(id)
-
-            res.status(HttpStatus.OK).json({ success: true, instructor: result })
-        } catch (error) {
-            console.log(error);
-            next(error)
-        }
+      const result =
+        await this._adminInstructorService.blockInstructorRequest(id);
+      res.status(HttpStatus.OK).json({ success: result });
+    } catch (error) {
+      console.log(error);
+      next(error);
     }
+  };
 
-    blockInstructor = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            const id = req.params.id!
+  getInstructorsCourses = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const id = req.params.id!;
 
-            const result = await this._adminInstructorService.blockInstructorRequest(id)
-            res.status(HttpStatus.OK).json({ success: result })
-        } catch (error) {
-            console.log(error);
-            next(error)
-        }
+      const result =
+        await this._adminInstructorService.getInstructorsCoursesRequest(id);
+      // const mapped = mapCourseDetailsToDTO(result)
+
+      res.status(HttpStatus.OK).json({ success: true, courses: result });
+    } catch (error) {
+      console.log(error);
+      next(error);
     }
-
-
-    getInstructorsCourses = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            const id = req.params.id!
-
-            const result = await this._adminInstructorService.getInstructorsCoursesRequest(id)
-            // const mapped = mapCourseDetailsToDTO(result)
-
-            res.status(HttpStatus.OK).json({ success: true, courses: result })
-        } catch (error) {
-            console.log(error);
-            next(error)
-
-        }
-    }
-
-
+  };
 }

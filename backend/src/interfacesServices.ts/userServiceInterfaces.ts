@@ -1,4 +1,5 @@
-import { googleLoginResult, IMyCourses, IPaymentDetails } from "../interfaces/userInterfaces";
+import { FilterQuery } from "mongoose";
+import { googleLoginResult, IMyCourses, IPaymentDetails, IRazorpayOrder, ISubmitQuiz, ISubscriptionCourses, SortOption, UserDTO } from "../interfaces/userInterfaces";
 import { ICourse } from "../models/course";
 import { IEvent } from "../models/events";
 import { IFavourite } from "../models/favourites";
@@ -6,17 +7,18 @@ import { IInstructor } from "../models/instructor";
 import { IMyCourse } from "../models/myCourses";
 import { IMyEvent } from "../models/myEvents";
 import { INotification } from "../models/notification";
-import { IPayment } from "../models/payment";
 import { IReport } from "../models/report";
 import { IReview } from "../models/review";
 import { ISubscription, IUser } from "../models/user";
 import { IWallet } from "../models/wallet";
+import { ISkills } from "../repositories/instructorRepository";
 import { ICourseDetails, IviewCourse } from "../services/user/userCourseService";
+import { IQuiz } from "../models/quiz";
 
 export interface LoginResult {
     success: boolean;
     message: string;
-    user?: any;
+    user?: IUser;
     accessToken?: string;
     refreshToken?: string;
 }
@@ -25,6 +27,8 @@ export interface RegisterResult {
     success: boolean;
     message: string;
 }
+
+
 
 
 // authetication servicess---------------------------------
@@ -73,19 +77,19 @@ export interface IUserAuthService {
 export interface IUserCourseService {
 
     getCourses(page: number,limit: number): Promise<{
-        courses: any;
-        skills: any;
+        courses: ICourse[];
+        skills: ISkills;
         totalPages: number;
         currentPage: number;
     }>;
 
     getAllCourses(
-        query: any,
+        query: FilterQuery<ICourse>,
         page: number,
         limit: number,
-        sortOption: any
+        sortOption: SortOption
     ): Promise<{
-        courses: any;
+        courses: ICourse[];
         totalCount: number;
         totalPages: number;
         currentPage: number;
@@ -99,7 +103,7 @@ export interface IUserCourseService {
     buyCourseRequest(
         userId: string,
         courseId: string
-    ): Promise<any>; // Razorpay order
+    ): Promise<IRazorpayOrder>; 
 
     cancelPayment(
         courseId: string
@@ -113,7 +117,8 @@ export interface IUserCourseService {
         userId: string
     ): Promise<{ success: boolean; message: string }>;
 
-    buySubscriptionRequest(userId : string):Promise<any>
+    buySubscriptionRequest(userId : string): Promise<IRazorpayOrder>
+
     verifySubscriptionPaymentRequest(   
         razorpay_order_id: string,
         razorpay_payment_id: string,
@@ -126,7 +131,7 @@ export interface IUserCourseService {
         page: number
     ): Promise<{ populatedCourses: IMyCourse[]; result: IMyCourses } | null>;
 
-    mySubscriptionCoursesRequest(id:string , page:number):Promise<any>
+    mySubscriptionCoursesRequest(id:string , page:number):Promise<ISubscriptionCourses | null>
 
     viewMyCourseRequest(
         id: string,
@@ -137,7 +142,7 @@ export interface IUserCourseService {
         userId: string,
         courseId: string,
         moduleTitle: string
-    ): Promise<any>;
+    ): Promise<IMyCourse | null>;
 
     getCertificateRequest(
         userId: string,
@@ -169,14 +174,13 @@ export interface IUserCourseService {
 
     getQuiz(
         courseId: string
-    ): Promise<any>;
+    ): Promise<IQuiz | null>;
 
     submitQuiz(
         userId: string,
         courseId: string,
-        quizId: string,
-        answers: any
-    ): Promise<{ score: number; totalPoints: number }>;
+        answers: string
+    ): Promise<ISubmitQuiz>;
 
     cancelCourseRequest(
         userId: string,
@@ -208,13 +212,10 @@ export interface IUserEventService {
 }
 
 
-//profile services ----------------------------
-
-
 
 export interface IUserProfileService {
-  getProfile(userId: string): Promise<any | null>;
-  editProfileRequest(userId: string, updateData: Partial<any>): Promise<any | null>;
+  getProfile(userId: string): Promise<UserDTO | null>;
+  editProfileRequest(userId: string, updateData: Partial<IUser>): Promise<UserDTO | null>;
   passwordChange(id: string, newPassword: string, oldPassword: string): Promise<boolean>;
   getWallet(userId: string): Promise<IWallet | null>;
   getPayment(userId: string , page:number): Promise<IPaymentDetails | null>;

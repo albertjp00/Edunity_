@@ -4,7 +4,7 @@ import { IEvent } from "../models/events";
 import { IInstructor } from "../models/instructor";
 import { IKyc } from "../models/kyc";
 import { IMessage } from "../models/message";
-import { IQuiz } from "../models/quiz";
+import { IQuestion, IQuiz } from "../models/quiz";
 import { ISkills } from "../repositories/instructorRepository";
 
 
@@ -15,7 +15,7 @@ export interface IInsRepository {
 
   findById(id: string): Promise<IInstructor | null>
 
-  updateProfile(id: string, data: any): Promise<IInstructor | null>
+  updateProfile(id: string, data: Partial<IInstructor>): Promise<IInstructor | null>
 
   updatePassword(id: string, newPassword: string): Promise<IInstructor | null>
 
@@ -23,7 +23,7 @@ export interface IInsRepository {
 
   changePassword(id: string, password: string): Promise<IInstructor | null>
 
-  addCourse(id: string, data: any): Promise<ICourse | null>
+  addCourse(id: string, data: Partial<ICourse>): Promise<ICourse | null>
 
   getCourses(id: string, skip: number, limit: number): Promise<ICourse[] | null>
 
@@ -31,7 +31,7 @@ export interface IInsRepository {
 
   purchaseDetails(courseId: string): Promise<IPurchaseDetails[] | null>
 
-  editCourse(id: string, data: any): Promise<ICourse | null>
+  editCourse(id: string, data: Partial<ICourse>): Promise<ICourse | null>
 
   countCourses(): Promise<number>;
 
@@ -43,15 +43,15 @@ export interface IInsRepository {
 
   getEvent(id: string): Promise<IEvent | null>
 
-  updateEvent(id: string, data: any): Promise<IEvent | null>
+  updateEvent(id: string, data: Partial<IEvent>): Promise<IEvent | null>
 
-  addQuiz(courseId: string, title: string, questions: any[]): Promise<IQuiz>
+  addQuiz(courseId: string, title: string, questions: IQuestion[]): Promise<IQuiz>
 
   getQuiz(courseId: string): Promise<IQuiz | null>
 
   getQuizByCourseId(courseId: string): Promise<IQuiz | null>
 
-  editQuiz(id: string, data: any): Promise<IQuiz>
+  editQuiz(id: string, data: Partial<IQuiz>): Promise<IQuiz>
 
   startEventById(id: string): Promise<IEvent | null>
 

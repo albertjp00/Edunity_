@@ -41,19 +41,16 @@ export class AuthController
   login = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, password } = req.body;
-      logger.info(`Login user: ${req.body.email}`);
-
+      
       if (!email || !password) {
         res.status(HttpStatus.BAD_REQUEST).json({ message: StatusMessage.EMAIL_AND_PASWWORD });
         return;
       }
 
-
       const result = await this._authService.loginRequest(email, password);
-
+      
       const loginMapped = LoginMapper(result)
     
-
       if (result.success) {
         res.cookie("refreshToken", result.refreshToken, {
           httpOnly: true,
@@ -61,8 +58,6 @@ export class AuthController
           sameSite: "strict",
           maxAge: 24 * 60 * 60 * 1000, 
         });
-
-        
 
         res.status(HttpStatus.OK).json({
           message: loginMapped.message,

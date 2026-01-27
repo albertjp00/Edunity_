@@ -66,9 +66,6 @@ export class BaseCourseRepository<T extends Document> {
     return await this.model.findByIdAndDelete(id);
   }
 
-  async countDocuments(query: any = {}): Promise<number> {
-    return await this.model.countDocuments(query);
-  }
 }
 
 

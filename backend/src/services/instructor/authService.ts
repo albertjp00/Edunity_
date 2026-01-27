@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 import { otpStore } from "../../utils/otpStore";
 import { generateOtp } from "../../utils/otp";
 import { sendOtp } from "../../utils/sendMail";
-import { InstAuthRequest } from "../../middleware/authMiddleware";
 import { StatusMessage } from "../../enums/statusMessage";
 
 dotenv.config()

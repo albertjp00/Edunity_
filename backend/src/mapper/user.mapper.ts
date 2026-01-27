@@ -17,7 +17,7 @@ export const mapUserToDTO = (user: IUser): UserDTO => {
     provider : user.provider,
     location : user.location,
     phone : user.phone,
-    createdAt: user.createdAt.toISOString()
+    createdAt: user.createdAt
   };
 };
 

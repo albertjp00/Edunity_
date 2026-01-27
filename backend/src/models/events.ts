@@ -1,5 +1,5 @@
 // import mongoose, { Schema, Document } from "mongoose";
-import mongoose , { Schema, Document, Types } from "mongoose";
+import mongoose , { Schema, Document } from "mongoose";
 
 export interface IEvent extends Document {
   _id:string;
@@ -31,7 +31,6 @@ const EventSchema: Schema = new Schema<IEvent>(
     topic: { type: String, required: true },
     date: { type: Date, required: true },
     time: { type: String, required: true },
-    // ampm:{type :String , required :true},
     participants: { type: Number, default: 0 },         
     isLive: { type: Boolean, default: false },
     maxParticipants: { type: Number },

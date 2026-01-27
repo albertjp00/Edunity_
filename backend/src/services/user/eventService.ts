@@ -1,4 +1,3 @@
-import { Server } from "http";
 import { IEvent } from "../../models/events";
 import { IMyEvent } from "../../models/myEvents";
 import { InstructorRepository } from "../../repositories/instructorRepository";
@@ -120,20 +119,16 @@ export class UserEventService implements IUserEventService {
     joinUserEventRequest = async (eventId: string, userId: string): Promise<{ success: boolean; message: string; meetingLink?: string } | null> => {
         try {
             const myEvent = await this.userRepository.getMyEvent(eventId);
-            // console.log(myEvent);
-            
 
             if (!myEvent) return { success: false, message: StatusMessage.NO_EVENT_FOUND };
-            // if (myEvent.userId !== userId)
-            //     return { success: false, message: "Not authorized" };
+            if (myEvent.userId !== userId)
+                return { success: false, message: "Not authorized" };
 
             const event = await this.instructorRepository.getEvent(eventId);
             if (!event) return { success: false, message: StatusMessage.NO_EVENT_FOUND };
 
             if (!event.isLive)
                 return { success: false, message: StatusMessage.EVENT_NOT_STARTED };
-            console.log(event);
-            
 
             // if (!event.participantsList.includes(userId)) {
             //   event.participantsList.push(userId);
@@ -141,18 +136,12 @@ export class UserEventService implements IUserEventService {
             //   await event.save();
             // }
 
-           
-                let meetingLink = event.meetingLink;
-            
+            const meetingLink = event.meetingLink
 
-            // const meetingLink = event.meetingLink;
             const result: { success: boolean; message: string; meetingLink?: string } = meetingLink !== undefined
                 ? { success: true, message: StatusMessage.EVENT_JOINED, meetingLink }
                 : { success: true, message: StatusMessage.EVENT_JOINED };
-
-            
-            // console.log(result);
-            
+                  
             return result;
 
         } catch (error) {

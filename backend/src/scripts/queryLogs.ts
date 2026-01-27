@@ -27,7 +27,7 @@ interface LogEntry {
 
 function queryLogs({ level, keyword, startDate, endDate }: LogQuery): LogEntry[] {
   const files = getLogFiles();
-  let results: LogEntry[] = [];
+  const results: LogEntry[] = [];
 
   for (const file of files) {
     const filePath = path.join(logsDir, file);

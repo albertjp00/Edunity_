@@ -9,7 +9,6 @@ import { IInstructorProfileService } from '../../interfacesServices.ts/instructo
 import { mapEarningsToDTO, mapInstructorProfileToDTO, mapNotificationToDTO, walleToDto } from '../../mapper/instructor.mapper';
 import { INotification } from '../../models/notification';
 import { StatusMessage } from '../../enums/statusMessage';
-// import { InstructorProfileService } from '../../services/instructor/profileServices';
 
 
 export class InstProfileController implements
@@ -35,10 +34,10 @@ export class InstProfileController implements
                 res.status(HttpStatus.UNAUTHORIZED).json({ error: 'Unauthorized' });
                 return;
             }
-
             const profile = await this._profileService.getProfile(userId);
-            console.log(profile);
-            const profileDTO = mapInstructorProfileToDTO(profile)
+
+        
+            const profileDTO = mapInstructorProfileToDTO(profile)        
 
 
             if (profile) {

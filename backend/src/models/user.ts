@@ -21,12 +21,12 @@ export interface IUser extends Document {
 }
 
 export interface ISubscription {
-    isActive: Boolean,
+    isActive: boolean,
     startDate:  Date ,
     endDate:  Date ,
-    paymentId:  String ,
-    orderId:  String ,
-    billingCycle: String
+    paymentId:  string ,
+    orderId:  string ,
+    billingCycle: string
 }
 
 

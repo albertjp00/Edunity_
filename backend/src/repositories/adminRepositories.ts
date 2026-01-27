@@ -1,11 +1,10 @@
-import { ICount, IUserOverview, PaginatedInstructors, PaginatedUsers, PurchaseResult } from "../interfaces/adminInterfaces";
+import { IAdminCourseDetails, IUserOverview, PaginatedInstructors, PaginatedUsers, PurchaseResult } from "../interfaces/adminInterfaces";
 import { IEarningsResult, ITotalEnrolled } from "../interfacesServices.ts/adminServiceInterfaces";
 import { CategoryModel, ICategory } from "../models/category";
 import { CourseModel, ICourse } from "../models/course";
-import { EarningModel, IEarnings } from "../models/earnings";
-import { FavouritesModel, IFavourite } from "../models/favourites";
+import { EarningModel} from "../models/earnings";
 import { IInstructor, InstructorModel } from "../models/instructor";
-import { KycModel } from "../models/kyc";
+import { IKyc, KycModel } from "../models/kyc";
 import { IMyCourse, MyCourseModel } from "../models/myCourses";
 import { INotification, NotificationModel } from "../models/notification";
 import { IQuiz, QuizModel } from "../models/quiz";
@@ -26,11 +25,11 @@ export interface IAdminRepository {
 
     unblockUser(id: string): Promise<boolean | null>
 
-    findUserCourses(id: string, page: number): Promise<ICourse[] | null>
+    findUserCourses(id: string): Promise<ICourse[] | null>
 
     findInstructors(page: string, search: string): Promise<PaginatedInstructors | null>
 
-    getKycDetails(id: string): Promise<void | null>
+    getKycDetails(id: string): Promise<IKyc | null>
 
     verifyKyc(id: string): Promise<void | null>
 
@@ -44,20 +43,15 @@ export interface IAdminRepository {
 
     findByCourseId(courseId: string): Promise<IMyCourse[] | null>
 
-    getFullCourseDetails(courseId: string): Promise<{
-        course: ICourse;
-        instructor: IInstructor | null;
-        enrolledUsers: IUser[];
-        totalEnrolled: number;
-    } | null>;
+    getFullCourseDetails(courseId: string): Promise<IAdminCourseDetails | null>;
 
-    getQuiz(courseId:string): Promise<IQuiz[] | null>
+    getQuiz(courseId: string): Promise<IQuiz[] | null>
 
     getPurchases(search: string, page: number): Promise<PurchaseResult | null>
 
     addCategory(category: string, skills: string[]): Promise<ICategory | null>
     getCategory(): Promise<ICategory[] | null>
-    deleteCategory(category: string): Promise<boolean>
+    deleteCategory(category: string): Promise<boolean | null>
 
     getTotalUsers(): Promise<number | null>
     getTotalInstructors(): Promise<number | null>
@@ -130,7 +124,7 @@ export class AdminRepository implements IAdminRepository {
 
     }
 
-    async findUserCourses(userId: string, page: number): Promise<ICourse[] | null> {
+    async findUserCourses(userId: string): Promise<ICourse[] | null> {
         try {
             const myCourses = await MyCourseModel.find({ userId });
 
@@ -175,7 +169,8 @@ export class AdminRepository implements IAdminRepository {
     }
 
 
-    async getKycDetails(id: string): Promise<void | null> {
+    async getKycDetails(id: string): Promise<IKyc | null> {
+        
         return KycModel.findOne({ instructorId: id })
     }
 
@@ -184,8 +179,8 @@ export class AdminRepository implements IAdminRepository {
     }
 
     async rejectKyc(id: string): Promise<void | null> {
-        const update = await InstructorModel.findByIdAndUpdate(id, { KYCstatus: 'rejected' })
-        const deleteKyc = await KycModel.findOneAndDelete({ instructorId: id })
+        await InstructorModel.findByIdAndUpdate(id, { KYCstatus: 'rejected' })
+        await KycModel.findOneAndDelete({ instructorId: id })
         return
     }
 
@@ -237,15 +232,15 @@ export class AdminRepository implements IAdminRepository {
         };
     }
 
-     async getQuiz(courseId:string): Promise<IQuiz[] | null>{
+    async getQuiz(courseId: string): Promise<IQuiz[] | null> {
         try {
-            const quiz = await QuizModel.find({courseId : courseId})
+            const quiz = await QuizModel.find({ courseId: courseId })
             return quiz
         } catch (error) {
             console.log(error);
             return null
         }
-     }
+    }
 
 
     async getPurchases(search: string = "", page: number = 1): Promise<PurchaseResult | null> {
@@ -253,39 +248,39 @@ export class AdminRepository implements IAdminRepository {
             const limit = 4;
             const skip = (page - 1) * limit;
 
-            // 1. Build search filter for DB query
-            const searchFilter: any = {};
-            if (search) {
-                // Search needs to happen on user or course → so we need lookup
-                // Simpler: fetch all purchases, then filter by joining user/course
-                // ✅ Better approach: pre-populate user & course
-            }
-
-            // 2. Fetch ALL purchases (no skip/limit yet) to apply search properly
             const purchases = await MyCourseModel.find().lean();
 
-            // 3. Map purchases with user & course info
+            type PaymentStatus = 'completed' | 'pending' | 'failed';
+
+
             const mapped = await Promise.all(
                 purchases.map(async (purchase) => {
                     const user = await UserModel.findById(purchase.userId).select("name email");
                     const course = await CourseModel.findById(purchase.courseId).select("title price");
 
+                    const paymentStatus: PaymentStatus =
+                        purchase.paymentStatus === 'completed' ||
+                            purchase.paymentStatus === 'pending' ||
+                            purchase.paymentStatus === 'failed'
+                            ? purchase.paymentStatus
+                            : 'completed';
+
+
                     return {
-                        _id: purchase._id,
+                        _id: purchase.id,
                         userId: purchase.userId,
                         userName: user?.name || "Unknown",
                         userEmail: user?.email || "Unknown",
                         courseId: purchase.courseId,
                         courseTitle: course?.title || "Unknown",
                         coursePrice: course?.price || 0,
-                        amountPaid: (purchase as any).amountPaid ?? course?.price,
-                        paymentStatus: (purchase as any).paymentStatus ?? "completed",
+                        amountPaid: purchase.amountPaid ?? course?.price,
+                        paymentStatus,
                         createdAt: purchase.createdAt,
                     };
                 })
             );
 
-            // 4. Apply search filter
             const filtered = mapped.filter((p) => {
                 if (!search) return true;
                 return (
@@ -295,7 +290,6 @@ export class AdminRepository implements IAdminRepository {
                 );
             });
 
-            // 5. Apply pagination AFTER filtering
             const totalPurchases = filtered.length;
             const totalPages = Math.ceil(totalPurchases / limit);
 
@@ -323,9 +317,14 @@ export class AdminRepository implements IAdminRepository {
         return await CategoryModel.find()
     }
 
-    async deleteCategory(category: string): Promise<boolean> {
-        await CategoryModel.findOneAndDelete({ name: category })
-        return true
+    async deleteCategory(category: string): Promise<boolean | null> {
+        try {
+            await CategoryModel.findOneAndDelete({ name: category })
+            return true
+        } catch (error) {
+            console.log(error);
+            return null
+        }
     }
 
 
@@ -449,8 +448,8 @@ export class AdminRepository implements IAdminRepository {
                 },
             ]);
 
-            console.log('monthy',result);
-            
+            console.log('monthy', result);
+
 
             return result;
         } catch (error) {

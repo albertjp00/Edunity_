@@ -1,17 +1,13 @@
-import { IMyCourses } from '../../interfaces/userInterfaces';
+import { IMyCourses, IRazorpayOrder, SortOption } from '../../interfaces/userInterfaces';
 import { ICourse } from '../../models/course';
 import { IFavourite } from '../../models/favourites';
 import { IInstructor } from '../../models/instructor';
 import { IMyCourse, IProgress } from '../../models/myCourses';
-import { IUser } from '../../models/user';
 import { AdminRepository } from '../../repositories/adminRepositories';
 import { InstructorRepository } from '../../repositories/instructorRepository';
 import { UserRepository } from '../../repositories/userRepository';
 import razorpay from '../../utils/razorpay';
 import crypto from 'crypto'
-import fs from 'fs';
-import PDFDocument from 'pdfkit'
-
 import path from "path";
 import { fileURLToPath } from "url";
 import { generateCertificate } from '../../utils/certificate';
@@ -20,9 +16,9 @@ import { IUserCourseService } from '../../interfacesServices.ts/userServiceInter
 import { StatusMessage } from '../../enums/statusMessage';
 import { IReview } from '../../models/review';
 import { IReport } from '../../models/report';
+import { FilterQuery } from 'mongoose';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 
 
@@ -80,7 +76,7 @@ export class UserCourseService implements IUserCourseService {
   }
 
 
-  async getAllCourses(query: any, page: number, limit: number, sortOption: any) {
+  async getAllCourses(query: FilterQuery<ICourse>, page: number, limit: number, sortOption: SortOption) {
     const skip = (page - 1) * limit;
 
 
@@ -97,13 +93,15 @@ export class UserCourseService implements IUserCourseService {
   }
 
 
-  mySubscriptionCoursesRequest = async (id: string, page: number): Promise<any> => {
+  mySubscriptionCoursesRequest = async (id: string, page: number) => {
     try {
       const courses = await this.userRepository.getSubscriptionCourses(id, page)
+      console.log('result',courses);
+      
       return courses
     } catch (error) {
       console.log(error);
-
+      return null
     }
   }
 
@@ -112,7 +110,6 @@ export class UserCourseService implements IUserCourseService {
 
   fetchCourseDetails = async (userId: string, courseId: string): Promise<ICourseDetails | string | null> => {
     try {
-      console.log("service get course details");
       let hasAccess = false
       const myCourse: IMyCourse | null = await this.userRepository.getCourseDetails(userId, courseId);
 
@@ -122,24 +119,21 @@ export class UserCourseService implements IUserCourseService {
         return 'myCourseExists'
       }
 
+      const course= await this.userRepository.getCourse(courseId);
+      if(!course) return null
 
-      const course: any = await this.userRepository.getCourse(courseId);
-      // console.log('myCoursessss', course);
-
-      if (course.accessType == 'subscription') {
+      if (course?.accessType == 'subscription') {
         const userSubscription = await this.userRepository.getSubscriptionActive(userId)
         if (userSubscription) {
           hasAccess = true
         }
       }
 
-
-
       if (myCourse) {
         hasAccess = true
       }
 
-      const instructor = await this.instructorRepository.findById(course.instructorId);
+      const instructor = await this.instructorRepository.findById(course?.instructorId as string);
       return {
         ...(course.toObject?.() || course),
         instructor,
@@ -153,20 +147,9 @@ export class UserCourseService implements IUserCourseService {
   };
 
 
-
-
-
-
-  // import OrderModel from "../models/orderModel"; // adjust path
-
-  buyCourseRequest = async (userId: string, courseId: string) => {
+  buyCourseRequest = async (userId: string, courseId: string) : Promise<IRazorpayOrder> => {
     try {
-      console.log('buy course service');
-
-      
-
       const course = await this.userRepository.getCourse(courseId);
-
 
       if (!course) {
         throw new Error(StatusMessage.COURSE_NOT_FOUND);
@@ -175,8 +158,6 @@ export class UserCourseService implements IUserCourseService {
         throw new Error(StatusMessage.PAYMENT_ALREADY_PROGRESS)
       }
 
-
-
       const options = {
         amount: course.price! * 100,
         currency: "INR",
@@ -184,13 +165,11 @@ export class UserCourseService implements IUserCourseService {
         notes: { userId, courseId },
       };
 
-
       const order = await razorpay.orders.create(options);
 
-      const onPurchase = await this.userRepository.onPurchase(courseId, true)
+      await this.userRepository.onPurchase(courseId, true)
 
       return order;
-
 
     } catch (error) {
       console.error(error);
@@ -213,20 +192,15 @@ export class UserCourseService implements IUserCourseService {
     razorpay_signature: string, courseId: string, userId: string): Promise<{ success: boolean; message: string }> => {
     try {
 
-      console.log('verify payment ', courseId, userId);
-
       const sign = razorpay_order_id + "|" + razorpay_payment_id;
       const expectedSign = crypto
         .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
         .update(sign.toString())
         .digest("hex");
 
-      console.log('check equal ', expectedSign, razorpay_signature);
-
 
       if (razorpay_signature === expectedSign) {
         const course = await this.userRepository.getCourse(courseId)
-        console.log('buyin course ', course);
 
         if (!course) {
           return { success: false, message: StatusMessage.COURSE_NOT_FOUND };
@@ -364,7 +338,6 @@ export class UserCourseService implements IUserCourseService {
           };
         })
       );
-      // console.log("my Courses ", populatedCourses);
 
       return { populatedCourses, result };
 
@@ -382,13 +355,12 @@ export class UserCourseService implements IUserCourseService {
       console.log('service myCourse viewMyCourse');
 
       const myCourse = await this.userRepository.viewMyCourse(id, myCourseId);
+      console.log('myc ourse ',myCourse);
+      
       if (!myCourse) return null;
       const progress = myCourse.progress
       const cancelCourse = myCourse.cancelCourse
-      // console.log('service my course details',myCourse);
       const enrolledAt = myCourse.createdAt
-
-      // const myCourse = await this.userRepository.findUserCourse(userId, courseId);
 
       const course = await this.userRepository.getCourse(myCourse.courseId.toString());
       if (!course) return null;
@@ -404,9 +376,9 @@ export class UserCourseService implements IUserCourseService {
 
             if (rawUrl.includes(".amazonaws.com/")) {
               const parts = rawUrl.split(".amazonaws.com/");
-              key = parts[1]?.split("?")[0]; // safely access
+              key = parts[1]?.split("?")[0]; 
             } else {
-              key = rawUrl.split("?")[0]; // fallback for direct key
+              key = rawUrl.split("?")[0]; 
             }
             console.log("key", key);
 
@@ -445,12 +417,11 @@ export class UserCourseService implements IUserCourseService {
   async updateProgress(userId: string, courseId: string, moduleTitle: string) {
 
     try {
-      const update = await this.userRepository.updateProgress(userId, courseId, moduleTitle)
+      return await this.userRepository.updateProgress(userId, courseId, moduleTitle)
 
-      return update
     } catch (error) {
       console.log(error);
-
+      return null
     }
   }
 
@@ -504,17 +475,6 @@ export class UserCourseService implements IUserCourseService {
 
     try {
       console.log('in servire review');
-
-      //   const courseReview = await this.userRepository.getCourse(courseId)
-      //   console.log(courseReview);
-
-      //   const reviewed = courseReview?.review.some((r:IReview)=>  r.userId === userId )
-
-      //   console.log('reviewdddd',reviewed);
-
-      //   if (reviewed) {
-      //   return 'exists'
-      // }
 
       const user = await this.userRepository.findById(userId)
       if (user) {
@@ -632,30 +592,16 @@ export class UserCourseService implements IUserCourseService {
 
   getQuiz = async (courseId: string) => {
     try {
-      // console.log('quiz service');
-
-      // const course = await this.userRepository.getCourse(myCourseId)
-      // console.log(course);
-
-      // if(!course) return null
       const quiz = await this.userRepository.getQuiz(courseId)
-      console.log(quiz);
-
       return quiz
     } catch (error) {
       console.log(error);
-
+      return null
     }
   }
 
-  submitQuiz = async (
-    userId: string,
-    courseId: string,
-    quizId: string,
-    answers: any
-  ) => {
+  submitQuiz = async (userId: string,courseId: string,answers: any) => {
     try {
-      console.log("quiz service", answers);
 
       const quiz = await this.userRepository.getQuiz(courseId);
       console.log(quiz?.questions);
@@ -682,8 +628,6 @@ export class UserCourseService implements IUserCourseService {
           score += q.points;
         }
       });
-
-
 
       await this.userRepository.submitQuiz(userId, courseId, score);
 

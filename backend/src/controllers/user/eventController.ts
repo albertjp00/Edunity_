@@ -49,14 +49,14 @@ export class UserEventController implements
 
     enrollEvent = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void | null> => {
         try {
-            const id = req.user?.id!
+            const id = req.user?.id as string
             const eventId = req.params.id
             
             if (!eventId) {
                 res.status(400).json({ success: false, message: StatusMessage.NO_EVENT_ID });
                 return;
             }
-            const result = await this._userEventService.eventEnrollRequest(id, eventId)
+            await this._userEventService.eventEnrollRequest(id, eventId)
 
             res.status(HttpStatus.OK).json({ success: true })
         } catch (error) {

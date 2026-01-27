@@ -30,9 +30,7 @@ const Purchases: React.FC = () => {
     try {
       setLoading(true);
       const res = await getPurchases(search, page)
-      // console.log(res);
       const resData = res.data.purchases
-      console.log(resData);
 
       setPurchases(resData);
       setPages(res.data.totalPages);

@@ -1,206 +1,226 @@
 import { Response, Request, NextFunction } from "express";
 import { AdminAuthRequest } from "../../middleware/authMiddleware";
 import { HttpStatus } from "../../enums/httpStatus.enums";
-import { IAdminCategoryController, IAdminCourseReadController, IAdminCourseService, IAdminPurchaseController } from "../../interfaces/adminInterfaces";
+import {
+  IAdminCategoryController,
+  IAdminCourseReadController,
+  IAdminCourseService,
+  IAdminPurchaseController,
+} from "../../interfaces/adminInterfaces";
 import { mapCourseToDTO, mapPurchaseToDTO } from "../../mapper/admin.mapper";
 import { StatusMessage } from "../../enums/statusMessage";
 
-
-
-
-export class AdminCourseController implements
+export class AdminCourseController
+  implements
     IAdminCourseReadController,
     IAdminPurchaseController,
-    IAdminCategoryController {
+    IAdminCategoryController
+{
+  private _courseService: IAdminCourseService;
 
-    private _courseService: IAdminCourseService;
+  constructor(adminCourseService: IAdminCourseService) {
+    this._courseService = adminCourseService;
+  }
 
-    constructor(adminCourseService: IAdminCourseService) {
-        this._courseService = adminCourseService;
+  getCourses = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 6;
+      const search = req.query.search as string;
+      console.log('get courses');
+      const data = await this._courseService.getCoursesRequest(
+        
+        page,
+        search,
+        limit,
+      );      
+      res.status(HttpStatus.OK).json({
+        success: true,
+        courses: data.courses,
+        totalPages: data.totalPages,
+        currentPage: data.currentPage,
+      });
+    } catch (error) {
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ success: false, message: StatusMessage.FAILED_TO_GET_COURSES });
+      next(error);
     }
+  };
 
+  getCourseDetails = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const id = req.params.id!;
+      const data = await this._courseService.getCourseDetailsRequest(id);
 
-
-    getCourses = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const page = parseInt(req.query.page as string) || 1;
-            const limit = parseInt(req.query.limit as string) || 6;
-            const search = req.query.search as string;
-            const data = await this._courseService.getCoursesRequest(page, search, limit);
-            const courseDTOs = (data.courses ?? []).map(mapCourseToDTO);
-
-            res.status(HttpStatus.OK).json({
-                success: true,
-                courses: courseDTOs,
-                totalPages: data.totalPages,
-                currentPage: data.currentPage,
-            });
-        } catch (error) {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.FAILED_TO_GET_COURSES });
-            next(error);
-        }
-    };
-
-
-    getCourseDetails = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const id = req.params.id!;
-            const data = await this._courseService.getCourseDetailsRequest(id);
-            console.log('admin course details', id, data)
-
-
-            res.status(HttpStatus.OK).json({
-                success: true,
-                course: data,
-            });
-        } catch (error) {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.FAILED_TO_GET_COURSE_DETAILS });
-            next(error)
-        }
-    };
-
-
-    getQuiz = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const id = req.params.id!;
-            console.log(id);
-
-            const data = await this._courseService.getQuizRequest(id);
-            console.log('admin quiz details', id, data);
-
-
-            res.status(HttpStatus.OK).json({ success: true, course: data, });
-        } catch (error) {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.FAILED_TO_GET_COURSE_DETAILS });
-            next(error)
-        }
-    };
-
-
-
-
-
-
-    getAllPurchases = async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
-        try {
-            const { search, page } = req.query;
-            console.log('search page  e ee ', search, page);
-
-
-            const purchases = await this._courseService.getPurchaseDetails(
-                search as string,
-                Number(page)
-            );
-
-            console.log('dtooooooooo', purchases);
-
-
-            const purchaseDTOs = (purchases.purchases ?? []).map(mapPurchaseToDTO);
-
-
-            res.status(HttpStatus.OK).json({
-                success: true, purchases: purchaseDTOs,
-                currentPage: purchases.currentPage,
-                totalPages: purchases.totalPages,
-                totalPurchases: purchases.totalPurchases,
-            });
-        } catch (err) {
-            next(err);
-        }
-    };
-
-
-
-    exportPurchasesPDF = async (req: AdminAuthRequest, res: Response) => {
-        try {
-            const result = await this._courseService.getPurchaseDetails('', 1);
-            const purchases = result.purchases
-            if (!purchases || purchases.length === 0) {
-                return res.status(400).json({ message: "No purchase data found" });
-            }
-
-            const pdfBuffer = await this._courseService.generatePurchasesPDF(purchases);
-
-            res.setHeader("Content-Type", "application/pdf");
-            res.setHeader(
-                "Content-Disposition",
-                "attachment; filename=purchase-report.pdf"
-            );
-
-            console.log(pdfBuffer);
-
-            res.send(pdfBuffer);
-        } catch (error) {
-            console.log(error);
-
-        }
-    };
-
-
-
-
-
-    addCategory = async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
-        try {
-            const { category, skills } = req.body
-            console.log(category, skills);
-
-            const categories = await this._courseService.addCategoryRequest(category, skills)
-
-            res.json({ success: true, category: categories })
-        } catch (error) {
-            console.log(error);
-            next(error)
-        }
+      res.status(HttpStatus.OK).json({
+        success: true,
+        course: data,
+      });
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: StatusMessage.FAILED_TO_GET_COURSE_DETAILS,
+      });
+      next(error);
     }
+  };
 
-    getCategory = async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
-        try {
-            const categories = await this._courseService.getCategoryRequest()
-            console.log(categories);
+  getQuiz = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = req.params.id!;
+      console.log(id);
 
-            res.json({ success: true, category: categories })
-        } catch (error) {
-            console.log(error);
-            next(error)
-        }
+      const data = await this._courseService.getQuizRequest(id);
+      console.log("admin quiz details", id, data);
+
+      res.status(HttpStatus.OK).json({ success: true, course: data });
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: StatusMessage.FAILED_TO_GET_COURSE_DETAILS,
+      });
+      next(error);
     }
+  };
 
-    deleteCategory = async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
-        try {
-            const category = req.body.category
+  getAllPurchases = async (
+    req: AdminAuthRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const { search, page } = req.query;
 
-            await this._courseService.deleteCategoryRequest(category)
+      const purchases = await this._courseService.getPurchaseDetails(
+        search as string,
+        Number(page),
+      );
 
-            res.json({ success: true })
-        } catch (error) {
-            console.log(error);
-            next(error)
-        }
+      const purchaseDTOs = (purchases?.purchases ?? []).map(mapPurchaseToDTO);
+
+      res.status(HttpStatus.OK).json({
+        success: true,
+        purchases: purchaseDTOs,
+        currentPage: purchases?.currentPage,
+        totalPages: purchases?.totalPages,
+        totalPurchases: purchases?.totalPurchases,
+      });
+    } catch (err) {
+      next(err);
     }
+  };
 
-    blockCourse = async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
-        try {
-            const courseId = req.params.id!
+  exportPurchasesPDF = async (req: AdminAuthRequest, res: Response) => {
+    try {
+      const result = await this._courseService.getPurchaseDetails("", 1);
+      const purchases = result?.purchases;
+      if (!purchases || purchases.length === 0) {
+        return res.status(400).json({ message: "No purchase data found" });
+      }
+      console.log("pdf", purchases);
 
-            await this._courseService.blockCourseRequest(courseId)
+      const pdfBuffer =
+        await this._courseService.generatePurchasesPDF(purchases);
 
-            res.json({ success: true })
-        } catch (error) {
-            console.log(error);
-            next(error)
-        }
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=purchase-report.pdf",
+      );
+
+      res.send(pdfBuffer);
+    } catch (error) {
+      console.log(error);
     }
+  };
 
+  addCategory = async (
+    req: AdminAuthRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const { category, skills } = req.body;
+      console.log(category, skills);
 
-    getReports = async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
-        try {
-            const reports = await this._courseService.getReportsRequest()
+      const categories = await this._courseService.addCategoryRequest(
+        category,
+        skills,
+      );
 
-            res.json({ success: true, reports: reports })
-        } catch (error) {
-            console.log(error);
-            next(error)
-        }
+      res.json({ success: true, category: categories });
+    } catch (error) {
+      console.log(error);
+      next(error);
     }
+  };
+
+  getCategory = async (
+    req: AdminAuthRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const categories = await this._courseService.getCategoryRequest();
+
+      res.json({ success: true, category: categories });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  };
+
+  deleteCategory = async (
+    req: AdminAuthRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const category = req.body.category;
+
+      await this._courseService.deleteCategoryRequest(category);
+
+      res.json({ success: true });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  };
+
+  blockCourse = async (
+    req: AdminAuthRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const courseId = req.params.id!;
+
+      await this._courseService.blockCourseRequest(courseId);
+
+      res.json({ success: true });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  };
+
+  getReports = async (
+    req: AdminAuthRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const reports = await this._courseService.getReportsRequest();
+
+      res.json({ success: true, reports: reports });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  };
 }

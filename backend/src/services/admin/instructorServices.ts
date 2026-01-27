@@ -1,8 +1,9 @@
 import { IAdminInstructorService, PaginatedInstructors } from "../../interfaces/adminInterfaces";
 import { ICourse } from "../../models/course";
 import { IInstructor } from "../../models/instructor";
+import { IKyc } from "../../models/kyc";
 import { IAdminRepository } from "../../repositories/adminRepositories";
-import { IInsRepository, InstructorRepository } from "../../repositories/instructorRepository";
+import { IInsRepository } from "../../repositories/instructorRepository";
 import { kycRejectMail } from "../../utils/sendMail";
 
 
@@ -15,9 +16,7 @@ export class AdminInstructorService implements IAdminInstructorService{
 
         getInstructors = async (page: string, search: string): Promise<PaginatedInstructors | null> => {
         try {
-            const result = await this.adminRepository.findInstructors(page, search)
-            // console.log(result);
-            
+            const result = await this.adminRepository.findInstructors(page, search)            
             return result
         } catch (error) {
             console.log(error);
@@ -25,13 +24,14 @@ export class AdminInstructorService implements IAdminInstructorService{
         }
     }
 
-    getKycDetails = async (id: string): Promise<void | null> => {
+    getKycDetails = async (id: string): Promise<IKyc | null> => {
         try {
             const result = await this.adminRepository.getKycDetails(id)
-            return result
+            
+            return result 
         } catch (error) {
             console.log(error);
-
+            return null
         }
     }
 
@@ -39,7 +39,7 @@ export class AdminInstructorService implements IAdminInstructorService{
         try {
             const result = await this.adminRepository.verifyKyc(id)
             if(result){
-                const notification = await this.adminRepository.verifyKycNotification(id)
+                await this.adminRepository.verifyKycNotification(id)
             }
             return result
         } catch (error) {
@@ -52,7 +52,7 @@ export class AdminInstructorService implements IAdminInstructorService{
         try {
 
             const result = await this.adminRepository.rejectKyc(id)
-            let defaultEmail = 'albertjpaul@gmail.com'
+            const defaultEmail = 'albertjpaul@gmail.com'
 
             await kycRejectMail(defaultEmail, reason)
             return result
@@ -75,7 +75,7 @@ export class AdminInstructorService implements IAdminInstructorService{
 
     blockInstructorRequest = async(id:string):Promise<boolean | null>=>{
         try {
-            const result = await this.adminRepository.blockUnblockInstructor(id)
+            await this.adminRepository.blockUnblockInstructor(id)
             return true
         } catch (error) {
             console.log(error); 

@@ -1,35 +1,28 @@
-import { CourseDetailsDTO, CourseDTO, EarningsDTO, InstructorAdminDTO, KycDTO, PurchaseDTO, StatsDTO, UserOverviewDTO } from "../dto/adminDTO";
+import { Types } from "mongoose";
+import { CourseDTO, CourseListAggregation, DTOKyc, EarningsDTO, InstructorAdminDTO, PurchaseDTO, StatsDTO, UserOverviewDTO } from "../dto/adminDTO";
 import { AdminUserCourseDTO, UserDTO } from "../interfaces/userInterfaces";
+import { ITotalEnrolled } from "../interfacesServices.ts/adminServiceInterfaces";
 import { ICourse } from "../models/course";
 import { IEarnings } from "../models/earnings";
+import { IInstructor } from "../models/instructor";
+import { IKyc } from "../models/kyc";
 import { IUser } from "../models/user";
+import { IPurchase } from "../interfaces/adminInterfaces";
 
-export const mapCourseToDTO = (course: any): CourseDTO => ({
-  id: course._id,
+export const mapCourseToDTO = (course: CourseListAggregation): CourseDTO => ({
+  id: course._id.toString(),
   title: course.title,
-  thumbnail: course.thumbnail,
-  price: course.price,
-  instructorName: course.instructorName,
-  createdAt: course.createdAt,
+  thumbnail: course.thumbnail ?? '',
+  price: course.price ?? 0,
+  instructorName: course.instructorName ?? 'Unknown',
+  createdAt: course.createdAt ?? new Date(),
   category: course.category,
   blocked : course.blocked
 });
 
-export const mapCourseDetailsToDTO = (data: any): CourseDetailsDTO => ({
-  id: data.course._id,
-  title: data.course.title,
-  description: data.course.description,
-  price: data.course.price,
-  thumbnail: data.course.thumbnail,
-  instructor: {
-    id: data.instructor._id,
-    name: data.instructor.name,
-    email: data.instructor.email,
-  },
-  enrolledUsers: data.enrolledUsers,
-});
 
-export const mapPurchaseToDTO = (purchase: any): PurchaseDTO => ({
+
+export const mapPurchaseToDTO = (purchase: IPurchase): PurchaseDTO => ({
   id: purchase._id,
   userName: purchase.userName,
   courseTitle: purchase.courseTitle,
@@ -43,12 +36,18 @@ export const mapPurchaseToDTO = (purchase: any): PurchaseDTO => ({
 
 
 
-export const mapStatsToDTO = (stats: any): StatsDTO => ({
+export const mapStatsToDTO = (stats: {
+        totalUsers: number | null;
+        totalInstructors: number | null;
+        totalCourses: number | null;
+         totalEarnings: number | null;
+        totalEnrolled: ITotalEnrolled[] | null;
+    }): StatsDTO => ({
   totalUsers: stats.totalUsers ?? 0,
   totalInstructors: stats.totalInstructors ?? 0,
   totalCourses: stats.totalCourses ?? 0,
   totalEarnings: stats.totalEarnings ?? 0,
-  totalEnrolled : stats.totalEnrolled ?? 0
+  totalEnrolled : stats.totalEnrolled ?? []
 });
 
 export const mapUserOverviewToDTO = (data: {name : string , count : number}[]): UserOverviewDTO[] => {
@@ -59,7 +58,7 @@ export const mapUserOverviewToDTO = (data: {name : string , count : number}[]): 
 };
 
 
-export const mapEarningsToDTO = (data: any[]): EarningsDTO[] => {
+export const mapEarningsToDTO = (data: IEarnings[]): EarningsDTO[] => {
   return data.map(item => ({
     adminEarnings: Number(item.adminEarnings) || 0,
     instructorEarnings: Number(item.instructorEarnings) || 0,
@@ -72,12 +71,12 @@ export const mapEarningsToDTO = (data: any[]): EarningsDTO[] => {
 
 
 
-export const mapInstructorToAdminDTO = (instructor: any): InstructorAdminDTO => {
+export const mapInstructorToAdminDTO = (instructor: IInstructor): InstructorAdminDTO => {
   return {
     id: instructor._id,
     name: instructor.name,
     email: instructor.email,
-    profileImage: instructor.profileImage,
+    profileImage: instructor.profileImage || '',
     KYCstatus: instructor.KYCstatus,
     blocked : instructor.blocked
     // totalPages: 1,
@@ -88,15 +87,12 @@ export const mapInstructorToAdminDTO = (instructor: any): InstructorAdminDTO => 
 
 
 
-export const mapKycToDTO = (kyc: any): KycDTO => {
-  return {
-    id: kyc._id,
-    status: kyc.status,
-    documentType: kyc.documentType,
-    documentUrl: kyc.documentUrl,
-    submittedAt: kyc.createdAt
-  };
-};
+export const mapKycToDTO = (data: IKyc): DTOKyc => ({
+  id: (data._id as Types.ObjectId).toString(),
+  instructorId: data.instructorId,
+  idProof: data.idProof,
+  addressProof: data.addressProof,
+});
 
 
 
@@ -122,4 +118,6 @@ export const mapAdminUserCourseToDTO = (course: ICourse): AdminUserCourseDTO => 
     thumbnail: course.thumbnail || ""
   };
 };
+
+
 

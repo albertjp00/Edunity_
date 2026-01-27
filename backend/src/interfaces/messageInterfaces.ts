@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import { AuthRequest, InstAuthRequest } from "../middleware/authMiddleware";
 
 export interface BaseMessageController {

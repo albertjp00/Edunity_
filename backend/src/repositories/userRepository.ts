@@ -1,4 +1,4 @@
-import mongoose, { Types } from 'mongoose';
+import { FilterQuery, Types } from 'mongoose';
 import { CourseModel, ICourse } from '../models/course';
 import { EventModel, IEvent } from '../models/events';
 import { FavouritesModel, IFavourite } from '../models/favourites';
@@ -10,9 +10,8 @@ import { IQuiz, QuizModel } from '../models/quiz';
 import { IInstructor, InstructorModel } from '../models/instructor';
 import { BaseRepository } from './baseRepository';
 
-import { IMyCourses, IPaymentDetails, IUserRepository, WalletTransaction } from '../interfaces/userInterfaces';
+import { IMyCourses, IPaymentDetails, ISubscriptionCourses, IUserRepository, SortOption, WalletTransaction } from '../interfaces/userInterfaces';
 import { IWallet, WalletModel } from '../models/wallet';
-import { log } from 'winston';
 import { IPayment, PaymentModel } from '../models/payment';
 import { INotification, NotificationModel } from '../models/notification';
 import { IReview, ReviewModel } from '../models/review';
@@ -106,11 +105,11 @@ export class UserRepository extends BaseRepository<IUser>
   }
 
 
-  async updateSubscription(id: string, data: any): Promise<boolean> {
+  async updateSubscription(id: string, data: Partial<ISubscription>): Promise<boolean> {
     await UserModel.findByIdAndUpdate(id, { subscription: data }, { new: true })
-
     return true
   }
+
 
 
 
@@ -171,12 +170,7 @@ export class UserRepository extends BaseRepository<IUser>
     return result[0]
   }
 
-  async getAllCourses(
-    query: any,
-    skip: number,
-    limit: number,
-    sortOption?: any
-  ): Promise<ICourse[]> {
+  async getAllCourses(query: FilterQuery<ICourse>,skip: number,limit: number,sortOption: SortOption) {
     const pipeline: any[] = [
       { $match: query },
     ];
@@ -186,7 +180,6 @@ export class UserRepository extends BaseRepository<IUser>
     } else {
       pipeline.push({ $sort: { createdAt: -1 } });
     }
-
 
     pipeline.push(
       { $skip: skip },
@@ -328,7 +321,7 @@ export class UserRepository extends BaseRepository<IUser>
 
   async notificationsMarkRead(userId: string): Promise<INotification[] | null> {
     try {
-      const update = await NotificationModel.updateMany({ recipientId: userId, isRead: false },
+      await NotificationModel.updateMany({ recipientId: userId, isRead: false },
         { $set: { isRead: true } }
       );
 
@@ -360,10 +353,8 @@ export class UserRepository extends BaseRepository<IUser>
     const data = await MyCourseModel.findOne({
       courseId: myCourseId,
       userId: id,
-      
     });
-    console.log(data);
-
+    console.log(myCourseId , id);
     return data;
   }
 
@@ -409,7 +400,6 @@ export class UserRepository extends BaseRepository<IUser>
 
   async addReview(userId: string, userName: string, userImage: string, courseId: string, rating: number, comment: string): Promise<IReview> {
     try {
-      // const course = await CourseModel.findById(courseId);
       console.log('name =---------------- im age', userName, userImage);
 
       const review = await ReviewModel.findOneAndUpdate({ userId, courseId },
@@ -517,10 +507,6 @@ export class UserRepository extends BaseRepository<IUser>
   };
 
 
-  ///get course is on top
-  // async getCourse(courseId: string){
-  //   return await CourseModel.findById(courseId)
-  // }
 
   async findUserCourse(userId: string, courseId: string) {
     return await MyCourseModel.findOne({ userId, courseId });
@@ -534,23 +520,6 @@ export class UserRepository extends BaseRepository<IUser>
     return await CourseModel.updateOne({ _id: courseId }, { $inc: { totalEnrolled: -1 } });
   }
 
-
-  // async addTransaction(userId: string, transaction: WalletTransaction): Promise<void> {
-  //   const wallet = await WalletModel.findOne({ userId });
-
-  //   if (wallet) {
-  //     wallet.transactions.push({ ...transaction, createdAt: new Date() });
-  //     if (transaction.type === "credit") wallet.balance += transaction.amount;
-  //     else wallet.balance -= transaction.amount;
-  //     await wallet.save();
-  //   } else {
-  //     await WalletModel.create({
-  //       userId,
-  //       balance: transaction.type === "credit" ? transaction.amount : -transaction.amount,
-  //       transactions: [{ ...transaction, createdAt: new Date() }],
-  //     });
-  //   }
-  // }
 
 
   async addTransaction(userId: string, transaction: WalletTransaction): Promise<void> {
@@ -578,7 +547,7 @@ export class UserRepository extends BaseRepository<IUser>
 
     if (!user.subscription.isActive) return false;
 
-    const { isActive, endDate } = user.subscription
+    const {  endDate } = user.subscription
 
     if (endDate < new Date()) {
       user.subscription.isActive = false
@@ -589,22 +558,14 @@ export class UserRepository extends BaseRepository<IUser>
   }
 
 
-  async getSubscriptionCourses(id: string, page: number): Promise<any> {
+  async getSubscriptionCourses(id: string, page: number): Promise<ISubscriptionCourses | null> {
     try {
-      // ---------- 1. Check if subscription is active ----------
-      // const isActive = await this.getSubscriptionActive(id);
-      // if (!isActive) {
-      //   return { success: false, message: "Subscription expired or inactive" };
-      // }
-
-
       const limit = 3;
       const skip = (page - 1) * limit;
 
       const courses = await CourseModel.find({ accessType: "subscription" })
         .skip(skip)
         .limit(limit)
-      // .select("title thumbnail price skills level instructorId");
 
       const total = await CourseModel.countDocuments({ accessType: "subscription" });
 
@@ -615,7 +576,7 @@ export class UserRepository extends BaseRepository<IUser>
       };
     } catch (error) {
       console.log(error);
-      return { success: false, message: "Internal server error" };
+      return null
     }
   }
 
@@ -632,7 +593,7 @@ export class UserRepository extends BaseRepository<IUser>
       if (report.message) {
         reportData.message = report.message;
       }
-      const reported = await ReportModel.create(reportData);
+      await ReportModel.create(reportData);
       return true
     } catch (error) {
       console.log(error);

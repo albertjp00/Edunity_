@@ -2,6 +2,7 @@ import { IPurchaseDetails } from "../../interfaces/instructorInterfaces";
 import { IInstCourseService } from "../../interfacesServices.ts/instructorServiceInterface";
 import { ICategory } from "../../models/category";
 import { ICourse } from "../../models/course";
+import { IQuestion, IQuiz } from "../../models/quiz";
 import { IInsRepository,  ISkills } from "../../repositories/instructorRepository";
 import { generateSignedUrl } from "../../utils/getSignedUrl";
 
@@ -117,17 +118,13 @@ export class CourseService implements IInstCourseService {
 
 
 
-  addCourseRequest = async (id: string, data: any) => {
+  addCourseRequest = async (id: string, data: Partial<ICourse>) => {
     try {
-      console.log("service add course data", data);
 
-      const instructor = await this.instructorRepository.findById(id)
-      const limit = instructor?.courseLimit!
-
+      // const instructor = await this.instructorRepository.findById(id)
+      // instructor?.courseLimit!
 
       const course = await this.instructorRepository.addCourse(id, data)
-
-      
 
       return course
       
@@ -141,8 +138,6 @@ export class CourseService implements IInstCourseService {
 
   editCourseRequest = async (id: string, data: Partial<ICourse>): Promise<ICourse | null> => {
     try {
-      // console.log(data);
-
       return await this.instructorRepository.editCourse(id, data);
     } catch (error) {
       console.log(error);
@@ -152,31 +147,28 @@ export class CourseService implements IInstCourseService {
   };
 
 
-  async addQuiz(courseId: string, title: string, questions: any[]) {
+  async addQuiz(courseId: string, title: string, questions: IQuestion[]) {
     try {
-      const quiz = await this.instructorRepository.addQuiz(courseId, title, questions);
-      return quiz;
+      await this.instructorRepository.addQuiz(courseId, title, questions);
     } catch (error) {
       throw new Error("Error while adding quiz: " + (error as Error).message);
     }
   }
 
-  async getQuiz(courseId: string) {
+  async getQuiz(courseId: string):Promise<IQuiz | null> {
     try {
       const quiz = await this.instructorRepository.getQuizByCourseId(courseId)
-      console.log(quiz);
-
       return quiz
     } catch (error) {
       console.log(error);
-
+      return null
     }
   }
 
-  async updateQuiz(id: string, data: any) {
+  async updateQuiz(id: string, data: Partial<IQuiz>) {
     try {
-      const update = await this.instructorRepository.editQuiz(id, data)
-      return update
+      await this.instructorRepository.editQuiz(id, data)
+
     } catch (error) {
       console.log(error);
 

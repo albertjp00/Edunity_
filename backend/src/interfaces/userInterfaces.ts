@@ -1,4 +1,4 @@
-import { ICourse} from "../models/course";
+import { ICourse } from "../models/course";
 import { IEvent } from "../models/events";
 import { IFavourite } from "../models/favourites";
 import { IInstructor } from "../models/instructor";
@@ -10,7 +10,6 @@ import { IPayment } from "../models/payment";
 import { ISubscription, IUser } from "../models/user";
 import { IWallet } from "../models/wallet";
 import { ISkills } from "../repositories/instructorRepository";
-import { UserRepository } from "../repositories/userRepository";
 
 export interface IUserRepository {
   findByEmail(email: string): Promise<IUser | null>;
@@ -27,13 +26,13 @@ export interface IUserRepository {
 
   getWallet(userId: string): Promise<IWallet | null>
 
-  getPayment(userId: string , page:number): Promise<IPaymentDetails | null>
+  getPayment(userId: string, page: number): Promise<IPaymentDetails | null>
 
   getCourse(id: string): Promise<ICourse | null>
 
   buyCourse(id: string): Promise<ICourse | null>
 
-  updateSubscription(id:string , data:any):Promise<boolean>
+  updateSubscription(id: string, data: Partial<ISubscription>): Promise<boolean>
 
   getCourses(skip: number, limit: number): Promise<ICourse[] | null>
 
@@ -41,17 +40,17 @@ export interface IUserRepository {
 
   findSkills(): Promise<ISkills>;
 
-  getAllCourses(query: any, skip: number, limit: number, sortOption: any): Promise<ICourse[] | null>
+  getAllCourses(query: FilterQuery<ICourse>,skip: number,limit: number,sortOption: SortOption): Promise< CourseListAggregation[] | null>
 
   getCourseDetails(id: string, courseId: string): Promise<IMyCourse | null>
 
   findInstructors(): Promise<IInstructor[] | null>
 
-  addMyCourse(id: string, data: any): Promise<IMyCourse | null>
+  addMyCourse(id: string, data: Partial<ICourse>): Promise<IMyCourse | null>
 
   sendNotification(userId: string, title: string, message: string): Promise<INotification | null>
 
-  getNotifications(userId: string , page : number): Promise<INotifications | null>
+  getNotifications(userId: string, page: number): Promise<INotifications | null>
 
   notificationsMarkRead(userId: string): Promise<INotification[] | null>
 
@@ -79,9 +78,9 @@ export interface IUserRepository {
 
   getSubscriptionActive(id: string): Promise<ISubscription | boolean>
 
-  getSubscriptionCourses(id:string , page:number):Promise<any>
+  getSubscriptionCourses(id: string, page: number): Promise<ISubscriptionCourses | null>
 
-  reportCourse(userId :string , courseId : string , report :IReport):Promise<boolean | null>
+  reportCourse(userId: string, courseId: string, report: IReport): Promise<boolean | null>
 
 }
 
@@ -95,6 +94,8 @@ import { IReview } from "../models/review";
 import { IReport } from "../models/report";
 import { INotifications } from "../interfacesServices.ts/userServiceInterfaces";
 import { JwtPayload } from "jsonwebtoken";
+import { FilterQuery, SortOrder } from "mongoose";
+import { CourseListAggregation } from "../dto/adminDTO";
 
 
 //authController
@@ -169,7 +170,7 @@ export interface IUserCoursePaymentController {
 
 export interface IUserMyCourseController {
   myCourses(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
-  mySubscriptionCourses(req: AuthRequest, res: Response, next: NextFunction):Promise<void>
+  mySubscriptionCourses(req: AuthRequest, res: Response, next: NextFunction): Promise<void>
   viewMyCourse(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
   refreshVideoUrl(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
   updateProgress(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
@@ -214,13 +215,12 @@ export interface IUserEventJoinController {
 
 
 //DTO
-export interface UserDTO {
+export interface  UserDTO {
   id: string;
   name: string;
   email: string;
   profileImage: string | undefined;
   blocked: boolean;
-
   bio?: string | undefined;
   image?: string | undefined;
   gender?: string | undefined;
@@ -228,7 +228,7 @@ export interface UserDTO {
   location?: string | undefined;
   phone?: string | undefined;
   createdAt?: Date;
-  provider? : string;
+  provider?: string;
 }
 
 export interface RefreshTokenPayload extends JwtPayload {
@@ -247,7 +247,7 @@ export interface IMessagedUser {
 export interface LoginResult {
   success: boolean;
   message: string;
-  user?: any;
+  user?: UserDTO;
   accessToken?: string;
   refreshToken?: string;
 }
@@ -265,9 +265,19 @@ export interface IMyCourses {
   totalCount: number;
   totalPages: number;
   currentPage: number;
-
 }
 
+export interface ISubscriptionCourses {
+  courses: ICourse[];
+  page: number;
+  totalPages: number;
+}
+
+
+export interface ISubmitQuiz {
+  score: number,
+  totalPoints: number
+}
 
 export interface WalletTransaction {
   type: "credit" | "debit";
@@ -284,9 +294,23 @@ export interface AdminUserCourseDTO {
 }
 
 
-export interface IPaymentDetails{
-  pay : IPayment[],
-  total:number,
-  totalPages:number,
-  currentPage : number
+export interface IPaymentDetails {
+  pay: IPayment[],
+  total: number,
+  totalPages: number,
+  currentPage: number
+}
+
+export interface SortOption {
+  price?: SortOrder
+  createdAt ?:number
+}
+
+export interface IRazorpayOrder {
+  id: string;
+  amount: number | string;
+  currency: string;
+  receipt?: string;
+  status: string;
+  created_at: number;
 }

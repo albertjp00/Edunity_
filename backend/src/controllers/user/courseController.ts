@@ -7,13 +7,14 @@ import { generateSignedUrl } from "../../utils/getSignedUrl";
 import {
     IUserCourseFavouriteController, IUserCoursePaymentController, IUserCourseQuizController,
     IUserCourseReadController, IUserCourseReviewController,
-    IUserMyCourseController
+    IUserMyCourseController,
+    SortOption
 } from "../../interfaces/userInterfaces";
 import { HttpStatus } from "../../enums/httpStatus.enums";
 import { IUserCourseService } from "../../interfacesServices.ts/userServiceInterfaces";
 import { StatusMessage } from "../../enums/statusMessage";
 import { ICourse } from "../../models/course";
-import { FilterQuery, SortOrder } from "mongoose";
+import { FilterQuery } from "mongoose";
 
 
 
@@ -45,6 +46,9 @@ export class UserCourseController
             const limit = parseInt(req.query.limit as string) || 6;
 
             const data = await this._courseService.getCourses(page, limit);
+
+            console.log('result',data);
+            
 
             res.status(HttpStatus.OK).json({
                 success: true,
@@ -89,7 +93,7 @@ export class UserCourseController
             if (price === "free") query.price = 0;
             if (price === "paid") query.price = { $gt: 0 };
 
-            const sortOption : {price? : SortOrder} = {};
+            const sortOption : SortOption = {};
             if (sortBy === "priceLowToHigh") sortOption.price = 1;
             if (sortBy === "priceHighToLow") sortOption.price = -1;
 
@@ -161,11 +165,9 @@ export class UserCourseController
             const userId = req.user?.id as string;
             const courseId = req.params.id!;
 
-            // Key for debouncing (user + course)
             const key = `buyCourse_${userId}_${courseId}`;
 
             const order = await debounceCall(key, 2000, async () => {
-                // This function runs only if user hasn't triggered in last 2s
                 return await this._courseService.buyCourseRequest(userId, courseId);
             });
 
@@ -235,11 +237,9 @@ export class UserCourseController
         try {
             const userId = req.user?.id as string
 
-            // Key for debouncing (user + course)
             const key = `buyCourse_${userId}`;
 
             const subscribe = await debounceCall(key, 2000, async () => {
-                // This function runs only if user hasn't triggered in last 2s
                 return await this._courseService.buySubscriptionRequest(userId);
             });
 
@@ -332,7 +332,6 @@ export class UserCourseController
             res.status(HttpStatus.OK).json({
                 success: true,
                 courses: result.courses,
-                totalCount: result.totalCount,
                 totalPages: result.totalPages,
                 currentPage: page,
             });
@@ -349,7 +348,6 @@ export class UserCourseController
         try {
             const id = req.user?.id as string
             const myCourseId = req.params.id!
-
 
             const result = await this._courseService.viewMyCourseRequest(id, myCourseId)
 
@@ -396,7 +394,6 @@ export class UserCourseController
 
 
             const result = await this._courseService.updateProgress(userId, courseId, moduleTitle);
-            console.log('progress updated ', result);
 
             res.status(HttpStatus.OK).json({ success: true, progress: result });
         } catch (error) {
@@ -534,11 +531,11 @@ export class UserCourseController
         try {
             const userId = req.user?.id as string
 
-            const { courseId, quizId } = req.params
+            const { courseId } = req.params
 
             const answers = req.body
 
-            const data = await this._courseService.submitQuiz(userId, courseId as string, quizId as string, answers)
+            const data = await this._courseService.submitQuiz(userId, courseId as string, answers)
 
             res.status(HttpStatus.OK).json({ success: true, data })
         } catch (error) {

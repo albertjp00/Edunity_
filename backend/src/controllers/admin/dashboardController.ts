@@ -4,7 +4,7 @@ import { HttpStatus } from "../../enums/httpStatus.enums";
 import { IAdminDashboardController } from "../../interfaces/adminInterfaces";
 
 import { IAdminService } from "../../interfacesServices.ts/adminServiceInterfaces";
-import { mapEarningsToDTO, mapStatsToDTO, mapUserOverviewToDTO } from "../../mapper/admin.mapper";
+import { mapEarningsToDTO, mapUserOverviewToDTO } from "../../mapper/admin.mapper";
 import { StatusMessage } from "../../enums/statusMessage";
 
 
@@ -24,10 +24,11 @@ export class AdminDashboardController implements
         try {
 
             const result = await this._adminService.getStats()
-            const dto = mapStatsToDTO(result);
+            // console.log('statssss',result);
+            // const dto = mapStatsToDTO(result);
 
 
-            res.status(HttpStatus.OK).json({ success: true, stats: dto })
+            res.status(HttpStatus.OK).json({ success: true, stats: result })
         } catch (error) {
             console.log(error);
             next(error)
@@ -61,7 +62,7 @@ export class AdminDashboardController implements
         try {
             const page = Number(req.params.page) || 1
             const result = await this._adminService.getEarningsData(page)
-            console.log(result);
+            console.log('earnings ',result);
 
             const dto = mapEarningsToDTO(result?.earnings ?? []);
 

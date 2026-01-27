@@ -1,3 +1,4 @@
+import { ICourseDetailsDTO } from "./instructorDTO";
 
 
 
@@ -11,9 +12,9 @@ export interface LoginDTO {
 
 
 
-export const courseDTO = (course: any) => {
+export const courseDTO = (course: ICourseDetailsDTO) => {
   return {
-    id: course._id,
+    id: course.id,
     title: course.title,
     thumbnail: course.thumbnail,
     skills: course.skills,

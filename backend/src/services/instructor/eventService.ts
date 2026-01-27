@@ -1,7 +1,5 @@
-import { Server } from "http";
-import { IEventResult, IMyEventInterface } from "../../interfaces/instructorInterfaces";
+import { IEventResult } from "../../interfaces/instructorInterfaces";
 import { IEvent } from "../../models/events";
-import { NextFunction } from "express";
 import { IInsRepository } from "../../repositories/instructorRepository";
 import { IInstEventService } from "../../interfacesServices.ts/instructorServiceInterface";
 
@@ -10,7 +8,7 @@ import { IInstEventService } from "../../interfacesServices.ts/instructorService
 export class InstEventService implements IInstEventService {
     constructor(private InstructorRepository: IInsRepository) { }
 
-    createEventRequest = async (id: string, data: any): Promise<IEvent | null> => {
+    createEventRequest = async (id: string, data: Partial<IEvent>): Promise<IEvent | null> => {
         try {
             const instructor = await this.InstructorRepository.findById(id)
             if (!instructor || !instructor.name) {
@@ -84,7 +82,7 @@ export class InstEventService implements IInstEventService {
 
 
 
-    updateEventRequest = async (id: string, data: any): Promise<IEvent | null> => {
+    updateEventRequest = async (id: string, data: Partial<IEvent>): Promise<IEvent | null> => {
         try {
 
             const event = await this.InstructorRepository.updateEvent(id, data)

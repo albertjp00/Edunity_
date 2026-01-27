@@ -1,4 +1,5 @@
 import { ILastMessage, IMessagedInstructor } from "../interfaces/instructorInterfaces";
+import { IMessagedUser } from "../interfaces/userInterfaces";
 import { IInstructor } from "../models/instructor";
 import { IMessage } from "../models/message";
 
@@ -11,7 +12,7 @@ export interface IMessageService {
   sendMessage(senderId: string, receiverId: string, text: string, file: string | null): Promise<IMessage>;
   getChatHistory(userId: string, receiverId: string): Promise<IMessage[]>;
   markMessagesAsRead(senderId: string, receiverId: string): Promise<boolean>;
-  getStudents(instructorId: string): Promise<any>; // replace 'any' if you know the model type
+  getStudents(instructorId: string): Promise<IMessagedUser[]>;
   getMessages(instructorId: string, receiverId: string): Promise<IMessage[]>;
   sendInstructorMessage(instructorId: string, receiverId: string, text: string, file: string | null): Promise<IMessage>;
 }

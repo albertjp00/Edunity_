@@ -132,7 +132,7 @@ export class MessageRepository implements IMessageRepository {
   }
 
   async markAsRead(senderId: string, receiverId: string): Promise<boolean> {
-    const read = await MessageModel.updateMany(
+    await MessageModel.updateMany(
       { senderId: senderId, receiverId: receiverId, read: false },
       { $set: { read: true } }
     )
