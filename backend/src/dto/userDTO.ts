@@ -1,16 +1,9 @@
 import { ICourseDetailsDTO } from "./instructorDTO";
 
-
-
-
 export interface LoginDTO {
   message: string;
   accessToken: string;
 }
-
-
-
-
 
 export const courseDTO = (course: ICourseDetailsDTO) => {
   return {

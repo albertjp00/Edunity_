@@ -12,7 +12,7 @@ export interface IInstructor extends Document {
   joinedAt: Date;
   KYCstatus: "pending" | "verified" | "rejected" | "notApplied";
   work?: string;
-  education?: string;
+  education?: string; 
   skills?:[];
   blocked:boolean,
   courseLimit:number

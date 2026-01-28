@@ -1,4 +1,4 @@
-import { AdminLoginDTO } from "../dto/adminDTO";
+import { AdminLoginDTO, AdminStatsDTO } from "../dto/adminDTO";
 import {  PaginatedUsers } from "../interfaces/adminInterfaces";
 import { ICourse } from "../models/course";
 import { IEarnings } from "../models/earnings";
@@ -30,15 +30,10 @@ export interface ITotalEnrolled {
 
 
 export interface IAdminService {
-    loginRequest(email: string, password: string): Promise<AdminLoginDTO>;
+    loginRequest(email: string, password: string): Promise<AdminLoginDTO | null>;
 
 
-    getStats(): Promise<{
-        totalUsers: number | null;
-        totalInstructors: number | null;
-        totalCourses: number | null;
-        totalEnrolled: ITotalEnrolled[] | null;
-    } | undefined>;
+    getStats(): Promise<AdminStatsDTO>;
 
     getUserOverview(): Promise<IUserOverviewItem[]>;
 

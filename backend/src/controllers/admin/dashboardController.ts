@@ -4,75 +4,77 @@ import { HttpStatus } from "../../enums/httpStatus.enums";
 import { IAdminDashboardController } from "../../interfaces/adminInterfaces";
 
 import { IAdminService } from "../../interfacesServices.ts/adminServiceInterfaces";
-import { mapEarningsToDTO, mapUserOverviewToDTO } from "../../mapper/admin.mapper";
+import {
+  mapEarningsToDTO,
+  mapStatsToDTO,
+  mapUserOverviewToDTO,
+} from "../../mapper/admin.mapper";
 import { StatusMessage } from "../../enums/statusMessage";
 
+export class AdminDashboardController implements IAdminDashboardController {
+  private _adminService: IAdminService;
 
+  constructor(adminService: IAdminService) {
+    this._adminService = adminService;
+  }
 
-export class AdminDashboardController implements
-    IAdminDashboardController {
-    private _adminService: IAdminService
+  dashboardStats = async (
+    req: AdminAuthRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const result = await this._adminService.getStats();
 
-    constructor(adminService: IAdminService) {
-        this._adminService = adminService
-
+      res.status(HttpStatus.OK).json({ success: true, stats: result });
+    } catch (error) {
+      console.log(error);
+      next(error);
     }
+  };
 
+  getUserOverview = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await this._adminService.getUserOverview();
+      
 
-
-    dashboardStats = async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
-        try {
-
-            const result = await this._adminService.getStats()
-            // console.log('statssss',result);
-            // const dto = mapStatsToDTO(result);
-
-
-            res.status(HttpStatus.OK).json({ success: true, stats: result })
-        } catch (error) {
-            console.log(error);
-            next(error)
-
-        }
+      res.status(HttpStatus.OK).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      console.error("Error fetching user overview:", error);
+      res.status(HttpStatus.OK).json({
+        success: false,
+        message: StatusMessage.FAILED_TO_FETCH_DATA,
+      });
+      next(error);
     }
+  };
 
+  getEarnings = async (
+    req: AdminAuthRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const page = Number(req.params.page) || 1;
+      const result = await this._adminService.getEarningsData(page);
+      console.log("earnings ", result);
 
+      const dto = mapEarningsToDTO(result?.earnings ?? []);
 
-    getUserOverview = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const result = await this._adminService.getUserOverview();
-            const dto = mapUserOverviewToDTO(result);
-
-            res.status(HttpStatus.OK).json({
-                success: true,
-                data: dto,
-            });
-        } catch (error) {
-            console.error("Error fetching user overview:", error);
-            res.status(HttpStatus.OK).json({
-                success: false,
-                message: StatusMessage.FAILED_TO_FETCH_DATA,
-            });
-            next(error)
-        }
-    };
-
-
-    getEarnings = async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
-        try {
-            const page = Number(req.params.page) || 1
-            const result = await this._adminService.getEarningsData(page)
-            console.log('earnings ',result);
-
-            const dto = mapEarningsToDTO(result?.earnings ?? []);
-
-            res.status(HttpStatus.OK).json({ success: true, earnings: dto, totalEarnings: result?.totalEarnings, totalPages: result?.totalPages })
-        } catch (error) {
-            console.log(error);
-            next(error)
-        }
+      res
+        .status(HttpStatus.OK)
+        .json({
+          success: true,
+          earnings: dto,
+          totalEarnings: result?.totalEarnings,
+          totalPages: result?.totalPages,
+        });
+    } catch (error) {
+      console.log(error);
+      next(error);
     }
-
-
-
+  };
 }

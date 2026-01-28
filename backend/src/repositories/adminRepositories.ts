@@ -1,3 +1,4 @@
+import { TotalEnrolledDTO } from "../dto/adminDTO";
 import { IAdminCourseDetails, IUserOverview, PaginatedInstructors, PaginatedUsers, PurchaseResult } from "../interfaces/adminInterfaces";
 import { IEarningsResult, ITotalEnrolled } from "../interfacesServices.ts/adminServiceInterfaces";
 import { CategoryModel, ICategory } from "../models/category";
@@ -56,7 +57,7 @@ export interface IAdminRepository {
     getTotalUsers(): Promise<number | null>
     getTotalInstructors(): Promise<number | null>
     getCourses(): Promise<number | null>
-    getTotalEnrolled(): Promise<ITotalEnrolled[] | null>
+    getTotalEnrolled(): Promise<TotalEnrolledDTO[] | null>
     getUserOverview(oneYearAgo: Date): Promise<IUserOverview[]>
 
     getEarningsData(page: number): Promise<IEarningsResult | null>
@@ -75,9 +76,7 @@ export interface IAdminRepository {
 export class AdminRepository implements IAdminRepository {
 
     async findByEmail(email: string, password: string): Promise<IUser | null> {
-        const user = await UserModel.findOne({ email, password })
-        console.log(user);
-
+        const user = await UserModel.findOne({ email, password })        
         return user
     }
 
@@ -267,7 +266,6 @@ export class AdminRepository implements IAdminRepository {
 
 
                     return {
-                        _id: purchase.id,
                         userId: purchase.userId,
                         userName: user?.name || "Unknown",
                         userEmail: user?.email || "Unknown",
@@ -303,7 +301,7 @@ export class AdminRepository implements IAdminRepository {
             };
         } catch (error) {
             console.error("Error fetching purchases:", error);
-            return null;
+            return null
         }
     }
 
@@ -319,7 +317,7 @@ export class AdminRepository implements IAdminRepository {
 
     async deleteCategory(category: string): Promise<boolean | null> {
         try {
-            await CategoryModel.findOneAndDelete({ name: category })
+            await CategoryModel.findByIdAndDelete(category )
             return true
         } catch (error) {
             console.log(error);
@@ -393,7 +391,7 @@ export class AdminRepository implements IAdminRepository {
 
 
 
-    async getTotalEnrolled(): Promise<ITotalEnrolled[] | null
+    async getTotalEnrolled(): Promise<TotalEnrolledDTO[] | null
     > {
         try {
 

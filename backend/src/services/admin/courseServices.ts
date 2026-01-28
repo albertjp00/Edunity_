@@ -1,4 +1,4 @@
-import { IAdminCourseService } from "../../interfaces/adminInterfaces";
+import { IAdminCourseService, PurchaseResult } from "../../interfaces/adminInterfaces";
 import { IUserRepository } from "../../interfaces/userInterfaces";
 import { ICategory } from "../../models/category";
 import { IInstructor } from "../../models/instructor";
@@ -6,7 +6,9 @@ import { IAdminRepository } from "../../repositories/adminRepositories";
 import { IInsRepository } from "../../repositories/instructorRepository";
 import PDFDocument from "pdfkit";
 import { once } from "events";
-import { mapCourseToDTO } from "../../mapper/admin.mapper";
+import { mapAdminCourseDetailsToDTO, mapCategoryDto, mapCourseToDTO, mapPurchaseToDTO, mapReportDto } from "../../mapper/admin.mapper";
+import { AdminPurchaseService, CategoryDTO, PurchaseAdminDTO, ReportDTO } from "../../dto/adminDTO";
+import { IReport } from "../../models/report";
 
 export class AdminCourseService implements IAdminCourseService {
   constructor(
@@ -62,6 +64,9 @@ export class AdminCourseService implements IAdminCourseService {
   getCourseDetailsRequest = async (courseId: string) => {
     try {
       const details = await this.adminRepository.getFullCourseDetails(courseId);
+      console.log('details',details);
+    //   const dto = await mapAdminCourseDetailsToDTO(details)
+      
 
       return details;
     } catch (err) {
@@ -73,20 +78,29 @@ export class AdminCourseService implements IAdminCourseService {
   getQuizRequest = async (courseId: string) => {
     try {
       const details = await this.adminRepository.getQuiz(courseId);
+      console.log(details);
+      
       return details;
+
     } catch (err) {
       console.error("Error fetching    course details:", err);
       throw err;
     }
   };
 
-  getPurchaseDetails = async (search: string, page: number) => {
+  getPurchaseDetails = async (search: string, page: number):Promise<AdminPurchaseService | null | undefined> => {
     try {
       const data = await this.adminRepository.getPurchases(search, page);
-      return data;
+      console.log('purchase',data);
+        const dtoPurchase = data?.purchases.map(mapPurchaseToDTO)
+        console.log('dto',dtoPurchase);
+        
+      
+    //   return {...data , purchases : dtoPurchase}
+    return data
     } catch (error) {
       console.log(error);
-      throw error;
+      throw error
     }
   };
 
@@ -123,6 +137,7 @@ export class AdminCourseService implements IAdminCourseService {
     return Buffer.concat(chunks);
   };
 
+  
   addCategoryRequest = async (
     category: string,
     skills: string[],
@@ -137,11 +152,16 @@ export class AdminCourseService implements IAdminCourseService {
     }
   };
 
-  getCategoryRequest = async (): Promise<ICategory[] | null> => {
+  getCategoryRequest = async (): Promise<CategoryDTO[] | null> => {
     try {
       const data = await this.adminRepository.getCategory();
 
-      return data;
+      console.log('category',data);
+
+      const category = data?.map(mapCategoryDto)
+        if(!category) return null
+
+      return category;
     } catch (error) {
       console.log(error);
       return null;
@@ -170,10 +190,10 @@ export class AdminCourseService implements IAdminCourseService {
     }
   };
 
-  getReportsRequest = async () => {
+  getReportsRequest = async (): Promise<ReportDTO[] | null> => {
     try {
-      const report = await this.adminRepository.getReports();
-
+      const data = await this.adminRepository.getReports();
+      const report = data?.map(mapReportDto)!
       return report;
     } catch (error) {
       console.log(error);

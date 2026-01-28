@@ -20,12 +20,14 @@ export class AdminAuthController implements
         try {
             const { email, password } = req.body
 
-            const result: AdminLoginDTO = await this._adminAuthService.loginRequest(email, password)
+            const result = await this._adminAuthService.loginRequest(email, password)
+            console.log('login',result);
+            
 
             if (result?.success) {
                 res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.LOGIN_SUCCESS, token: result.token })
             } else {
-                res.json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR })
+                res.json({ success: false, message: result.message })
             }
         } catch (error) {
             console.log(error);

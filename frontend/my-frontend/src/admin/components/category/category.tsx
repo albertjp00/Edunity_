@@ -9,6 +9,7 @@ const Category = () => {
   const [skillName, setSkillName] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
+  const [error ,setError] = useState<string | null>(null)
 
   useEffect(() => {
     const getCategory = async () => {
@@ -26,7 +27,7 @@ const Category = () => {
   }, []);
 
   const handleAddSkill = () => {
-    if (!skillName.trim()) return;
+    if (!skillName.trim()) return setError('Type a skill')
 
     setSkills((prev) => [...prev, skillName]);
     setSkillName("");
@@ -36,6 +37,7 @@ const Category = () => {
     if (!categoryName.trim())
       return toast.error("Category name required");
     if (skills.length === 0)
+      
       return toast.error("Add at least one skill");
 
     try {
@@ -81,11 +83,18 @@ const Category = () => {
         <input
           type="text"
           value={skillName}
-          onChange={(e) => setSkillName(e.target.value)}
+          onChange={(e) => {
+            setSkillName(e.target.value)
+          setError('')
+        } }
           placeholder="Skill name"
         />
+        
         <button onClick={handleAddSkill}>Add Skill</button>
+        
       </div>
+      <br />
+      {error && <p className="error-text">{error}</p>}
 
       {/* Show skills before saving */}
       <ul>

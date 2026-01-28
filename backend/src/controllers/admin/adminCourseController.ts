@@ -48,6 +48,8 @@ export class AdminCourseController
     }
   };
 
+
+
   getCourseDetails = async (
     req: Request,
     res: Response,
@@ -56,6 +58,8 @@ export class AdminCourseController
     try {
       const id = req.params.id!;
       const data = await this._courseService.getCourseDetailsRequest(id);
+
+
 
       res.status(HttpStatus.OK).json({
         success: true,
@@ -70,23 +74,7 @@ export class AdminCourseController
     }
   };
 
-  getQuiz = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const id = req.params.id!;
-      console.log(id);
 
-      const data = await this._courseService.getQuizRequest(id);
-      console.log("admin quiz details", id, data);
-
-      res.status(HttpStatus.OK).json({ success: true, course: data });
-    } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        success: false,
-        message: StatusMessage.FAILED_TO_GET_COURSE_DETAILS,
-      });
-      next(error);
-    }
-  };
 
   getAllPurchases = async (
     req: AdminAuthRequest,
@@ -100,12 +88,13 @@ export class AdminCourseController
         search as string,
         Number(page),
       );
+      
 
-      const purchaseDTOs = (purchases?.purchases ?? []).map(mapPurchaseToDTO);
+    //   const purchaseDTOs = (purchases?.purchases ?? []).map(mapPurchaseToDTO);
 
       res.status(HttpStatus.OK).json({
         success: true,
-        purchases: purchaseDTOs,
+        purchases: purchases?.purchases,
         currentPage: purchases?.currentPage,
         totalPages: purchases?.totalPages,
         totalPurchases: purchases?.totalPurchases,
@@ -122,7 +111,6 @@ export class AdminCourseController
       if (!purchases || purchases.length === 0) {
         return res.status(400).json({ message: "No purchase data found" });
       }
-      console.log("pdf", purchases);
 
       const pdfBuffer =
         await this._courseService.generatePurchasesPDF(purchases);
@@ -166,7 +154,7 @@ export class AdminCourseController
     next: NextFunction,
   ) => {
     try {
-      const categories = await this._courseService.getCategoryRequest();
+      const categories = await this._courseService.getCategoryRequest();      
 
       res.json({ success: true, category: categories });
     } catch (error) {
@@ -182,6 +170,8 @@ export class AdminCourseController
   ) => {
     try {
       const category = req.body.category;
+      console.log("category delete" ,category );
+      
 
       await this._courseService.deleteCategoryRequest(category);
 
