@@ -6,6 +6,7 @@ import { otpStore } from "../../utils/otpStore";
 import { generateOtp } from "../../utils/otp";
 import { sendOtp } from "../../utils/sendMail";
 import { StatusMessage } from "../../enums/statusMessage";
+import { IInstAuthService } from "../../interfacesServices.ts/instructorServiceInterface";
 
 dotenv.config()
 
@@ -28,7 +29,7 @@ interface RegisterResult {
 }
 
 
-export class InstAuthService {
+export class InstAuthService implements IInstAuthService {
     constructor(private instructorRepository: IInsRepository) { }
 
     instructorLogin = async (email: string, password: string): Promise<LoginResult> => {

@@ -65,7 +65,7 @@ export class AdminCourseService implements IAdminCourseService {
     try {
       const details = await this.adminRepository.getFullCourseDetails(courseId);
       console.log('details',details);
-    //   const dto = await mapAdminCourseDetailsToDTO(details)
+      // const dto = await mapAdminCourseDetailsToDTO(details)
       
 
       return details;

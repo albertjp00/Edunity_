@@ -1,8 +1,8 @@
 // import mongoose, { Schema, Document } from "mongoose";
-import mongoose , { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
 export interface IEvent extends Document {
-  _id:string;
+  _id: string;
   instructorId: string;
   instructorName: string;
   title: string;
@@ -10,16 +10,15 @@ export interface IEvent extends Document {
   topic: string;
   date: Date;
   time: string;
-  // ampm:string;
   participants: number;
-  participantsList: string[]; 
-  isLive: boolean;            
-  maxParticipants?: number;  
-  meetingLink?: string;      
-  recordingUrl?: string;      
+  participantsList: string[];
+  isLive: boolean;
+  maxParticipants?: number;
+  meetingLink: string;
+  recordingUrl?: string;
   createdAt: Date;
   updatedAt: Date;
-  isOver:boolean
+  isOver: boolean;
 }
 
 const EventSchema: Schema = new Schema<IEvent>(
@@ -31,16 +30,14 @@ const EventSchema: Schema = new Schema<IEvent>(
     topic: { type: String, required: true },
     date: { type: Date, required: true },
     time: { type: String, required: true },
-    participants: { type: Number, default: 0 },         
+    participants: { type: Number, default: 0 },
     isLive: { type: Boolean, default: false },
     maxParticipants: { type: Number },
     meetingLink: { type: String },
     recordingUrl: { type: String },
-    isOver:{type:Boolean , default:false}
+    isOver: { type: Boolean, default: false },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-
-
-export const EventModel = mongoose.model<IEvent>("Event", EventSchema); 
+export const EventModel = mongoose.model<IEvent>("Event", EventSchema);

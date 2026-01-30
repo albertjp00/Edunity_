@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { IReview } from "../models/review";
 
 export interface InstructorCourseDTO {
@@ -73,13 +74,13 @@ export interface EventDTO {
   title: string;
   description: string;
   topic: string;
-  date: string;        // ISO string
+  date: Date;
   time: string;
   participants: number;
-  participantsList: string[];
   isLive: boolean;
-  meetingLink?: string;
-
+  isOver: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 
@@ -117,6 +118,21 @@ export interface IRecentStudentDTO {
   date: Date;
 }
 
+
+export interface InstructorDashboardRaw {
+  totalCourses: number;
+  totalStudents: number;
+  totalEarnings: number;
+  monthlyEarnings: Record<string, number>;
+  recentStudents?: {
+    name: string;
+    email: string;
+    course: string;
+    date: Date;
+  }[];
+}
+
+
 export interface IInstructorDashboardDTO {
   totalCourses: number;
   totalStudents: number;
@@ -150,4 +166,52 @@ export interface WalletDto {
   userId: string;
   balance: number;
   transactions: TransactionDto[];
+}
+
+
+export interface PurchaseDTO{
+    name: string,
+    title: string,
+    thumbnail: string,
+    price: number,
+    category: string,
+    amountPaid: number,
+    paymentStatus: string,
+    createdAt: Date
+  }
+
+
+  export interface QuizDTO {
+  id: string;
+  courseId: string;
+  title: string;
+  questions: QuizQuestionDTO[];
+  createdAt: Date;
+}
+
+export interface QuizQuestionDTO {
+  id: string;
+  question: string;
+  options: string[];
+  points: number;
+}
+
+
+
+
+export interface MessagedStudentsDTO { 
+  instructor: {
+    _id: string;
+    name: string;
+  };
+  lastMessage: {
+    id: string;
+    text: string;
+    attachment : string;
+    senderId: string;
+    receiverId: string;
+    read: boolean;
+    timestamp: Date;
+    
+  };
 }

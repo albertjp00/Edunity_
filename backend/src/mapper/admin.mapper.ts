@@ -143,7 +143,6 @@ export const mapAdminCourseDetailsToDTO = (
 ): AdminCourseDetailsDTO => {
   const { course, instructor, enrolledUsers, totalEnrolled } = details;
 
-  // ✅ THIS is where you add it
   const instructorDTO: AdminCourseDetailsDTO["instructor"] = {
     id: instructor._id.toString(),
     name: instructor.name,

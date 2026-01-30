@@ -6,8 +6,7 @@ import { IAdminDashboardController } from "../../interfaces/adminInterfaces";
 import { IAdminService } from "../../interfacesServices.ts/adminServiceInterfaces";
 import {
   mapEarningsToDTO,
-  mapStatsToDTO,
-  mapUserOverviewToDTO,
+
 } from "../../mapper/admin.mapper";
 import { StatusMessage } from "../../enums/statusMessage";
 

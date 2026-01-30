@@ -29,6 +29,9 @@ export class MessageController implements
       const { instructorId } = req.params
       const userId = req.user?.id
       const instructor = await this.messageService.getInstructor(instructorId as string, userId as string)
+      console.log('message instructor', instructor);
+
+      
       res.status(HttpStatus.OK).json({ success: true, instructor: instructor })
 
     } catch (error) {
@@ -36,7 +39,6 @@ export class MessageController implements
       next(error)
     }
   }
-
 
   // controller
   getInstructorToMessage = async(req: AuthRequest, res: Response,next: NextFunction) => {
@@ -144,14 +146,14 @@ export class MessageController implements
     try {
       const instructorId = req.instructor?.id
 
-      const result = await this.messageService.getStudents(instructorId as string)      
-
+      const result = await this.messageService.getStudents(instructorId as string)        
+      console.log('messaged students',result);
       res.status(HttpStatus.OK).json({ success: true, students: result, instructorId })
+
 
     } catch (error) {
       console.log(error);
       next(error)
-
     }
   }
 
@@ -161,13 +163,10 @@ export class MessageController implements
     try {
       const { receiverId } = req.params;
 
-
       const instructorId = req.instructor?.id
 
-
       const messages = await this.messageService.getMessages(instructorId as string, receiverId as string);
-      // console.log('messages ',messages);
-
+      console.log('messages ',messages);
 
       res.status(HttpStatus.OK).json({ success: true, messages: messages, instructorId })
     } catch (error) {
@@ -185,17 +184,9 @@ export class MessageController implements
 
       const file = req.file ? req.file.filename : null;
       console.log(file);
-
-
-
-
       const receiverId = req.params.receiverId!
       const instructorId = req.instructor?.id as string
-
-
       const message = await this.messageService.sendInstructorMessage(instructorId, receiverId, text, file);
-
-
 
       res.status(HttpStatus.OK).json({ success: true, message });
     } catch (error) {
@@ -211,7 +202,7 @@ export class MessageController implements
     try {
 
       await this.messageService.markMessagesAsRead(senderId, receiverId)
-
+      
     } catch (error) {
       console.log(error);
 

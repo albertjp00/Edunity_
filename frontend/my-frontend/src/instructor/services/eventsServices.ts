@@ -35,3 +35,24 @@ export const eventEnd = async (eventId:string) => {
         throw error
     }
 }
+
+
+export const eventJoin = async (eventId:string) => {
+    try {
+        const res = await instructorApi.patch(`/instructor/joinEvent/${eventId}`);
+        return res
+    } catch (error) {
+        console.log(error);
+        throw error
+    }
+}
+
+export const getEvent = async (eventId:string) => {
+    try {
+        const res = await instructorApi.get(`/instructor/getEvent/${eventId}`);
+        return res
+    } catch (error) {
+        console.log(error);
+        throw error
+    }
+}

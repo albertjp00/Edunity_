@@ -6,7 +6,7 @@ import { generateOtp } from "../../utils/otp";
 import { sendOtp } from "../../utils/sendMail";
 import { OAuth2Client } from "google-auth-library";
 import { googleLoginResult, IUserRepository } from "../../interfaces/userInterfaces";
-import { IUserAuthService } from "../../interfacesServices.ts/userServiceInterfaces";
+import { IUserAuthService, LoginResult, RegisterResult } from "../../interfacesServices.ts/userServiceInterfaces";
 import { StatusMessage } from "../../enums/statusMessage";
 import { IUser } from "../../models/user";
 
@@ -19,19 +19,6 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const SECRET_KEY = process.env.SECRET_KEY || "access_secret";
 
 // Interfaces
-interface LoginResult {
-    success: boolean;
-    message: string;
-    user?: IUser;
-    accessToken?: string;
-    refreshToken?: string;
-}
-
-interface RegisterResult {
-    success: boolean;
-    message: string;
-}
-
 
 
 // Main Auth Service

@@ -1,23 +1,15 @@
-import { IPurchaseDetails } from "../../interfaces/instructorInterfaces";
+import { QuizDTO } from "../../dto/instructorDTO";
+import { CourseResult, IPurchaseDetails } from "../../interfaces/instructorInterfaces";
 import { IInstCourseService } from "../../interfacesServices.ts/instructorServiceInterface";
+import { mapCourseDetailsToDTO, mapInstructorCourseToDTO, mapPurchaseDetailsToDTO, mapQuizToDTO } from "../../mapper/instructor.mapper";
 import { ICategory } from "../../models/category";
 import { ICourse } from "../../models/course";
 import { IQuestion, IQuiz } from "../../models/quiz";
-import { IInsRepository,  ISkills } from "../../repositories/instructorRepository";
+import { IInsRepository } from "../../repositories/instructorRepository";
 import { generateSignedUrl } from "../../utils/getSignedUrl";
 
 
 
-
-// Define the structure for paginated results
-interface CourseResult {
-  courses: ICourse[] | null;
-  skills: ISkills;
-  totalPages: number;
-  currentPage: number;
-  totalItems: number;
-  instructor: any
-}
 
 
 
@@ -28,7 +20,7 @@ export class CourseService implements IInstCourseService {
     try {
       const skip = (page - 1) * limit;
 
-      const [courses, totalItems, skills] = await Promise.all([
+      const [courses, totalItems] = await Promise.all([
         this.instructorRepository.getCourses(id, search, skip, limit),
         this.instructorRepository.countCourses(id),
         this.instructorRepository.findSkills()
@@ -36,11 +28,9 @@ export class CourseService implements IInstCourseService {
       const instructor = await this.instructorRepository.findById(id)
       const l = courses?.length
 
-      console.log('my courses ', l , totalItems);
       
       return {
-        courses,
-        skills,
+        courses: courses?.map(mapInstructorCourseToDTO) ?? [],
         totalPages: Math.ceil(totalItems / limit),
         currentPage: page,
         totalItems,
@@ -58,25 +48,22 @@ export class CourseService implements IInstCourseService {
 
   fetchCourseDetails = async (courseId: string) => {
     try {
-      console.log("service get course details", courseId);
 
       const course = await this.instructorRepository.getCourseDetails(courseId);
       if (!course) return null;
 
-      // Generate signed URLs for private videos
       if (course.modules && course.modules.length > 0) {
         for (const module of course.modules) {
           const rawUrl = module.videoUrl;
 
           if (rawUrl) {
-            // Extract key safely and remove query params
             let key: string | undefined;
 
             if (rawUrl.includes(".amazonaws.com/")) {
               const parts = rawUrl.split(".amazonaws.com/");
-              key = parts[1]?.split("?")[0]; // safely access
+              key = parts[1]?.split("?")[0]; 
             } else {
-              key = rawUrl.split("?")[0]; // fallback for direct key
+              key = rawUrl.split("?")[0]; 
             }
             console.log("key", key);
 
@@ -85,14 +72,12 @@ export class CourseService implements IInstCourseService {
             }
           }
         }
-      }
-
-      // console.log('course in service',course.modules);
+      }      
 
       const quiz = await this.instructorRepository.getQuizByCourseId(courseId);
       const quizExists = !!quiz;
 
-      return { course, quizExists };
+      return { course:mapCourseDetailsToDTO(course), quizExists };
     } catch (error) {
       console.error("❌ Error fetching course details:", error);
       return null;
@@ -105,10 +90,9 @@ export class CourseService implements IInstCourseService {
   getPurchaseDetails = async (id: string): Promise<IPurchaseDetails[] | null> => {
     try {
       const details = await this.instructorRepository.purchaseDetails(id)
-      console.log("purchaase",details);
-      
+      if(!details) return null
 
-      return details
+      return details?.map(mapPurchaseDetailsToDTO)
     } catch (error) {
       console.log(error);
       return null
@@ -120,14 +104,8 @@ export class CourseService implements IInstCourseService {
 
   addCourseRequest = async (id: string, data: Partial<ICourse>) => {
     try {
-
-      // const instructor = await this.instructorRepository.findById(id)
-      // instructor?.courseLimit!
-
       const course = await this.instructorRepository.addCourse(id, data)
-
       return course
-      
     } catch (error) {
       console.error("Add Course Error:", error);
       throw error;
@@ -155,10 +133,11 @@ export class CourseService implements IInstCourseService {
     }
   }
 
-  async getQuiz(courseId: string):Promise<IQuiz | null> {
+  async getQuiz(courseId: string):Promise<QuizDTO | null> {
     try {
-      const quiz = await this.instructorRepository.getQuizByCourseId(courseId)
-      return quiz
+      const quiz = await this.instructorRepository.getQuizByCourseId(courseId)      
+      if(!quiz) return null
+      return mapQuizToDTO(quiz)
     } catch (error) {
       console.log(error);
       return null
@@ -171,13 +150,14 @@ export class CourseService implements IInstCourseService {
 
     } catch (error) {
       console.log(error);
-
     }
   }
 
   async getCategoryRequest(): Promise<ICategory[] | null> {
     try {
       const category = await this.instructorRepository.getCategory()
+      console.log('category edit',category);
+      
       return category
     } catch (error) {
       console.log(error);

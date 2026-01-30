@@ -5,9 +5,9 @@ export interface IOption {
 }
 
 export interface IQuestion {
-  _id: mongoose.Types.ObjectId;   // 👈 Add this
+  _id: mongoose.Types.ObjectId;   
   question: string;
-  options: { text: string }[];
+  options: string[];
   correctAnswer: string;
   points: number;
 }
@@ -17,7 +17,7 @@ export interface IQuiz extends Document {
   courseId: string;
   title: string;
   questions: IQuestion[];
-  createdAt?: Date;
+  createdAt: Date;
   updatedAt?: Date;
 }
 

@@ -4,6 +4,8 @@ import {
   CategoryDTO,
   CourseDTO,
   CourseListAggregation,
+  DTOKyc,
+  InstructorAdminDTO,
   ReportDTO,
 } from "../dto/adminDTO";
 import { AdminAuthRequest } from "../middleware/authMiddleware";
@@ -191,9 +193,9 @@ export interface IAdminInstructorService {
   getInstructors(
     page: string,
     search: string,
-  ): Promise<PaginatedInstructors | null>;
+  ): Promise<PaginatedInstructorsService | null>;
 
-  getKycDetails(id: string): Promise<IKyc | null>;
+  getKycDetails(id: string): Promise<DTOKyc | null>;
 
   verifyKyc(id: string): Promise<void | null>;
 
@@ -213,8 +215,22 @@ export interface PaginatedUsers {
   totalUsers: number;
 }
 
+export interface PaginatedUsersService {
+  users: UserDTO[];
+  totalPages: number;
+  currentPage: number;
+  totalUsers: number;
+}
+
 export interface PaginatedInstructors {
   instructors: IInstructor[];
+  totalPages: number;
+  currentPage: number;
+  totalInstructors: number;
+}
+
+export interface PaginatedInstructorsService {
+  instructors: InstructorAdminDTO[];
   totalPages: number;
   currentPage: number;
   totalInstructors: number;
@@ -286,6 +302,7 @@ export interface CourseDetailsServiceResult {
 }
 
 import { Types } from "mongoose";
+import { UserDTO } from "./userInterfaces";
 
 export interface CourseRaw {
   _id: Types.ObjectId;

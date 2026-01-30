@@ -2,10 +2,9 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./eventDetails.css";
-import instructorApi from "../../../api/instructorApi";
 import eventImage from '../../../assets/webinar_thumnail.png'
 import { toast } from "react-toastify";
-import { eventEnd } from "../../services/eventsServices";
+import { eventEnd, eventJoin, getEvent } from "../../services/eventsServices";
 import type { IEvent } from "../../interterfaces/instructorInterfaces";
 
 
@@ -21,8 +20,9 @@ const EventDetails: React.FC = () => {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const result = await instructorApi.get(`/instructor/getEvent/${eventId}`);
-        console.log(result);
+        if(!eventId) return
+        const result = await getEvent(eventId)
+        console.log('event',result);
 
         setEvent(result.data.event);
         setInstructor(result.data.event.instructorId);
@@ -50,13 +50,14 @@ const EventDetails: React.FC = () => {
   const handleJoin = async () => {
     if (!event || !instructor) return;
     try {
-      await instructorApi.patch(`/instructor/joinEvent/${event._id}`, { userId: instructor });
-      navigate(`/instructor/joinEvent/${event._id}`, {
+      const res = await eventJoin(event.id)
+      console.log(res);
+      
+      navigate(`/instructor/joinEvent/${event.id}`, {
         state: { instructorName }
       });
     } catch (error) {
       console.error(error);
-      // alert("Unable to join event. Please try again.");
       toast.error("Unable to join event. Please try again.")
     }
   };

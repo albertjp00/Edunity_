@@ -12,7 +12,6 @@ export type AdminLoginDTO =
       message: string;
     };
 
-
 export interface CourseDTO {
   id: string;
   title: string;
@@ -194,12 +193,10 @@ export interface ReportDTO {
 }
 
 export interface LoginDTO {
-  success : boolean;
+  success: boolean;
   message: string;
   accessToken: string;
 }
-
-
 
 export interface TotalEnrolledDTO {
   enrolled: number;
@@ -212,3 +209,5 @@ export interface AdminStatsDTO {
   totalCourses: number;
   totalEnrolled: TotalEnrolledDTO[];
 }
+
+

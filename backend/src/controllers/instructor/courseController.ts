@@ -1,36 +1,52 @@
 import { NextFunction, Request, Response } from "express";
 import { InstAuthRequest } from "../../middleware/authMiddleware";
 import { uploadToS3 } from "../../utils/s3Upload";
-import fs from 'fs'
+import fs from "fs";
 import { generateSignedUrl } from "../../utils/getSignedUrl";
 import { ICourse, IModule } from "../../models/course";
 import { HttpStatus } from "../../enums/httpStatus.enums";
-import { IInstCourseManageController, IInstCourseViewController, IInstQuizController } from "../../interfaces/instructorInterfaces";
+import {
+  IInstCourseManageController,
+  IInstCourseViewController,
+  IInstQuizController,
+} from "../../interfaces/instructorInterfaces";
 import { IInstCourseService } from "../../interfacesServices.ts/instructorServiceInterface";
-import { mapCourseDetailsToDTO, mapInstructorCourseToDTO } from "../../mapper/instructor.mapper";
+import {
+  mapCourseDetailsToDTO,
+  mapInstructorCourseToDTO,
+} from "../../mapper/instructor.mapper";
 import { StatusMessage } from "../../enums/statusMessage";
 
-
-export class InstCourseController implements
-  IInstCourseViewController,
-  IInstCourseManageController,
-  IInstQuizController {
+export class InstCourseController
+  implements
+    IInstCourseViewController,
+    IInstCourseManageController,
+    IInstQuizController
+{
   private _courseService: IInstCourseService;
 
   constructor(courseService: IInstCourseService) {
     // const repo = new InstructorRepository();
-    this._courseService = courseService
+    this._courseService = courseService;
   }
 
-  myCourses = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
+  myCourses = async (
+    req: InstAuthRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
       const id = req.instructor?.id;
       const search = (req.body.query as string) || "";
       const page = parseInt(req.body.page as string) || 1;
 
       const limit = 4;
-      const data = await this._courseService.fetchCourses(id as string, search, page, limit);
-
+      const data = await this._courseService.fetchCourses(
+        id as string,
+        search,
+        page,
+        limit,
+      );
 
       if (!data || !data.courses) {
         res.status(HttpStatus.OK).json({
@@ -43,96 +59,103 @@ export class InstCourseController implements
         return;
       }
 
-      const mappedCourses = data.courses.map((course: ICourse) =>
-        mapInstructorCourseToDTO(course)
-      );
-
-      // console.log(data);
-
-
       res.status(HttpStatus.OK).json({
         success: true,
-        course: mappedCourses,
-        skills: data.skills,
+        course: data.courses,
         totalPages: data.totalPages,
         currentPage: data.currentPage,
       });
-
     } catch (error) {
       console.error(error);
       next(error);
     }
   };
 
-
-  courseDetails = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
+  courseDetails = async (
+    req: InstAuthRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
-      // const id = req.instructor?.id
-      const courseId = req.params.id!
-      const result = await this._courseService.fetchCourseDetails(courseId)
+      const courseId = req.params.id!;
+      const result = await this._courseService.fetchCourseDetails(courseId);
       if (!result || !result.course) {
-        res.status(404).json({ success: false, message: StatusMessage.COURSE_NOT_FOUND });
-        return
+        res
+          .status(404)
+          .json({ success: false, message: StatusMessage.COURSE_NOT_FOUND });
+        return;
       }
 
-      console.log(result);
-      
-      const courseDTO = mapCourseDetailsToDTO(result.course);
-
-      res.status(HttpStatus.OK).json({ success: true, course: courseDTO, quiz: result?.quizExists })
+      res
+        .status(HttpStatus.OK)
+        .json({
+          success: true,
+          course: result.course,
+          quiz: result?.quizExists,
+        });
     } catch (error) {
       console.log(error);
-      next(error)
+      next(error);
     }
-  }
-
-
+  };
 
   refreshVideoUrl = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { key } = req.query; // frontend sends the key (filename)
+      const { key } = req.query;
       if (!key) {
-        res.status(400).json({ success: false, message: StatusMessage.MISSING_KEY });
-        return
+        res
+          .status(400)
+          .json({ success: false, message: StatusMessage.MISSING_KEY });
+        return;
       }
 
       const signedUrl = await generateSignedUrl(key as string);
       res.status(HttpStatus.OK).json({ success: true, url: signedUrl });
     } catch (error) {
       console.error("Error refreshing video URL:", error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.ERROR_LINK });
-      next(error)
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ success: false, message: StatusMessage.ERROR_LINK });
+      next(error);
     }
   };
 
-
-
-  purchaseDetails = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
+  purchaseDetails = async (
+    req: InstAuthRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
       const courseId = req.params.id!;
+      
       const data = await this._courseService.getPurchaseDetails(courseId);
 
-      console.log('purchase data', data);
-
       if (!data) {
-        res.status(404).json({ success: false, message: StatusMessage.PURCHASE_NOT_FOUND });
-        return
+        res
+          .status(404)
+          .json({ success: false, message: StatusMessage.PURCHASE_NOT_FOUND });
+        return;
       }
 
       res.status(HttpStatus.OK).json({ success: true, details: data });
     } catch (error) {
       console.error(error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
-      next(error)
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
+      next(error);
     }
   };
 
-  editCourse = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+  editCourse = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       const courseId = req.params.id!;
       const files = Array.isArray(req.files) ? req.files : [];
-      // console.log(" Edit Course:", courseId);
-      // console.log(" Multer Files:", files);
 
       const skills =
         typeof req.body.skills === "string"
@@ -148,7 +171,7 @@ export class InstCourseController implements
       for (let index = 0; index < modules.length; index++) {
         const mod = modules[index];
         const videoFile = files.find(
-          (f) => f.fieldname === `modules[${index}][video]`
+          (f) => f.fieldname === `modules[${index}][video]`,
         );
 
         let videoUrl = mod.videoUrl || "";
@@ -156,7 +179,11 @@ export class InstCourseController implements
         if (videoFile) {
           const fileBuffer = fs.readFileSync(videoFile.path);
 
-          videoUrl = await uploadToS3(fileBuffer, videoFile.originalname, videoFile.mimetype);
+          videoUrl = await uploadToS3(
+            fileBuffer,
+            videoFile.originalname,
+            videoFile.mimetype,
+          );
           console.log(`✅ Uploaded video for module ${index}: ${videoUrl}`);
         }
 
@@ -179,28 +206,33 @@ export class InstCourseController implements
         thumbnail: thumbnailFile ? thumbnailFile.filename : req.body.thumbnail,
       };
 
-      // console.log("✅ Final Course Data:", data);
-
-      const result = await this._courseService.editCourseRequest(courseId, data);
-
-      // console.log("edited dtooo --------",result );
-
+      const result = await this._courseService.editCourseRequest(
+        courseId,
+        data,
+      );
 
       if (!result) {
-        res.status(404).json({ success: false, message: StatusMessage.COURSE_NOT_FOUND });
+        res
+          .status(404)
+          .json({ success: false, message: StatusMessage.COURSE_NOT_FOUND });
         return;
       }
 
       res.status(HttpStatus.OK).json({ success: true });
     } catch (error) {
       console.error("❌ Error editing course:", error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
-      next(error)
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
+      next(error);
     }
   };
 
-
-  addCourse = async (req: InstAuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  addCourse = async (
+    req: InstAuthRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       const id = req.instructor?.id;
 
@@ -215,7 +247,7 @@ export class InstCourseController implements
         const content = req.body.modules?.[index]?.content;
 
         const videoFile = files.find(
-          (f) => f.fieldname === `modules[${index}][video]`
+          (f) => f.fieldname === `modules[${index}][video]`,
         );
 
         let videoUrl: string | undefined;
@@ -225,7 +257,7 @@ export class InstCourseController implements
           videoUrl = await uploadToS3(
             fileBuffer,
             videoFile.originalname,
-            videoFile.mimetype
+            videoFile.mimetype,
           );
         }
 
@@ -235,7 +267,6 @@ export class InstCourseController implements
           ...(videoUrl && { videoUrl }), // ✅ key omitted if undefined
         });
       }
-
 
       const thumbnailFile = files.find((f) => f.fieldname === "thumbnail");
 
@@ -251,62 +282,51 @@ export class InstCourseController implements
         ...(thumbnailFile && { thumbnail: thumbnailFile.filename }),
       };
 
-
-
       await this._courseService.addCourseRequest(id as string, data);
 
       res.status(HttpStatus.OK).json({ success: true });
     } catch (error) {
       console.error("❌ Error adding course:", error);
-      res.status(500).json({ success: false, message: StatusMessage.ERROR_ADDING_COURSE });
-      next(error)
+      res
+        .status(500)
+        .json({ success: false, message: StatusMessage.ERROR_ADDING_COURSE });
+      next(error);
     }
   };
-
-
-
-
-
-
-
 
   addQuiz = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
       const { title, questions } = req.body;
-      console.log(title , questions);
-      
-
+      console.log(title, questions);
 
       if (!id || !title || !questions) {
-        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: StatusMessage.MISSING_FIELDS });
+        res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ success: false, message: StatusMessage.MISSING_FIELDS });
         return;
       }
 
       await this._courseService.addQuiz(id, title, questions);
 
-
       res.status(HttpStatus.OK).json({ success: true });
     } catch (error) {
-
       const message =
         error instanceof Error ? error.message : StatusMessage.SOMETHING_WRONG;
 
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message });
-      next(error)
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ success: false, message });
+      next(error);
     }
-
   };
-
 
   getQuiz = async (req: Request, res: Response, next: NextFunction) => {
     try {
-
-
       const { courseId } = req.params;
       console.log(courseId);
 
-      const result = await this._courseService.getQuiz(courseId as string)
+      const result = await this._courseService.getQuiz(courseId as string);
 
       if (!result) {
         res.json({ success: false, message: StatusMessage.QUIZ_NOT_FOUND });
@@ -316,41 +336,32 @@ export class InstCourseController implements
       res.status(HttpStatus.OK).json({ success: true, quiz: result });
     } catch (error) {
       console.error("Error fetching quiz:", error);
-      next(error)
+      next(error);
     }
-  }
-
+  };
 
   editQuiz = async (req: Request, res: Response, next: NextFunction) => {
     try {
-
       const { quizId } = req.params;
-      const data = req.body.quiz
+      const data = req.body.quiz;
 
-      await this._courseService.updateQuiz(quizId as string, data)
+      await this._courseService.updateQuiz(quizId as string, data);
 
       res.status(HttpStatus.OK).json({ success: true });
     } catch (error) {
       console.error("Error fetching quiz:", error);
-      next(error)
+      next(error);
     }
-  }
-
+  };
 
   getCategory = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const category = await this._courseService.getCategoryRequest()
-
+      const category = await this._courseService.getCategoryRequest();
 
       res.status(HttpStatus.OK).json({ success: true, category: category });
     } catch (error) {
       console.error("Error fetching quiz:", error);
-      next(error)
+      next(error);
     }
-  }
-
-
-
-
+  };
 }
-

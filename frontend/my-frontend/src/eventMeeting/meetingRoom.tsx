@@ -45,7 +45,6 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
   const [micOn, setMicOn] = useState(true);
   const [camOn, setCamOn] = useState(true);
 
-  // Helper: set or replace a remote user entry
   const upsertRemoteUser = (update: Partial<RemoteUser> & { socketId: string }) => {
     setRemoteUsers((prev) => {
       const idx = prev.findIndex((p) => p.socketId === update.socketId);
@@ -70,7 +69,6 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
   };
 
   useEffect(() => {
-    // 1) get local media first, then join room
     let cancelled = false;
     (async () => {
       try {
@@ -82,18 +80,15 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
         localStreamRef.current = media;
         if (localVideoRef.current) localVideoRef.current.srcObject = media;
 
-        // After we have media, join event
         socket.emit("joinEvent", { eventId, userId, role , name });
 
-        // Also send initial status
         socket.emit("update-status", { eventId, micOn: true, camOn: true });
       } catch (err) {
         console.error("Failed to getUserMedia", err);
       }
     })();
 
-    // 2) setup socket listeners ONCE
-    // remove handlers first just in case (safe)
+
     socket.off("user-joined");
     socket.off("offer");
     socket.off("answer");
@@ -135,7 +130,6 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
     });
 
 
-    // When someone leaves
     socket.on("user-left", (participant: Participant) => {
       if (!participant) return;
       console.log(`${participant.name} left the meeting`);
@@ -150,12 +144,10 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
 
 
     socket.on("offer", async ({ from, offer }) => {
-      // got offer from instructor (or user)
       console.log("offer from", from);
       const pc = createPeerConnection(from);
       pcMap.current[from] = pc;
 
-      // attach local tracks
       const localStream = localStreamRef.current;
       if (localStream) localStream.getTracks().forEach((t) => pc.addTrack(t, localStream));
 
@@ -198,7 +190,6 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
     return () => {
       cancelled = true;
       socket.emit("leaveEvent", { eventId, userId });
-      // cleanup pcs
       Object.values(pcMap.current).forEach((pc) => {
         try {
           pc.close();
@@ -221,10 +212,10 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
       socket.off("user-left");
       socket.off("status-updated");
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // run once on mount
+   
+  }, []);
 
-  // createPeerConnection helper
+
   const createPeerConnection = (socketId: string) => {
     // If already exists, return it
     if (pcMap.current[socketId]) return pcMap.current[socketId];
@@ -241,14 +232,12 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
       const incomingStream = ev.streams && ev.streams[0];
       if (!incomingStream) return;
 
-      // ensure we only upsert once per socketId (avoid duplicates when audio+video tracks fire separately)
       upsertRemoteUser({ socketId, stream: incomingStream, micOn: true, camOn: true });
     };
 
     return pc;
   };
 
-  // Controls
   const toggleMic = () => {
     const s = localStreamRef.current;
     if (!s) return;
@@ -268,7 +257,6 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
   };
 
   const leaveMeeting = () => {
-    // close all peer connections
     Object.values(pcMap.current).forEach((pc) => pc.close());
     pcMap.current = {};
     if (localStreamRef.current) {
@@ -284,7 +272,6 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
       <h2>{role === "instructor" ? "Instructor View" : "User View"}</h2>
 
       <div className="video-container">
-        {/* Local Video */}
         <div className="video-tile">
           <video ref={localVideoRef} autoPlay playsInline muted />
           {!micOn && <span className="mic-muted">🔇</span>}
@@ -295,7 +282,6 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
 
 
 
-        {/* Remote Videos */}
         {remoteUsers.map((user) => (
           <div key={user.socketId} className="video-tile">
             <video

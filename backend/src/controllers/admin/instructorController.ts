@@ -6,10 +6,6 @@ import {
   IAdminKycController,
 } from "../../interfaces/adminInterfaces";
 import { AdminAuthRequest } from "../../middleware/authMiddleware";
-import {
-  mapInstructorToAdminDTO,
-  mapKycToDTO,
-} from "../../mapper/admin.mapper";
 
 export class AdminInstructorController
   implements IAdminInstructorController, IAdminKycController
@@ -31,7 +27,7 @@ export class AdminInstructorController
       if (!data) return;
 
       const mapped = {
-        instructors: data.instructors.map(mapInstructorToAdminDTO),
+        instructors: data.instructors,
         totalPages: data.totalPages,
         currentPage: data.currentPage,
         totalInstructors: data.totalInstructors,
@@ -47,13 +43,11 @@ export class AdminInstructorController
   getKyc = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = req.params.id!;
-      console.log("get kyc");
 
       const data = await this._adminInstructorService.getKycDetails(id);
       if (!data) return;
-      const dto = mapKycToDTO(data);
 
-      res.status(HttpStatus.OK).json({ success: true, data: dto });
+      res.status(HttpStatus.OK).json({ success: true, data: data });
     } catch (error) {
       console.log(error);
       next(error);
@@ -76,6 +70,7 @@ export class AdminInstructorController
       next(error);
     }
   };
+
   rejectKyc = async (
     req: AdminAuthRequest,
     res: Response,
@@ -102,8 +97,9 @@ export class AdminInstructorController
     try {
       const id = req.params.id!;
 
-      const result =
-        await this._adminInstructorService.getInstructorsRequest(id);
+      const result = await this._adminInstructorService.getInstructorsRequest(id);
+        console.log('result',result);
+        
 
       res.status(HttpStatus.OK).json({ success: true, instructor: result });
     } catch (error) {
@@ -140,6 +136,8 @@ export class AdminInstructorController
       const result =
         await this._adminInstructorService.getInstructorsCoursesRequest(id);
       // const mapped = mapCourseDetailsToDTO(result)
+      console.log('get admin course details');
+      
 
       res.status(HttpStatus.OK).json({ success: true, courses: result });
     } catch (error) {

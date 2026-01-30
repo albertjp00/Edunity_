@@ -11,6 +11,7 @@ import { INotification, NotificationModel } from "../models/notification";
 import { EarningModel } from "../models/earnings";
 import { IWallet, WalletModel } from "../models/wallet";
 import { CategoryModel, ICategory } from "../models/category";
+import { IInstructorDashboardDTO } from "../dto/instructorDTO";
 // import { IInsRepository } from "../interfaces/instructorInterfaces";
 
 
@@ -74,7 +75,7 @@ export interface IInsRepository {
 
   // getMyCourses(id : string):Promise<string[] | null>
 
-  getDashboard(instructorId: string): Promise<any>
+  getDashboard(instructorId: string): Promise<IInstructorDashboardDTO | null>
 
   getCategory():Promise<ICategory[] | null>;
 
@@ -129,7 +130,7 @@ export class InstructorRepository implements IInsRepository {
   
 
 
-  async getCourses(id: string, search : string , skip: number, limit: number): Promise<ICourse[]> {
+  async getCourses(id: string, search : string , skip: number, limit: number): Promise<ICourse[] | null> {
     const filter: any = { instructorId: id };
 
   if (search && search.trim() !== "") {
@@ -243,7 +244,9 @@ export class InstructorRepository implements IInsRepository {
 
 
   async getEvent(id: string): Promise<IEvent | null> {
-    return EventModel.findById(id)
+    
+    const event = await  EventModel.findById(id)
+    return event    
   }
 
 
@@ -328,24 +331,8 @@ export class InstructorRepository implements IInsRepository {
     }
   }
 
-  // interface IDashboardCourse{
-  //     id : st
-  // }
 
-  // getMyCourses = async (id : string):Promise<string[] | null> =>{
-  //     try {
-  //         const courses = await CourseModel.countDocuments({instructorId:id}).select('_id')
-  //         return courses
-  //     } catch (error) {
-  //         console.log(error);
-  //         return null
-  //     }
-  // }
-
-
-
-
-  getDashboard = async (instructorId: string): Promise<any> => {
+  getDashboard = async (instructorId: string): Promise<IInstructorDashboardDTO | null> => {
     try {
       // 1️⃣ Total Courses
       const totalCourses = await CourseModel.countDocuments({ instructorId });

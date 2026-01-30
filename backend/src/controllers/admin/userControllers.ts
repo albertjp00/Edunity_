@@ -20,6 +20,9 @@ export class AdminUserController implements IAdminUserManagementController {
 
             const result = await this._userService.getUserRequest(id)
             // const mapped = mapUserToDTO(result)
+            console.log('user',result);
+        
+
             res.status(HttpStatus.OK).json({ success: true, user: result })
         } catch (error) {
             console.log(error);
@@ -31,23 +34,17 @@ export class AdminUserController implements IAdminUserManagementController {
     getUsers = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { search, page } = req.query;
-            // let limit = 4
-
-
-
+        
             const data = await this._userService.getUsers(
                 String(search),
                 Number(page),
             );
 
-            if (!data) return
-            const mappedUsers = data.users.map(mapUserToDTO);
-
-
-
+            if (!data) return            
+            
             res.status(HttpStatus.OK).json({
                 success: true,
-                users: mappedUsers,
+                users: data.users,
                 totalPages: data.totalPages,
                 currentPage: data.currentPage,
                 totalUsers: data.totalUsers
@@ -101,11 +98,8 @@ export class AdminUserController implements IAdminUserManagementController {
             const id = req.params.id!
 
             const result = await this._userService.getUsersCoursesRequest(id)
-            // console.log(result);
             if (!result) return
             const mapped = result.map(mapAdminUserCourseToDTO)
-
-
 
             res.status(HttpStatus.OK).json({ success: true, courses: mapped })
         } catch (error) {

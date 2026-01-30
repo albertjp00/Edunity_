@@ -1,4 +1,5 @@
-import { IEventResult, IPurchaseDetails } from "../interfaces/instructorInterfaces";
+import { IInstructorDashboardDTO, IInstructorProfileDTO, INotificationDTO, InstructorDashboardRaw, QuizDTO } from "../dto/instructorDTO";
+import { CourseResult, ICourseDetailsResult, IEventDetailsService, IEventResult, IEventResultService, IPurchaseDetails } from "../interfaces/instructorInterfaces";
 import { ICategory } from "../models/category";
 import { ICourse } from "../models/course";
 import { IEvent } from "../models/events";
@@ -55,19 +56,9 @@ export interface IInstAuthService {
 
 
 export interface IInstCourseService {
-    fetchCourses(id: string, search: string, page: number, limit: number): Promise<{
-        courses: ICourse[] | null;
-        skills: ISkills;
-        totalPages: number;
-        currentPage: number;
-        totalItems: number;
-        instructor: IInstructor;
-    }>;
+    fetchCourses(id: string, search: string, page: number, limit: number): Promise<CourseResult>;
 
-    fetchCourseDetails(courseId: string): Promise<{
-        course: ICourse | null;
-        quizExists: boolean;
-    } | null>;
+    fetchCourseDetails(courseId: string): Promise<ICourseDetailsResult| null>;
 
     getPurchaseDetails(id: string):Promise<IPurchaseDetails[] | null>;
 
@@ -77,7 +68,7 @@ export interface IInstCourseService {
 
     addQuiz(courseId: string, title: string, questions: IQuestion[]):Promise<void>;
 
-    getQuiz(courseId: string): Promise<IQuiz | null>;
+    getQuiz(courseId: string): Promise<QuizDTO | null>;
 
     updateQuiz(id: string, data: Partial<IQuiz>): Promise<void>;
 
@@ -89,9 +80,9 @@ export interface IInstCourseService {
 export interface IInstEventService {
     createEventRequest(id: string, data: Partial<IEvent>): Promise<IEvent | null>;
 
-    getMyEventsRequest(id: string, search: string, page: string): Promise<IEventResult | null>;
+    getMyEventsRequest(id: string, search: string, page: string): Promise<IEventResultService | null>;
 
-    getEventRequest(id: string): Promise<IEvent | null>;
+    getEventRequest(id: string): Promise<IEventDetailsService | null>;
 
     updateEventRequest(id: string, data: Partial<IEvent>): Promise<IEvent | null>;
 
@@ -104,12 +95,12 @@ export interface IInstEventService {
 
 
 export interface IInstructorProfileService {
-  getProfile(userId: string): Promise<IInstructor | null>;
+  getProfile(userId: string): Promise<IInstructorProfileDTO | null>;
   editProfileRequest(id: string, updateData: Partial<IInstructor>): Promise<boolean | null>;
   passwordChange(id: string, newPassword: string, oldPassword: string): Promise<boolean>;
   kycSubmit(id: string, idProof: string, addressProof: string): Promise<boolean | null>;
-  getNotifications(id: string): Promise<INotification[] | null>;
-  getDashboard(id: string): Promise<void>;
+  getNotifications(id: string): Promise<INotificationDTO[] | null>;
+  getDashboard(id: string): Promise<InstructorDashboardRaw | null>;
   getEarnings(id: string): Promise<{ monthlyEarnings: { month: string; earnings: number }[]; totalEarnings: number } | null>;
   getWallet(id: string): Promise<IWallet | null>;
 }

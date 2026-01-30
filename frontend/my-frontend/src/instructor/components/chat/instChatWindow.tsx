@@ -24,14 +24,6 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
   const [isTyping, setIsTyping] = useState(false);
 
 
-  //   console.log('userID',instructorId);
-  //   const socket = io(import.meta.env.VITE_API_URL, {
-  //   auth: {
-  //     userId: instructorId, 
-  //   },
-  // });
-
-
 
   useEffect(() => {
     if (!receiverId) return;
@@ -190,20 +182,9 @@ const InstructorChatWindow: React.FC<ChatWindowProps> = ({
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
 
-  // useEffect(() => {
-  //   if (receiverId && instructorId) {
-  //     const room = [instructorId, receiverId].sort().join("_");
-  //     console.log(`🟣 Instructor joining room: ${room}`);
-  //     socket.emit("joinRoom", { userId: instructorId, receiverId });
-  //   }
-  // }, [receiverId, instructorId]);
 
 
-  // console.log("🔗 Socket ID:", socket.id);
-
-
-
-  // to 
+  
   useEffect(() => {
     if (!receiverId) return;
 

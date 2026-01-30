@@ -111,7 +111,6 @@ export interface LocationState {
 
 export interface IEvent {
   id: string;
-  _id: string;
   instructorId: string;
   instructorName: string;
   title: string;

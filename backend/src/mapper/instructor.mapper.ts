@@ -1,11 +1,34 @@
-import { ICourseDetailsDTO, IEarningsDTO, IEventDTO, IInstructorDashboardDTO, IInstructorProfileDTO, IModuleDTO, INotificationDTO, InstructorCourseDTO, TransactionDto, WalletDto } from "../dto/instructorDTO";
-import { InstructorDTO } from "../interfaces/instructorInterfaces";
+import { CategoryDTO } from "../dto/adminDTO";
+import {
+  EventDTO,
+  ICourseDetailsDTO,
+  IEarningsDTO,
+  IEventDTO,
+  IInstructorDashboardDTO,
+  IInstructorProfileDTO,
+  IModuleDTO,
+  INotificationDTO,
+  InstructorCourseDTO,
+  InstructorDashboardRaw,
+  IRecentStudentDTO,
+  MessagedStudentsDTO,
+  PurchaseDTO,
+  QuizDTO,
+  QuizQuestionDTO,
+  TransactionDto,
+  WalletDto,
+} from "../dto/instructorDTO";
+import {
+  InstructorDTO,
+  IPurchaseDetails,
+} from "../interfaces/instructorInterfaces";
+import { IMessagedUser } from "../interfaces/userInterfaces";
+import { ICategory } from "../models/category";
+import { IEvent } from "../models/events";
 import { IInstructor } from "../models/instructor";
 import { INotification } from "../models/notification";
+import { IQuestion, IQuiz } from "../models/quiz";
 import { IWallet } from "../models/wallet";
-
-
-
 
 export const mapInstructorToDTO = (instructor: IInstructor): InstructorDTO => {
   return {
@@ -20,16 +43,13 @@ export const mapInstructorToDTO = (instructor: IInstructor): InstructorDTO => {
     KYCstatus: instructor.KYCstatus,
     work: instructor.work,
     education: instructor.education,
-    blocked: instructor.blocked
+    blocked: instructor.blocked,
   };
 };
 
-
-
-
 export const mapInstructorCourseToDTO = (course: any): InstructorCourseDTO => {
   return {
-    id: course._id?.toString(),
+    id: course.id?.toString(),
     instructorId: course.instructorId,
     title: course.title,
     description: course.description,
@@ -40,11 +60,9 @@ export const mapInstructorCourseToDTO = (course: any): InstructorCourseDTO => {
     category: course.category,
     totalEnrolled: course.totalEnrolled,
     createdAt: course.createdAt,
-    onPurchase: course.onPurchase
+    onPurchase: course.onPurchase,
   };
 };
-
-
 
 export const mapModuleToDTO = (module: any): IModuleDTO => ({
   id: module._id?.toString(),
@@ -52,7 +70,6 @@ export const mapModuleToDTO = (module: any): IModuleDTO => ({
   videoUrl: module.videoUrl,
   content: module.content,
 });
-
 
 export const mapCourseDetailsToDTO = (course: any): ICourseDetailsDTO => ({
   id: course._id.toString(),
@@ -74,9 +91,7 @@ export const mapCourseDetailsToDTO = (course: any): ICourseDetailsDTO => ({
   reviews: course.review ?? [],
 });
 
-
-
-export const mapEventToDTO = (event: any): IEventDTO => {
+export const mapEventToDTO = (event: IEvent): IEventDTO => {
   return {
     id: event._id.toString(),
     title: event.title,
@@ -87,14 +102,12 @@ export const mapEventToDTO = (event: any): IEventDTO => {
     participants: event.participants,
     isLive: event.isLive,
     meetingLink: event.meetingLink ?? null,
-    isOver:event.isOver
+    isOver: event.isOver,
   };
 };
 
-
-
 export const mapInstructorProfileToDTO = (
-  profile: IInstructor
+  profile: IInstructor,
 ): IInstructorProfileDTO => {
   return {
     _id: profile._id.toString(),
@@ -108,11 +121,9 @@ export const mapInstructorProfileToDTO = (
     work: profile.work ?? "",
     education: profile.education ?? "",
     blocked: profile.blocked ?? false,
-    skills:profile.skills ?? []
+    skills: profile.skills ?? [],
   };
 };
-
-
 
 export const mapNotificationToDTO = (n: INotification): INotificationDTO => {
   return {
@@ -124,49 +135,139 @@ export const mapNotificationToDTO = (n: INotification): INotificationDTO => {
   };
 };
 
-
-export const mapDashboardToDTO = (data: any): IInstructorDashboardDTO => {
+export const mapDashboardToDTO = (
+  data: InstructorDashboardRaw,
+): IInstructorDashboardDTO => {
   return {
     totalCourses: data.totalCourses,
     totalStudents: data.totalStudents,
     totalEarnings: data.totalEarnings,
     monthlyEarnings: data.monthlyEarnings,
-    recentStudents: data.recentStudents?.map((s: any) => ({
-      name: s.name,
-      email: s.email,
-      course: s.course,
-      date: s.date
-    })) || []
+    recentStudents:
+      data.recentStudents?.map((s: IRecentStudentDTO) => ({
+        name: s.name,
+        email: s.email,
+        course: s.course,
+        date: s.date,
+      })) || [],
   };
 };
-
 
 export const mapEarningsToDTO = (data: any): IEarningsDTO => {
   return {
-    monthlyEarnings: data.monthlyEarnings?.map((m: any) => ({
-      month: m.month,
-      earnings: m.earnings
-    })) || [],
-    totalEarnings: data.totalEarnings
+    monthlyEarnings:
+      data.monthlyEarnings?.map((m: any) => ({
+        month: m.month,
+        earnings: m.earnings,
+      })) || [],
+    totalEarnings: data.totalEarnings,
   };
 };
 
-
 // wallet.mapper.ts
 
-
 export const walleToDto = (wallet: IWallet): WalletDto => {
-    return {
-      userId: wallet.userId,
-      balance: wallet.balance,
-      transactions: wallet.transactions.map((t): TransactionDto => ({
+  return {
+    userId: wallet.userId,
+    balance: wallet.balance,
+    transactions: wallet.transactions.map(
+      (t): TransactionDto => ({
         type: t.type,
         amount: t.amount,
-        courseId: t.courseId || '',
-        description: t.description || '',
+        courseId: t.courseId || "",
+        description: t.description || "",
         createdAt: t.createdAt,
-      })),
-    };
-  }
+      }),
+    ),
+  };
+};
 
+export const mapPurchaseDetailsToDTO = (
+  purchase: IPurchaseDetails,
+): PurchaseDTO => {
+  return {
+    name: purchase.name,
+    title: purchase.title,
+    thumbnail: purchase.thumbnail,
+    price: purchase.price,
+    category: purchase.category,
+    amountPaid: purchase.amountPaid,
+    paymentStatus: purchase.paymentStatus,
+    createdAt: purchase.createdAt,
+  };
+};
 
+export const mapQuizToDTO = (quiz: IQuiz): QuizDTO => ({
+  id: quiz.id.toString(),
+  courseId: quiz.courseId,
+  title: quiz.title,
+  questions: (quiz.questions ?? []).map(mapQuizQuestionToDTO),
+  createdAt: quiz.createdAt,
+});
+
+const mapQuizQuestionToDTO = (question: IQuestion): QuizQuestionDTO => ({
+  id: question._id.toString(),
+  question: question.question,
+  options: question.options,
+  points: question.points,
+});
+
+export const mapCategoryDTO = (data: ICategory): CategoryDTO => ({
+  id: data.id,
+  name: data.name,
+  skills: data.skills,
+});
+
+export const mapEventsDTO = (data: IEvent): EventDTO => {
+  return {
+    id: data._id,
+    instructorId: data.instructorId,
+    instructorName: data.instructorName,
+    title: data.title,
+    description: data.description,
+    topic: data.topic,
+    date: data.date,
+    time: data.time,
+    participants: data.participants,
+    isLive: data.isLive,
+    isOver: data.isOver,
+    createdAt: data.createdAt,
+    updatedAt: data.updatedAt,
+  };
+};
+
+export const mapEventDetailsDTO = (data: IEvent): EventDTO => {
+  return {
+    id: data._id,
+    instructorId: data.instructorId,
+    instructorName: data.instructorName,
+    title: data.title,
+    description: data.description,
+    topic: data.topic,
+    date: data.date,
+    time: data.time,
+    participants: data.participants,
+    isLive: data.isLive,
+    isOver: data.isOver,
+    createdAt: data.createdAt,
+    updatedAt: data.updatedAt,
+  };
+};
+
+export const mapMessagedStudentsDTO = (data: IMessagedUser): MessagedStudentsDTO => {
+  return {
+    instructor: {
+      _id: data.instructor._id.toString(),
+      name: data.instructor.name,
+    },
+    lastMessage: {
+      id: data.lastMessage._id.toString(),
+      text: data.lastMessage.text || '',
+      attachment: data.lastMessage.attachment || '',
+      senderId: data.lastMessage.senderId,
+      receiverId: data.lastMessage.receiverId,
+      read: data.lastMessage.read,
+      timestamp: data.lastMessage.timestamp,
+    },
+  };
+};

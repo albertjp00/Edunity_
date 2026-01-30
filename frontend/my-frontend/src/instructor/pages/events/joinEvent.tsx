@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import MeetingRoom from "../../../eventMeeting/meetingRoom";
-import instructorApi from "../../../api/instructorApi";
 import { toast } from "react-toastify";
+import { eventJoin } from "../../services/eventsServices";
 
 const InstructorEvent: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
@@ -19,16 +19,16 @@ const InstructorEvent: React.FC = () => {
     const joinEvent = async () => {
       if (!eventId) return;
       try {
-        const { data } = await instructorApi.patch(`/instructor/joinEvent/${eventId}`);
-        if (data.success) {
-          setMeetingLink(data.meetingLink || eventId); 
-          console.log('dadaaadadad',data);
+        const res = await eventJoin(eventId)
+        if(!res) return
+        if (res.data.success) {
+          setMeetingLink(res.data.meetingLink || eventId); 
+          console.log('dadaaadadad',res.data);
           
         } else {
-          // alert(data.message || "Failed to join event");
           toast.error("Failed to join event")
         }
-        setInstructor(data.instructorId)
+        setInstructor(res.data.instructorId)
       } catch (err) {
         console.error(err);
         // alert("Server error joining event");
@@ -40,20 +40,19 @@ const InstructorEvent: React.FC = () => {
 
     joinEvent();
 
-    const userInfo = async ()=>{
-      try {
+    // const userInfo = async ()=>{
+    //   try {
    
         
-        const userDetails  = await instructorApi.get('/instructor/profile')
-        // setName( userDetails.data.user.name)
-                console.log('details',userDetails);
-
-      } catch (error) {
-        console.log(error);
+    //     const userDetails  = await instructorApi.get('/instructor/profile')
         
-      }
-    }
-    userInfo()
+
+    //   } catch (error) {
+    //     console.log(error);
+        
+    //   }
+    // }
+    // userInfo()
   }, [eventId]);
 
   if (loading) return <p>Starting event...</p>;

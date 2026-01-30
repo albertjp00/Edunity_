@@ -229,3 +229,18 @@ export interface INotifications {
     notifications : INotification[]
     total : number
 }
+
+
+
+export interface LoginResult {
+    success: boolean;
+    message: string;
+    user?: IUser;
+    accessToken?: string;
+    refreshToken?: string;
+}
+
+export interface RegisterResult {
+    success: boolean;
+    message: string;
+}

@@ -1,4 +1,6 @@
+import { IInstructorDashboardDTO, IInstructorProfileDTO, INotificationDTO, InstructorDashboardRaw } from "../../dto/instructorDTO";
 import { IInstructorProfileService } from "../../interfacesServices.ts/instructorServiceInterface";
+import { mapDashboardToDTO, mapInstructorProfileToDTO, mapNotificationToDTO } from "../../mapper/instructor.mapper";
 import { IInstructor } from "../../models/instructor";
 import { INotification } from "../../models/notification";
 import { IWallet } from "../../models/wallet";
@@ -13,15 +15,13 @@ export class InstructorProfileService implements IInstructorProfileService {
   constructor(instructorRepository: InstructorRepository) {
     this.instructorRepository = instructorRepository
   }
-  async getProfile(userId: string) {
+  async getProfile(userId: string):Promise<IInstructorProfileDTO | null> {
     try {
       const user = await this.instructorRepository.findById(userId);
       if (!user) return null;
+      
 
-      // const { password, ...userWithoutPassword } = user.toObject();
-
-
-      return user;
+      return mapInstructorProfileToDTO(user)
     } catch (error) {
       console.error('ProfileService.getProfile error:', error);
       throw new Error('Failed to get profile');
@@ -72,23 +72,25 @@ export class InstructorProfileService implements IInstructorProfileService {
     }
   }
 
-    getNotifications = async(id : string):Promise<INotification[] | null>=>{
+    getNotifications = async(id : string):Promise<INotificationDTO[] | null>=>{
     try {
       const notifications = await this.instructorRepository.getNotifications(id)
-      return notifications
+      if(!notifications) return null
+      return notifications?.map(mapNotificationToDTO)
     } catch (error) {
       console.log(error);
       return null
     }
   }
 
-  getDashboard = async(id : string):Promise<void>=>{
+  getDashboard = async(id : string):Promise<InstructorDashboardRaw | null>=>{
     try {
       const data = await this.instructorRepository.getDashboard(id)
-      
-      return data
+      if(!data) return null 
+      return mapDashboardToDTO(data)
     } catch (error) {
       console.log(error);
+      return null
     }
   }
 
