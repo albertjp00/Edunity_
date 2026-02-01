@@ -96,6 +96,7 @@ import { INotifications } from "../interfacesServices.ts/userServiceInterfaces";
 import { JwtPayload } from "jsonwebtoken";
 import { FilterQuery, SortOrder } from "mongoose";
 import { CourseListAggregation } from "../dto/adminDTO";
+import { SubscriptionCourseDTO } from "../dto/userDTO";
 
 
 //authController
@@ -267,9 +268,13 @@ export interface IMyCourses {
   currentPage: number;
 }
 
+export interface ISubscriptionCoursesService {
+  courses: SubscriptionCourseDTO[]; 
+  totalPages: number;
+}
+
 export interface ISubscriptionCourses {
   courses: ICourse[];
-  page: number;
   totalPages: number;
 }
 

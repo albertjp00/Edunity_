@@ -196,6 +196,7 @@ export interface LoginDTO {
   success: boolean;
   message: string;
   accessToken: string;
+  refreshToken : string;
 }
 
 export interface TotalEnrolledDTO {

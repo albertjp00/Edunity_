@@ -49,7 +49,7 @@ const CourseDetailsUser: React.FC = () => {
     try {
       if(!id) return
       const res = await courseDetails(id)
-      // console.log(res);
+      console.log('res detauls',res);
       if(!res) return
       if(res.data.success=='exists'){
         navigate(`/user/viewMyCourse/${id}`,{replace:true})
@@ -125,15 +125,6 @@ const CourseDetailsUser: React.FC = () => {
 
       const rzp = new window.Razorpay(options);
 
-      // ALWAYS WORKS — best place for cleanup + cancel call
-      // rzp.on("modal.closed", async () => {
-      //   try {
-      //     await paymentCancel(courseId);
-      //   } finally {
-      //     setActivePayment(null);
-      //     localStorage.removeItem("payment_in_progress");
-      //   }
-      // });
 
       rzp.open();
     } catch (error) {
@@ -144,34 +135,6 @@ const CourseDetailsUser: React.FC = () => {
     }
   }
 
-
-  // const submitReview = async () => {
-  //   if (!hasAccess) {
-  //     toast.error("You must purchase the course before leaving a review!");
-  //     return;
-  //   }
-  //   if (rating === 0 || !comment.trim()) {
-  //     toast.warning("Please provide both a rating and comment.");
-  //     return;
-  //   }
-
-  //   try {
-  //     setLoadingReview(true);
-  //     const res = await api.post(`/user/course/${course?._id}/review`, {
-  //       rating,
-  //       comment,
-  //     });
-  //     toast.success("Review added!");
-  //     setReviews((prev) => [res.data.review, ...prev]);
-  //     setRating(0);
-  //     setComment("");
-  //   } catch (err) {
-  //     console.error(err);
-  //     toast.error("Failed to submit review.");
-  //   } finally {
-  //     setLoadingReview(false);
-  //   }
-  // };
 
   useEffect(()=>{
     const getFavourites = async()=>{

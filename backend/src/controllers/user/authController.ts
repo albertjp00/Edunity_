@@ -49,7 +49,6 @@ export class AuthController
 
       const result = await this._authService.loginRequest(email, password);
       
-      const loginMapped = LoginMapper(result)
     
       if (result.success) {
         res.cookie("refreshToken", result.refreshToken, {
@@ -60,8 +59,8 @@ export class AuthController
         });
 
         res.status(HttpStatus.OK).json({
-          message: loginMapped.message,
-          accessToken: loginMapped.accessToken,
+          message: result.message,
+          accessToken: result.accessToken,
         });
       
       }else {
@@ -104,7 +103,6 @@ export class AuthController
         res.json({ accessToken: newAccessToken });
       });
     } catch (error) {
-      // console.log(error);
       next(error)
     }
   };
@@ -136,7 +134,6 @@ export class AuthController
       const id = req.user?.id
       
       const isBlocked = await this._authService.isBlocked(id)
-      // console.log('blocked or not',isBlocked);
       
       res.json({ blocked: isBlocked })
     } catch (error) {
@@ -158,7 +155,6 @@ export class AuthController
         res.status(HttpStatus.BAD_REQUEST).json(result); // Failure
       }
     } catch (error) {
-      // console.error("Register error:", error);
       next(error)
       res
         .status(HttpStatus.BAD_REQUEST)
@@ -175,12 +171,11 @@ export class AuthController
         res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: StatusMessage.EMAIL_REQUIRED });
         return;
       }
-
       await this._authService.resendOtpRequest(email);
 
       res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.OTP_SENT });
     } catch (error) {
-      // console.error(error);
+      console.error(error);
       next(error)
       res.status(500).json({ success: false, message: StatusMessage.OTP_RESEND_FAILED });
     }
@@ -198,7 +193,7 @@ export class AuthController
         res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: result.message });
       }
     } catch (error) {
-      // console.log(error);
+      console.log(error);
       next(error)
     }
   };
@@ -265,7 +260,6 @@ export class AuthController
 
       res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.OTP_VERIFIED });
     } catch (error) {
-      // console.error(error);
       next(error)
       res.status(500).json({ message: StatusMessage.INTERNAL_SERVER_ERROR });
     }

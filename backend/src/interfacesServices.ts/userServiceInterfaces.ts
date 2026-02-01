@@ -1,5 +1,5 @@
 import { FilterQuery } from "mongoose";
-import { googleLoginResult, IMyCourses, IPaymentDetails, IRazorpayOrder, ISubmitQuiz, ISubscriptionCourses, SortOption, UserDTO } from "../interfaces/userInterfaces";
+import { googleLoginResult, IMyCourses, IPaymentDetails, IRazorpayOrder, ISubmitQuiz, ISubscriptionCoursesService, SortOption, UserDTO } from "../interfaces/userInterfaces";
 import { ICourse } from "../models/course";
 import { IEvent } from "../models/events";
 import { IFavourite } from "../models/favourites";
@@ -14,6 +14,8 @@ import { IWallet } from "../models/wallet";
 import { ISkills } from "../repositories/instructorRepository";
 import { ICourseDetails, IviewCourse } from "../services/user/userCourseService";
 import { IQuiz } from "../models/quiz";
+import { LoginDTO } from "../dto/adminDTO";
+import { CourseDetailsDTO, CourseDocument, MyCourseDTO } from "../dto/userDTO";
 
 export interface LoginResult {
     success: boolean;
@@ -35,7 +37,7 @@ export interface RegisterResult {
 
 export interface IUserAuthService {
 
-    loginRequest(email: string, password: string): Promise<LoginResult>;
+    loginRequest(email: string, password: string): Promise<LoginDTO | LoginResult>;
 
     isBlocked(id: string): Promise<boolean | null>;
 
@@ -89,7 +91,7 @@ export interface IUserCourseService {
         limit: number,
         sortOption: SortOption
     ): Promise<{
-        courses: ICourse[];
+        courses: CourseDetailsDTO[];
         totalCount: number;
         totalPages: number;
         currentPage: number;
@@ -129,9 +131,9 @@ export interface IUserCourseService {
     myCoursesRequest(
         id: string,
         page: number
-    ): Promise<{ populatedCourses: IMyCourse[]; result: IMyCourses } | null>;
+    ): Promise<{ populatedCourses: MyCourseDTO[]; result: IMyCourses } | null>;
 
-    mySubscriptionCoursesRequest(id:string , page:number):Promise<ISubscriptionCourses | null>
+    mySubscriptionCoursesRequest(id:string , page:number):Promise<ISubscriptionCoursesService | null>
 
     viewMyCourseRequest(
         id: string,

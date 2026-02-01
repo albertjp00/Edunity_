@@ -570,7 +570,6 @@ export class UserRepository extends BaseRepository<IUser>
       const total = await CourseModel.countDocuments({ accessType: "subscription" });
 
       return {
-        page,
         totalPages: Math.ceil(total / limit),
         courses,
       };

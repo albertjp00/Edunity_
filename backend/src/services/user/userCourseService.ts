@@ -1,4 +1,4 @@
-import { IMyCourses, IRazorpayOrder, SortOption } from '../../interfaces/userInterfaces';
+import { IMyCourses, IRazorpayOrder, ISubscriptionCoursesService, SortOption } from '../../interfaces/userInterfaces';
 import { ICourse } from '../../models/course';
 import { IFavourite } from '../../models/favourites';
 import { IInstructor } from '../../models/instructor';
@@ -17,6 +17,8 @@ import { StatusMessage } from '../../enums/statusMessage';
 import { IReview } from '../../models/review';
 import { IReport } from '../../models/report';
 import { FilterQuery } from 'mongoose';
+import { mapAllCourseToDTO, mapMyCoursesListToDTO, mapSubscriptionCourseToDTO } from '../../mapper/user.mapper';
+import { MyCourseDTO } from '../../dto/userDTO';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -63,10 +65,6 @@ export class UserCourseService implements IUserCourseService {
     const totalCourses = await this.userRepository.countCourses();
     const skills = await this.userRepository.findSkills();
 
-
-    // console.log('courses', courses);
-
-
     return {
       courses,
       skills,
@@ -84,8 +82,11 @@ export class UserCourseService implements IUserCourseService {
 
     const totalCount = await this.userRepository.countAllCourses(query);
 
+    console.log('get all courses',courses);
+  
+
     return {
-      courses,
+      courses :courses.map(mapAllCourseToDTO),
       totalCount,
       totalPages: Math.ceil(totalCount / limit),
       currentPage: page,
@@ -93,12 +94,17 @@ export class UserCourseService implements IUserCourseService {
   }
 
 
-  mySubscriptionCoursesRequest = async (id: string, page: number) => {
+  mySubscriptionCoursesRequest = async (id: string, page: number):Promise<ISubscriptionCoursesService | null> => {
     try {
-      const courses = await this.userRepository.getSubscriptionCourses(id, page)
-      console.log('result',courses);
+      const result = await this.userRepository.getSubscriptionCourses(id, page)
+      if(!result) return null
       
-      return courses
+      const courses = result?.courses
+
+      const totalPages = result?.totalPages
+        console.log(courses[0]?.modules);
+        
+      return {courses : courses?.map(mapSubscriptionCourseToDTO) , totalPages}
     } catch (error) {
       console.log(error);
       return null
@@ -132,6 +138,7 @@ export class UserCourseService implements IUserCourseService {
       if (myCourse) {
         hasAccess = true
       }
+      
 
       const instructor = await this.instructorRepository.findById(course?.instructorId as string);
       return {
@@ -322,11 +329,10 @@ export class UserCourseService implements IUserCourseService {
 
 
 
-  myCoursesRequest = async (id: string, page: number): Promise<{ populatedCourses: IMyCourse[], result: IMyCourses } | null> => {
+  myCoursesRequest = async (id: string, page: number): Promise<{ populatedCourses: MyCourseDTO[], result: IMyCourses } | null> => {
     try {
 
       const result = await this.userRepository.findMyCourses(id, page)
-      // console.log("courseIdd ", myCourses);
 
       if (!result.myCourses || result.myCourses.length === 0) return { populatedCourses: [], result };
       const populatedCourses = await Promise.all(
@@ -339,7 +345,11 @@ export class UserCourseService implements IUserCourseService {
         })
       );
 
-      return { populatedCourses, result };
+
+      console.log('populated ',populatedCourses);
+      const mappedCourses = mapMyCoursesListToDTO(populatedCourses);
+
+      return { populatedCourses : mappedCourses, result };
 
     } catch (error) {
       console.log(error);

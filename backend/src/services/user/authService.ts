@@ -9,6 +9,8 @@ import { googleLoginResult, IUserRepository } from "../../interfaces/userInterfa
 import { IUserAuthService, LoginResult, RegisterResult } from "../../interfacesServices.ts/userServiceInterfaces";
 import { StatusMessage } from "../../enums/statusMessage";
 import { IUser } from "../../models/user";
+import { LoginMapper } from "../../mapper/user.mapper";
+import { LoginDTO } from "../../dto/adminDTO";
 
 dotenv.config();
 
@@ -27,7 +29,7 @@ export class AuthService implements IUserAuthService {
 
 
 
-    loginRequest = async (email: string, password: string): Promise<LoginResult> => {
+    loginRequest = async (email: string, password: string): Promise<LoginDTO | LoginResult> => {
         try {
             const user = await this.userRepository.findByEmail(email);
 
@@ -47,12 +49,11 @@ export class AuthService implements IUserAuthService {
             const accessToken = jwt.sign({ id: user._id }, secret, { expiresIn: "15m" });
             const refreshToken = jwt.sign({ id: user._id }, refresh, { expiresIn: "30m" });
 
-            return {
-                success: true,
-                message: StatusMessage.LOGIN_SUCCESS,
-                accessToken,
-                refreshToken,
-            };
+            const loginMapped = LoginMapper({ message: StatusMessage.LOGIN_SUCCESS,accessToken,refreshToken})
+
+
+
+            return loginMapped
         } catch (error) {
             console.error(error);
             return { success: false, message: StatusMessage.INTERNAL_SERVER_ERROR }; // ✅ safe fallback
