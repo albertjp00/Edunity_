@@ -113,6 +113,9 @@ export interface Favourite {
   _id: string;
   userId: string;
   courseId: string;
+  thumbnail : string;
+  title :string;
+  description : string;
   course: Course;
   progress: {
     completedModules: string[];

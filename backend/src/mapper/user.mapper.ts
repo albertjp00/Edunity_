@@ -1,5 +1,24 @@
-import { CourseDetailsDTO, CourseDocument, CourseWithAccessDTO, LoginDTO, MyCourseDTO, SubscriptionCourseDTO } from "../dto/userDTO";
+import { QuizDTO } from "../dto/instructorDTO";
+import {
+  CourseDetailsDTO,
+  CourseDocument,
+  CourseModuleDTO,
+  CourseViewDTO,
+  CourseWithAccessDTO,
+  FavCourseDTO,
+  FavoriteCourseDTO,
+  ICoursePopulated,
+  LoginDTO,
+  MyCourseDTO,
+  QuizUserDTO,
+  SubscriptionCourseDTO,
+  UserInstructorDTO,
+} from "../dto/userDTO";
 import { UserDTO } from "../interfaces/userInterfaces";
+import { IFavourites, IQuizService } from "../interfacesServices.ts/userServiceInterfaces";
+import { IFavourite } from "../models/favourites";
+import { IInstructor } from "../models/instructor";
+import { IQuiz } from "../models/quiz";
 import { IUser } from "../models/user";
 
 export const mapUserToDTO = (user: IUser): UserDTO => {
@@ -63,19 +82,17 @@ export const mapAllCourseToDTO = (course: CourseDocument): CourseDetailsDTO => {
     totalEnrolled: course.totalEnrolled,
     createdAt: course.createdAt,
     thumbnail: course.thumbnail,
-    blocked : course.blocked,
+    blocked: course.blocked,
     moduleCount: course.moduleCount,
     instructorName: course.instructorName,
     instructorImage: course.instructorImage,
   };
 };
 
-
-
 export const mapCourseWithAccessToDTO = (
   course: any,
   hasAccess: boolean,
-  completedModules: string[]
+  completedModules: string[],
 ): CourseWithAccessDTO => {
   const rawCourse = course.toObject?.() || course;
 
@@ -98,7 +115,7 @@ export const mapCourseWithAccessToDTO = (
       id: module._id.toString(),
       title: module.title,
       videoUrl: module.videoUrl,
-      content: module.content
+      content: module.content,
     })),
 
     instructor: {
@@ -109,15 +126,13 @@ export const mapCourseWithAccessToDTO = (
       bio: rawCourse.instructor.bio,
       education: rawCourse.instructor.education,
       work: rawCourse.instructor.work,
-      skills: rawCourse.instructor.skills
+      skills: rawCourse.instructor.skills,
     },
 
     hasAccess,
-    completedModules
+    completedModules,
   };
 };
-
-
 
 export const mapMyCourseToDTO = (myCourse: any): MyCourseDTO => {
   const raw = myCourse.toObject?.() || myCourse;
@@ -142,20 +157,18 @@ export const mapMyCourseToDTO = (myCourse: any): MyCourseDTO => {
       level: course.level,
       category: course.category,
       totalEnrolled: course.totalEnrolled,
-      accessType: course.accessType
-    }
+      accessType: course.accessType,
+    },
   };
 };
-
 
 export const mapMyCoursesListToDTO = (courses: any[]) => {
   return courses.map(mapMyCourseToDTO);
 };
 
-
-
-
-export const mapSubscriptionCourseToDTO = (course: any): SubscriptionCourseDTO => {
+export const mapSubscriptionCourseToDTO = (
+  course: any,
+): SubscriptionCourseDTO => {
   const raw = course.toObject?.() || course;
 
   return {
@@ -165,11 +178,149 @@ export const mapSubscriptionCourseToDTO = (course: any): SubscriptionCourseDTO =
     price: raw.price,
     skills: raw.skills,
     level: raw.level,
-    modules : raw.modules,
+    modules: raw.modules,
     category: raw.category,
     totalEnrolled: raw.totalEnrolled,
     accessType: raw.accessType,
     thumbnail: raw.thumbnail,
-    createdAt: raw.createdAt
+    createdAt: raw.createdAt,
+  };
+};
+
+export const mapCourseToViewDTO = (course: any): CourseViewDTO => {
+  return {
+    _id: course._id.toString(),
+    instructorId: course.instructorId,
+    title: course.title,
+    description: course.description,
+    thumbnail: course.thumbnail,
+    price: course.price,
+    skills: course.skills ?? [],
+    level: course.level,
+    category: course.category,
+    accessType: course.accessType,
+    totalEnrolled: course.totalEnrolled ?? 0,
+    onPurchase: course.onPurchase ?? false,
+    blocked: course.blocked ?? false,
+    createdAt: course.createdAt,
+    reviewCount: course.review?.length ?? 0,
+
+    modules: (course.modules ?? []).map(
+      (module: any): CourseModuleDTO => ({
+        title: module.title,
+        id: module._id.toString(),
+        videoUrl: module.videoUrl,
+      }),
+    ),
+  };
+};
+
+export const mapUserInstructorDto = (
+  instructor: IInstructor,
+): UserInstructorDTO => {
+  return {
+    name: instructor.name,
+    expertise: instructor.expertise ?? "",
+    profileImage: instructor.profileImage ?? "",
+  };
+};
+
+export const mapFavoriteToDTO = (fav: IFavourites): FavoriteCourseDTO => {
+  const { course } = fav;
+
+  return {
+    _id: fav._id.toString(),
+    userId: fav.userId,
+    courseId: fav.courseId,
+    course: {
+      _id: course._id.toString(),
+      title: course.title,
+      description: course.description ?? "",
+      thumbnail: course.thumbnail ?? "",
+      price: course.price ?? 0,
+      skills: course.skills ?? [],
+      level: course.level ?? "",
+      modules: course.modules ?? [],
+      totalEnrolled: course.totalEnrolled ?? 0,
+      category: course.category,
+      accessType: course.accessType,
+      onPurchase: course.onPurchase,
+      blocked: course.blocked,
+      createdAt: course.createdAt!,
+    },
+  };
+};
+
+export const mapFavCourseToDTO = (course: ICoursePopulated): FavCourseDTO => {
+  return {
+    _id: course._id.toString(),
+    instructorId: course.instructorId,
+    title: course.title,
+    description: course.description,
+    thumbnail: course.thumbnail,
+    price: course.price,
+    skills: course.skills,
+    modules: course.modules.map((m) => ({
+      _id: m._id.toString(),
+      title: m.title,
+      content: m.content,
+      ...(m.videoUrl ? { videoUrl: m.videoUrl } : {}),
+    })),
+
+    totalEnrolled: course.totalEnrolled,
+    createdAt: course.createdAt,
+    level: course.level,
+    category: course.category,
+    blocked: course.blocked,
+    accessType: course.accessType,
+    onPurchase: course.onPurchase,
+    instructor: {
+  _id: course.instructor._id.toString(),
+  name: course.instructor.name,
+  email: course.instructor.email,
+  expertise: course.instructor.expertise,
+  KYCApproved: course.instructor.KYCApproved,
+  joinedAt: course.instructor.joinedAt,
+  KYCstatus: course.instructor.KYCstatus,
+  blocked: course.instructor.blocked,
+  skills: course.instructor.skills,
+
+  ...(course.instructor.profileImage
+    ? { profileImage: course.instructor.profileImage }
+    : {}),
+
+  ...(course.instructor.bio
+    ? { bio: course.instructor.bio }
+    : {}),
+
+  ...(course.instructor.education
+    ? { education: course.instructor.education }
+    : {}),
+
+  ...(course.instructor.work
+    ? { work: course.instructor.work }
+    : {}),
+},
+
+    hasAccess: course.hasAccess,
+    completedModules: course.completedModules.map((id) => id.toString()),
+  };
+};
+
+
+
+export const mapQuizToDTO = (quiz: IQuizService): QuizUserDTO => {
+  return {
+    _id: quiz._id.toString(),
+    courseId: quiz.courseId,
+    title: quiz.title,
+    questions: quiz.questions.map((q) => ({
+  id: q._id.toString(),
+  question: q.question,
+  options: q.options,
+  correctAnswer: q.correctAnswer,
+  points: q.points,
+})),
+
   };
 };

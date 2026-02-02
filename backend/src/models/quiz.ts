@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Types ,Document, Schema } from "mongoose";
 
 export interface IOption {
   text: string;
@@ -14,6 +14,7 @@ export interface IQuestion {
 
 
 export interface IQuiz extends Document {
+  _id : Types.ObjectId
   courseId: string;
   title: string;
   questions: IQuestion[];

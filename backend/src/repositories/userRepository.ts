@@ -85,9 +85,9 @@ export class UserRepository extends BaseRepository<IUser>
     return { pay, total, totalPages, currentPage: page }
   }
 
-  async getCourse(id: string): Promise<ICourse | null> {
-    return await CourseModel.findById(id);
-  }
+    async getCourse(id: string): Promise<ICourse | null> {
+      return await CourseModel.findById(id);
+    }
 
 
   async onPurchase(id: string, value: boolean): Promise<ICourse | null> {
@@ -242,7 +242,7 @@ export class UserRepository extends BaseRepository<IUser>
 
 
   async findInstructors(): Promise<IInstructor[] | null> {
-    return await InstructorModel.find()
+    return await InstructorModel.find().limit(4)
   }
 
 
@@ -353,13 +353,25 @@ export class UserRepository extends BaseRepository<IUser>
     const data = await MyCourseModel.findOne({
       courseId: myCourseId,
       userId: id,
-    });
-    console.log(myCourseId , id);
+    })
+    if(!data) return null
+    
+    if(data.cancelCourse){
+    const date = new Date()
+    const diffTime = date.getTime() - data?.createdAt.getTime()
+    const diffDays = diffTime / (1000 * 60 * 60 * 24)
+
+    if(diffDays > 7){
+       data.cancelCourse = false
+       await data.save()
+    }
+  }
+
     return data;
   }
 
 
-  async updateProgress(userId: string, courseId: string, moduleTitle: string): Promise<IMyCourse | null> {
+  async updateProgress(userId: string, courseId: string, moduleTitle: string): Promise<boolean | null> {
     try {
       const course = await MyCourseModel.findOne({ userId, courseId });
 
@@ -373,8 +385,9 @@ export class UserRepository extends BaseRepository<IUser>
         course.cancelCourse = false;
         await course.save();
       }
-
-      return course;
+      console.log('update progress ',course);
+      
+      return true;
     } catch (error) {
       console.error("Update progress error:", error);
       return null;
@@ -400,8 +413,6 @@ export class UserRepository extends BaseRepository<IUser>
 
   async addReview(userId: string, userName: string, userImage: string, courseId: string, rating: number, comment: string): Promise<IReview> {
     try {
-      console.log('name =---------------- im age', userName, userImage);
-
       const review = await ReviewModel.findOneAndUpdate({ userId, courseId },
         { $set: { rating, comment }, $setOnInsert: { userId, courseId, userName, userImage } }, { new: true, upsert: true })
 

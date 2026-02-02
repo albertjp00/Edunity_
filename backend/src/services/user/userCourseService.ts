@@ -1,46 +1,52 @@
-import { IMyCourses, IRazorpayOrder, ISubscriptionCoursesService, SortOption } from '../../interfaces/userInterfaces';
-import { ICourse } from '../../models/course';
-import { IFavourite } from '../../models/favourites';
-import { IInstructor } from '../../models/instructor';
-import { IMyCourse, IProgress } from '../../models/myCourses';
-import { AdminRepository } from '../../repositories/adminRepositories';
-import { InstructorRepository } from '../../repositories/instructorRepository';
-import { UserRepository } from '../../repositories/userRepository';
-import razorpay from '../../utils/razorpay';
-import crypto from 'crypto'
+import {
+  IMyCourses,
+  IRazorpayOrder,
+  ISubscriptionCoursesService,
+  SortOption,
+} from "../../interfaces/userInterfaces";
+import { ICourse } from "../../models/course";
+import { IFavourite } from "../../models/favourites";
+import { IInstructor } from "../../models/instructor";
+import { IMyCourse, IProgress } from "../../models/myCourses";
+import { AdminRepository } from "../../repositories/adminRepositories";
+import { InstructorRepository } from "../../repositories/instructorRepository";
+import { UserRepository } from "../../repositories/userRepository";
+import razorpay from "../../utils/razorpay";
+import crypto from "crypto";
 import path from "path";
 import { fileURLToPath } from "url";
-import { generateCertificate } from '../../utils/certificate';
-import { generateSignedUrl } from '../../utils/getSignedUrl';
-import { IUserCourseService } from '../../interfacesServices.ts/userServiceInterfaces';
-import { StatusMessage } from '../../enums/statusMessage';
-import { IReview } from '../../models/review';
-import { IReport } from '../../models/report';
-import { FilterQuery } from 'mongoose';
-import { mapAllCourseToDTO, mapMyCoursesListToDTO, mapSubscriptionCourseToDTO } from '../../mapper/user.mapper';
-import { MyCourseDTO } from '../../dto/userDTO';
+import { generateCertificate } from "../../utils/certificate";
+import { generateSignedUrl } from "../../utils/getSignedUrl";
+import {
+  IFavourites,
+  IUserCourseService,
+  IviewCourse,
+} from "../../interfacesServices.ts/userServiceInterfaces";
+import { StatusMessage } from "../../enums/statusMessage";
+import { IReview } from "../../models/review";
+import { IReport } from "../../models/report";
+import { FilterQuery } from "mongoose";
+import {
+  mapAllCourseToDTO,
+  mapCourseToViewDTO,
+  mapFavoriteToDTO,
+  mapMyCoursesListToDTO,
+  mapQuizToDTO,
+  mapSubscriptionCourseToDTO,
+  mapUserInstructorDto,
+} from "../../mapper/user.mapper";
+import {
+  FavoriteCourseDTO,
+  MyCourseDTO,
+  QuizUserDTO,
+  UserInstructorDTO,
+} from "../../dto/userDTO";
 
 const __filename = fileURLToPath(import.meta.url);
 
-
-
 export interface ICourseDetails extends ICourse {
-  instructor: IInstructor | null;
   hasAccess: boolean;
-  completedModules: string[];
 }
-
-
-export interface IviewCourse {
-  course: ICourse,
-  instructor: IInstructor
-  progress: IProgress
-  cancelCourse: boolean
-  quizExists: boolean
-  enrolledAt: Date
-  review: IReview[] | null
-}
-
 
 export class UserCourseService implements IUserCourseService {
   private userRepository: UserRepository;
@@ -50,12 +56,11 @@ export class UserCourseService implements IUserCourseService {
   constructor(
     userRepository: UserRepository,
     instructorRepository: InstructorRepository,
-    adminRepository: AdminRepository) {
-
+    adminRepository: AdminRepository,
+  ) {
     this.userRepository = userRepository;
     this.instructorRepository = instructorRepository;
-    this.adminRepository = adminRepository
-
+    this.adminRepository = adminRepository;
   }
 
   async getCourses(page: number, limit: number) {
@@ -73,79 +78,89 @@ export class UserCourseService implements IUserCourseService {
     };
   }
 
-
-  async getAllCourses(query: FilterQuery<ICourse>, page: number, limit: number, sortOption: SortOption) {
+  async getAllCourses(
+    query: FilterQuery<ICourse>,
+    page: number,
+    limit: number,
+    sortOption: SortOption,
+  ) {
     const skip = (page - 1) * limit;
 
-
-    const courses = await this.userRepository.getAllCourses(query, skip, limit, sortOption);
+    const courses = await this.userRepository.getAllCourses(
+      query,
+      skip,
+      limit,
+      sortOption,
+    );
 
     const totalCount = await this.userRepository.countAllCourses(query);
 
-    console.log('get all courses',courses);
-  
-
     return {
-      courses :courses.map(mapAllCourseToDTO),
+      courses: courses.map(mapAllCourseToDTO),
       totalCount,
       totalPages: Math.ceil(totalCount / limit),
       currentPage: page,
     };
   }
 
-
-  mySubscriptionCoursesRequest = async (id: string, page: number):Promise<ISubscriptionCoursesService | null> => {
+  mySubscriptionCoursesRequest = async (
+    id: string,
+    page: number,
+  ): Promise<ISubscriptionCoursesService | null> => {
     try {
-      const result = await this.userRepository.getSubscriptionCourses(id, page)
-      if(!result) return null
-      
-      const courses = result?.courses
+      const result = await this.userRepository.getSubscriptionCourses(id, page);
+      if (!result) return null;
 
-      const totalPages = result?.totalPages
-        console.log(courses[0]?.modules);
-        
-      return {courses : courses?.map(mapSubscriptionCourseToDTO) , totalPages}
+      const courses = result?.courses;
+
+      const totalPages = result?.totalPages;
+      console.log(courses[0]?.modules);
+
+      return { courses: courses?.map(mapSubscriptionCourseToDTO), totalPages };
     } catch (error) {
       console.log(error);
-      return null
+      return null;
     }
-  }
+  };
 
-
-
-
-  fetchCourseDetails = async (userId: string, courseId: string): Promise<ICourseDetails | string | null> => {
+  fetchCourseDetails = async (
+    userId: string,
+    courseId: string,
+  ): Promise<ICourseDetails | string | null> => {
     try {
-      let hasAccess = false
-      const myCourse: IMyCourse | null = await this.userRepository.getCourseDetails(userId, courseId);
+      let hasAccess = false;
+      const myCourse: IMyCourse | null =
+        await this.userRepository.getCourseDetails(userId, courseId);
 
       const completedModules = myCourse?.progress?.completedModules || [];
 
       if (myCourse) {
-        return 'myCourseExists'
+        return "myCourseExists";
       }
 
-      const course= await this.userRepository.getCourse(courseId);
-      if(!course) return null
+      const course = await this.userRepository.getCourse(courseId);
+      if (!course) return null;
 
-      if (course?.accessType == 'subscription') {
-        const userSubscription = await this.userRepository.getSubscriptionActive(userId)
+      if (course?.accessType == "subscription") {
+        const userSubscription =
+          await this.userRepository.getSubscriptionActive(userId);
         if (userSubscription) {
-          hasAccess = true
+          hasAccess = true;
         }
       }
 
       if (myCourse) {
-        hasAccess = true
+        hasAccess = true;
       }
-      
 
-      const instructor = await this.instructorRepository.findById(course?.instructorId as string);
+      const instructor = await this.instructorRepository.findById(
+        course?.instructorId as string,
+      );
       return {
         ...(course.toObject?.() || course),
         instructor,
         hasAccess,
-        completedModules
+        completedModules,
       };
     } catch (error) {
       console.log(error);
@@ -153,8 +168,10 @@ export class UserCourseService implements IUserCourseService {
     }
   };
 
-
-  buyCourseRequest = async (userId: string, courseId: string) : Promise<IRazorpayOrder> => {
+  buyCourseRequest = async (
+    userId: string,
+    courseId: string,
+  ): Promise<IRazorpayOrder> => {
     try {
       const course = await this.userRepository.getCourse(courseId);
 
@@ -162,7 +179,7 @@ export class UserCourseService implements IUserCourseService {
         throw new Error(StatusMessage.COURSE_NOT_FOUND);
       }
       if (course.onPurchase) {
-        throw new Error(StatusMessage.PAYMENT_ALREADY_PROGRESS)
+        throw new Error(StatusMessage.PAYMENT_ALREADY_PROGRESS);
       }
 
       const options = {
@@ -174,10 +191,9 @@ export class UserCourseService implements IUserCourseService {
 
       const order = await razorpay.orders.create(options);
 
-      await this.userRepository.onPurchase(courseId, true)
+      await this.userRepository.onPurchase(courseId, true);
 
       return order;
-
     } catch (error) {
       console.error(error);
       throw error;
@@ -186,37 +202,37 @@ export class UserCourseService implements IUserCourseService {
 
   cancelPayment = async (courseId: string): Promise<void> => {
     try {
-      const result = await this.userRepository.cancelPurchase(courseId)
+      const result = await this.userRepository.cancelPurchase(courseId);
     } catch (error) {
       console.log(error);
-
     }
-  }
+  };
 
-
-
-  verifyPaymentRequest = async (razorpay_order_id: string, razorpay_payment_id: string,
-    razorpay_signature: string, courseId: string, userId: string): Promise<{ success: boolean; message: string }> => {
+  verifyPaymentRequest = async (
+    razorpay_order_id: string,
+    razorpay_payment_id: string,
+    razorpay_signature: string,
+    courseId: string,
+    userId: string,
+  ): Promise<{ success: boolean; message: string }> => {
     try {
-
       const sign = razorpay_order_id + "|" + razorpay_payment_id;
       const expectedSign = crypto
         .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
         .update(sign.toString())
         .digest("hex");
 
-
       if (razorpay_signature === expectedSign) {
-        const course = await this.userRepository.getCourse(courseId)
+        const course = await this.userRepository.getCourse(courseId);
 
         if (!course) {
           return { success: false, message: StatusMessage.COURSE_NOT_FOUND };
         }
-        const updateEnrolled = await this.userRepository.buyCourse(courseId)
+        const updateEnrolled = await this.userRepository.buyCourse(courseId);
 
         await this.userRepository.addMyCourse(userId, course);
 
-        const instructorId = course.instructorId as string
+        const instructorId = course.instructorId as string;
 
         const ADMIN_COMMISSION_RATE = 0.2;
         const coursePrice = course.price ?? 0;
@@ -225,8 +241,13 @@ export class UserCourseService implements IUserCourseService {
         const instructorEarning = coursePrice - adminEarning;
 
         //adminEarnings
-        const adminEarningsUpdate = await this.adminRepository.updateEarnings(courseId, coursePrice, instructorId,
-          instructorEarning, adminEarning)
+        const adminEarningsUpdate = await this.adminRepository.updateEarnings(
+          courseId,
+          coursePrice,
+          instructorId,
+          instructorEarning,
+          adminEarning,
+        );
 
         //   const wallet = await this.instructorRepository.addToWallet(instructorId, {
         //   type: "credit",
@@ -235,14 +256,26 @@ export class UserCourseService implements IUserCourseService {
         //   description: `Earnings of course: ${course.title}`,
         // });
 
-        const courseName = course.title
-        const payment = await this.userRepository.userPayment(userId, courseId, courseName, coursePrice)
+        const courseName = course.title;
+        const payment = await this.userRepository.userPayment(
+          userId,
+          courseId,
+          courseName,
+          coursePrice,
+        );
 
         //notification
-        const title = "Course Purchased"
-        const message = `You have successfully purchased the course "${course?.title}`
-        const notification = await this.userRepository.sendNotification(userId, title, message)
-        const onPurchase = await this.userRepository.onPurchase(courseId, false)
+        const title = "Course Purchased";
+        const message = `You have successfully purchased the course "${course?.title}`;
+        const notification = await this.userRepository.sendNotification(
+          userId,
+          title,
+          message,
+        );
+        const onPurchase = await this.userRepository.onPurchase(
+          courseId,
+          false,
+        );
 
         return { success: true, message: StatusMessage.COURSE_ADDED };
       } else {
@@ -250,18 +283,18 @@ export class UserCourseService implements IUserCourseService {
       }
     } catch (error) {
       console.log(error);
-      return { success: false, message: StatusMessage.PAYMENT_VERIFICATION_FAILURE }
-
+      return {
+        success: false,
+        message: StatusMessage.PAYMENT_VERIFICATION_FAILURE,
+      };
     }
-
-  }
-
+  };
 
   //subscription
   buySubscriptionRequest = async (userId: string) => {
     try {
       const options = {
-        amount: 39900,  // ₹399
+        amount: 39900, // ₹399
         currency: "INR",
         receipt: `subscription_${Date.now()}`,
         notes: { userId },
@@ -269,21 +302,17 @@ export class UserCourseService implements IUserCourseService {
 
       const order = await razorpay.orders.create(options);
       return order;
-
     } catch (error) {
       console.error(error);
       throw error;
     }
   };
 
-
-
-
   verifySubscriptionPaymentRequest = async (
     razorpay_order_id: string,
     razorpay_payment_id: string,
     razorpay_signature: string,
-    userId: string
+    userId: string,
   ): Promise<{ success: boolean; message: string }> => {
     try {
       const sign = razorpay_order_id + "|" + razorpay_payment_id;
@@ -301,97 +330,87 @@ export class UserCourseService implements IUserCourseService {
         startDate: new Date(),
         endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 days
         paymentId: razorpay_payment_id,
-        orderId: razorpay_order_id
-      }
-
-      console.log('verify service ', data);
-
-
+        orderId: razorpay_order_id,
+      };
 
       await this.userRepository.updateSubscription(userId, data);
 
       await this.userRepository.sendNotification(
         userId,
         "Subscription Activated",
-        "Your premium subscription is now active!"
+        "Your premium subscription is now active!",
       );
 
       return { success: true, message: "Subscription Activated" };
-
     } catch (error) {
       console.error(error);
       return { success: false, message: "Subscription Verification Failed" };
     }
   };
 
-
-
-
-
-
-  myCoursesRequest = async (id: string, page: number): Promise<{ populatedCourses: MyCourseDTO[], result: IMyCourses } | null> => {
+  myCoursesRequest = async (
+    id: string,
+    page: number,
+  ): Promise<{
+    populatedCourses: MyCourseDTO[];
+    result: IMyCourses;
+  } | null> => {
     try {
+      const result = await this.userRepository.findMyCourses(id, page);
 
-      const result = await this.userRepository.findMyCourses(id, page)
-
-      if (!result.myCourses || result.myCourses.length === 0) return { populatedCourses: [], result };
+      if (!result.myCourses || result.myCourses.length === 0)
+        return { populatedCourses: [], result };
       const populatedCourses = await Promise.all(
         result.myCourses.map(async (mc) => {
-          const course = await this.userRepository.getCourse(mc.courseId.toString());
+          const course = await this.userRepository.getCourse(
+            mc.courseId.toString(),
+          );
           return {
-            ...mc.toObject?.() || mc,
+            ...(mc.toObject?.() || mc),
             course,
           };
-        })
+        }),
       );
 
-
-      console.log('populated ',populatedCourses);
       const mappedCourses = mapMyCoursesListToDTO(populatedCourses);
 
-      return { populatedCourses : mappedCourses, result };
-
+      return { populatedCourses: mappedCourses, result };
     } catch (error) {
       console.log(error);
-      return null
+      return null;
     }
-  }
+  };
 
   viewMyCourseRequest = async (
     id: string,
-    myCourseId: string
+    myCourseId: string,
   ): Promise<IviewCourse | null> => {
     try {
-      console.log('service myCourse viewMyCourse');
-
       const myCourse = await this.userRepository.viewMyCourse(id, myCourseId);
-      console.log('myc ourse ',myCourse);
-      
+
       if (!myCourse) return null;
-      const progress = myCourse.progress
-      const cancelCourse = myCourse.cancelCourse
-      const enrolledAt = myCourse.createdAt
+      const progress = myCourse.progress;
+      const cancelCourse = myCourse.cancelCourse;
+      const enrolledAt = myCourse.createdAt;
 
-      const course = await this.userRepository.getCourse(myCourse.courseId.toString());
+      const course = await this.userRepository.getCourse(
+        myCourse.courseId.toString(),
+      );
       if (!course) return null;
-
 
       if (course.modules && course.modules.length > 0) {
         for (const module of course.modules) {
           const rawUrl = module.videoUrl;
 
           if (rawUrl) {
-
             let key: string | undefined;
 
             if (rawUrl.includes(".amazonaws.com/")) {
               const parts = rawUrl.split(".amazonaws.com/");
-              key = parts[1]?.split("?")[0]; 
+              key = parts[1]?.split("?")[0];
             } else {
-              key = rawUrl.split("?")[0]; 
+              key = rawUrl.split("?")[0];
             }
-            console.log("key", key);
-
             if (key) {
               module.videoUrl = await generateSignedUrl(key);
             }
@@ -399,47 +418,55 @@ export class UserCourseService implements IUserCourseService {
         }
       }
 
-
-
-      const instructor = await this.instructorRepository.findById(course.instructorId as string);
+      const instructor = await this.instructorRepository.findById(
+        course.instructorId as string,
+      );
       if (!instructor) return null;
 
-      const quiz = await this.userRepository.getQuiz(course.id)
+      const quiz = await this.userRepository.getQuiz(course.id);
       console.log(quiz);
-      let quizExists = false
+      let quizExists = false;
       if (quiz) {
-        quizExists = true
+        quizExists = true;
       }
 
-      const review = await this.userRepository.getReview(id, course.id)
+      const review = await this.userRepository.getReview(id, course.id);
 
-
-
-      return { course, review, instructor, progress, cancelCourse, quizExists, enrolledAt };
+      return {
+        course: mapCourseToViewDTO(course),
+        review,
+        instructor,
+        progress,
+        cancelCourse,
+        quizExists,
+        enrolledAt,
+      };
     } catch (error) {
       console.log(error);
       return null;
     }
   };
 
-
-
-  async updateProgress(userId: string, courseId: string, moduleTitle: string) {
-
+  async updateProgress(
+    userId: string,
+    courseId: string,
+    moduleTitle: string,
+  ): Promise<boolean | null> {
     try {
-      return await this.userRepository.updateProgress(userId, courseId, moduleTitle)
-
+      await this.userRepository.updateProgress(userId, courseId, moduleTitle);
+      return true;
     } catch (error) {
       console.log(error);
-      return null
+      return null;
     }
   }
 
-
   async getCertificateRequest(userId: string, courseId: string) {
     try {
-
-      const myCourse = await this.userRepository.findUserCourse(userId, courseId);
+      const myCourse = await this.userRepository.findUserCourse(
+        userId,
+        courseId,
+      );
 
       if (!myCourse) {
         return { success: false, message: StatusMessage.COURSE_NOT_FOUND };
@@ -452,7 +479,8 @@ export class UserCourseService implements IUserCourseService {
         const user = await this.userRepository.findById(userId);
 
         const totalModules = course?.modules?.length || 0;
-        const completedModules = myCourse?.progress?.completedModules?.length || 0;
+        const completedModules =
+          myCourse?.progress?.completedModules?.length || 0;
 
         if (completedModules < totalModules) {
           return {
@@ -465,7 +493,7 @@ export class UserCourseService implements IUserCourseService {
           user?.name || "Learner",
           course?.title || "Course",
           userId,
-          courseId
+          courseId,
         );
         const fileName = path.basename(filePath);
 
@@ -474,145 +502,148 @@ export class UserCourseService implements IUserCourseService {
       filePath = path.basename(filePath);
 
       return { filePath };
-
     } catch (error) {
       console.error(error);
       return { success: false, message: StatusMessage.ERROR_CERTIFICATE };
     }
   }
 
-  async addReview(userId: string, courseId: string, rating: number, review: string): Promise<IReview | null | string | undefined> {
-
+  async addReview(
+    userId: string,
+    courseId: string,
+    rating: number,
+    review: string,
+  ): Promise<IReview | null | string | undefined> {
     try {
-      console.log('in servire review');
+      console.log("in servire review");
 
-      const user = await this.userRepository.findById(userId)
+      const user = await this.userRepository.findById(userId);
       if (user) {
-        const userName = user.name
-        const userImage = user.profileImage || ''
+        const userName = user.name;
+        const userImage = user.profileImage || "";
 
-
-        let addedReview = await this.userRepository.addReview(userId, userName, userImage, courseId, rating, review)
-        return addedReview
-
+        let addedReview = await this.userRepository.addReview(
+          userId,
+          userName,
+          userImage,
+          courseId,
+          rating,
+          review,
+        );
+        return addedReview;
       }
-
-
-
     } catch (error) {
       console.log(error);
-      return null
+      return null;
     }
   }
 
-
-
-  async getInstructorsRequest(): Promise<IInstructor[] | null> {
-
+  async getInstructorsRequest(): Promise<UserInstructorDTO[] | null> {
     try {
-      const update = await this.userRepository.findInstructors()
+      const result = await this.userRepository.findInstructors();
+      if (!result) return null;
 
-      return update
+      return result?.map(mapUserInstructorDto);
     } catch (error) {
       console.log(error);
-      return null
+      return null;
     }
   }
 
-
-
-  async addtoFavourites(userId: string, courseId: string): Promise<string | null> {
+  async addtoFavourites(
+    userId: string,
+    courseId: string,
+  ): Promise<string | null> {
     try {
-      // console.log('add to fav');
-
-      const result = await this.userRepository.addtoFavourites(userId, courseId);
-
-      // if (result == 'existing') {
-      //   return result;
-      // }
-
-      return result
+      const result = await this.userRepository.addtoFavourites(
+        userId,
+        courseId,
+      );
+      return result;
     } catch (error) {
       console.log(error);
-      return null
-      // return { success: false, message: StatusMessage.INTERNAL_SERVER_ERROR };
+      return null;
     }
   }
 
-  async getFavourites(userId: string): Promise<IFavourite[] | null> {
+  async getFavorites(userId: string): Promise<FavoriteCourseDTO[] | null> {
     try {
-      console.log('get fav');
-
       const result = await this.userRepository.getFavourites(userId);
 
       if (!result || result.length === 0) return [];
       const populatedCourses = await Promise.all(
         result.map(async (mc) => {
-          const course = await this.userRepository.getCourse(mc.courseId.toString());
+          const course = await this.userRepository.getCourse(
+            mc.courseId.toString(),
+          );
           return {
-            ...mc.toObject?.() || mc,
+            ...(mc.toObject?.() || mc),
             course,
           };
-        })
+        }),
       );
-
-
-
-      return populatedCourses
+      return populatedCourses.map(mapFavoriteToDTO);
     } catch (error) {
       console.log(error);
-      return null
+      return null;
     }
   }
 
-  favCourseDetails = async (userId: string, courseId: string): Promise<ICourseDetails | boolean | null> => {
+  favCourseDetails = async (
+    userId: string,
+    courseId: string,
+  ): Promise<ICourseDetails | boolean | null> => {
     try {
-      // console.log();
-      let hasAccess = false
-      const myCourse = await this.userRepository.getCourseDetails(userId, courseId);
+      
+      let hasAccess = false;
+      const myCourse = await this.userRepository.getCourseDetails(
+        userId,
+        courseId,
+      );
       console.log(myCourse);
-      const favCourse = await this.userRepository.getFavCourseDetails(userId, courseId);
+      const favCourse = await this.userRepository.getFavCourseDetails(
+        userId,
+        courseId,
+      );
       if (!favCourse) {
-        return false
+        return false;
       }
-
 
       const course: any = await this.userRepository.getCourse(courseId);
       // console.log('myCoursessss', course);
 
-
       if (myCourse) {
-        hasAccess = true
+        hasAccess = true;
       }
 
-      const instructor = await this.instructorRepository.findById(course.instructorId);
+      const instructor = await this.instructorRepository.findById(
+        course.instructorId,
+      );
 
-      return {
-        ...(course.toObject?.() || course),
-        instructor,
-        hasAccess,
-        completedModules: []
-      };
+      
+
+      return hasAccess
     } catch (error) {
       console.log(error);
       return null;
     }
   };
 
-
-  getQuiz = async (courseId: string) => {
+  getQuiz = async (courseId: string):Promise<QuizUserDTO | null> => {
     try {
-      const quiz = await this.userRepository.getQuiz(courseId)
-      return quiz
+      const quiz = await this.userRepository.getQuiz(courseId);
+      console.log('quiz ',quiz);
+      if(!quiz) return null
+      
+      return mapQuizToDTO(quiz);
     } catch (error) {
       console.log(error);
-      return null
+      return null;
     }
-  }
+  };
 
-  submitQuiz = async (userId: string,courseId: string,answers: any) => {
+  submitQuiz = async (userId: string, courseId: string, answers: any) => {
     try {
-
       const quiz = await this.userRepository.getQuiz(courseId);
       console.log(quiz?.questions);
 
@@ -629,11 +660,19 @@ export class UserCourseService implements IUserCourseService {
       quiz.questions.forEach((q) => {
         totalPoints += q.points;
         const userAnswer = flatAnswers[q._id.toString()];
-        console.log("QID:", q._id.toString(), "Correct:", q.correctAnswer, "User:", userAnswer);
+        console.log(
+          "QID:",
+          q._id.toString(),
+          "Correct:",
+          q.correctAnswer,
+          "User:",
+          userAnswer,
+        );
 
         if (
           userAnswer &&
-          userAnswer.toString().trim().toLowerCase() === q.correctAnswer.toString().trim().toLowerCase()
+          userAnswer.toString().trim().toLowerCase() ===
+            q.correctAnswer.toString().trim().toLowerCase()
         ) {
           score += q.points;
         }
@@ -648,9 +687,11 @@ export class UserCourseService implements IUserCourseService {
     }
   };
 
-
   async cancelCourseRequest(userId: string, courseId: string): Promise<void> {
-    const enrollment = await this.userRepository.findUserCourse(userId, courseId);
+    const enrollment = await this.userRepository.findUserCourse(
+      userId,
+      courseId,
+    );
     if (!enrollment) throw new Error(StatusMessage.NOT_ENROLLED);
 
     const course = await this.userRepository.getCourse(courseId);
@@ -672,16 +713,19 @@ export class UserCourseService implements IUserCourseService {
     await this.userRepository.decreaseCourseEnrollment(courseId);
   }
 
-
-  reportCourseRequest = async (userId: string, courseId: string, report: IReport) => {
+  reportCourseRequest = async (
+    userId: string,
+    courseId: string,
+    report: IReport,
+  ) => {
     try {
-
-      const res = await this.userRepository.reportCourse(userId, courseId, report)
-
+      const res = await this.userRepository.reportCourse(
+        userId,
+        courseId,
+        report,
+      );
     } catch (error) {
       console.log(error);
-
     }
-  }
-
+  };
 }

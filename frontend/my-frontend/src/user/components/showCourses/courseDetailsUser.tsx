@@ -142,7 +142,7 @@ const CourseDetailsUser: React.FC = () => {
       if(!id) return
       const res = await fetchFavourites(id)
       if(!res) return
-      // console.log('favvv',res);
+      console.log('favvv',res);
       
       if(res.data.success){
         setFavourites(res.data.success)
@@ -238,12 +238,12 @@ const CourseDetailsUser: React.FC = () => {
               Reviews
             </button>
 
-            <button
+            {/* <button
               className={activeTab === "report" ? "active" : ""}
               onClick={() => setActiveTab("report")}
             >
               Report
-            </button>
+            </button> */}
           </div>
 
           {/* Tab content */}

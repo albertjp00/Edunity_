@@ -1,15 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./viewMyCourse.css";
-import { cancelCourse, getCertificate, submitReport, submitReview, updateProgress, viewMyCourse } from "../../services/courseServices";
+import {
+  cancelCourse,
+  getCertificate,
+  submitReport,
+  submitReview,
+  updateProgress,
+  viewMyCourse,
+} from "../../services/courseServices";
 import VideoPlayerUser from "../videoPlayer/videoPlayer";
 import { toast } from "react-toastify";
 import ConfirmModal from "../modal/modal";
-import type { ICourse, IInstructor, IMyCourse, IReport, IReview, User } from "../../interfaces";
+import type {
+  ICourse,
+  IInstructor,
+  IMyCourse,
+  IReport,
+  IReview,
+  User,
+} from "../../interfaces";
 import { getUserProfile } from "../../services/profileServices";
-
-
-
 
 const ViewMyCourse: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,9 +32,9 @@ const ViewMyCourse: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("overview");
   const [showModal, setShowModal] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
-  const [review, setReview] = useState<IReview[] | null>()
-  const [user, setUser] = useState<User | null>()
-  const [myReview, setMyReview] = useState<IReview | null>(null)
+  const [review, setReview] = useState<IReview[] | null>();
+  const [user, setUser] = useState<User | null>();
+  const [myReview, setMyReview] = useState<IReview | null>(null);
   // const [myReviewRating, setReviewRating] = useState<number | null>(null)
   // const [myReviewText, setReviewText] = useState<string | null>("")
   const [isEditingReview, setIsEditingReview] = useState(false);
@@ -31,12 +42,11 @@ const ViewMyCourse: React.FC = () => {
   const [reviewText, setReviewText] = useState<string>("");
   // const [loadingReview, setLoadingReview] = useState<boolean>(false);
   const [report, setReport] = useState<IReport>({
-  reason: "",
-  message: "",
-});
+    reason: "",
+    message: "",
+  });
 
   const navigate = useNavigate();
-
 
   const [canCancel, setCanCancel] = useState<boolean>(false);
 
@@ -49,7 +59,7 @@ const ViewMyCourse: React.FC = () => {
       const res = await viewMyCourse(id);
       if (!res) return;
 
-      console.log(res);
+      console.log("course", res);
 
       const fetchedMyCourse: IMyCourse = res.data.course;
       const fetchedInstructor: IInstructor = res.data.instructor;
@@ -57,62 +67,38 @@ const ViewMyCourse: React.FC = () => {
       setInstructor(fetchedInstructor);
       setCompletedModules(fetchedMyCourse.progress?.completedModules || []);
       setQuiz(res.data.quiz);
-      setReview(res.data.review)
-
-
-
+      setReview(res.data.review);
 
       const reviews = res.data.review || [];
-      if (!user) return
-      const hasMyReview = reviews.find((r: IReview) => r.userId === user.id
-      );
+      if (!user) return;
+      const hasMyReview = reviews.find((r: IReview) => r.userId === user.id);
 
       if (hasMyReview) {
         setMyReview(hasMyReview);
       }
       console.log(hasMyReview);
 
-
-
-
-      // const enrolledDate = new Date(fetchedMyCourse.enrolledAt);
-      // const now = new Date();
-      // const diffDays =
-      //   (now.getTime() - enrolledDate.getTime()) / (1000 * 60 * 60 * 24);
-
-      // const hasViewedMoreThanOne =
-      //   fetchedMyCourse.progress.completedModules.length > 1;
-
-      // setCanCancel(diffDays <= 10 && !hasViewedMoreThanOne);
-
-
-      setCanCancel(res.data.course.cancelCourse)
+      setCanCancel(res.data.course.cancelCourse);
     } catch (err) {
       console.error("Error fetching course:", err);
     }
   };
 
-
   const fetchUser = async () => {
     try {
-      const res = await getUserProfile()
-      if (!res) return
-      console.log('user', res);
+      const res = await getUserProfile();
+      if (!res) return;
+      console.log("user", res);
 
-      setUser(res.data.data)
+      setUser(res.data.data);
     } catch (error) {
       console.log(error);
-
     }
-  }
-
-
-
+  };
 
   useEffect(() => {
-    fetchUser()
-  }, [])
-
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -120,39 +106,34 @@ const ViewMyCourse: React.FC = () => {
     }
   }, [user]);
 
-
-
   const toggleModule = (index: number): void => {
     setExpandedModule(expandedModule === index ? null : index);
   };
 
-
   const markAsCompleted = async (moduleTitle: string): Promise<void> => {
     if (completedModules.includes(moduleTitle)) return;
     try {
-      console.log('marked as completed');
+      console.log("marked as completed");
 
-      if (!id) return
-      await updateProgress(id, moduleTitle)
+      if (!id) return;
+      await updateProgress(id, moduleTitle);
       setCompletedModules((prev) => [...prev, moduleTitle]);
-      setCanCancel(false)
+      setCanCancel(false);
     } catch (err) {
       console.error("Error updating progress:", err);
     }
   };
-
 
   const handleCancelClick = (courseId: string | null) => {
     setSelectedCourseId(courseId);
     setShowModal(true);
   };
 
-
   const confirmCancel = async () => {
     try {
       if (!selectedCourseId) return;
-      const res = await cancelCourse(selectedCourseId)
-      if (!res) return
+      const res = await cancelCourse(selectedCourseId);
+      if (!res) return;
       if (res.data.success) {
         toast.success("Course cancelled successfully!");
         navigate("/user/myCourses");
@@ -171,15 +152,12 @@ const ViewMyCourse: React.FC = () => {
     setSelectedCourseId(null);
   };
 
-
-  const gotoQuiz = (myCourseId: string) => {
+  const gotoQuiz = (myCourseId: string) => {    
     navigate(`/user/quiz/${myCourseId}`);
   };
 
-
   const [showCertificate, setShowCertificate] = useState(false);
   const [certificateUrl, setCertificateUrl] = useState<string | null>(null);
-
 
   const handleViewCertificate = async (id: string) => {
     try {
@@ -197,11 +175,7 @@ const ViewMyCourse: React.FC = () => {
     }
   };
 
-
-  //reviews 
-
-
-
+  //reviews
 
   const handleSubmitReview = async () => {
     if (rating === 0 || !reviewText.trim()) {
@@ -210,39 +184,34 @@ const ViewMyCourse: React.FC = () => {
     }
 
     try {
-      // setLoadingReview(true);
-      const courseId = course?._id
-      if (!courseId) return
-      const res = await submitReview(courseId, rating, reviewText)
-      // const res = await api.post("/user/review", {
-      //   courseId: course?._id,
-      //   rating,
-      //   review: reviewText,
-      // });
+      const courseId = course?._id;
+      if (!courseId) return;
+      const res = await submitReview(courseId, rating, reviewText);
 
-      if (!res) return
+      if (!res) return;
       console.log(res);
 
       if (res.data.success) {
         toast.success("Review submitted successfully!");
         setRating(0);
         setReviewText("");
-        setMyReview(res.data.result)
+        setMyReview(res.data.result);
 
-
-        const newReview = res.data.review
+        const newReview = res.data.review;
 
         setReview((prev) => {
           if (isEditingReview) {
-            return prev ? prev.map((r) => r.userId === newReview.userId ? newReview : r) : newReview
+            return prev
+              ? prev.map((r) => (r.userId === newReview.userId ? newReview : r))
+              : newReview;
           }
 
-          return prev ? [...prev, newReview] : [newReview]
-        })
-        setIsEditingReview(false)
-        setMyReview(newReview)
+          return prev ? [...prev, newReview] : [newReview];
+        });
+        setIsEditingReview(false);
+        setMyReview(newReview);
       } else if (!res.data.success) {
-        toast.error(res.data.message)
+        toast.error(res.data.message);
       }
     } catch (error) {
       console.error("Error submitting review:", error);
@@ -252,22 +221,18 @@ const ViewMyCourse: React.FC = () => {
     }
   };
 
-
-  const reportSubmit = async (e:React.FormEvent) => {
-    e.preventDefault()
+  const reportSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      if(!id || !report.reason) return
-      await submitReport(id , report);
+      if (!id || !report.reason) return;
+      await submitReport(id, report);
 
-      toast.success("report submitted")
-      setReport({reason : '' , message : ''})
+      toast.success("report submitted");
+      setReport({ reason: "", message: "" });
     } catch (error) {
       console.log(error);
-
     }
-  }
-
-
+  };
 
   if (!course) return <p>Loading...</p>;
 
@@ -277,7 +242,6 @@ const ViewMyCourse: React.FC = () => {
 
   return (
     <div className="course-details-wrapper">
-
       <div className="course-header">
         <h2>Course Details</h2>
         <p className="breadcrumb">Home / My Course</p>
@@ -320,7 +284,7 @@ const ViewMyCourse: React.FC = () => {
               className={activeTab === "report" ? "active" : ""}
               onClick={() => setActiveTab("report")}
             >
-             Report
+              Report
             </button>
           </div>
 
@@ -333,9 +297,9 @@ const ViewMyCourse: React.FC = () => {
 
                 <h4>What Will I Learn?</h4>
                 <p>
-                  You’ll learn everything from frontend to backend development including
-                  real-world projects and best practices to become a professional web
-                  developer.
+                  You’ll learn everything from frontend to backend development
+                  including real-world projects and best practices to become a
+                  professional web developer.
                 </p>
               </div>
 
@@ -366,7 +330,9 @@ const ViewMyCourse: React.FC = () => {
                                 {[1, 2, 3, 4, 5].map((star) => (
                                   <span
                                     key={star}
-                                    className={star <= r.rating ? "star filled" : "star"}
+                                    className={
+                                      star <= r.rating ? "star filled" : "star"
+                                    }
                                   >
                                     ★
                                   </span>
@@ -381,18 +347,18 @@ const ViewMyCourse: React.FC = () => {
 
                           {/* ✅ Edit button — top right */}
                           {myReview && r.userId === user?.id && (
-                            <button className="edit-review-btn"
+                            <button
+                              className="edit-review-btn"
                               onClick={() => {
                                 setIsEditingReview(true);
                                 setRating(myReview.rating);
                                 setReviewText(myReview.comment);
-                              }
-                              }>
+                              }}
+                            >
                               Edit
                             </button>
                           )}
                         </div>
-
 
                         <p className="review-comment">"{r.comment}"</p>
                       </div>
@@ -403,49 +369,40 @@ const ViewMyCourse: React.FC = () => {
                 </div>
               )}
 
+              {progressPercent === 100 && (!myReview || isEditingReview) && (
+                <div className="review-section">
+                  <h4>{myReview ? "Edit Your Review" : "Leave a Review"}</h4>
 
-              {progressPercent === 100 && (!myReview || isEditingReview) &&
-                (
-                  <div className="review-section">
-                    <h4>{myReview ? "Edit Your Review" : "Leave a Review"}</h4>
-
-                    <label>Rating:</label>
-                    <div className="star-rating">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <span
-                          key={star}
-                          onClick={() => setRating(star)}
-                          className={star <= rating ? "star filled" : "star"}
-                        >
-                          ★
-                        </span>
-                      ))}
-                    </div>
-
-                    <textarea
-                      placeholder="Write your review..."
-                      value={reviewText}
-                      onChange={(e) => setReviewText(e.target.value)}
-                      className="review-textarea"
-                    />
-
-                    <button
-                      className="submit-review-btn"
-                      onClick={handleSubmitReview}
-                    >
-                      {isEditingReview ? "Update Review" : "Submit Review"}
-                    </button>
+                  <label>Rating:</label>
+                  <div className="star-rating">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <span
+                        key={star}
+                        onClick={() => setRating(star)}
+                        className={star <= rating ? "star filled" : "star"}
+                      >
+                        ★
+                      </span>
+                    ))}
                   </div>
-                )}
 
+                  <textarea
+                    placeholder="Write your review..."
+                    value={reviewText}
+                    onChange={(e) => setReviewText(e.target.value)}
+                    className="review-textarea"
+                  />
+
+                  <button
+                    className="submit-review-btn"
+                    onClick={handleSubmitReview}
+                  >
+                    {isEditingReview ? "Update Review" : "Submit Review"}
+                  </button>
+                </div>
+              )}
             </>
           )}
-
-
-
-
-
-
 
           {/* CURRICULUM TAB */}
           {activeTab === "curriculum" && (
@@ -515,10 +472,8 @@ const ViewMyCourse: React.FC = () => {
                   🎓 View Certificate
                 </button>
               )}
-
             </div>
           )}
-
 
           {showCertificate && (
             <div className="certificate-modal-overlay">
@@ -534,11 +489,9 @@ const ViewMyCourse: React.FC = () => {
                   title="Course Certificate"
                   className="certificate-frame"
                 />
-
               </div>
             </div>
           )}
-
 
           {/* INSTRUCTOR TAB */}
           {activeTab === "instructor" && instructor && (
@@ -569,28 +522,37 @@ const ViewMyCourse: React.FC = () => {
             </div>
           )}
 
-
           {activeTab === "report" && (
             <div className="tab-content report-tab">
               <h3>Report this course</h3>
 
               <p className="report-subtext">
-                Help us keep the platform safe by reporting issues with this course.
+                Help us keep the platform safe by reporting issues with this
+                course.
               </p>
 
               <form className="report-form">
                 <label>Reason for reporting</label>
 
-                <select name="reason" value={report.reason} onChange={(e)=>setReport((prev)=>({...prev , reason:e.target.value}))} required>
-                  <option value="" >Select a reason</option>
+                <select
+                  name="reason"
+                  value={report.reason}
+                  onChange={(e) =>
+                    setReport((prev) => ({ ...prev, reason: e.target.value }))
+                  }
+                  required
+                >
+                  <option value="">Select a reason</option>
 
-                  <option value="misleading">Misleading course description</option>
+                  <option value="misleading">
+                    Misleading course description
+                  </option>
                   <option value="scam">Scam or fake course</option>
                   <option value="copyright">Copyright violation</option>
-                  <option value="inappropriate">Inappropriate or offensive content</option>
+                  <option value="inappropriate">
+                    Inappropriate or offensive content
+                  </option>
                   <option value="spam">Spam or promotional content</option>
-
-
                 </select>
 
                 <label>Additional details (optional)</label>
@@ -599,10 +561,16 @@ const ViewMyCourse: React.FC = () => {
                   value={report.message}
                   placeholder="Provide more details to help us review this course"
                   rows={4}
-                  onChange={(e)=>setReport((prev)=>({...prev , message:e.target.value}))}
+                  onChange={(e) =>
+                    setReport((prev) => ({ ...prev, message: e.target.value }))
+                  }
                 />
 
-                <button type="submit" onClick={reportSubmit} className="report-btn">
+                <button
+                  type="submit"
+                  onClick={reportSubmit}
+                  className="report-btn"
+                >
                   Submit Report
                 </button>
               </form>
@@ -641,7 +609,6 @@ const ViewMyCourse: React.FC = () => {
                 onConfirm={confirmCancel}
                 onCancel={cancelAction}
               />
-
 
               <div className="sidebar-stats">
                 <p>

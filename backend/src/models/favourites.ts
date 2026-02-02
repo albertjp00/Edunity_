@@ -1,8 +1,9 @@
-import mongoose, { Document, Schema} from "mongoose";
+import mongoose, {Types , Document, Schema} from "mongoose";
 
 
 
 export interface IFavourite extends Document {
+  _id : Types.ObjectId
   userId: string;
   courseId: string;
 }

@@ -107,7 +107,7 @@ router.post(ROUTES.COURSES.ADD_REVIEW, authMiddleware, courseController.addRevie
 
 router.get(ROUTES.COURSES.MY_COURSES, authMiddleware, courseController.myCourses);
 router.get(ROUTES.COURSES.GET_INSTRUCTORS, authMiddleware, courseController.getInstructors);
-router.get(ROUTES.COURSES.FAVOURITES, authMiddleware, courseController.getFavourites);
+router.get(ROUTES.COURSES.FAVOURITES, authMiddleware, courseController.getFavorites);
 router.get(ROUTES.COURSES.ADD_FAVOURITES, authMiddleware, courseController.addtoFavourites);
 router.get(ROUTES.COURSES.FAV_COURSE_DETAILS, authMiddleware, courseController.favCourseDetails);
 

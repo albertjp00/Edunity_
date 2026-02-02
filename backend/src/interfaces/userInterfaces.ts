@@ -58,7 +58,7 @@ export interface IUserRepository {
 
   viewMyCourse(id: string, courseId: string): Promise<IMyCourse | null>
 
-  updateProgress(userId: string, courseId: string, moduleTitle: string): Promise<IMyCourse | null>
+  updateProgress(userId: string, courseId: string, moduleTitle: string): Promise<boolean | null>
 
   getCertificate(userId: string, courseId: string, certificate: string): Promise<IMyCourse | null>
 
@@ -183,9 +183,9 @@ export interface IUserCourseReviewController {
   addReview(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
 }
 
-export interface IUserCourseFavouriteController {
+export interface IUserCourseFavoriteController {
   addtoFavourites(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
-  getFavourites(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+  getFavorites(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
   favCourseDetails(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
 }
 

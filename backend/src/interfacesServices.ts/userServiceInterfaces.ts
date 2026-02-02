@@ -4,7 +4,7 @@ import { ICourse } from "../models/course";
 import { IEvent } from "../models/events";
 import { IFavourite } from "../models/favourites";
 import { IInstructor } from "../models/instructor";
-import { IMyCourse } from "../models/myCourses";
+import { IMyCourse, IProgress } from "../models/myCourses";
 import { IMyEvent } from "../models/myEvents";
 import { INotification } from "../models/notification";
 import { IReport } from "../models/report";
@@ -12,10 +12,10 @@ import { IReview } from "../models/review";
 import { ISubscription, IUser } from "../models/user";
 import { IWallet } from "../models/wallet";
 import { ISkills } from "../repositories/instructorRepository";
-import { ICourseDetails, IviewCourse } from "../services/user/userCourseService";
+import { ICourseDetails } from "../services/user/userCourseService";
 import { IQuiz } from "../models/quiz";
 import { LoginDTO } from "../dto/adminDTO";
-import { CourseDetailsDTO, CourseDocument, MyCourseDTO } from "../dto/userDTO";
+import { CourseDetailsDTO, CourseDocument, CourseViewDTO, FavoriteCourseDTO, MyCourseDTO, QuizUserDTO, UserInstructorDTO } from "../dto/userDTO";
 
 export interface LoginResult {
     success: boolean;
@@ -144,7 +144,7 @@ export interface IUserCourseService {
         userId: string,
         courseId: string,
         moduleTitle: string
-    ): Promise<IMyCourse | null>;
+    ): Promise<boolean | null>;
 
     getCertificateRequest(
         userId: string,
@@ -158,16 +158,16 @@ export interface IUserCourseService {
         review: string
     ): Promise<IReview | null | string | undefined>;
 
-    getInstructorsRequest(): Promise<IInstructor[] | null>;
+    getInstructorsRequest(): Promise<UserInstructorDTO[] | null>;
 
     addtoFavourites(
         userId: string,
         courseId: string
     ): Promise<string | null>;
 
-    getFavourites(
+    getFavorites(
         userId: string
-    ): Promise<IFavourite[] | null>;
+    ): Promise<FavoriteCourseDTO[] | null>;
 
     favCourseDetails(
         userId: string,
@@ -176,7 +176,7 @@ export interface IUserCourseService {
 
     getQuiz(
         courseId: string
-    ): Promise<IQuiz | null>;
+    ): Promise<QuizUserDTO | null>;
 
     submitQuiz(
         userId: string,
@@ -245,4 +245,43 @@ export interface LoginResult {
 export interface RegisterResult {
     success: boolean;
     message: string;
+}
+
+
+export interface IviewCourse {
+  course: CourseViewDTO,
+  instructor: IInstructor
+  progress: IProgress
+  cancelCourse: boolean
+  quizExists: boolean
+  enrolledAt: Date
+  review: IReview[] | null
+}
+
+
+
+export interface IFavourites{
+    _id: string,
+    userId: string,
+    courseId: string,
+    course : ICourse
+}
+
+
+
+import { Types } from "mongoose";
+
+export interface IQuizQuestion {
+  _id: Types.ObjectId;
+  question: string;
+  options: string[];
+  correctAnswer: string;
+  points: number;
+}
+
+export interface IQuizService {
+  _id: Types.ObjectId;
+  courseId: string;
+  title: string;
+  questions: IQuizQuestion[];
 }

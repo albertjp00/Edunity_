@@ -5,7 +5,7 @@ import { AuthRequest } from "../../middleware/authMiddleware";
 import { debounceCall } from "../../utils/debounce";
 import { generateSignedUrl } from "../../utils/getSignedUrl";
 import {
-  IUserCourseFavouriteController,
+  IUserCourseFavoriteController,
   IUserCoursePaymentController,
   IUserCourseQuizController,
   IUserCourseReadController,
@@ -25,7 +25,7 @@ export class UserCourseController
     IUserCoursePaymentController,
     IUserMyCourseController,
     IUserCourseReviewController,
-    IUserCourseFavouriteController,
+    IUserCourseFavoriteController,
     IUserCourseQuizController
 {
   private _courseService: IUserCourseService;
@@ -367,10 +367,10 @@ export class UserCourseController
       const id = req.user?.id as string;
       const myCourseId = req.params.id!;
 
-      const result = await this._courseService.viewMyCourseRequest(
+      const result = await this._courseService.viewMyCourseRequest( 
         id,
         myCourseId,
-      );
+      );      
 
       res
         .status(HttpStatus.OK)
@@ -417,6 +417,9 @@ export class UserCourseController
       const userId = req.user?.id as string;
       const { courseId, moduleTitle } = req.body;
 
+      console.log('update progress',courseId , moduleTitle , req.body);
+      
+
       if (!userId || !courseId || !moduleTitle) {
         res
           .status(400)
@@ -424,13 +427,13 @@ export class UserCourseController
         return;
       }
 
-      const result = await this._courseService.updateProgress(
+      await this._courseService.updateProgress(
         userId,
         courseId,
         moduleTitle,
       );
 
-      res.status(HttpStatus.OK).json({ success: true, progress: result });
+      res.status(HttpStatus.OK).json({ success: true});
     } catch (error) {
       next(error);
       res
@@ -489,8 +492,9 @@ export class UserCourseController
       res
         .status(HttpStatus.OK)
         .json({ success: true, instructors: instructor });
+
     } catch (error) {
-      // console.error("Error updating progress:", error);
+      console.error(error);
       next(error);
       res
         .status(500)
@@ -511,12 +515,7 @@ export class UserCourseController
         userId,
         courseId,
       );
-      // console.log(result);
 
-      // if (result == 'existing') {
-      //     res.json({ success: true, message: StatusMessage.COURSE_ALREADY_EXISTS , fav:"removed" });
-      //     return
-      // }
 
       res.status(HttpStatus.OK).json({ success: true, fav: result });
     } catch (error) {
@@ -528,19 +527,17 @@ export class UserCourseController
     }
   };
 
-  getFavourites = async (
+  getFavorites = async (
     req: AuthRequest,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       const userId = req.user?.id as string;
-      const data = await this._courseService.getFavourites(userId);
-      // console.log(data);
-
+      const data = await this._courseService.getFavorites(userId);      
       res.status(HttpStatus.OK).json({ success: true, favourites: data });
     } catch (error) {
-      // console.log(error);
+      console.log(error);
       next(error);
     }
   };
@@ -556,9 +553,11 @@ export class UserCourseController
       const result = await this._courseService.favCourseDetails(id, courseId);
       if (result === false) {
         res.json({ success: false });
+        
       }else{
-
-      res.json({ success: true, course: result });
+        console.log('resuld fac courses',result);
+        
+      res.json({ success: true});
       }
     } catch (error) {
       console.log(error);
