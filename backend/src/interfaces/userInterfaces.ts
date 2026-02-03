@@ -306,6 +306,8 @@ export interface IPaymentDetails {
   currentPage: number
 }
 
+
+
 export interface SortOption {
   price?: SortOrder
   createdAt ?:number

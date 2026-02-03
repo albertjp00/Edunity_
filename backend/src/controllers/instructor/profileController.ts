@@ -8,14 +8,7 @@ import {
   IInstProfileUpdateController,
 } from "../../interfaces/instructorInterfaces";
 import { IInstructorProfileService } from "../../interfacesServices.ts/instructorServiceInterface";
-import {
-  mapDashboardToDTO,
-  mapEarningsToDTO,
-  mapInstructorProfileToDTO,
-  mapNotificationToDTO,
-  walleToDto,
-} from "../../mapper/instructor.mapper";
-import { INotification } from "../../models/notification";
+import {mapEarningsToDTO} from "../../mapper/instructor.mapper";
 import { StatusMessage } from "../../enums/statusMessage";
 
 export class InstProfileController
@@ -246,10 +239,7 @@ export class InstProfileController
   ) => {
     try {
       const id = req.instructor?.id;
-      const result = await this._profileService.getWallet(id as string);
-      if (!result) return;
-      const wallet = walleToDto(result);
-
+      const wallet = await this._profileService.getWallet(id as string);
       res.status(HttpStatus.OK).json({ success: true, wallet });
     } catch (error) {
       console.log(error);

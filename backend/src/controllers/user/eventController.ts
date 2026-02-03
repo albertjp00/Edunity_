@@ -35,7 +35,7 @@ export class UserEventController implements
     getEventDetails = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void | null> => {
         try {
             const id = req.params.id!
-            const enrolled = await this._userEventService.getIfEnrolled(id)
+            const enrolled = await this._userEventService.getIfEnrolled(id)            
             const result = await this._userEventService.getEventDetailsRequest(id)
 
             res.status(HttpStatus.OK).json({ success: true, event: result, enrolled: enrolled })

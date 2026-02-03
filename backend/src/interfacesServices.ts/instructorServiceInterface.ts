@@ -1,13 +1,10 @@
-import { IInstructorDashboardDTO, IInstructorProfileDTO, INotificationDTO, InstructorDashboardRaw, QuizDTO } from "../dto/instructorDTO";
-import { CourseResult, ICourseDetailsResult, IEventDetailsService, IEventResult, IEventResultService, IPurchaseDetails } from "../interfaces/instructorInterfaces";
+import {  IInstructorProfileDTO, INotificationDTO, InstructorDashboardRaw, QuizDTO, WalletDto } from "../dto/instructorDTO";
+import { CourseResult, ICourseDetailsResult, IEventDetailsService,  IEventResultService, IPurchaseDetails } from "../interfaces/instructorInterfaces";
 import { ICategory } from "../models/category";
 import { ICourse } from "../models/course";
 import { IEvent } from "../models/events";
 import { IInstructor } from "../models/instructor";
-import { INotification } from "../models/notification";
 import { IQuestion, IQuiz } from "../models/quiz";
-import { IWallet } from "../models/wallet";
-import { ISkills } from "../repositories/instructorRepository";
 import { LoginResult, RegisterResult } from "./userServiceInterfaces";
 
 
@@ -102,5 +99,5 @@ export interface IInstructorProfileService {
   getNotifications(id: string): Promise<INotificationDTO[] | null>;
   getDashboard(id: string): Promise<InstructorDashboardRaw | null>;
   getEarnings(id: string): Promise<{ monthlyEarnings: { month: string; earnings: number }[]; totalEarnings: number } | null>;
-  getWallet(id: string): Promise<IWallet | null>;
+  getWallet(id: string): Promise<WalletDto | null>;
 }

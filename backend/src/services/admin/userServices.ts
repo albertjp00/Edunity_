@@ -1,5 +1,4 @@
 import {
-  PaginatedUsers,
   PaginatedUsersService,
 } from "../../interfaces/adminInterfaces";
 import { IUserRepository } from "../../interfaces/userInterfaces";

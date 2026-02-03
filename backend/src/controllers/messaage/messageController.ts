@@ -147,7 +147,6 @@ export class MessageController implements
       const instructorId = req.instructor?.id
 
       const result = await this.messageService.getStudents(instructorId as string)        
-      console.log('messaged students',result);
       res.status(HttpStatus.OK).json({ success: true, students: result, instructorId })
 
 
@@ -166,7 +165,6 @@ export class MessageController implements
       const instructorId = req.instructor?.id
 
       const messages = await this.messageService.getMessages(instructorId as string, receiverId as string);
-      console.log('messages ',messages);
 
       res.status(HttpStatus.OK).json({ success: true, messages: messages, instructorId })
     } catch (error) {

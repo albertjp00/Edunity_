@@ -1,6 +1,6 @@
 import { MessagedStudentsDTO } from "../dto/instructorDTO";
+import { MessageDTO } from "../dto/userDTO";
 import { ILastMessage, IMessagedInstructor } from "../interfaces/instructorInterfaces";
-import { IMessagedUser } from "../interfaces/userInterfaces";
 import { IInstructor } from "../models/instructor";
 import { IMessage } from "../models/message";
 
@@ -16,13 +16,13 @@ export interface IMessageService {
 
   sendMessage(senderId: string, receiverId: string, text: string, file: string | null): Promise<IMessage>;
 
-  getChatHistory(userId: string, receiverId: string): Promise<IMessage[]>;
+  getChatHistory(userId: string, receiverId: string): Promise<MessageDTO[]>;
 
   markMessagesAsRead(senderId: string, receiverId: string): Promise<boolean>;
 
   getStudents(instructorId: string): Promise<MessagedStudentsDTO[] | null>;
 
-  getMessages(instructorId: string, receiverId: string): Promise<IMessage[] | null>;
+  getMessages(instructorId: string, receiverId: string): Promise<MessageDTO[] | null>;
 
   sendInstructorMessage(instructorId: string, receiverId: string, text: string, file: string | null): Promise<IMessage>;
 }

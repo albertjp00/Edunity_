@@ -1,6 +1,5 @@
 import {
     IEventDetailsService,
-  IEventResult,
   IEventResultService,
 } from "../../interfaces/instructorInterfaces";
 import { IEvent } from "../../models/events";

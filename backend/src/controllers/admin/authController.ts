@@ -2,7 +2,6 @@ import { NextFunction, Response } from "express";
 import { IAdminAuthController, IAdminAuthService } from "../../interfaces/adminInterfaces";
 import { AdminAuthRequest } from "../../middleware/authMiddleware";
 import { HttpStatus } from "../../enums/httpStatus.enums";
-import { AdminLoginDTO } from "../../dto/adminDTO";
 import { StatusMessage } from "../../enums/statusMessage";
 
 

@@ -7,7 +7,6 @@ import {
   IAdminCourseService,
   IAdminPurchaseController,
 } from "../../interfaces/adminInterfaces";
-import { mapCourseToDTO, mapPurchaseToDTO } from "../../mapper/admin.mapper";
 import { StatusMessage } from "../../enums/statusMessage";
 
 export class AdminCourseController

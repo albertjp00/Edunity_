@@ -9,6 +9,7 @@ export interface IMessage extends Document {
   attachment? : string;
   timestamp: Date;
   read : boolean;
+  createdAt : Date;
 }
 
 const messageSchema: Schema<IMessage> = new Schema(

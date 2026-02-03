@@ -8,7 +8,6 @@ import { IAuthBasicController, IAuthForgotPasswordController,
    IAuthGoogleController, IAuthRegisterController, 
    RefreshTokenPayload} from "../../interfaces/userInterfaces";
 import { IUserAuthService } from "../../interfacesServices.ts/userServiceInterfaces";
-import { LoginMapper } from "../../mapper/user.mapper";
 import { StatusMessage } from "../../enums/statusMessage";
 // import { AuthService } from "../../services/user/authService";
 

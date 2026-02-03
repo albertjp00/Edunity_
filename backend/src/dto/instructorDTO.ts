@@ -1,4 +1,3 @@
-import { Types } from "mongoose";
 import { IReview } from "../models/review";
 
 export interface InstructorCourseDTO {
@@ -215,3 +214,5 @@ export interface MessagedStudentsDTO {
     
   };
 }
+
+

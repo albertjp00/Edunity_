@@ -1,4 +1,4 @@
-import { IAdminCourseService, PurchaseResult } from "../../interfaces/adminInterfaces";
+import { IAdminCourseService } from "../../interfaces/adminInterfaces";
 import { IUserRepository } from "../../interfaces/userInterfaces";
 import { ICategory } from "../../models/category";
 import { IInstructor } from "../../models/instructor";
@@ -6,9 +6,8 @@ import { IAdminRepository } from "../../repositories/adminRepositories";
 import { IInsRepository } from "../../repositories/instructorRepository";
 import PDFDocument from "pdfkit";
 import { once } from "events";
-import { mapAdminCourseDetailsToDTO, mapCategoryDto, mapCourseToDTO, mapPurchaseToDTO, mapReportDto } from "../../mapper/admin.mapper";
-import { AdminPurchaseService, CategoryDTO, PurchaseAdminDTO, ReportDTO } from "../../dto/adminDTO";
-import { IReport } from "../../models/report";
+import { mapCategoryDto, mapCourseToDTO, mapPurchaseToDTO, mapReportDto } from "../../mapper/admin.mapper";
+import { AdminPurchaseService, CategoryDTO,  ReportDTO } from "../../dto/adminDTO";
 
 export class AdminCourseService implements IAdminCourseService {
   constructor(
@@ -95,9 +94,7 @@ export class AdminCourseService implements IAdminCourseService {
         const dtoPurchase = data?.purchases.map(mapPurchaseToDTO)
         console.log('dto',dtoPurchase);
         
-      
-    //   return {...data , purchases : dtoPurchase}
-    return data
+        return data
     } catch (error) {
       console.log(error);
       throw error
@@ -193,7 +190,8 @@ export class AdminCourseService implements IAdminCourseService {
   getReportsRequest = async (): Promise<ReportDTO[] | null> => {
     try {
       const data = await this.adminRepository.getReports();
-      const report = data?.map(mapReportDto)!
+      if(!data) return null
+      const report = data?.map(mapReportDto)
       return report;
     } catch (error) {
       console.log(error);

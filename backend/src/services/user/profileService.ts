@@ -1,11 +1,11 @@
+import { WalletDto } from '../../dto/instructorDTO';
 import { StatusMessage } from '../../enums/statusMessage';
-import { IPaymentDetails, UserDTO } from '../../interfaces/userInterfaces';
-import { INotifications, IUserProfileService } from '../../interfacesServices.ts/userServiceInterfaces';
-import { mapUserToDTO } from '../../mapper/user.mapper';
+import {  UserDTO } from '../../interfaces/userInterfaces';
+import { INotifications, IPaymentDetailsService, IUserProfileService } from '../../interfacesServices.ts/userServiceInterfaces';
+import { walleToDto } from '../../mapper/instructor.mapper';
+import { mapPayToDto, mapUserToDTO } from '../../mapper/user.mapper';
 import { INotification } from '../../models/notification';
-import { IPayment } from '../../models/payment';
 import { ISubscription, IUser } from '../../models/user';
-import { IWallet } from '../../models/wallet';
 import { UserRepository } from '../../repositories/userRepository';
 import bcrypt from 'bcrypt'
 
@@ -73,21 +73,24 @@ export class ProfileService implements IUserProfileService {
     }
   }
 
-  async getWallet(userId: string): Promise<IWallet | null> {
+  async getWallet(userId: string): Promise<WalletDto | null> {
     try {
       const wallet = await this.userRepository.getWallet(userId)
-      return wallet
+      if(!wallet) return null
+      return walleToDto(wallet)
     } catch (error) {
       console.log(error);
       return null
     }
   }
 
-  async getPayment(userId: string , page:number): Promise<IPaymentDetails | null> {
+  async getPayment(userId: string , page:number): Promise<IPaymentDetailsService | null> {
     try {
-      const pay = await this.userRepository.getPayment(userId , page)
-      if (!pay) return null
-      return pay
+      const result = await this.userRepository.getPayment(userId , page)
+      if (!result) return null
+      console.log('pay',result);
+      
+      return {pay :result?.pay.map(mapPayToDto),totalPages:result.totalPages,total : result.total , currentPage : result.total}
     } catch (error) {
       console.log(error);
       return null
@@ -97,7 +100,6 @@ export class ProfileService implements IUserProfileService {
   async getNotifications(userId: string , page :number): Promise<INotifications | null> {
     try {
       const noti = await this.userRepository.getNotifications(userId , page)
-      
       return noti
     } catch (error) {
       console.log(error);

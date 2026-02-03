@@ -5,7 +5,6 @@ import { fileURLToPath } from "url";
 import "winston-daily-rotate-file";
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 
 const logDirectory = path.resolve(process.cwd(), "../app-logs");

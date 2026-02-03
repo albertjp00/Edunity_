@@ -18,6 +18,7 @@ import {
   TransactionDto,
   WalletDto,
 } from "../dto/instructorDTO";
+import { MessageDTO } from "../dto/userDTO";
 import {
   InstructorDTO,
   IPurchaseDetails,
@@ -26,6 +27,7 @@ import { IMessagedUser } from "../interfaces/userInterfaces";
 import { ICategory } from "../models/category";
 import { IEvent } from "../models/events";
 import { IInstructor } from "../models/instructor";
+import { IMessage } from "../models/message";
 import { INotification } from "../models/notification";
 import { IQuestion, IQuiz } from "../models/quiz";
 import { IWallet } from "../models/wallet";
@@ -271,3 +273,20 @@ export const mapMessagedStudentsDTO = (data: IMessagedUser): MessagedStudentsDTO
     },
   };
 };
+
+
+
+
+export const mapMessageToDTO = (message: IMessage): MessageDTO => {
+  return {
+    _id: message._id.toString(),
+    senderId: message.senderId,
+    receiverId: message.receiverId,
+    text: message.text ?? '',
+    read: message.read,
+    timestamp: message.timestamp,
+    createdAt: message.createdAt,
+    ...(message.attachment ? { attachment: message.attachment } : {}),
+  };
+};
+

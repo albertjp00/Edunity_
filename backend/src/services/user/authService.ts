@@ -8,7 +8,6 @@ import { OAuth2Client } from "google-auth-library";
 import { googleLoginResult, IUserRepository } from "../../interfaces/userInterfaces";
 import { IUserAuthService, LoginResult, RegisterResult } from "../../interfacesServices.ts/userServiceInterfaces";
 import { StatusMessage } from "../../enums/statusMessage";
-import { IUser } from "../../models/user";
 import { LoginMapper } from "../../mapper/user.mapper";
 import { LoginDTO } from "../../dto/adminDTO";
 

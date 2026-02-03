@@ -469,7 +469,7 @@ export class InstructorRepository implements IInsRepository {
   getWallet = async (id: string): Promise<IWallet | null> => {
     try {
       const wallet = await WalletModel.findOne({ userId: id })
-
+      
       return wallet
     } catch (error) {
       console.error("Error calculating total earnings:", error);

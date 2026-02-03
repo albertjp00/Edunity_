@@ -1,21 +1,17 @@
 import { FilterQuery } from "mongoose";
-import { googleLoginResult, IMyCourses, IPaymentDetails, IRazorpayOrder, ISubmitQuiz, ISubscriptionCoursesService, SortOption, UserDTO } from "../interfaces/userInterfaces";
+import { googleLoginResult, IMyCourses, IRazorpayOrder, ISubmitQuiz, ISubscriptionCoursesService, SortOption, UserDTO } from "../interfaces/userInterfaces";
 import { ICourse } from "../models/course";
-import { IEvent } from "../models/events";
-import { IFavourite } from "../models/favourites";
 import { IInstructor } from "../models/instructor";
-import { IMyCourse, IProgress } from "../models/myCourses";
+import {  IProgress } from "../models/myCourses";
 import { IMyEvent } from "../models/myEvents";
 import { INotification } from "../models/notification";
 import { IReport } from "../models/report";
 import { IReview } from "../models/review";
 import { ISubscription, IUser } from "../models/user";
-import { IWallet } from "../models/wallet";
 import { ISkills } from "../repositories/instructorRepository";
 import { ICourseDetails } from "../services/user/userCourseService";
-import { IQuiz } from "../models/quiz";
 import { LoginDTO } from "../dto/adminDTO";
-import { CourseDetailsDTO, CourseDocument, CourseViewDTO, FavoriteCourseDTO, MyCourseDTO, QuizUserDTO, UserInstructorDTO } from "../dto/userDTO";
+import { CourseDetailsDTO,  CourseViewDTO, EventDTO, FavoriteCourseDTO, MyCourseDTO, PayDto, QuizUserDTO, UserInstructorDTO } from "../dto/userDTO";
 
 export interface LoginResult {
     success: boolean;
@@ -205,11 +201,11 @@ export interface IUserCourseService {
 
 
 export interface IUserEventService {
-  getEventsRequest(): Promise<IEvent[] | null>;
+  getEventsRequest(): Promise<EventDTO[] | null>;
   getIfEnrolled(id: string): Promise<IMyEvent | boolean | null>;
-  getEventDetailsRequest(id: string): Promise<IEvent | null>;
+  getEventDetailsRequest(id: string): Promise<EventDTO | null>;
   eventEnrollRequest(id: string, eventId: string): Promise<IMyEvent | null>;
-  getMyEvents(userId: string): Promise<IEvent[] | null>;
+  getMyEvents(userId: string): Promise<EventDTO[] | null>;
   joinUserEventRequest(eventId: string, userId: string): Promise<{ success: boolean; message: string; meetingLink?: string } | null>;
 }
 
@@ -219,8 +215,8 @@ export interface IUserProfileService {
   getProfile(userId: string): Promise<UserDTO | null>;
   editProfileRequest(userId: string, updateData: Partial<IUser>): Promise<UserDTO | null>;
   passwordChange(id: string, newPassword: string, oldPassword: string): Promise<boolean>;
-  getWallet(userId: string): Promise<IWallet | null>;
-  getPayment(userId: string , page:number): Promise<IPaymentDetails | null>;
+  getWallet(userId: string): Promise<WalletDto | null>;
+  getPayment(userId: string , page:number): Promise<IPaymentDetailsService | null>;
   getNotifications(userId: string , page : number): Promise<INotifications | null>;
   notificationsMarkRead(userId: string): Promise<INotification[] | null>;
   subscriptionCheckRequest(id:string):Promise<ISubscription | boolean | null>;
@@ -270,6 +266,7 @@ export interface IFavourites{
 
 
 import { Types } from "mongoose";
+import { WalletDto } from "../dto/instructorDTO";
 
 export interface IQuizQuestion {
   _id: Types.ObjectId;
@@ -284,4 +281,13 @@ export interface IQuizService {
   courseId: string;
   title: string;
   questions: IQuizQuestion[];
+}
+
+
+
+export interface IPaymentDetailsService {
+  pay: PayDto[],
+  total: number,
+  totalPages: number,
+  currentPage: number
 }

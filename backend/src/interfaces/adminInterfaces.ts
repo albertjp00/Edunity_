@@ -3,7 +3,6 @@ import {
   AdminPurchaseService,
   CategoryDTO,
   CourseDTO,
-  CourseListAggregation,
   DTOKyc,
   InstructorAdminDTO,
   ReportDTO,
@@ -13,11 +12,8 @@ import { ICategory } from "../models/category";
 import { ICourse } from "../models/course";
 import { IInstructor } from "../models/instructor";
 import { IQuiz } from "../models/quiz";
-import { IReport } from "../models/report";
 import { IUser } from "../models/user";
-import { NextFunction, Request, Response } from "express";
-import { IKyc } from "../models/kyc";
-
+import { NextFunction, Request, Response } from "express"
 export interface IAdminCourseReadController {
   getCourses(req: Request, res: Response, next: NextFunction): Promise<void>;
   getCourseDetails(

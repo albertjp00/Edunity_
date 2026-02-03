@@ -7,8 +7,6 @@ import {
   IEventReadController,
 } from "../../interfaces/instructorInterfaces";
 import { IInstEventService } from "../../interfacesServices.ts/instructorServiceInterface";
-import { mapEventToDTO } from "../../mapper/instructor.mapper";
-import { IEvent } from "../../models/events";
 import { StatusMessage } from "../../enums/statusMessage";
 // import { InstEventService } from "../../services/instructor/eventService"
 

@@ -1,8 +1,8 @@
 import { MessagedStudentsDTO } from "../../dto/instructorDTO";
+import { MessageDTO } from "../../dto/userDTO";
 import { ILastMessage, IMessagedInstructor } from "../../interfaces/instructorInterfaces";
-import { IMessagedUser } from "../../interfaces/userInterfaces";
 import { IMessageService } from "../../interfacesServices.ts/messageServiceInterface";
-import { mapMessagedStudentsDTO} from "../../mapper/instructor.mapper";
+import { mapMessagedStudentsDTO, mapMessageToDTO} from "../../mapper/instructor.mapper";
 import { IInstructor } from "../../models/instructor";
 import { IMessage } from "../../models/message";
 import { MessageRepository } from "../../repositories/messageRepositories";
@@ -42,8 +42,9 @@ export class MessageService implements IMessageService{
 
 
 
-    async getChatHistory(userId: string, receiverId: string): Promise<IMessage[]> {
-        return await this.messageRepository.getMessages(userId, receiverId);
+    async getChatHistory(userId: string, receiverId: string): Promise<MessageDTO[]> {
+        const messages =  await this.messageRepository.getMessages(userId, receiverId);
+        return messages.map(mapMessageToDTO)
     }
 
     async   markMessagesAsRead(senderId: string, receiverId: string): Promise<boolean> {
@@ -52,6 +53,8 @@ export class MessageService implements IMessageService{
         return await this.messageRepository.markAsRead(senderId, receiverId);
     }
 
+
+        // Instructor side 
     async getStudents(instructorId: string ): Promise<MessagedStudentsDTO[] | null> {
         try {
             const students = await this.messageRepository.getUsers(instructorId)      
@@ -66,12 +69,17 @@ export class MessageService implements IMessageService{
     }
 
 
-    // Instructor side 
 
-    async getMessages(instructorId : string , receiverId : string):Promise<IMessage[] | null>{
+
+    async getMessages(instructorId : string , receiverId : string):Promise<MessageDTO[] | null>{
         try {
-            return await this.messageRepository.getUserMessages(instructorId , receiverId)
+            const messages = await this.messageRepository.getUserMessages(instructorId , receiverId)
+            console.log(messages);
+            return messages.map(mapMessageToDTO)
+
         } catch (error) {
+            console.log(error);
+            
             return null
         }
     }

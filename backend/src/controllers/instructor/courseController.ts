@@ -3,7 +3,7 @@ import { InstAuthRequest } from "../../middleware/authMiddleware";
 import { uploadToS3 } from "../../utils/s3Upload";
 import fs from "fs";
 import { generateSignedUrl } from "../../utils/getSignedUrl";
-import { ICourse, IModule } from "../../models/course";
+import {  IModule } from "../../models/course";
 import { HttpStatus } from "../../enums/httpStatus.enums";
 import {
   IInstCourseManageController,
@@ -11,10 +11,6 @@ import {
   IInstQuizController,
 } from "../../interfaces/instructorInterfaces";
 import { IInstCourseService } from "../../interfacesServices.ts/instructorServiceInterface";
-import {
-  mapCourseDetailsToDTO,
-  mapInstructorCourseToDTO,
-} from "../../mapper/instructor.mapper";
 import { StatusMessage } from "../../enums/statusMessage";
 
 export class InstCourseController

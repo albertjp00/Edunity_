@@ -1,9 +1,10 @@
-import { IEvent } from "../../models/events";
 import { IMyEvent } from "../../models/myEvents";
 import { InstructorRepository } from "../../repositories/instructorRepository";
 import { UserRepository } from "../../repositories/userRepository";
 import { IUserEventService } from "../../interfacesServices.ts/userServiceInterfaces";
 import { StatusMessage } from "../../enums/statusMessage";
+import { mapEventDetailsToDto, mapEventToDTO } from "../../mapper/user.mapper";
+import { EventDTO } from "../../dto/userDTO";
 
 
 export class NotFoundError extends Error {
@@ -44,11 +45,12 @@ export class UserEventService implements IUserEventService {
         this.instructorRepository = instructorRepository
     }
 
-    getEventsRequest = async (): Promise<IEvent[] | null> => {
+    getEventsRequest = async (): Promise<EventDTO[] | null> => {
         try {
             const result = await this.userRepository.getEvents()
-
-            return result
+            console.log('events',result);
+            if(!result) return null
+            return result?.map(mapEventToDTO)
         } catch (error) {
             console.log(error);
             return null
@@ -57,9 +59,7 @@ export class UserEventService implements IUserEventService {
 
     getIfEnrolled = async (id: string): Promise<IMyEvent | boolean | null> => {
         try {
-
             const result = await this.userRepository.getMyEvent(id)
-            
 
             if (result) {
                 return true
@@ -72,18 +72,13 @@ export class UserEventService implements IUserEventService {
         }
     }
 
-    getEventDetailsRequest = async (id: string): Promise<IEvent | null> => {
+    getEventDetailsRequest = async (id: string): Promise<EventDTO | null> => {
         try {
-            const result = await this.instructorRepository.getEvent(id)
-            console.log(result);
-            
-
+            const result = await this.instructorRepository.getEvent(id)            
             if(!result){
                 return null
             }
-
-            // const user = await this.userRepository.getMyEvent(result._id : )
-            return result
+            return mapEventDetailsToDto(result)
         } catch (error) {
             console.log(error);
             return null
@@ -103,14 +98,14 @@ export class UserEventService implements IUserEventService {
 
 
 
-    getMyEvents = async (userId: string): Promise<IEvent[] | null> => {
+    getMyEvents = async (userId: string): Promise<EventDTO[] | null> => {
         try {
             const result = await this.userRepository.getMyEvents(userId)
-            return result
+            if(!result) return null           
+            return result.map(mapEventToDTO)
         } catch (error) {
             console.log(error);
             return null
-
         }
     }
 
@@ -130,11 +125,6 @@ export class UserEventService implements IUserEventService {
             if (!event.isLive)
                 return { success: false, message: StatusMessage.EVENT_NOT_STARTED };
 
-            // if (!event.participantsList.includes(userId)) {
-            //   event.participantsList.push(userId);
-            //   event.participants += 1;
-            //   await event.save();
-            // }
 
             const meetingLink = event.meetingLink
 

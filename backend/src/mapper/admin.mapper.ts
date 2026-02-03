@@ -23,15 +23,10 @@ import { IEarnings } from "../models/earnings";
 import { IInstructor } from "../models/instructor";
 import { IKyc } from "../models/kyc";
 import { IUser } from "../models/user";
-import {
-  AdminCourseDetailsRaw,
-  IPurchase,
-  PurchaseResult,
-} from "../interfaces/adminInterfaces";
 import { ICategory } from "../models/category";
 import { IReport } from "../models/report";
-import { LoginDTO } from "../dto/userDTO";
 import { StatusMessage } from "../enums/statusMessage";
+import { AdminCourseDetailsRaw } from "../interfaces/adminInterfaces";
 
 export const mapCourseToDTO = (course: CourseListAggregation): CourseDTO => ({
   id: course._id.toString(),

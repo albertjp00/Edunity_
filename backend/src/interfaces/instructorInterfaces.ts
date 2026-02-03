@@ -326,7 +326,7 @@ export interface CourseResult {
   totalPages: number;
   currentPage: number;
   totalItems: number;
-  instructor: any;
+  instructor: IInstructor | null;
 }
 
 export interface ICourseDetailsResult {

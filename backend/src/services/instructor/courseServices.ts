@@ -26,8 +26,8 @@ export class CourseService implements IInstCourseService {
         this.instructorRepository.findSkills()
       ]);
       const instructor = await this.instructorRepository.findById(id)
-      const l = courses?.length
-
+      console.log('instructorrorororo',instructor);
+      
       
       return {
         courses: courses?.map(mapInstructorCourseToDTO) ?? [],

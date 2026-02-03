@@ -5,9 +5,7 @@ import {
   SortOption,
 } from "../../interfaces/userInterfaces";
 import { ICourse } from "../../models/course";
-import { IFavourite } from "../../models/favourites";
-import { IInstructor } from "../../models/instructor";
-import { IMyCourse, IProgress } from "../../models/myCourses";
+import { IMyCourse } from "../../models/myCourses";
 import { AdminRepository } from "../../repositories/adminRepositories";
 import { InstructorRepository } from "../../repositories/instructorRepository";
 import { UserRepository } from "../../repositories/userRepository";
@@ -18,7 +16,6 @@ import { fileURLToPath } from "url";
 import { generateCertificate } from "../../utils/certificate";
 import { generateSignedUrl } from "../../utils/getSignedUrl";
 import {
-  IFavourites,
   IUserCourseService,
   IviewCourse,
 } from "../../interfacesServices.ts/userServiceInterfaces";
@@ -42,7 +39,6 @@ import {
   UserInstructorDTO,
 } from "../../dto/userDTO";
 
-const __filename = fileURLToPath(import.meta.url);
 
 export interface ICourseDetails extends ICourse {
   hasAccess: boolean;
@@ -202,7 +198,7 @@ export class UserCourseService implements IUserCourseService {
 
   cancelPayment = async (courseId: string): Promise<void> => {
     try {
-      const result = await this.userRepository.cancelPurchase(courseId);
+      await this.userRepository.cancelPurchase(courseId);
     } catch (error) {
       console.log(error);
     }
@@ -241,7 +237,7 @@ export class UserCourseService implements IUserCourseService {
         const instructorEarning = coursePrice - adminEarning;
 
         //adminEarnings
-        const adminEarningsUpdate = await this.adminRepository.updateEarnings(
+        await this.adminRepository.updateEarnings(
           courseId,
           coursePrice,
           instructorId,
@@ -249,15 +245,9 @@ export class UserCourseService implements IUserCourseService {
           adminEarning,
         );
 
-        //   const wallet = await this.instructorRepository.addToWallet(instructorId, {
-        //   type: "credit",
-        //   amount: instructorEarning,
-        //   courseId,
-        //   description: `Earnings of course: ${course.title}`,
-        // });
 
         const courseName = course.title;
-        const payment = await this.userRepository.userPayment(
+        await this.userRepository.userPayment(
           userId,
           courseId,
           courseName,
@@ -267,12 +257,12 @@ export class UserCourseService implements IUserCourseService {
         //notification
         const title = "Course Purchased";
         const message = `You have successfully purchased the course "${course?.title}`;
-        const notification = await this.userRepository.sendNotification(
+        await this.userRepository.sendNotification(
           userId,
           title,
           message,
         );
-        const onPurchase = await this.userRepository.onPurchase(
+        await this.userRepository.onPurchase(
           courseId,
           false,
         );
@@ -522,7 +512,7 @@ export class UserCourseService implements IUserCourseService {
         const userName = user.name;
         const userImage = user.profileImage || "";
 
-        let addedReview = await this.userRepository.addReview(
+        const  addedReview = await this.userRepository.addReview(
           userId,
           userName,
           userImage,
@@ -616,7 +606,7 @@ export class UserCourseService implements IUserCourseService {
         hasAccess = true;
       }
 
-      const instructor = await this.instructorRepository.findById(
+      await this.instructorRepository.findById(
         course.instructorId,
       );
 
@@ -632,7 +622,6 @@ export class UserCourseService implements IUserCourseService {
   getQuiz = async (courseId: string):Promise<QuizUserDTO | null> => {
     try {
       const quiz = await this.userRepository.getQuiz(courseId);
-      console.log('quiz ',quiz);
       if(!quiz) return null
       
       return mapQuizToDTO(quiz);
@@ -719,7 +708,7 @@ export class UserCourseService implements IUserCourseService {
     report: IReport,
   ) => {
     try {
-      const res = await this.userRepository.reportCourse(
+      await this.userRepository.reportCourse(
         userId,
         courseId,
         report,

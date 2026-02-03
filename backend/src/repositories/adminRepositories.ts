@@ -1,6 +1,6 @@
 import { TotalEnrolledDTO } from "../dto/adminDTO";
 import { IAdminCourseDetails, IUserOverview, PaginatedInstructors, PaginatedUsers, PurchaseResult } from "../interfaces/adminInterfaces";
-import { IEarningsResult, ITotalEnrolled } from "../interfacesServices.ts/adminServiceInterfaces";
+import { IEarningsResult } from "../interfacesServices.ts/adminServiceInterfaces";
 import { CategoryModel, ICategory } from "../models/category";
 import { CourseModel, ICourse } from "../models/course";
 import { EarningModel} from "../models/earnings";

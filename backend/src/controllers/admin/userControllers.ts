@@ -1,7 +1,7 @@
 import { Response, Request, NextFunction } from "express";
 import { HttpStatus } from "../../enums/httpStatus.enums";
 import { IAdminUserManagementController } from "../../interfaces/adminInterfaces";
-import { mapAdminUserCourseToDTO, mapUserToDTO } from "../../mapper/admin.mapper";
+import { mapAdminUserCourseToDTO } from "../../mapper/admin.mapper";
 import { IAdminUserServices } from "../../interfacesServices.ts/adminServiceInterfaces";
 import { StatusMessage } from "../../enums/statusMessage";
 // import { AdminUserService } from "../../services/admin/userServices";

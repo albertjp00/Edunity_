@@ -1,24 +1,25 @@
-import { QuizDTO } from "../dto/instructorDTO";
 import {
   CourseDetailsDTO,
   CourseDocument,
   CourseModuleDTO,
   CourseViewDTO,
   CourseWithAccessDTO,
+  EventDTO,
   FavCourseDTO,
   FavoriteCourseDTO,
   ICoursePopulated,
   LoginDTO,
   MyCourseDTO,
+  PayDto,
   QuizUserDTO,
   SubscriptionCourseDTO,
   UserInstructorDTO,
 } from "../dto/userDTO";
 import { UserDTO } from "../interfaces/userInterfaces";
 import { IFavourites, IQuizService } from "../interfacesServices.ts/userServiceInterfaces";
-import { IFavourite } from "../models/favourites";
+import { IEvent } from "../models/events";
 import { IInstructor } from "../models/instructor";
-import { IQuiz } from "../models/quiz";
+import { IPayment } from "../models/payment";
 import { IUser } from "../models/user";
 
 export const mapUserToDTO = (user: IUser): UserDTO => {
@@ -322,5 +323,59 @@ export const mapQuizToDTO = (quiz: IQuizService): QuizUserDTO => {
   points: q.points,
 })),
 
+  };
+};
+
+
+export const mapPayToDto = (pay : IPayment):PayDto =>{
+  return{
+    _id: pay.id.toString(),
+      userId: pay.userId,
+      courseId: pay.courseId,
+      courseName: pay.courseName,
+      amount: pay.amount,
+      status:pay.status,
+      paymentDate: pay.paymentDate,
+  }
+}
+
+
+export const mapEventToDTO = (event: IEvent): EventDTO => {
+  return {
+    _id: event._id.toString(),
+    instructorId: event.instructorId,
+    instructorName: event.instructorName,
+    title: event.title,
+    description: event.description,
+    topic: event.topic,
+    date: event.date,
+    time: event.time,
+    participants: event.participants,
+    participantsList: event.participantsList,
+    isLive: event.isLive,
+    isOver: event.isOver,
+    ...(event.meetingLink ? { meetingLink: event.meetingLink } : {}),
+    createdAt: event.createdAt,
+    updatedAt: event.updatedAt,
+  };
+};
+
+export const mapEventDetailsToDto = (event: IEvent): EventDTO => {
+  return {
+    _id: event._id.toString(),
+    instructorId: event.instructorId,
+    instructorName: event.instructorName,
+    title: event.title,
+    description: event.description,
+    topic: event.topic,
+    date: event.date,
+    time: event.time,
+    participants: event.participants,
+    participantsList: event.participantsList,
+    isLive: event.isLive,
+    isOver: event.isOver,
+    ...(event.meetingLink ? { meetingLink: event.meetingLink } : {}),
+    createdAt: event.createdAt,
+    updatedAt: event.updatedAt,
   };
 };

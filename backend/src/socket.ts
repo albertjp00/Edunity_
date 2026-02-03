@@ -18,7 +18,6 @@ const messageRepo = new MessageRepository()
 const messageService = new MessageService(messageRepo)
 const messageController = new MessageController(messageService)
 
-const eventParticipants: Record<string, Participant[]> = {};
 
 export const setupSocket = (io: Server) => {
 
@@ -43,18 +42,6 @@ export const setupSocket = (io: Server) => {
 
 
     let currentUserId: string | null = null;
-
-    const userId = socket.handshake.auth?.userId;
-
-    // if (userId) {
-    //   onlineUsers.set(userId, socket.id);
-    //   socket.join(`user_${userId}`);
-
-    //   // notify everyone
-    //   // console.log('user online');
-
-    //   io.emit("userOnline", userId);
-    // }
 
 
     socket.on("joinRoom", ({ userId, receiverId }) => {

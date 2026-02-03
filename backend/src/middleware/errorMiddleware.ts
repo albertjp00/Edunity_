@@ -12,7 +12,7 @@ export function errorHandler(
   err: CustomError,
   req: Request,
   res: Response,
-  _next: NextFunction
+  // _next: NextFunction
 ) {
   const status = err.statusCode || HttpStatus.INTERNAL_SERVER_ERROR;
 

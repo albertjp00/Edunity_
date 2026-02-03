@@ -1,13 +1,11 @@
-import { ICourseDetailsDTO, QuizQuestionDTO } from "./instructorDTO";
+import {  QuizQuestionDTO } from "./instructorDTO";
 
 export interface LoginDTO {
-  success : true
+  success: true;
   message: string;
   accessToken: string;
-  refreshToken : string
+  refreshToken: string;
 }
-
-
 
 export interface CourseDetailsDTO {
   _id: string;
@@ -20,30 +18,28 @@ export interface CourseDetailsDTO {
   totalEnrolled: number;
   createdAt: Date;
   thumbnail: string;
-  blocked : boolean;
+  blocked: boolean;
   moduleCount: number;
-  instructorName : string;
+  instructorName: string;
   instructorImage: string;
 }
 
-
-export interface CourseDocument{
-  _id: string,
-  title: string,
-  description: string,
-  price: number,
-  skills: string[],
-  level: string,
-  category: string,
-  totalEnrolled: number,
-  createdAt: Date,
-  thumbnail: string,
-  blocked: boolean,
-  moduleCount: number,
-  instructorName: string,
-  instructorImage: string
+export interface CourseDocument {
+  _id: string;
+  title: string;
+  description: string;
+  price: number;
+  skills: string[];
+  level: string;
+  category: string;
+  totalEnrolled: number;
+  createdAt: Date;
+  thumbnail: string;
+  blocked: boolean;
+  moduleCount: number;
+  instructorName: string;
+  instructorImage: string;
 }
-
 
 export interface CourseWithAccessDTO {
   _id: string;
@@ -79,8 +75,6 @@ export interface CourseWithAccessDTO {
   completedModules: string[];
 }
 
-
-
 export interface MyCourseDTO {
   _id: string;
   courseId: string;
@@ -104,7 +98,6 @@ export interface MyCourseDTO {
   };
 }
 
-
 export interface SubscriptionCourseDTO {
   _id: string;
   title: string;
@@ -112,7 +105,7 @@ export interface SubscriptionCourseDTO {
   price: number;
   skills: string[];
   level: string;
-  modules : string;
+  modules: string;
   category: string;
   totalEnrolled: number;
   accessType: string;
@@ -120,11 +113,10 @@ export interface SubscriptionCourseDTO {
   createdAt: Date;
 }
 
-
 // dto/courseView.dto.ts
 
 export interface CourseModuleDTO {
-  title : string,
+  title: string;
   id: string;
   videoUrl: string;
 }
@@ -148,12 +140,11 @@ export interface CourseViewDTO {
   reviewCount: number;
 }
 
-export interface UserInstructorDTO{
-  name : string,
-  expertise : string;
-  profileImage : string;
+export interface UserInstructorDTO {
+  name: string;
+  expertise: string;
+  profileImage: string;
 }
-
 
 export interface FavoriteCourseDTO {
   _id: string;
@@ -176,8 +167,6 @@ export interface FavoriteCourseDTO {
     createdAt: Date;
   };
 }
-
-
 
 import { Types } from "mongoose";
 
@@ -225,8 +214,6 @@ export interface ICoursePopulated {
   completedModules: Types.ObjectId[];
 }
 
-
-
 export interface FavCourseDTO {
   _id: string;
   instructorId: string;
@@ -267,13 +254,52 @@ export interface FavCourseDTO {
   completedModules: string[];
 }
 
-
-
-
 export interface QuizUserDTO {
   _id: string;
   courseId: string;
   title: string;
   questions: QuizQuestionDTO[];
+}
 
+export interface PayDto {
+  _id: string;
+  userId: string;
+  courseId: string;
+  courseName: string;
+  amount: number;
+  status: string;
+  paymentDate: Date;
+}
+
+
+export interface EventDTO {
+  _id: string;
+  instructorId: string;
+  instructorName: string;
+  title: string;
+  description: string;
+  topic: string;
+  date: Date;
+  time: string;
+  participants: number;
+  participantsList: string[];
+  isLive: boolean;
+  isOver: boolean;
+  meetingLink?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+
+
+
+export interface MessageDTO {
+  _id: string;
+  senderId: string;
+  receiverId: string;
+  text: string;
+  attachment?: string;
+  read: boolean;
+  timestamp: Date;
+  createdAt: Date;
 }

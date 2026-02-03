@@ -1,5 +1,5 @@
 import { AdminLoginDTO, AdminStatsDTO } from "../dto/adminDTO";
-import { PaginatedUsers, PaginatedUsersService } from "../interfaces/adminInterfaces";
+import {  PaginatedUsersService } from "../interfaces/adminInterfaces";
 import { ICourse } from "../models/course";
 import { IEarnings } from "../models/earnings";
 import { IUser } from "../models/user";

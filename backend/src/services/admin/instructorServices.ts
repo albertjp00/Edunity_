@@ -1,7 +1,6 @@
 import { DTOKyc } from "../../dto/adminDTO";
 import {
   IAdminInstructorService,
-  PaginatedInstructors,
   PaginatedInstructorsService,
 } from "../../interfaces/adminInterfaces";
 import {
@@ -10,7 +9,6 @@ import {
 } from "../../mapper/admin.mapper";
 import { ICourse } from "../../models/course";
 import { IInstructor } from "../../models/instructor";
-import { IKyc } from "../../models/kyc";
 import { IAdminRepository } from "../../repositories/adminRepositories";
 import { IInsRepository } from "../../repositories/instructorRepository";
 import { kycRejectMail } from "../../utils/sendMail";
