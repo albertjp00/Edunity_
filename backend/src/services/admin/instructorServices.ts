@@ -3,14 +3,14 @@ import {
   IAdminInstructorService,
   PaginatedInstructorsService,
 } from "../../interfaces/adminInterfaces";
+import { IAdminRepository } from "../../interfacesServices.ts/adminServiceInterfaces";
+import { IInsRepository } from "../../interfacesServices.ts/instructorServiceInterface";
 import {
   mapInstructorToAdminDTO,
   mapKycToDTO,
 } from "../../mapper/admin.mapper";
 import { ICourse } from "../../models/course";
 import { IInstructor } from "../../models/instructor";
-import { IAdminRepository } from "../../repositories/adminRepositories";
-import { IInsRepository } from "../../repositories/instructorRepository";
 import { kycRejectMail } from "../../utils/sendMail";
 
 export class AdminInstructorService implements IAdminInstructorService {

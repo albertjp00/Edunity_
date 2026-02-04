@@ -99,7 +99,7 @@ export class MessageController implements
       const { receiverId, text = '' } = req.body;
       const userId = req.user?.id as string;
 
-      const file = req.file ? req.file.filename : null;
+      const file = req.file ? req.file.filename : '';
 
       const message = await this.messageService.sendMessage(
         userId,

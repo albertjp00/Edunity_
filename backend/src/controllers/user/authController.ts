@@ -30,7 +30,6 @@ export class AuthController
   private _authService: IUserAuthService;
 
   constructor(authService: IUserAuthService) {
-    // const repo = new UserRepository();
     this._authService = authService
   }
 

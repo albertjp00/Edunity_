@@ -21,7 +21,6 @@ export class InstProfileController
   private _profileService: IInstructorProfileService;
 
   constructor(instProfileService: IInstructorProfileService) {
-    // const repo = new InstructorRepository();
     this._profileService = instProfileService;
   }
 

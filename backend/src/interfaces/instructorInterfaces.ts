@@ -75,6 +75,8 @@ export interface IInsRepository {
   startEventById(id: string): Promise<IEvent | null>;
 
   endEventById(id: string): Promise<IEvent | null>;
+
+  
 }
 
 import { NextFunction, Request, Response } from "express";

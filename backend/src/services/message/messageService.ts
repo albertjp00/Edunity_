@@ -5,16 +5,16 @@ import { IMessageService } from "../../interfacesServices.ts/messageServiceInter
 import { mapMessagedStudentsDTO, mapMessageToDTO} from "../../mapper/instructor.mapper";
 import { IInstructor } from "../../models/instructor";
 import { IMessage } from "../../models/message";
-import { MessageRepository } from "../../repositories/messageRepositories";
+import { IMessageRepository, MessageRepository } from "../../repositories/messageRepositories";
 
 
 
 
 export class MessageService implements IMessageService{
-    private messageRepository: MessageRepository;
+    private messageRepository: IMessageRepository;
 
     
-    constructor(messageRepository: MessageRepository) {
+    constructor(messageRepository: IMessageRepository) {
         this.messageRepository = messageRepository
     }
 
@@ -36,8 +36,13 @@ export class MessageService implements IMessageService{
         return await this.messageRepository.getUnreadMessages(userId , instructorId)
     }
 
-    async sendMessage(senderId: string, receiverId: string, text: string , file: string | null): Promise<IMessage> {
-        return await this.messageRepository.createMessage(senderId, receiverId, text , file);
+    async sendMessage(senderId: string, receiverId: string, text: string , file: string | null): Promise<IMessage | null> {
+        try {
+            return await this.messageRepository.createMessage(senderId, receiverId, text , file);
+        } catch (error) {
+            console.log(error);
+            return null
+        }
     }
 
 
@@ -84,7 +89,7 @@ export class MessageService implements IMessageService{
         }
     }
 
-    async sendInstructorMessage(instructorId:string , receiverId:string , text:string , file : string | null){
+    async sendInstructorMessage(instructorId:string , receiverId:string , text:string , file : string | null):Promise<IMessage>{
         return await this.messageRepository.sendInstructorsMessage(instructorId, receiverId , text , file)
     }
 }

@@ -1,18 +1,19 @@
-import { IAdminRepository } from "../../repositories/adminRepositories";
-import { UserRepository } from "../../repositories/userRepository";
 import jwt from "jsonwebtoken";
 import { PaginatedUsers } from "../../interfaces/adminInterfaces";
 import {
+  IAdminRepository,
   IAdminService,
   IEarningsResult,
 } from "../../interfacesServices.ts/adminServiceInterfaces";
 import { AdminLoginDTO, AdminStatsDTO } from "../../dto/adminDTO";
 import { AdminLoginMapper, AdminStatsMapper, mapUserOverviewToDTO } from "../../mapper/admin.mapper";
+import { IUserRepository } from "../../interfaces/userInterfaces";
+import { getLast12Months, MONTH_NAMES } from "../../utils/data.utils";
 
 export class AdminService implements IAdminService {
   constructor(
     private adminRepository: IAdminRepository,
-    private userRepository: UserRepository,
+    private userRepository: IUserRepository,
   ) {}
 
   loginRequest = async (
@@ -108,56 +109,36 @@ export class AdminService implements IAdminService {
     }
   };
 
-  getUserOverview = async () => {
-    try {
-      const oneYearAgo = new Date();
-      oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+getUserOverview = async (): Promise<{ name: string; count: number }[]> => {
+  try {
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
-      const usersByMonth =
-        await this.adminRepository.getUserOverview(oneYearAgo);
+    const usersByMonth =
+      await this.adminRepository.getUserOverview(oneYearAgo);
 
-      const monthNames = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ];
+    const months = getLast12Months();
 
-      const now = new Date();
-      const months: { name: string; count: number }[] = [];
+    usersByMonth.forEach((item: any) => {
+      const [year, month] = item._id.split("-");
+      const monthIndex = parseInt(month) - 1;
 
-      for (let i = 11; i >= 0; i--) {
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const year = d.getFullYear();
-        const month = d.getMonth() + 1;
-        const name = `${monthNames[month - 1]} ${year}`;
-        months.push({ name, count: 0 });
-      }
+      
 
-      usersByMonth.forEach((item: any) => {
-        const [year, month] = item._id.split("-");
-        const monthName = `${monthNames[parseInt(month) - 1]} ${year}`;
-        const found = months.find((m) => m.name === monthName);
-        if (found) found.count = item.count;
-      });
+const monthName = `${MONTH_NAMES[monthIndex]} ${year}`;
 
-      console.log('months',months);
-      const dto = mapUserOverviewToDTO(months);
 
-      return dto;
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  };
+      const found = months.find(m => m.name === monthName);
+      if (found) found.count = item.count;
+    });
+
+    return months; // ✅ ARRAY
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 
   getEarningsData = async (page: number): Promise<IEarningsResult | null> => {
     try {

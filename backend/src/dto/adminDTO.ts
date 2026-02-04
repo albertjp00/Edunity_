@@ -131,7 +131,7 @@ export interface UserCourseDTO {
 export interface CourseListAggregation {
   _id: string;
   title: string;
-  description?: string;
+  description: string;
   price: number;
   skills: string[];
   level: string;

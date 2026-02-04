@@ -1,6 +1,6 @@
 import { TotalEnrolledDTO } from "../dto/adminDTO";
 import { IAdminCourseDetails, IUserOverview, PaginatedInstructors, PaginatedUsers, PurchaseResult } from "../interfaces/adminInterfaces";
-import { IEarningsResult } from "../interfacesServices.ts/adminServiceInterfaces";
+import { IAdminRepository, IEarningsResult } from "../interfacesServices.ts/adminServiceInterfaces";
 import { CategoryModel, ICategory } from "../models/category";
 import { CourseModel, ICourse } from "../models/course";
 import { EarningModel} from "../models/earnings";
@@ -11,64 +11,6 @@ import { INotification, NotificationModel } from "../models/notification";
 import { IQuiz, QuizModel } from "../models/quiz";
 import { IReport, ReportModel } from "../models/report";
 import { IUser, UserModel } from "../models/user";
-
-
-
-
-
-
-export interface IAdminRepository {
-    findByEmail(email: string, password: string): Promise<IUser | null>
-
-    findUsers(search: string, page: number): Promise<PaginatedUsers | null>
-
-    blockUser(id: string): Promise<boolean | null>
-
-    unblockUser(id: string): Promise<boolean | null>
-
-    findUserCourses(id: string): Promise<ICourse[] | null>
-
-    findInstructors(page: string, search: string): Promise<PaginatedInstructors | null>
-
-    getKycDetails(id: string): Promise<IKyc | null>
-
-    verifyKyc(id: string): Promise<void | null>
-
-    rejectKyc(id: string): Promise<void | null>
-
-    verifyKycNotification(id: string): Promise<INotification | null>
-
-    getInstructorCourses(id: string): Promise<ICourse[] | null>
-
-    getCourseDetails(courseId: string): Promise<ICourse | null>;
-
-    findByCourseId(courseId: string): Promise<IMyCourse[] | null>
-
-    getFullCourseDetails(courseId: string): Promise<IAdminCourseDetails | null>;
-
-    getQuiz(courseId: string): Promise<IQuiz[] | null>
-
-    getPurchases(search: string, page: number): Promise<PurchaseResult | null>
-
-    addCategory(category: string, skills: string[]): Promise<ICategory | null>
-    getCategory(): Promise<ICategory[] | null>
-    deleteCategory(category: string): Promise<boolean | null>
-
-    getTotalUsers(): Promise<number | null>
-    getTotalInstructors(): Promise<number | null>
-    getCourses(): Promise<number | null>
-    getTotalEnrolled(): Promise<TotalEnrolledDTO[] | null>
-    getUserOverview(oneYearAgo: Date): Promise<IUserOverview[]>
-
-    getEarningsData(page: number): Promise<IEarningsResult | null>
-
-
-    blockCourse(courseId: string): Promise<boolean | null>
-
-    getReports(): Promise<IReport[] | null>
-
-    blockUnblockInstructor(id: string): Promise<boolean>
-}
 
 
 

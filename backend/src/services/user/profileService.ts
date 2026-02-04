@@ -1,6 +1,6 @@
 import { WalletDto } from '../../dto/instructorDTO';
 import { StatusMessage } from '../../enums/statusMessage';
-import {  UserDTO } from '../../interfaces/userInterfaces';
+import {  IUserRepository, UserDTO } from '../../interfaces/userInterfaces';
 import { INotifications, IPaymentDetailsService, IUserProfileService } from '../../interfacesServices.ts/userServiceInterfaces';
 import { walleToDto } from '../../mapper/instructor.mapper';
 import { mapPayToDto, mapUserToDTO } from '../../mapper/user.mapper';
@@ -10,18 +10,10 @@ import { UserRepository } from '../../repositories/userRepository';
 import bcrypt from 'bcrypt'
 
 export class ProfileService implements IUserProfileService {
-  private userRepository: UserRepository;
 
-  constructor(userRepository: UserRepository) {
-    this.userRepository = userRepository;
-  }
+  constructor(private userRepository: IUserRepository) {}
 
 
-  //   interface userDetails {
-  //     name  : string ,
-  //     email : string ,
-  //     role: string,
-  //   }
 
   async getProfile(userId: string):Promise<UserDTO | null> {
     try {

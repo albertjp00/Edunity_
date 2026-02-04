@@ -8,7 +8,6 @@ import {
 } from "../../interfaces/instructorInterfaces";
 import { IInstEventService } from "../../interfacesServices.ts/instructorServiceInterface";
 import { StatusMessage } from "../../enums/statusMessage";
-// import { InstEventService } from "../../services/instructor/eventService"
 
 export class EventController
   implements

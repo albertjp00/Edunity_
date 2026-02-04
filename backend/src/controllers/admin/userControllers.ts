@@ -4,7 +4,6 @@ import { IAdminUserManagementController } from "../../interfaces/adminInterfaces
 import { mapAdminUserCourseToDTO } from "../../mapper/admin.mapper";
 import { IAdminUserServices } from "../../interfacesServices.ts/adminServiceInterfaces";
 import { StatusMessage } from "../../enums/statusMessage";
-// import { AdminUserService } from "../../services/admin/userServices";
 
 
 export class AdminUserController implements IAdminUserManagementController {

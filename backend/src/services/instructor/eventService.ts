@@ -3,8 +3,7 @@ import {
   IEventResultService,
 } from "../../interfaces/instructorInterfaces";
 import { IEvent } from "../../models/events";
-import { IInsRepository } from "../../repositories/instructorRepository";
-import { IInstEventService } from "../../interfacesServices.ts/instructorServiceInterface";
+import { IInsRepository, IInstEventService } from "../../interfacesServices.ts/instructorServiceInterface";
 import { mapEventDetailsDTO, mapEventsDTO } from "../../mapper/instructor.mapper";
 
 export class InstEventService implements IInstEventService {

@@ -31,12 +31,6 @@ export class UserCourseController
   private _courseService: IUserCourseService;
 
   constructor(courseService: IUserCourseService) {
-    // const repo = new UserRepository();
-    // this.courseService = new UserCourseService(repo);
-
-    // const userRepo = new UserRepository();
-    // const instructorRepo = new InstructorRepository();
-    // const adminRepo = new AdminRepository()
 
     this._courseService = courseService;
   }
@@ -52,10 +46,10 @@ export class UserCourseController
 
       res.status(HttpStatus.OK).json({
         success: true,
-        course: data.courses,
-        skills: data.skills,
-        totalPages: data.totalPages,
-        currentPage: data.currentPage,
+        course: data?.courses,
+        skills: data?.skills,
+        totalPages: data?.totalPages,
+        currentPage: data?.currentPage,
       });
     } catch (error) {
       console.error(error);
@@ -118,12 +112,15 @@ export class UserCourseController
 
       query.blocked = false;
 
-      const { courses, totalCount } = await this._courseService.getAllCourses(
+      const result = await this._courseService.getAllCourses(
         query,
         Number(page),
         Number(limit),
         sortOption,
       );      
+      if(!result) return
+
+      const { courses, totalCount } = result
 
       res.json({
         courses,
@@ -131,7 +128,7 @@ export class UserCourseController
         totalCount,
       });
     } catch (error) {
-      // console.log("Error in getAllCourses:", error);
+      console.log("Error in getAllCourses:", error);
       next(error);
       res.status(500).json({ message: StatusMessage.FAILED_TO_GET_COURSES });
     }

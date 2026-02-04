@@ -3,149 +3,114 @@ import { CourseModel, ICourse } from "../models/course";
 import { EventModel, IEvent } from "../models/events";
 import { IInstructor, InstructorModel } from "../models/instructor";
 import { IKyc, KycModel } from "../models/kyc";
-import {  MyCourseModel } from "../models/myCourses";
+import { MyCourseModel } from "../models/myCourses";
 import { IQuiz, QuizModel } from "../models/quiz";
-import {  UserModel } from "../models/user";
-import { IEventResult, IPurchaseDetails } from "../interfaces/instructorInterfaces";
+import { UserModel } from "../models/user";
+import {
+  IEventResult,
+  IPurchaseDetails,
+} from "../interfaces/instructorInterfaces";
 import { INotification, NotificationModel } from "../models/notification";
 import { EarningModel } from "../models/earnings";
 import { IWallet, WalletModel } from "../models/wallet";
 import { CategoryModel, ICategory } from "../models/category";
 import { IInstructorDashboardDTO } from "../dto/instructorDTO";
-// import { IInsRepository } from "../interfaces/instructorInterfaces";
-
+import { IInsRepository } from "../interfacesServices.ts/instructorServiceInterface";
 
 export interface ISkills {
   uniqueSkills: string[] | null;
 }
 
-export interface IInsRepository {
-  findByEmail(email: string): Promise<IInstructor | null>
-
-  create(instructor: { name: string; email: string; password: string }): Promise<IInstructor | null>
-
-  findById(id: string): Promise<IInstructor | null>
-
-  updateProfile(id: string, data: Partial<IInstructor>): Promise<IInstructor | null>
-
-  updatePassword(id: string, newPassword: string): Promise<IInstructor | null>
-
-  kycSubmit(id: string, idProof: string, addressProof: string): Promise<IKyc | null>
-
-  changePassword(id: string, password: string): Promise<IInstructor | null>
-
-
-
-  addCourse(id: string, data: Partial<ICourse>): Promise<ICourse | null>
-
-
-  getCourses(id: string, search : string , skip: number, limit: number): Promise<ICourse[] | null>
-
-  getCourseDetails(courseId: string): Promise<ICourse | null>
-
-  purchaseDetails(courseId: string): Promise<IPurchaseDetails[] | null>
-
-  editCourse(id: string, data: Partial<ICourse>): Promise<ICourse | null>
-
-  countCourses(id : string): Promise<number>;
-
-  findSkills(): Promise<ISkills>;
-
-  addEvent(id: string, name: string, data: Partial<IEvent>): Promise<IEvent>
-
-  getMyEvents(id: string, search: string, page: string): Promise<IEventResult | null>
-
-  getEvent(id: string): Promise<IEvent | null>
-
-  updateEvent(id: string, data: any): Promise<IEvent | null>
-
-  addQuiz(courseId: string, title: string, questions: any[]): Promise<IQuiz>
-
-  getQuiz(courseId: string): Promise<IQuiz | null>
-
-  getQuizByCourseId(courseId: string): Promise<IQuiz | null>
-
-  editQuiz(id: string, data: Partial<IQuiz>): Promise<IQuiz>
-
-  startEventById(id: string): Promise<IEvent | null>
-
-  endEventById(id: string): Promise<IEvent | null>
-
-  totalCourses(id: string): Promise<number | null>
-
-  // getMyCourses(id : string):Promise<string[] | null>
-
-  getDashboard(instructorId: string): Promise<IInstructorDashboardDTO | null>
-
-  getCategory():Promise<ICategory[] | null>;
-
-
-}
 
 
 
 export class InstructorRepository implements IInsRepository {
   async findByEmail(email: string): Promise<IInstructor | null> {
-    const user = await InstructorModel.findOne({ email })
-    return user
+    const user = await InstructorModel.findOne({ email });
+    return user;
   }
 
-
-  async create(instructor: { name: string; email: string; password: string }): Promise<IInstructor> {
+  async create(instructor: {
+    name: string;
+    email: string;
+    password: string;
+  }): Promise<IInstructor> {
     return await InstructorModel.create(instructor);
   }
-
 
   async findById(id: string): Promise<IInstructor | null> {
     return await InstructorModel.findById(id);
   }
 
-  async updateProfile(id: string, data: Partial<IInstructor>): Promise<IInstructor | null> {
-    return await InstructorModel.findByIdAndUpdate(id, data, { new: true })
+  async updateProfile(
+    id: string,
+    data: Partial<IInstructor>,
+  ): Promise<IInstructor | null> {
+    return await InstructorModel.findByIdAndUpdate(id, data, { new: true });
   }
 
-  async updatePassword(id: string, newPassword: string): Promise<IInstructor | null> {
-    return await InstructorModel.findByIdAndUpdate(id, { password: newPassword }, { new: true })
+  async updatePassword(
+    id: string,
+    newPassword: string,
+  ): Promise<IInstructor | null> {
+    return await InstructorModel.findByIdAndUpdate(
+      id,
+      { password: newPassword },
+      { new: true },
+    );
   }
 
-  async kycSubmit(id: string, idProof: string, addressProof: string): Promise<IKyc | null> {
-    await InstructorModel.findByIdAndUpdate(id, { KYCstatus: 'pending' }, { new: true })
-    return await KycModel.create({ instructorId: id, idProof: idProof, addressProof: addressProof })
+  async kycSubmit(
+    id: string,
+    idProof: string,
+    addressProof: string,
+  ): Promise<IKyc | null> {
+    await InstructorModel.findByIdAndUpdate(
+      id,
+      { KYCstatus: "pending" },
+      { new: true },
+    );
+    return await KycModel.create({
+      instructorId: id,
+      idProof: idProof,
+      addressProof: addressProof,
+    });
   }
-
 
   async getNotifications(id: string): Promise<INotification[] | null> {
-    return await NotificationModel.find({ recipientId: id })
+    return await NotificationModel.find({ recipientId: id });
   }
 
-  async changePassword(id: string, password: string): Promise<IInstructor | null> {
-    return await InstructorModel.findByIdAndUpdate(id, { password: password })
+  async changePassword(
+    id: string,
+    password: string,
+  ): Promise<IInstructor | null> {
+    return await InstructorModel.findByIdAndUpdate(id, { password: password });
   }
-
 
   async addCourse(id: string, data: Partial<ICourse>): Promise<ICourse | null> {
-    return await CourseModel.create({ instructorId: id, ...data, });
+    return await CourseModel.create({ instructorId: id, ...data });
   }
 
-  
-
-
-  async getCourses(id: string, search : string , skip: number, limit: number): Promise<ICourse[] | null> {
+  async getCourses(
+    id: string,
+    search: string,
+    skip: number,
+    limit: number,
+  ): Promise<ICourse[] | null> {
     const filter: any = { instructorId: id };
 
-  if (search && search.trim() !== "") {
-    filter.title = { $regex: search, $options: "i" };
-  }
+    if (search && search.trim() !== "") {
+      filter.title = { $regex: search, $options: "i" };
+    }
     const courses = await CourseModel.find(filter).skip(skip).limit(limit);
     return courses || [];
   }
 
   async getCourseDetails(courseId: string): Promise<ICourse | null> {
-    const course = await CourseModel.findById(courseId)
-    return course
+    const course = await CourseModel.findById(courseId);
+    return course;
   }
-
-
 
   async purchaseDetails(courseId: string): Promise<IPurchaseDetails[] | null> {
     const course = await CourseModel.findById(courseId).lean();
@@ -156,63 +121,72 @@ export class InstructorRepository implements IInsRepository {
     if (!purchases || purchases.length === 0) return null;
 
     // fetch all userIds in one go
-    const userIds = purchases.map(p => p.userId);
+    const userIds = purchases.map((p) => p.userId);
     const users = await UserModel.find({ _id: { $in: userIds } }).lean();
 
     // build a map for quick lookup
-    const userMap = new Map(users.map(u => [String(u._id), u]));
+    const userMap = new Map(users.map((u) => [String(u._id), u]));
 
     // map purchases to details
-    const result: IPurchaseDetails[] = purchases.map(purchase => {
-      const user = userMap.get(String(purchase.userId));
-      if (!user) return
+    const result: IPurchaseDetails[] = purchases
+      .map((purchase) => {
+        const user = userMap.get(String(purchase.userId));
+        if (!user) return;
 
-      return {
-        name: user.name,
-        title: course.title,
-        ...(course.thumbnail && { thumbnail: course.thumbnail }),
-        ...(course.price !== undefined && { price: course.price }),
-        category: course.category,
-        amountPaid: course.price ?? 0,
-        paymentStatus: purchase.paymentStatus,
-        createdAt: purchase.createdAt,
-      };
-    }).filter(Boolean) as IPurchaseDetails[];
+        return {
+          name: user.name,
+          title: course.title,
+          ...(course.thumbnail && { thumbnail: course.thumbnail }),
+          ...(course.price !== undefined && { price: course.price }),
+          category: course.category,
+          amountPaid: course.price ?? 0,
+          paymentStatus: purchase.paymentStatus,
+          createdAt: purchase.createdAt,
+        };
+      })
+      .filter(Boolean) as IPurchaseDetails[];
 
     return result;
   }
 
-
-
-
-
-  async editCourse(id: string, data: Partial<ICourse>): Promise<ICourse | null> {
+  async editCourse(
+    id: string,
+    data: Partial<ICourse>,
+  ): Promise<ICourse | null> {
     return await CourseModel.findByIdAndUpdate(id, data, { new: true });
   }
 
-
-
-  async countCourses(id : string): Promise<number> {
-    return await CourseModel.countDocuments({instructorId : id});
-
+  async countCourses(id: string): Promise<number> {
+    return await CourseModel.countDocuments({ instructorId: id });
   }
 
   async findSkills(): Promise<ISkills> {
     const result = await CourseModel.aggregate([
       { $unwind: "$skills" },
       { $group: { _id: null, uniqueSkills: { $addToSet: "$skills" } } },
-      { $project: { _id: 0, uniqueSkills: 1 } }
-    ])
+      { $project: { _id: 0, uniqueSkills: 1 } },
+    ]);
 
-    return result[0]
+    return result[0];
   }
 
-  async addEvent(id: string, name: string, data: Partial<IEvent>): Promise<IEvent> {
-    return await EventModel.create({ instructorId: id, instructorName: name, ...data })
+  async addEvent(
+    id: string,
+    name: string,
+    data: Partial<IEvent>,
+  ): Promise<IEvent> {
+    return await EventModel.create({
+      instructorId: id,
+      instructorName: name,
+      ...data,
+    });
   }
 
-
-  async getMyEvents(id: string, search: string, page: string): Promise<IEventResult | null> {
+  async getMyEvents(
+    id: string,
+    search: string,
+    page: string,
+  ): Promise<IEventResult | null> {
     const limit = 3;
     const skip = (parseInt(page) - 1) * limit;
     // console.log(search);
@@ -230,7 +204,6 @@ export class InstructorRepository implements IInsRepository {
 
     // console.log(events);
 
-
     const total = await EventModel.countDocuments(query);
 
     return {
@@ -240,53 +213,47 @@ export class InstructorRepository implements IInsRepository {
     };
   }
 
-
-
-
   async getEvent(id: string): Promise<IEvent | null> {
-    
-    const event = await  EventModel.findById(id)
-    return event    
+    const event = await EventModel.findById(id);
+    return event;
   }
-
 
   async updateEvent(id: string, data: Partial<IEvent>): Promise<IEvent | null> {
-    return await EventModel.findByIdAndUpdate(id, { ...data },{new:true})
+    return await EventModel.findByIdAndUpdate(id, { ...data }, { new: true });
   }
 
-
-  async addQuiz(courseId: string, title: string, questions: any[]): Promise<IQuiz> {
-    return await QuizModel.create({ courseId, title, questions })
+  async addQuiz(
+    courseId: string,
+    title: string,
+    questions: any[],
+  ): Promise<IQuiz> {
+    return await QuizModel.create({ courseId, title, questions });
   }
 
   async getQuiz(courseId: string): Promise<IQuiz | null> {
-
-
-    const quiz = await QuizModel.findById({ courseId: courseId })
+    const quiz = await QuizModel.findById({ courseId: courseId });
     console.log(quiz);
-    return quiz
-
+    return quiz;
   }
 
   async getQuizByCourseId(courseId: string): Promise<IQuiz | null> {
-    return await QuizModel.findOne({ courseId })
+    return await QuizModel.findOne({ courseId });
   }
-
 
   async editQuiz(id: string, data: Partial<IQuiz>): Promise<IQuiz> {
     const updatedQuiz = await QuizModel.findOneAndUpdate(
-  {courseId : id},
-  {
-    $set: {
-      title: data.title,
-      questions: data.questions,
-    },
-  },
-  {
-    new: true,
-    runValidators: true,
-  }
-);
+      { courseId: id },
+      {
+        $set: {
+          title: data.title,
+          questions: data.questions,
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
 
     if (!updatedQuiz) {
       throw new Error("Quiz not found");
@@ -294,15 +261,13 @@ export class InstructorRepository implements IInsRepository {
     return updatedQuiz;
   }
 
-
-
   startEventById = async (id: string): Promise<IEvent | null> => {
     if (!Types.ObjectId.isValid(id)) return null;
 
     return EventModel.findByIdAndUpdate(
       id,
       { isLive: true },
-      { new: true }
+      { new: true },
     ).exec();
   };
 
@@ -316,29 +281,32 @@ export class InstructorRepository implements IInsRepository {
         participantsList: [],
         participants: 0,
       },
-      { new: true }
+      { new: true },
     ).exec();
   };
 
-  //dashboard 
+  //dashboard
   totalCourses = async (id: string): Promise<number | null> => {
     try {
-      const total = await CourseModel.countDocuments({ instructorId: id })
-      return total
+      const total = await CourseModel.countDocuments({ instructorId: id });
+      return total;
     } catch (error) {
       console.log(error);
-      return null
+      return null;
     }
-  }
+  };
 
-
-  getDashboard = async (instructorId: string): Promise<IInstructorDashboardDTO | null> => {
+  getDashboard = async (
+    instructorId: string,
+  ): Promise<IInstructorDashboardDTO | null> => {
     try {
       // 1️⃣ Total Courses
       const totalCourses = await CourseModel.countDocuments({ instructorId });
 
       // 2️⃣ Get course IDs created by this instructor
-      const courses = await CourseModel.find({ instructorId }).select("_id title");
+      const courses = await CourseModel.find({ instructorId }).select(
+        "_id title",
+      );
       const courseIds = courses.map((c) => c._id.toString());
 
       if (courseIds.length === 0) {
@@ -376,7 +344,6 @@ export class InstructorRepository implements IInsRepository {
         }
       });
 
-
       // 7️⃣ Get recent students manually (limit 5)
       const recentEnrollments = enrollments
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
@@ -389,11 +356,15 @@ export class InstructorRepository implements IInsRepository {
       // Fetch user and course data manually (no populate)
       const [users, recentCourses] = await Promise.all([
         UserModel.find({ _id: { $in: userIds } }).select("name email"),
-        CourseModel.find({ _id: { $in: Array.from(courseIdSet) } }).select("_id title"),
+        CourseModel.find({ _id: { $in: Array.from(courseIdSet) } }).select(
+          "_id title",
+        ),
       ]);
 
       const userMap = new Map(users.map((u) => [u._id.toString(), u]));
-      const courseMap = new Map(recentCourses.map((c) => [c._id.toString(), c.title]));
+      const courseMap = new Map(
+        recentCourses.map((c) => [c._id.toString(), c.title]),
+      );
 
       const recentStudents = recentEnrollments.map((e) => ({
         name: userMap.get(e.userId)?.name || "Unknown",
@@ -416,10 +387,9 @@ export class InstructorRepository implements IInsRepository {
     }
   };
 
-
-  getMonthlyEarnings = async (instructorId: string): Promise<
-    { month: string; earnings: number }[]
-  > => {
+  getMonthlyEarnings = async (
+    instructorId: string,
+  ): Promise<{ month: string; earnings: number }[]> => {
     try {
       const result = await EarningModel.aggregate([
         { $match: { instructorId } },
@@ -429,12 +399,22 @@ export class InstructorRepository implements IInsRepository {
             totalEarnings: { $sum: "$instructorEarnings" },
           },
         },
-        { $sort: { "_id": 1 } },
+        { $sort: { _id: 1 } },
       ]);
 
       const months = [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
       ];
 
       // Map all 12 months to ensure consistent data
@@ -456,57 +436,36 @@ export class InstructorRepository implements IInsRepository {
       const earnings = await EarningModel.find({ instructorId: id });
 
       // Calculate total instructor earnings
-      const total = earnings.reduce((sum, e) => sum + (e.instructorEarnings || 0), 0);
+      const total = earnings.reduce(
+        (sum, e) => sum + (e.instructorEarnings || 0),
+        0,
+      );
 
       return total;
     } catch (error) {
       console.error("Error calculating total earnings:", error);
       return 0;
     }
-  }
-
+  };
 
   getWallet = async (id: string): Promise<IWallet | null> => {
     try {
-      const wallet = await WalletModel.findOne({ userId: id })
-      
-      return wallet
+      const wallet = await WalletModel.findOne({ userId: id });
+
+      return wallet;
     } catch (error) {
       console.error("Error calculating total earnings:", error);
       return null;
     }
-  }
+  };
 
 
-// async addToWallet(id: string, transaction: WalletTransaction): Promise<void> {
-//     const wallet = await WalletModel.findOne({ instructorId:id });
-
-//     if (wallet) {
-//       wallet.transactions.push({ ...transaction, createdAt: new Date() });
-//       if (transaction.type === "credit") wallet.balance += transaction.amount;
-//       else wallet.balance -= transaction.amount;
-//       await wallet.save();
-//     } else {
-//       await WalletModel.create({
-//         instructorId : id,
-//         balance: transaction.type === "credit" ? transaction.amount : -transaction.amount,
-//         transactions: [{ ...transaction, createdAt: new Date() }],
-//       });
-//     }
-//   }
-
-
-getCategory = async():Promise<ICategory[] | null>=>{
-  try {
-    return await CategoryModel.find()
-  } catch (error) {
-    console.log(error);
-    return null
-  }
+  getCategory = async (): Promise<ICategory[] | null> => {
+    try {
+      return await CategoryModel.find();
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  };
 }
-
-
-
-}
-
-

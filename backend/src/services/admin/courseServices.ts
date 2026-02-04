@@ -2,12 +2,12 @@ import { IAdminCourseService } from "../../interfaces/adminInterfaces";
 import { IUserRepository } from "../../interfaces/userInterfaces";
 import { ICategory } from "../../models/category";
 import { IInstructor } from "../../models/instructor";
-import { IAdminRepository } from "../../repositories/adminRepositories";
-import { IInsRepository } from "../../repositories/instructorRepository";
 import PDFDocument from "pdfkit";
 import { once } from "events";
 import { mapCategoryDto, mapCourseToDTO, mapPurchaseToDTO, mapReportDto } from "../../mapper/admin.mapper";
 import { AdminPurchaseService, CategoryDTO,  ReportDTO } from "../../dto/adminDTO";
+import { IAdminRepository } from "../../interfacesServices.ts/adminServiceInterfaces";
+import { IInsRepository } from "../../interfacesServices.ts/instructorServiceInterface";
 
 export class AdminCourseService implements IAdminCourseService {
   constructor(

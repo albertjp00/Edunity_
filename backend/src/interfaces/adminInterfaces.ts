@@ -13,7 +13,7 @@ import { ICourse } from "../models/course";
 import { IInstructor } from "../models/instructor";
 import { IQuiz } from "../models/quiz";
 import { IUser } from "../models/user";
-import { NextFunction, Request, Response } from "express"
+import { NextFunction, Request, Response } from "express";
 export interface IAdminCourseReadController {
   getCourses(req: Request, res: Response, next: NextFunction): Promise<void>;
   getCourseDetails(
@@ -177,14 +177,10 @@ export interface IAdminCourseService {
 }
 
 export interface IAdminAuthService {
-  loginRequest(
-    email: string,
-    password: string,
-  ): Promise<AdminLoginDTO>;
+  loginRequest(email: string, password: string): Promise<AdminLoginDTO>;
 }
 
 //adminInstructor services
-
 export interface IAdminInstructorService {
   getInstructors(
     page: string,
@@ -203,6 +199,8 @@ export interface IAdminInstructorService {
 
   getInstructorsCoursesRequest(id: string): Promise<ICourse[] | null>;
 }
+
+
 
 export interface PaginatedUsers {
   users: IUser[];

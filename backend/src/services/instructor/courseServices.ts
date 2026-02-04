@@ -1,11 +1,10 @@
 import { QuizDTO } from "../../dto/instructorDTO";
 import { CourseResult, IPurchaseDetails } from "../../interfaces/instructorInterfaces";
-import { IInstCourseService } from "../../interfacesServices.ts/instructorServiceInterface";
+import { IInsRepository, IInstCourseService } from "../../interfacesServices.ts/instructorServiceInterface";
 import { mapCourseDetailsToDTO, mapInstructorCourseToDTO, mapPurchaseDetailsToDTO, mapQuizToDTO } from "../../mapper/instructor.mapper";
 import { ICategory } from "../../models/category";
 import { ICourse } from "../../models/course";
 import { IQuestion, IQuiz } from "../../models/quiz";
-import { IInsRepository } from "../../repositories/instructorRepository";
 import { generateSignedUrl } from "../../utils/getSignedUrl";
 
 

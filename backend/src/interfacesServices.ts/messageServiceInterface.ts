@@ -14,7 +14,7 @@ export interface IMessageService {
 
   getUnreadMessages(userId: string, instructorId: string): Promise<ILastMessage | null>;
 
-  sendMessage(senderId: string, receiverId: string, text: string, file: string | null): Promise<IMessage>;
+  sendMessage(senderId: string, receiverId: string, text: string, file: string | null): Promise<IMessage | null>;
 
   getChatHistory(userId: string, receiverId: string): Promise<MessageDTO[]>;
 

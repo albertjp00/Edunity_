@@ -75,11 +75,11 @@ export interface IUserAuthService {
 export interface IUserCourseService {
 
     getCourses(page: number,limit: number): Promise<{
-        courses: ICourse[];
+        courses: ICourse[] | null;
         skills: ISkills;
         totalPages: number;
         currentPage: number;
-    }>;
+    } | null>;
 
     getAllCourses(
         query: FilterQuery<ICourse>,
@@ -87,11 +87,11 @@ export interface IUserCourseService {
         limit: number,
         sortOption: SortOption
     ): Promise<{
-        courses: CourseDetailsDTO[];
+        courses: CourseDetailsDTO[] | ICourse | null;
         totalCount: number;
         totalPages: number;
         currentPage: number;
-    }>;
+    } | null>;
 
     fetchCourseDetails(
         userId: string,

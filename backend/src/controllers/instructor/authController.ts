@@ -5,8 +5,8 @@ import {
   IInstPasswordResetController,
   IInstRegisterController,
 } from "../../interfaces/instructorInterfaces";
+import { IInstAuthService } from "../../interfacesServices.ts/instructorServiceInterface";
 
-import { InstAuthService } from "../../services/instructor/authService";
 import { NextFunction, Request, Response } from "express";
 
 export class InstAuthController
@@ -15,9 +15,9 @@ export class InstAuthController
     IInstRegisterController,
     IInstPasswordResetController
 {
-  private _instAuthService: InstAuthService;
+  private _instAuthService: IInstAuthService;
 
-  constructor(instAuthService: InstAuthService) {
+  constructor(instAuthService: IInstAuthService) {
     // const repo = new InstructorRepository();
     this._instAuthService = instAuthService;
   }
@@ -38,12 +38,11 @@ export class InstAuthController
         res.status(HttpStatus.OK).json({
           success: true,
           message: StatusMessage.LOGIN_SUCCESS,
-          instructor: response.instructor,
           token: response.accessToken,
           refreshToken: response.refreshToken,
         });
       } else {
-        res.status(response.statusCode || HttpStatus.UNAUTHORIZED).json({
+        res.status(HttpStatus.UNAUTHORIZED).json({
           success: false,
           message: response.message,
         });

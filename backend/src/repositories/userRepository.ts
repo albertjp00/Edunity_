@@ -552,7 +552,7 @@ export class UserRepository
     return await QuizModel.findOne({ courseId: courseId });
   }
 
-  async submitQuiz(userId: string, courseId: string, score: number) {
+  async submitQuiz(userId: string, courseId: string, score: number):Promise<IMyCourse> {
     return await MyCourseModel.findOneAndUpdate(
       { userId, courseId },
       { $set: { quizScore: score } },
@@ -576,19 +576,21 @@ export class UserRepository
     ).exec();
   };
 
-  async findUserCourse(userId: string, courseId: string) {
+  async findUserCourse(userId: string, courseId: string):Promise<IMyCourse | null> {
     return await MyCourseModel.findOne({ userId, courseId });
   }
 
-  async removeUserCourse(userId: string, courseId: string) {
-    return await MyCourseModel.deleteOne({ userId, courseId });
+  async removeUserCourse(userId: string, courseId: string):Promise<boolean> {
+    await MyCourseModel.deleteOne({ userId, courseId });
+    return true
   }
 
-  async decreaseCourseEnrollment(courseId: string) {
-    return await CourseModel.updateOne(
+  async decreaseCourseEnrollment(courseId: string):Promise<boolean> {
+    await CourseModel.updateOne(
       { _id: courseId },
       { $inc: { totalEnrolled: -1 } },
     );
+    return true
   }
 
   async addTransaction(

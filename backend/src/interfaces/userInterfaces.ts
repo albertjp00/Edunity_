@@ -30,6 +30,10 @@ export interface IUserRepository {
 
   getCourse(id: string): Promise<ICourse | null>
 
+  onPurchase(id: string, value: boolean): Promise<ICourse | null>
+
+  cancelPurchase(id: string): Promise<ICourse | null>
+
   buyCourse(id: string): Promise<ICourse | null>
 
   updateSubscription(id: string, data: Partial<ISubscription>): Promise<boolean>
@@ -68,6 +72,8 @@ export interface IUserRepository {
 
   getEvents(): Promise<IEvent[] | null>
 
+  enrollEvent(userId: string, eventId: string): Promise<IMyEvent>
+
   getMyEvents(id: string): Promise<IEvent[] | null>
 
   addtoFavourites(id: string, courseId: string): Promise<string | null>
@@ -81,6 +87,26 @@ export interface IUserRepository {
   getSubscriptionCourses(id: string, page: number): Promise<ISubscriptionCourses | null>
 
   reportCourse(userId: string, courseId: string, report: IReport): Promise<boolean | null>
+
+  countAllCourses(query: any): Promise<number>
+
+  userPayment(userId: string,courseId: string,courseName: string,coursePrice: number,): Promise<IPayment | null>
+
+  getQuiz(courseId: string): Promise<IQuiz | null>
+
+  getReview(userId: string, courseId: string): Promise<IReview[] | null>
+
+  findUserCourse(userId: string, courseId: string):Promise<IMyCourse | null>
+
+  getFavCourseDetails(userId: string,courseId: string,): Promise<IFavourite | null>
+
+  submitQuiz(userId: string, courseId: string, score: number):Promise<IMyCourse>
+
+  addTransaction(userId: string,transaction: WalletTransaction,): Promise<void>
+
+  removeUserCourse(userId: string, courseId: string):Promise<boolean>
+
+  decreaseCourseEnrollment(courseId: string):Promise<boolean>
 
 }
 
@@ -97,6 +123,7 @@ import { JwtPayload } from "jsonwebtoken";
 import { FilterQuery, SortOrder } from "mongoose";
 import { CourseListAggregation } from "../dto/adminDTO";
 import { SubscriptionCourseDTO } from "../dto/userDTO";
+import { IQuiz } from "../models/quiz";
 
 
 //authController

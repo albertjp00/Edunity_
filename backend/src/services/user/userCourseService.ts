@@ -2,17 +2,15 @@ import {
   IMyCourses,
   IRazorpayOrder,
   ISubscriptionCoursesService,
+  IUserRepository,
   SortOption,
 } from "../../interfaces/userInterfaces";
 import { ICourse } from "../../models/course";
 import { IMyCourse } from "../../models/myCourses";
-import { AdminRepository } from "../../repositories/adminRepositories";
-import { InstructorRepository } from "../../repositories/instructorRepository";
-import { UserRepository } from "../../repositories/userRepository";
+import {   ISkills } from "../../repositories/instructorRepository";
 import razorpay from "../../utils/razorpay";
 import crypto from "crypto";
 import path from "path";
-import { fileURLToPath } from "url";
 import { generateCertificate } from "../../utils/certificate";
 import { generateSignedUrl } from "../../utils/getSignedUrl";
 import {
@@ -38,6 +36,8 @@ import {
   QuizUserDTO,
   UserInstructorDTO,
 } from "../../dto/userDTO";
+import { IAdminRepository } from "../../interfacesServices.ts/adminServiceInterfaces";
+import { IInsRepository } from "../../interfacesServices.ts/instructorServiceInterface";
 
 
 export interface ICourseDetails extends ICourse {
@@ -45,22 +45,21 @@ export interface ICourseDetails extends ICourse {
 }
 
 export class UserCourseService implements IUserCourseService {
-  private userRepository: UserRepository;
-  private instructorRepository: InstructorRepository;
-  private adminRepository: AdminRepository;
 
   constructor(
-    userRepository: UserRepository,
-    instructorRepository: InstructorRepository,
-    adminRepository: AdminRepository,
-  ) {
-    this.userRepository = userRepository;
-    this.instructorRepository = instructorRepository;
-    this.adminRepository = adminRepository;
-  }
+    private userRepository: IUserRepository,
+    private instructorRepository: IInsRepository,
+    private adminRepository: IAdminRepository,
+  ) {}
 
-  async getCourses(page: number, limit: number) {
-    const skip = (page - 1) * limit;
+  async getCourses(page: number, limit: number): Promise<{
+          courses: ICourse[] | null;
+          skills: ISkills;
+          totalPages: number;
+          currentPage: number;
+      } | null> {
+    try {
+      const skip = (page - 1) * limit;
 
     const courses = await this.userRepository.getCourses(skip, limit);
     const totalCourses = await this.userRepository.countCourses();
@@ -72,6 +71,10 @@ export class UserCourseService implements IUserCourseService {
       totalPages: Math.ceil(totalCourses / limit),
       currentPage: page,
     };
+    } catch (error) {
+      console.log(error);
+      return null
+    }
   }
 
   async getAllCourses(
@@ -80,7 +83,8 @@ export class UserCourseService implements IUserCourseService {
     limit: number,
     sortOption: SortOption,
   ) {
-    const skip = (page - 1) * limit;
+    try {
+      const skip = (page - 1) * limit;
 
     const courses = await this.userRepository.getAllCourses(
       query,
@@ -88,6 +92,7 @@ export class UserCourseService implements IUserCourseService {
       limit,
       sortOption,
     );
+    if(!courses) return null
 
     const totalCount = await this.userRepository.countAllCourses(query);
 
@@ -97,6 +102,10 @@ export class UserCourseService implements IUserCourseService {
       totalPages: Math.ceil(totalCount / limit),
       currentPage: page,
     };
+    } catch (error) {
+      console.log(error);
+      return null
+    }
   }
 
   mySubscriptionCoursesRequest = async (
@@ -347,8 +356,9 @@ export class UserCourseService implements IUserCourseService {
   } | null> => {
     try {
       const result = await this.userRepository.findMyCourses(id, page);
+      if(!result) return null
 
-      if (!result.myCourses || result.myCourses.length === 0)
+      if (!result?.myCourses || result.myCourses.length === 0)
         return { populatedCourses: [], result };
       const populatedCourses = await Promise.all(
         result.myCourses.map(async (mc) => {

@@ -2,11 +2,10 @@ import {
   PaginatedUsersService,
 } from "../../interfaces/adminInterfaces";
 import { IUserRepository } from "../../interfaces/userInterfaces";
-import { IAdminUserServices } from "../../interfacesServices.ts/adminServiceInterfaces";
+import { IAdminRepository, IAdminUserServices } from "../../interfacesServices.ts/adminServiceInterfaces";
 import { mapUserToDTO } from "../../mapper/user.mapper";
 import { ICourse } from "../../models/course";
 import { IUser } from "../../models/user";
-import { IAdminRepository } from "../../repositories/adminRepositories";
 
 export class AdminUserService implements IAdminUserServices {
   constructor(

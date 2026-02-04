@@ -4,7 +4,7 @@ import {
   InstructorDashboardRaw,
   WalletDto,
 } from "../../dto/instructorDTO";
-import { IInstructorProfileService } from "../../interfacesServices.ts/instructorServiceInterface";
+import { IInsRepository, IInstructorProfileService } from "../../interfacesServices.ts/instructorServiceInterface";
 import {
   mapDashboardToDTO,
   mapEarningsToDTO,
@@ -13,13 +13,13 @@ import {
   walleToDto,
 } from "../../mapper/instructor.mapper";
 import { IInstructor } from "../../models/instructor";
-import { InstructorRepository } from "../../repositories/instructorRepository";
+import {  InstructorRepository } from "../../repositories/instructorRepository";
 import bcrypt from "bcrypt";
 
 export class InstructorProfileService implements IInstructorProfileService {
-  private instructorRepository: InstructorRepository;
+  private instructorRepository: IInsRepository;
 
-  constructor(instructorRepository: InstructorRepository) {
+  constructor(instructorRepository: IInsRepository) {
     this.instructorRepository = instructorRepository;
   }
   async getProfile(userId: string): Promise<IInstructorProfileDTO | null> {

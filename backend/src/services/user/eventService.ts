@@ -1,10 +1,12 @@
 import { IMyEvent } from "../../models/myEvents";
-import { InstructorRepository } from "../../repositories/instructorRepository";
+import {  InstructorRepository } from "../../repositories/instructorRepository";
 import { UserRepository } from "../../repositories/userRepository";
 import { IUserEventService } from "../../interfacesServices.ts/userServiceInterfaces";
 import { StatusMessage } from "../../enums/statusMessage";
 import { mapEventDetailsToDto, mapEventToDTO } from "../../mapper/user.mapper";
 import { EventDTO } from "../../dto/userDTO";
+import { IUserRepository } from "../../interfaces/userInterfaces";
+import { IInsRepository } from "../../interfacesServices.ts/instructorServiceInterface";
 
 
 export class NotFoundError extends Error {
@@ -32,18 +34,11 @@ export class EventFullError extends Error {
 
 export class UserEventService implements IUserEventService {
 
-    private userRepository: UserRepository;
-    private instructorRepository: InstructorRepository;
 
     constructor(
-        userRepository: UserRepository, 
-        instructorRepository: InstructorRepository
-    ) {
-
-         
-        this.userRepository = userRepository;
-        this.instructorRepository = instructorRepository
-    }
+        private userRepository: IUserRepository, 
+        private instructorRepository: IInsRepository
+    ) {}
 
     getEventsRequest = async (): Promise<EventDTO[] | null> => {
         try {

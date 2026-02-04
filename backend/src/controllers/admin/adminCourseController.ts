@@ -26,13 +26,12 @@ export class AdminCourseController
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 6;
       const search = req.query.search as string;
-      console.log('get courses');
+      console.log("get courses");
       const data = await this._courseService.getCoursesRequest(
-        
         page,
         search,
         limit,
-      );      
+      );
       res.status(HttpStatus.OK).json({
         success: true,
         courses: data.courses,
@@ -47,8 +46,6 @@ export class AdminCourseController
     }
   };
 
-
-
   getCourseDetails = async (
     req: Request,
     res: Response,
@@ -57,8 +54,6 @@ export class AdminCourseController
     try {
       const id = req.params.id!;
       const data = await this._courseService.getCourseDetailsRequest(id);
-
-
 
       res.status(HttpStatus.OK).json({
         success: true,
@@ -73,8 +68,6 @@ export class AdminCourseController
     }
   };
 
-
-
   getAllPurchases = async (
     req: AdminAuthRequest,
     res: Response,
@@ -87,9 +80,8 @@ export class AdminCourseController
         search as string,
         Number(page),
       );
-      
 
-    //   const purchaseDTOs = (purchases?.purchases ?? []).map(mapPurchaseToDTO);
+      //   const purchaseDTOs = (purchases?.purchases ?? []).map(mapPurchaseToDTO);
 
       res.status(HttpStatus.OK).json({
         success: true,
@@ -153,7 +145,7 @@ export class AdminCourseController
     next: NextFunction,
   ) => {
     try {
-      const categories = await this._courseService.getCategoryRequest();      
+      const categories = await this._courseService.getCategoryRequest();
 
       res.json({ success: true, category: categories });
     } catch (error) {
@@ -169,8 +161,7 @@ export class AdminCourseController
   ) => {
     try {
       const category = req.body.category;
-      console.log("category delete" ,category );
-      
+      console.log("category delete", category);
 
       await this._courseService.deleteCategoryRequest(category);
 

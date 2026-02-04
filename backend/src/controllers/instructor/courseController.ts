@@ -3,7 +3,7 @@ import { InstAuthRequest } from "../../middleware/authMiddleware";
 import { uploadToS3 } from "../../utils/s3Upload";
 import fs from "fs";
 import { generateSignedUrl } from "../../utils/getSignedUrl";
-import {  IModule } from "../../models/course";
+import { IModule } from "../../models/course";
 import { HttpStatus } from "../../enums/httpStatus.enums";
 import {
   IInstCourseManageController,
@@ -82,13 +82,11 @@ export class InstCourseController
         return;
       }
 
-      res
-        .status(HttpStatus.OK)
-        .json({
-          success: true,
-          course: result.course,
-          quiz: result?.quizExists,
-        });
+      res.status(HttpStatus.OK).json({
+        success: true,
+        course: result.course,
+        quiz: result?.quizExists,
+      });
     } catch (error) {
       console.log(error);
       next(error);
@@ -123,7 +121,7 @@ export class InstCourseController
   ) => {
     try {
       const courseId = req.params.id!;
-      
+
       const data = await this._courseService.getPurchaseDetails(courseId);
 
       if (!data) {
@@ -142,7 +140,6 @@ export class InstCourseController
       next(error);
     }
   };
-
 
   editCourse = async (
     req: Request,

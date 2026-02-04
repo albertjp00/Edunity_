@@ -17,7 +17,6 @@ export class ProfileController implements
     private _profileService: IUserProfileService;
 
     constructor(profileService: IUserProfileService) {
-        // const repo = new UserRepository(); 
         this._profileService = profileService
     }
 

@@ -15,7 +15,7 @@ export interface IMessageRepository {
 
   getInstructors(userId: string): Promise<IMessagedInstructor[]>
 
-  createMessage(senderId: string, receiverId: string, text: string, file: string): Promise<IMessage>
+  createMessage(senderId: string, receiverId: string, text: string, file: string | null): Promise<IMessage | null>
 
   getMessages(userId: string, receiverId: string): Promise<IMessage[]>
 
@@ -23,6 +23,11 @@ export interface IMessageRepository {
 
   getUsers(instructorId: string): Promise<IMessagedUser[]>
 
+  getUnreadMessages(senderId: string, receiverId: string): Promise<ILastMessage | null>
+
+  getUserMessages(instructorId: string, userId: string): Promise<IMessage[]>
+
+  sendInstructorsMessage(instructorId: string, userId: string, text: string, file: string | null):Promise<IMessage>
 
 }
 
@@ -114,10 +119,8 @@ export class MessageRepository implements IMessageRepository {
 
 
 
-  async createMessage(userId: string, instructorId: string, text?: string, file?: string | null): Promise<IMessage> {
-    const message = new MessageModel({ senderId: userId, receiverId: instructorId, text, attachment: file });
-    // console.log("messsages repo",message);
-    
+  async createMessage(userId: string, instructorId: string, text?: string, file?: string | null): Promise<IMessage | null> {
+    const message = new MessageModel({ senderId: userId, receiverId: instructorId, text, attachment: file });    
     return message.save();
   }
 
@@ -213,7 +216,7 @@ export class MessageRepository implements IMessageRepository {
 
 
 
-  async sendInstructorsMessage(instructorId: string, userId: string, text: string, file: string | null) {
+  async sendInstructorsMessage(instructorId: string, userId: string, text: string, file: string | null):Promise<IMessage> {
 
     const message = new MessageModel({
       senderId: instructorId,
