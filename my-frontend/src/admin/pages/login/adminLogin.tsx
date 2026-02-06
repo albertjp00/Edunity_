@@ -37,7 +37,7 @@ const LoginAdmin: React.FC = () => {
       // }
       if (response.data.success) {
         localStorage.setItem('admin',response.data.token)
-        navigate('/admin/home')
+        navigate('/admin')
       }else{
         toast.error(response.data.message)
       }

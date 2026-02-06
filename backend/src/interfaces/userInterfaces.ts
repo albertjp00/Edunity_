@@ -30,7 +30,7 @@ export interface IUserRepository {
 
   getCourse(id: string): Promise<ICourse | null>
 
-  onPurchase(id: string, value: boolean): Promise<ICourse | null>
+  onPurchase(id: string, value: boolean ): Promise<ICourse | null>
 
   cancelPurchase(id: string): Promise<ICourse | null>
 
@@ -88,7 +88,7 @@ export interface IUserRepository {
 
   reportCourse(userId: string, courseId: string, report: IReport): Promise<boolean | null>
 
-  countAllCourses(query: any): Promise<number>
+  countAllCourses(query: FilterQuery<ICourse>): Promise<number>
 
   userPayment(userId: string,courseId: string,courseName: string,coursePrice: number,): Promise<IPayment | null>
 

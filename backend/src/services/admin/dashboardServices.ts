@@ -1,14 +1,19 @@
 import jwt from "jsonwebtoken";
 import { PaginatedUsers } from "../../interfaces/adminInterfaces";
 import {
+  EarningsFilter,
+  EarningsSort,
   IAdminRepository,
   IAdminService,
   IEarningsResult,
 } from "../../interfacesServices.ts/adminServiceInterfaces";
 import { AdminLoginDTO, AdminStatsDTO } from "../../dto/adminDTO";
-import { AdminLoginMapper, AdminStatsMapper, mapUserOverviewToDTO } from "../../mapper/admin.mapper";
+import { AdminLoginMapper, AdminStatsMapper } from "../../mapper/admin.mapper";
 import { IUserRepository } from "../../interfaces/userInterfaces";
 import { getLast12Months, MONTH_NAMES } from "../../utils/data.utils";
+
+const refresh: string = process.env.REFRESH_KEY!;
+
 
 export class AdminService implements IAdminService {
   constructor(
@@ -35,8 +40,9 @@ export class AdminService implements IAdminService {
         process.env.SECRET_KEY as string,
         { expiresIn: "1d" },
       );
+      const refreshToken = jwt.sign({ id: admin._id }, refresh, { expiresIn: "2h" });
 
-      return AdminLoginMapper(token);
+      return AdminLoginMapper({token , refreshToken});
     } catch (error) {
       console.error(error);
       return {
@@ -140,9 +146,30 @@ const monthName = `${MONTH_NAMES[monthIndex]} ${year}`;
 };
 
 
-  getEarningsData = async (page: number): Promise<IEarningsResult | null> => {
+  getEarningsData = async (page: number,
+    fromDate: string | undefined,
+    toDate: string | undefined,
+    sort: string | undefined,): Promise<IEarningsResult | null> => {
     try {
-      const earningsData = await this.adminRepository.getEarningsData(page);
+
+      const filter :EarningsFilter = {};
+
+    if (fromDate && toDate) {
+      filter.lastUpdated = {
+        $gte: new Date(fromDate as string),
+        $lte: new Date(toDate as string),
+      };
+    }
+    
+
+
+    let sortOption : EarningsSort = { lastUpdated: -1 };
+
+    if (sort === "adminHigh") sortOption = { adminEarnings: -1 };
+    if (sort === "adminLow") sortOption = { adminEarnings: 1 };
+    if (sort === "latest") sortOption = { lastUpdated: -1 };
+
+      const earningsData = await this.adminRepository.getEarningsData(page ,filter , sortOption);
 
       const earnings = earningsData?.earnings || [];
       const totalPages = earningsData?.totalPages || 0;
@@ -152,7 +179,6 @@ const monthName = `${MONTH_NAMES[monthIndex]} ${year}`;
         })
         .reduce((acc, curr) => acc + curr);
 
-      // console.log('get earnings data',earningsData , total);
       return { earnings, totalEarnings, totalPages };
     } catch (error) {
       console.log(error);

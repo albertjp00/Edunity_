@@ -54,9 +54,16 @@ export class AdminDashboardController implements IAdminDashboardController {
   ) => {
     try {
       const page = Number(req.params.page) || 1;
-      const result = await this._adminService.getEarningsData(page);
-      console.log("earnings ", result);
 
+      const { fromDate, toDate, sort } = req.query;
+      console.log(fromDate, toDate, sort);
+
+      const result = await this._adminService.getEarningsData(
+        page,
+        req.query.fromDate as string | undefined,
+        req.query.toDate as string | undefined,
+        req.query.sort as string | undefined,
+      );
       const dto = mapEarningsToDTO(result?.earnings ?? []);
 
       res.status(HttpStatus.OK).json({

@@ -46,9 +46,9 @@ export class AuthService implements IUserAuthService {
             }
 
             const accessToken = jwt.sign({ id: user._id }, secret, { expiresIn: "15m" });
-            const refreshToken = jwt.sign({ id: user._id }, refresh, { expiresIn: "30m" });
+            const refreshToken = jwt.sign({ id: user._id }, refresh, { expiresIn: "2h" });
 
-            const loginMapped = LoginMapper({ message: StatusMessage.LOGIN_SUCCESS,accessToken,refreshToken})
+            const loginMapped = LoginMapper({ success : true, message: StatusMessage.LOGIN_SUCCESS,accessToken,refreshToken})
 
 
 

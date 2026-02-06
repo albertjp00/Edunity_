@@ -9,7 +9,6 @@ import { IAuthBasicController, IAuthForgotPasswordController,
    RefreshTokenPayload} from "../../interfaces/userInterfaces";
 import { IUserAuthService } from "../../interfacesServices.ts/userServiceInterfaces";
 import { StatusMessage } from "../../enums/statusMessage";
-// import { AuthService } from "../../services/user/authService";
 
 
 
@@ -32,7 +31,6 @@ export class AuthController
   constructor(authService: IUserAuthService) {
     this._authService = authService
   }
-
 
 
 

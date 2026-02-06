@@ -47,6 +47,8 @@ const courseController = new AdminCourseController(adminCourseService);
 
 admin.post(ADMIN_ROUTES.AUTH.LOGIN, authController.adminLogin);
 
+admin.post(ADMIN_ROUTES.AUTH.REFRESH, authController.refreshToken);
+
 admin.get(ADMIN_ROUTES.USERS.GET_ALL, adminAuthMiddleware, userController.getUsers);
 
 admin.put(ADMIN_ROUTES.USERS.BLOCK_UNBLOCK, adminAuthMiddleware, userController.blockUnblock);

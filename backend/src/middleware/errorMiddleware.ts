@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { HttpStatus } from "../enums/httpStatus.enums";
 import logger from "../utils/logger";
 

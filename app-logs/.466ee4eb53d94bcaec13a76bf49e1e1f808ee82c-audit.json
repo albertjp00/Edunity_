@@ -9,6 +9,16 @@
             "date": 1770217726001,
             "name": "C:\\Edunity_\\app-logs\\error-2026-02-04.log",
             "hash": "e21cd4ba8ff5d21fcde57ed92283bffdf85c29124ed8b1749af2ee4712b0c699"
+        },
+        {
+            "date": 1770284171802,
+            "name": "C:\\Edunity_\\app-logs\\error-2026-02-05.log",
+            "hash": "8e402050a0c43a4483efac8036db3042299af18ed508ddc76f24029a9cf3fca0"
+        },
+        {
+            "date": 1770316398183,
+            "name": "C:\\Edunity_\\app-logs\\error-2026-02-06.log",
+            "hash": "287c07d5b3646442ff69e06d1298266b1d45133b3dd131dd0940db883649cb16"
         }
     ],
     "hashType": "sha256"

@@ -1,6 +1,4 @@
 import { IMyEvent } from "../../models/myEvents";
-import {  InstructorRepository } from "../../repositories/instructorRepository";
-import { UserRepository } from "../../repositories/userRepository";
 import { IUserEventService } from "../../interfacesServices.ts/userServiceInterfaces";
 import { StatusMessage } from "../../enums/statusMessage";
 import { mapEventDetailsToDto, mapEventToDTO } from "../../mapper/user.mapper";

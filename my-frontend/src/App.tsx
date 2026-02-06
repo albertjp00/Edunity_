@@ -1,7 +1,7 @@
 
 
 import './App.css'
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import Home from './user/pages/home/homePage'
 import { ToastContainer } from 'react-toastify'
 import Login from './user/pages/authentication/Userlogin'
@@ -50,7 +50,6 @@ import AddCoursesInstructor from './instructor/pages/course/addCourses'
 
 import InstructorDetails from './admin/pages/adminInstructors/instructorDetails'
 import UserDetails from './admin/pages/adminUsers/adminUserDetails'
-import AdminCourses from './admin/pages/courses/adminCourses'
 import AdminCourseDetails from './admin/pages/courses/adminCourseDetails'
 
 
@@ -201,24 +200,13 @@ function App() {
 
 
               // {/* admin  */}
+              <Route path='/admin' element={<Navigate to='/admin/dashboard'/>} />
             <Route path='/admin/login' element={<LoginAdmin />} />
             <Route path='/admin/*' element={<AdminProtectedRoute><AdminHome /></AdminProtectedRoute>} />
             <Route path='/admin/viewKyc/:id' element={<AdminProtectedRoute><ViewKyc /></AdminProtectedRoute>} />
             <Route path='/admin/instructors/:id' element={<AdminProtectedRoute><InstructorDetails /></AdminProtectedRoute>} />
             <Route path='/admin/user/:id' element={<AdminProtectedRoute><UserDetails /></AdminProtectedRoute>} />
-            <Route path='/admin/courses' element={<AdminProtectedRoute><AdminCourses /></AdminProtectedRoute>} />
             <Route path='/admin/courseDetails/:id' element={<AdminProtectedRoute><AdminCourseDetails /></AdminProtectedRoute>} />
-            {/* <Route path='/admin/reports' element={<AdminProtectedRoute><Reports /></AdminProtectedRoute>} /> */}
-            {/* <Route path='/admin/purchases' element={<AdminProtectedRoute><PurchasesAdmin /></AdminProtectedRoute>} /> */}
-
-
-
-
-
-
-            {/* <Route path="*" element={<NotFound />} /> */}
-
-
 
           </Routes>
         </Router>

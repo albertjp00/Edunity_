@@ -233,7 +233,7 @@ export class UserCourseService implements IUserCourseService {
         if (!course) {
           return { success: false, message: StatusMessage.COURSE_NOT_FOUND };
         }
-        const updateEnrolled = await this.userRepository.buyCourse(courseId);
+        await this.userRepository.buyCourse(courseId);
 
         await this.userRepository.addMyCourse(userId, course);
 

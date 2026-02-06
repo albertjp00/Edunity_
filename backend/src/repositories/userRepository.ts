@@ -235,7 +235,7 @@ export class UserRepository
     return await CourseModel.aggregate(pipeline);
   }
 
-  async countAllCourses(query: any): Promise<number> {
+  async countAllCourses(query: FilterQuery<ICourse>): Promise<number> {    
     return CourseModel.countDocuments(query);
   }
 

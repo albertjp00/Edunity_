@@ -1,6 +1,7 @@
 export const ADMIN_ROUTES = {
   AUTH: {
     LOGIN: "/login",
+    REFRESH : "/refreshToken",
   },
 
   USERS: {

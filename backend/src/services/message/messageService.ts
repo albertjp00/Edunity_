@@ -5,7 +5,7 @@ import { IMessageService } from "../../interfacesServices.ts/messageServiceInter
 import { mapMessagedStudentsDTO, mapMessageToDTO} from "../../mapper/instructor.mapper";
 import { IInstructor } from "../../models/instructor";
 import { IMessage } from "../../models/message";
-import { IMessageRepository, MessageRepository } from "../../repositories/messageRepositories";
+import { IMessageRepository } from "../../repositories/messageRepositories";
 
 
 

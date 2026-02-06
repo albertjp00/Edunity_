@@ -40,7 +40,7 @@ const CourseDetailsUser: React.FC = () => {
   const [fav , setFavourites] = useState<boolean>(false)
   // const [rating, setRating] = useState<number>(0);
   // const [comment, setComment] = useState<string>("");
-  // const [loadingReview, setLoadingReview] = useState<boolean>(false);
+  // const [loadingReview, setLoadingReview] = useState<boolean>(false); 
 
 
   const navigate = useNavigate();

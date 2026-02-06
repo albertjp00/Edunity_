@@ -1,4 +1,4 @@
-import {  QuizQuestionDTO } from "./instructorDTO";
+import {  IModuleDTO, QuizQuestionDTO } from "./instructorDTO";
 
 export interface LoginDTO {
   success: true;
@@ -115,6 +115,26 @@ export interface SubscriptionCourseDTO {
 
 // dto/courseView.dto.ts
 
+export interface CourseMapperInput {
+  _id: string;
+  title: string;
+  thumbnail?: string;
+  description?: string;
+  level?: string;
+  skills?: string[];
+  price?: number;
+  accessType: string;
+  onPurchase: boolean;
+  instructorId: string;
+  createdAt: Date;
+
+  instructor?: {
+    name?: string;
+    profileImage?: string;
+  };
+}
+
+
 export interface CourseModuleDTO {
   title: string;
   id: string;
@@ -140,6 +160,13 @@ export interface CourseViewDTO {
   reviewCount: number;
 }
 
+
+export interface loginInput{
+  success : boolean , 
+  message : string , 
+  accessToken : string , 
+  refreshToken : string}
+
 export interface UserInstructorDTO {
   name: string;
   expertise: string;
@@ -158,7 +185,7 @@ export interface FavoriteCourseDTO {
     price: number;
     skills: string[];
     level: string;
-    modules?: any[];
+    modules?: IModuleDTO[] | undefined;
     totalEnrolled: number;
     category: string;
     accessType: string;

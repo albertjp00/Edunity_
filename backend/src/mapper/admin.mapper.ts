@@ -26,7 +26,7 @@ import { IUser } from "../models/user";
 import { ICategory } from "../models/category";
 import { IReport } from "../models/report";
 import { StatusMessage } from "../enums/statusMessage";
-import { AdminCourseDetailsRaw } from "../interfaces/adminInterfaces";
+import { AdminCourseDetailsRaw, IPurchase } from "../interfaces/adminInterfaces";
 
 export const mapCourseToDTO = (course: CourseListAggregation): CourseDTO => ({
   id: course._id.toString(),
@@ -41,7 +41,7 @@ export const mapCourseToDTO = (course: CourseListAggregation): CourseDTO => ({
 
 
 
-export const mapPurchaseToDTO = (purchase: any): PurchaseAdminDTO => {
+export const mapPurchaseToDTO = (purchase: IPurchase): PurchaseAdminDTO => {
   return {
     userId: purchase.userId,
     userName: purchase.userName,
@@ -220,13 +220,16 @@ export const mapReportDto = (report :IReport ):ReportDTO=>{
 
 
 
-export const AdminLoginMapper =(token : string): AdminLoginDTO => {
-    return {
-      success : true,
-      message:StatusMessage.LOGIN_SUCCESS,
-      token,
-    };
-  }
+export const AdminLoginMapper = (
+  { token, refreshToken }: { token: string; refreshToken: string }
+): AdminLoginDTO => {
+  return {
+    success: true,
+    message: StatusMessage.LOGIN_SUCCESS,
+    token,
+    refreshToken,
+  };
+};
 
 
 

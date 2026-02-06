@@ -11,6 +11,7 @@ import PurchasesAdmin from "./purchases/purchasesAdmin";
 import AdminEarnings from "../components/earnings/earnings";
 import Category from "../components/category/category";
 import Reports from "../components/reports/reports";
+import CoursesAdmin from "../components/adminCourses/adminCourse";
 
 const AdminHome: React.FC = () => {
   const [select] = useState<"dashboard" | "users" | "instructors">(
@@ -26,14 +27,14 @@ const AdminHome: React.FC = () => {
       <AdminNavbar />
       <div className="admin-container">
         <Sidebar />
-
+        
         <div className="a">
           <Routes>
             
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="users" element={<UsersAdmin />} />
             <Route path="instructors" element={<InstructorsAdmin />} />
-            {/* <Route path='courses' element={<CourseAdmin />}/> */}
+            <Route path='courses' element={<CoursesAdmin />}/>
             <Route path="purchases" element={<PurchasesAdmin />} />
             <Route path="earnings" element={<AdminEarnings />} />
             <Route path="category" element={<Category />} />
@@ -41,14 +42,7 @@ const AdminHome: React.FC = () => {
 
           </Routes>
         </div>
-
-        {/* Alternative conditional rendering (kept as reference)
-        <div className="main-content">
-          {select === "dashboard" && <Dashboard />}
-          {select === "users" && <UsersAdmin />}
-          {select === "instructors" && <InstructorsAdmin />}
-        </div> 
-        */}
+        
       </div>
     </div>
   );

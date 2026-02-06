@@ -61,8 +61,13 @@ export const blockInstructor = async (instructorId: string) => {
 
 //earnings 
 
-export const getEarnings= async (page = 1)=>{
-  const res = await adminApi.get(`/admin/getEarnings/${page}`)
+export const getEarnings= async (page = 1 , filters : {fromDate ?: string , toDate?:string,sort?:string})=>{
+  const res = await adminApi.get(`/admin/getEarnings/${page}`,
+    {
+      params :{
+      ...filters  
+    }
+  })
   return res
 }
 

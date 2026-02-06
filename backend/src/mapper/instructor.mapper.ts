@@ -25,6 +25,8 @@ import {
 } from "../interfaces/instructorInterfaces";
 import { IMessagedUser } from "../interfaces/userInterfaces";
 import { ICategory } from "../models/category";
+import { ICourse, IModule } from "../models/course";
+import { IEarnings } from "../models/earnings";
 import { IEvent } from "../models/events";
 import { IInstructor } from "../models/instructor";
 import { IMessage } from "../models/message";
@@ -49,27 +51,27 @@ export const mapInstructorToDTO = (instructor: IInstructor): InstructorDTO => {
   };
 };
 
-export const mapInstructorCourseToDTO = (course: any): InstructorCourseDTO => {
+export const mapInstructorCourseToDTO = (course: ICourse): InstructorCourseDTO => {
   return {
     id: course.id?.toString(),
-    instructorId: course.instructorId,
+    instructorId: course.instructorId ?? '',
     title: course.title,
-    description: course.description,
-    thumbnail: course.thumbnail,
-    price: course.price,
+    description: course.description ?? '',
+    thumbnail: course.thumbnail ?? '',
+    price: course.price ?? 0,
     skills: course.skills || [],
-    level: course.level,
+    level: course.level ?? '',
     category: course.category,
-    totalEnrolled: course.totalEnrolled,
-    createdAt: course.createdAt,
+    totalEnrolled: course.totalEnrolled ?? 0,
+    createdAt: course.createdAt ?? new Date(0),
     onPurchase: course.onPurchase,
   };
 };
 
-export const mapModuleToDTO = (module: any): IModuleDTO => ({
+export const mapModuleToDTO = (module: IModule): IModuleDTO => ({
   id: module._id?.toString(),
   title: module.title,
-  videoUrl: module.videoUrl,
+  videoUrl: module.videoUrl ?? '',
   content: module.content,
 });
 
@@ -87,7 +89,7 @@ export const mapCourseDetailsToDTO = (course: any): ICourseDetailsDTO => ({
   createdAt: course.createdAt,
 
   // map modules
-  modules: course.modules?.map((m: any) => mapModuleToDTO(m)) ?? [],
+  modules: course.modules?.map((m: IModule) => mapModuleToDTO(m)) ?? [],
 
   // rename "review" → "reviews"
   reviews: course.review ?? [],
@@ -155,7 +157,7 @@ export const mapDashboardToDTO = (
   };
 };
 
-export const mapEarningsToDTO = (data: any): IEarningsDTO => {
+export const mapEarningsToDTO = (data: IEarningsDTO): IEarningsDTO => {
   return {
     monthlyEarnings:
       data.monthlyEarnings?.map((m: any) => ({

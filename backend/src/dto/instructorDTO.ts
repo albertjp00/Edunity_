@@ -11,7 +11,7 @@ export interface InstructorCourseDTO {
   level: string;
   category: string;
   totalEnrolled: number;
-  createdAt: string;
+  createdAt: Date;
   onPurchase: boolean;
 }
 

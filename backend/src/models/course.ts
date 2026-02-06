@@ -2,6 +2,7 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface IModule {
   title: string;
+  _id : string;
   // videoUrl: string;
   content: string;
   videoUrl?: string;

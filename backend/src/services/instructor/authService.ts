@@ -47,7 +47,7 @@ export class InstAuthService implements IInstAuthService {
       expiresIn: "3h",
     });
     const refreshToken = jwt.sign({ id: instructor._id }, refresh, {
-      expiresIn: "1d",
+      expiresIn: "5h",
     });
 
     return {

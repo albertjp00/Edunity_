@@ -13,27 +13,24 @@ const InstructorAllEventList: React.FC = () => {
 
   const navigate = useNavigate();
 
-const fetchEvents = async (search = "", page = 1) => {
-  try {
-    const result = await getMyEvents(search, page);
-    console.log(result);
-     
-    if (!result) return;
+  const fetchEvents = async (search = "", page = 1) => {
+    try {
+      const result = await getMyEvents(search, page);
+      console.log(result);
 
-    const eventsData = Array.isArray(result.data?.events) ? result.data.events : [];
-const totalPagesData = result.data?.totalPages || 1;
+      if (!result) return;
 
-setEvents(eventsData);
-setTotalPages(totalPagesData);
+      const eventsData = Array.isArray(result.data?.events)
+        ? result.data.events
+        : [];
+      const totalPagesData = result.data?.totalPages || 1;
 
-  } catch (error) {
-    console.error("Error fetching events:", error);
-  }
-};
-
-
-
-  
+      setEvents(eventsData);
+      setTotalPages(totalPagesData);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    }
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,8 +51,6 @@ setTotalPages(totalPagesData);
     navigate(`/instructor/eventDetails/${id}`);
   };
 
-
-
   useEffect(() => {
     fetchEvents("", currentPage);
   }, []);
@@ -66,8 +61,6 @@ setTotalPages(totalPagesData);
         <h1>MY EVENTS</h1>
       </div>
 
-
-      {/* 🔍 Search Bar */}
       <form className="search-form" onSubmit={handleSearch}>
         <input
           type="text"
@@ -94,8 +87,11 @@ setTotalPages(totalPagesData);
                   className="tile-thumbnail"
                 />
                 <span className="tile-instructor">{event.instructorName}</span>
-                <span className="tile-edit" onClick={() => gotoEdit(event.id!)}>
-                  Edit
+                <span
+                  className={`tile-edit ${!event.isOver}`}
+                  onClick={() => !event.isOver && gotoEdit(event.id!)}
+                >
+                  {event.isOver ? "Event Over" : "Edit"}
                 </span>
               </div>
 

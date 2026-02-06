@@ -13,7 +13,6 @@ import {
   walleToDto,
 } from "../../mapper/instructor.mapper";
 import { IInstructor } from "../../models/instructor";
-import {  InstructorRepository } from "../../repositories/instructorRepository";
 import bcrypt from "bcrypt";
 
 export class InstructorProfileService implements IInstructorProfileService {

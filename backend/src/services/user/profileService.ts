@@ -6,7 +6,6 @@ import { walleToDto } from '../../mapper/instructor.mapper';
 import { mapPayToDto, mapUserToDTO } from '../../mapper/user.mapper';
 import { INotification } from '../../models/notification';
 import { ISubscription, IUser } from '../../models/user';
-import { UserRepository } from '../../repositories/userRepository';
 import bcrypt from 'bcrypt'
 
 export class ProfileService implements IUserProfileService {

@@ -1,6 +1,7 @@
 import {
   CourseDetailsDTO,
   CourseDocument,
+  CourseMapperInput,
   CourseModuleDTO,
   CourseViewDTO,
   CourseWithAccessDTO,
@@ -9,6 +10,7 @@ import {
   FavoriteCourseDTO,
   ICoursePopulated,
   LoginDTO,
+  loginInput,
   MyCourseDTO,
   PayDto,
   QuizUserDTO,
@@ -21,6 +23,7 @@ import { IEvent } from "../models/events";
 import { IInstructor } from "../models/instructor";
 import { IPayment } from "../models/payment";
 import { IUser } from "../models/user";
+import { mapModuleToDTO } from "./instructor.mapper";
 
 export const mapUserToDTO = (user: IUser): UserDTO => {
   return {
@@ -39,7 +42,7 @@ export const mapUserToDTO = (user: IUser): UserDTO => {
   };
 };
 
-export const LoginMapper = (login: any): LoginDTO => {
+export const LoginMapper = (login: loginInput): LoginDTO => {
   return {
     success: true,
     message: login.message,
@@ -48,7 +51,7 @@ export const LoginMapper = (login: any): LoginDTO => {
   };
 };
 
-export const mapCourse = (course: any) => {
+export const mapCourse = (course: CourseMapperInput) => {
   if (!course) return null;
 
   return {
@@ -62,7 +65,6 @@ export const mapCourse = (course: any) => {
     accessType: course.accessType,
     onPurchase: course.onPurchase,
     instructorId: course.instructorId,
-
     // optional (only if populated)
     instructorName: course.instructor?.name || null,
     instructorImage: course.instructor?.profileImage || null,
@@ -241,7 +243,7 @@ export const mapFavoriteToDTO = (fav: IFavourites): FavoriteCourseDTO => {
       price: course.price ?? 0,
       skills: course.skills ?? [],
       level: course.level ?? "",
-      modules: course.modules ?? [],
+      modules: course.modules?.map(mapModuleToDTO),
       totalEnrolled: course.totalEnrolled ?? 0,
       category: course.category,
       accessType: course.accessType,

@@ -212,9 +212,9 @@ export interface IInsRepository {
 
   getEvent(id: string): Promise<IEvent | null>;
 
-  updateEvent(id: string, data: any): Promise<IEvent | null>;
+  updateEvent(id: string, data: Partial<IEvent>): Promise<IEvent | null>;
 
-  addQuiz(courseId: string, title: string, questions: any[]): Promise<IQuiz>;
+  addQuiz(courseId: string, title: string, questions: IQuestion[]): Promise<IQuiz>;
 
   getQuiz(courseId: string): Promise<IQuiz | null>;
 

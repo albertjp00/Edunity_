@@ -6,11 +6,13 @@ export type AdminLoginDTO =
       success: true;
       message: string;
       token: string;
+      refreshToken: string;
     }
   | {
       success: false;
       message: string;
     };
+
 
 export interface CourseDTO {
   id: string;
