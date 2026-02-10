@@ -7,11 +7,8 @@ import { addToFavourites, getFavouriteCourses } from '../../services/courseServi
 import { toast } from 'react-toastify';
 
 
-
-// const API_URL = import.meta.env.VITE_API_URL
-
 const Favourites = () => {
-  const [favourites, setFavourites] = useState<Favourite[]>([]) // 👈 store as array
+  const [favourites, setFavourites] = useState<Favourite[]>([]) 
   const navigate = useNavigate()
 
   const getFavourites = async () => {

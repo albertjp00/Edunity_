@@ -1,4 +1,4 @@
-import "./Benefits.css";
+import "./benefits.css"
 
 const benefitsData = [
   {

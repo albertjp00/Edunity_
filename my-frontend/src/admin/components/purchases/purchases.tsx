@@ -6,19 +6,6 @@ import useDebounce from "../debounce/debounce";
 import type { Purchase } from "../../adminInterfaces";
 
 
-// interface PurchasesPagination {
-//   currentPage: number;
-//   totalPages: number;
-//   totalPurchases: number;
-//   resData: Purchase[];
-// }
-
-// interface PurchasesResponse {
-//   success: boolean;
-//   purchases: PurchasesPagination;
-// }
-
-
 const Purchases: React.FC = () => {
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [loading, setLoading] = useState<boolean>(true);

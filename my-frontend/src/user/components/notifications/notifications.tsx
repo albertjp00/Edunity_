@@ -13,10 +13,6 @@ interface Notification {
   link?: string;
 }
 
-// interface NotificationBellProps {
-//   userId: string;
-// }
-
 
 const UserNotifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);

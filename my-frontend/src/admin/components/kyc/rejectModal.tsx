@@ -1,6 +1,6 @@
 // components/RejectKycModal.tsx
 import  { useState } from "react";
-import './rejectmodal.css'
+import './rejectModal.css'
 
 interface RejectKycModalProps {
   isOpen: boolean;

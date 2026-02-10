@@ -1,7 +1,7 @@
 // src/pages/OtpVerification.tsx
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import "./forgotPassMail.css";
+import "./resetPassVerify.css";
 import { toast } from "react-toastify";
 import { resendOtp, verifyOtp } from "../../services/authServices";
 import axios from "axios";
