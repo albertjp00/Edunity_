@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import {
     IInstructorDashboardDTO,
   IInstructorProfileDTO,
@@ -15,7 +16,7 @@ import {
   IPurchaseDetails,
 } from "../interfaces/instructorInterfaces";
 import { ICategory } from "../models/category";
-import { ICourse } from "../models/course";
+import { ICourse, IModule } from "../models/course";
 import { IEvent } from "../models/events";
 import { IInstructor } from "../models/instructor";
 import { IKyc } from "../models/kyc";
@@ -24,6 +25,7 @@ import { IQuestion, IQuiz } from "../models/quiz";
 import { IWallet } from "../models/wallet";
 import { ISkills } from "../repositories/instructorRepository";
 import { LoginResult, RegisterResult } from "./userServiceInterfaces";
+import { IReview } from "../models/review";
 
 // ------instructor auth service interfacesss --------------------
 export interface IInstAuthService {
@@ -266,4 +268,24 @@ export interface LoginResultService{
 export interface RegisterResultService {
     success: boolean;
     message: string;
+}
+
+export interface ICourseService{
+_id: Types.ObjectId; 
+  instructorId?: string;
+  title: string;
+  description?: string;
+  thumbnail?: string;
+  price?: number;
+  skills?: string[];
+  level?: string;
+  modules?: IModule[];
+  createdAt?: Date;
+  totalEnrolled?: number;
+  category: string;
+  onPurchase:boolean;
+  averageRating?: number;
+  accessType : string;
+  blocked : boolean
+  review : IReview[]
 }

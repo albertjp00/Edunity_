@@ -13,19 +13,19 @@ export interface IModule {
 
 export interface ICourse extends Document {
   _id: Types.ObjectId; 
-  instructorId?: string;
+  instructorId: string;
   title: string;
-  description?: string;
-  thumbnail?: string;
-  price?: number;
-  skills?: string[];
-  level?: string;
-  modules?: IModule[];
-  createdAt?: Date;
-  totalEnrolled?: number;
+  description: string;
+  thumbnail: string;
+  price: number;
+  skills: string[];
+  level: string;
+  modules: IModule[];
+  createdAt: Date;
+  totalEnrolled: number;
   category: string;
   onPurchase:boolean;
-  averageRating?: number;
+  averageRating: number;
   accessType : string;
   blocked : boolean
 }

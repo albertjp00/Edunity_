@@ -291,3 +291,35 @@ export interface IPaymentDetailsService {
   totalPages: number,
   currentPage: number
 }
+
+
+
+
+export interface ICourseModule {
+  _id: Types.ObjectId;
+  title: string;
+  videoUrl: string;
+  content: string;
+}
+
+export type  AccessType = "oneTime" | "subscription"
+
+
+export interface ICourseView {
+  _id: Types.ObjectId;
+  instructorId: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+  price: number;
+  skills: string[];
+  level: string;
+  category: string;
+  accessType: AccessType;   
+  totalEnrolled?: number;
+  onPurchase: boolean;
+  blocked: boolean;
+  createdAt: Date;
+  modules: ICourseModule[];
+}
+

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import React, { useState, useEffect, type FormEvent, type ChangeEvent } from 'react'
+import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react'
 import './instructorLogin.css'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'

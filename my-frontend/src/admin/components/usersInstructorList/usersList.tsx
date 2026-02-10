@@ -1,4 +1,3 @@
-import React from "react";
 import './userList.css'
 import type { AdminListProps } from "../../adminInterfaces";
 

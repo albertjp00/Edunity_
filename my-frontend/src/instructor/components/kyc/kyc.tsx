@@ -1,4 +1,4 @@
-import React, { useState, type ChangeEvent, type FormEvent } from 'react'
+import { useState, type ChangeEvent, type FormEvent } from 'react'
 import './kyc.css'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'

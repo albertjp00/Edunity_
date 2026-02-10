@@ -27,6 +27,7 @@ import { ICategory } from "../models/category";
 import { IReport } from "../models/report";
 import { StatusMessage } from "../enums/statusMessage";
 import { AdminCourseDetailsRaw, IPurchase } from "../interfaces/adminInterfaces";
+import { InstructorDTO } from "../interfaces/instructorInterfaces";
 
 export const mapCourseToDTO = (course: CourseListAggregation): CourseDTO => ({
   id: course._id.toString(),
@@ -250,3 +251,23 @@ export const AdminStatsMapper = (data: RawStats): AdminStatsDTO => {
     totalEnrolled: data.totalEnrolled ?? [],
   };
 };
+
+
+
+
+export const mapInstructorToDto = (data:IInstructor):InstructorDTO =>{
+  return {
+    _id: data._id.toString(),
+  name: data.name,
+  email: data.email,
+  expertise: data.expertise ?? '',
+  bio: data.bio  ?? '',
+  profileImage: data.profileImage ?? '',
+  KYCApproved: data.KYCApproved,
+  joinedAt: data.joinedAt,
+  KYCstatus: data.KYCstatus,
+  work:data.work,
+  education: data.education,
+  blocked: data.blocked
+  }
+}

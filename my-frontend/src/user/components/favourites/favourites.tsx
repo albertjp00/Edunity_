@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import './favourites.css'
 import Navbar from '../navbar/navbar';
 import { useNavigate } from 'react-router-dom';

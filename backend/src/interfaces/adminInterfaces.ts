@@ -61,6 +61,8 @@ export interface IAdminAuthController {
     res: Response,
     next: NextFunction,
   ): Promise<void>;
+
+  refreshToken(req: AdminAuthRequest, res: Response, next: NextFunction):Promise<void>
 }
 
 //  USER MANAGEMENT INTERFACE
@@ -139,7 +141,7 @@ export interface IAdminInstructorsController {
 // ------------AdminServicess interfaces-------------------
 
 export interface IAdminCourseService {
-  getInstructorsRequest(id: string): Promise<IInstructor | null>;
+  getInstructorsRequest(id: string): Promise<InstructorDTO | null>;
 
   getCoursesRequest(
     page: number,
@@ -193,7 +195,7 @@ export interface IAdminInstructorService {
 
   rejectKyc(id: string, reason: string): Promise<void | null>;
 
-  getInstructorsRequest(id: string): Promise<IInstructor | null>;
+  getInstructorsRequest(id: string): Promise<InstructorDTO | null>;
 
   blockInstructorRequest(id: string): Promise<boolean | null>;
 
@@ -242,6 +244,7 @@ export interface ICount {
 }
 
 export interface IUserOverview {
+  _id:string;
   name: string; // "Oct 2025"
   count: number;
 }
@@ -279,7 +282,7 @@ export interface IPurchase {
 }
 
 export interface IAdminCourseDetails {
-  course: ICourse;
+  course: ICourse ;
   instructor: IInstructor | null;
   enrolledUsers: IUser[];
   totalEnrolled: number;
@@ -297,6 +300,7 @@ export interface CourseDetailsServiceResult {
 
 import { Types } from "mongoose";
 import { UserDTO } from "./userInterfaces";
+import { InstructorDTO } from "./instructorInterfaces";
 
 export interface CourseRaw {
   _id: Types.ObjectId;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import './instructorEditProfile.css';
 import { toast } from 'react-toastify';
 import profilePic from './../../../assets/profilePic.png';

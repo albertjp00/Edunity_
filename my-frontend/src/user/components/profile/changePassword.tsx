@@ -1,4 +1,4 @@
-import React, { useState, type FormEvent, type ChangeEvent } from 'react';
+import { useState, type FormEvent, type ChangeEvent } from 'react';
 import './changePassword.css'; 
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';

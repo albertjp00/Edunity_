@@ -1,4 +1,3 @@
-import React from 'react'
 import Navbar from '../../components/navbar/navbar'
 import Subscription from '../../components/subscription/subscription'
 

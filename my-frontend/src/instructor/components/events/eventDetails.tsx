@@ -1,5 +1,5 @@
 // src/pages/EventDetails.tsx
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./eventDetails.css";
 import eventImage from '../../../assets/webinar_thumnail.png'

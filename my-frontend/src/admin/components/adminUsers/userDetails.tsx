@@ -1,5 +1,5 @@
 // pages/AdminUserDetails.tsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import profilePic from "../../../assets/profilePic.png";
 import { useNavigate, useParams } from "react-router-dom";
 import "./userDetails.css";

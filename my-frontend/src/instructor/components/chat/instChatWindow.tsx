@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "./chatwindow.css";
 import attachmentImage from "../../../assets/documentImage.jpg";
 import { getMessages, sendMessages } from "../../services/instructorServices";

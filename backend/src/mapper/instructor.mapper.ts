@@ -12,6 +12,7 @@ import {
   InstructorDashboardRaw,
   IRecentStudentDTO,
   MessagedStudentsDTO,
+  MonthlyEarning,
   PurchaseDTO,
   QuizDTO,
   QuizQuestionDTO,
@@ -24,9 +25,9 @@ import {
   IPurchaseDetails,
 } from "../interfaces/instructorInterfaces";
 import { IMessagedUser } from "../interfaces/userInterfaces";
+import { ICourseService } from "../interfacesServices.ts/instructorServiceInterface";
 import { ICategory } from "../models/category";
 import { ICourse, IModule } from "../models/course";
-import { IEarnings } from "../models/earnings";
 import { IEvent } from "../models/events";
 import { IInstructor } from "../models/instructor";
 import { IMessage } from "../models/message";
@@ -75,23 +76,21 @@ export const mapModuleToDTO = (module: IModule): IModuleDTO => ({
   content: module.content,
 });
 
-export const mapCourseDetailsToDTO = (course: any): ICourseDetailsDTO => ({
+export const mapCourseDetailsToDTO = (course: ICourseService): ICourseDetailsDTO => ({
   id: course._id.toString(),
-  instructorId: course.instructorId,
+  instructorId: course.instructorId ?? '',
   title: course.title,
-  description: course.description,
-  thumbnail: course.thumbnail,
-  price: course.price,
-  totalEnrolled: course.totalEnrolled,
-  skills: course.skills,
-  level: course.level,
+  description: course.description ?? '',
+  thumbnail: course.thumbnail ?? '',
+  price: course.price ?? 0,
+  totalEnrolled: course.totalEnrolled ?? 2,
+  skills: course.skills ?? [],
+  level: course.level ?? '',
   category: course.category,
-  createdAt: course.createdAt,
+  createdAt: course.createdAt ?? new Date(),
 
-  // map modules
+  
   modules: course.modules?.map((m: IModule) => mapModuleToDTO(m)) ?? [],
-
-  // rename "review" → "reviews"
   reviews: course.review ?? [],
 });
 
@@ -160,7 +159,7 @@ export const mapDashboardToDTO = (
 export const mapEarningsToDTO = (data: IEarningsDTO): IEarningsDTO => {
   return {
     monthlyEarnings:
-      data.monthlyEarnings?.map((m: any) => ({
+      data.monthlyEarnings?.map((m: MonthlyEarning) => ({
         month: m.month,
         earnings: m.earnings,
       })) || [],

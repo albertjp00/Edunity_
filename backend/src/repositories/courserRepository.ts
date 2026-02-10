@@ -18,7 +18,7 @@ export interface ICourseRepository {
 
   findSkills(): Promise<ISkills>;
 
-  getAllCourses(query: any, skip: number, limit: number, sortOption: any): Promise<ICourse[] | null>
+  getAllCourses(query: ICourse, skip: number, limit: number, sortOption: Partial<ICourse>): Promise<ICourse[] | null>
 }
 
 
@@ -101,16 +101,15 @@ implements ICourseRepository {
             }
           
             async getAllCourses(
-              query: any,
+              query: ICourse,
               skip: number,
               limit: number,
-              sortOption?: any
+              sortOption: Partial<ICourse>
             ): Promise<ICourse[]> {
               const pipeline: any[] = [
                 { $match: query },
               ];
           
-              // Add sort stage only if sortOption exists
               if (sortOption && Object.keys(sortOption).length > 0) {
                 pipeline.push({ $sort: sortOption });
               }

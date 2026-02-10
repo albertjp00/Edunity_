@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import './instVerifyotp.css'
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";

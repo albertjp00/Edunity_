@@ -17,12 +17,10 @@ interface LogQuery {
   endDate?: string | undefined;
 }
 
-// ✅ Define a type for a single log entry
 interface LogEntry {
   timestamp: string;
   level: string;
   message: string;
-  [key: string]: any;
 }
 
 function queryLogs({ level, keyword, startDate, endDate }: LogQuery): LogEntry[] {
@@ -56,15 +54,16 @@ function queryLogs({ level, keyword, startDate, endDate }: LogQuery): LogEntry[]
   return results;
 }
 
+
 const today = new Date();
 const yesterday = new Date();
 yesterday.setDate(today.getDate() - 1);
 
-yesterday.setHours(0, 0, 0, 0); // start of yesterday
-today.setHours(23, 59, 59, 999); // end of today
+yesterday.setHours(0, 0, 0, 0); 
+today.setHours(23, 59, 59, 999); 
 
 const results = queryLogs({
-  level: "error", // "info" | "warn" | "error"
+  level: "error", 
   startDate: yesterday.toISOString(),
   endDate: today.toISOString()     
 });

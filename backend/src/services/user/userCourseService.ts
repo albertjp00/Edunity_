@@ -432,6 +432,9 @@ export class UserCourseService implements IUserCourseService {
 
       const review = await this.userRepository.getReview(id, course.id);
 
+      console.log('view course',course);
+      
+
       return {
         course: mapCourseToViewDTO(course),
         review,
@@ -596,29 +599,16 @@ export class UserCourseService implements IUserCourseService {
     try {
       
       let hasAccess = false;
-      const myCourse = await this.userRepository.getCourseDetails(
-        userId,
-        courseId,
-      );
-      console.log(myCourse);
+
       const favCourse = await this.userRepository.getFavCourseDetails(
         userId,
         courseId,
       );
-      if (!favCourse) {
-        return false;
+      console.log('fav course',favCourse);
+      
+      if (favCourse) {
+        return true;
       }
-
-      const course: any = await this.userRepository.getCourse(courseId);
-      // console.log('myCoursessss', course);
-
-      if (myCourse) {
-        hasAccess = true;
-      }
-
-      await this.instructorRepository.findById(
-        course.instructorId,
-      );
 
       
 

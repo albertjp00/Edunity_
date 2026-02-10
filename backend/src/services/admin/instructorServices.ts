@@ -25,7 +25,6 @@ export class AdminInstructorService implements IAdminInstructorService {
   ): Promise<PaginatedInstructorsService | null> => {
     try {
       const result = await this.adminRepository.findInstructors(page, search);
-      console.log("result", result);
 
       return {
         instructors: result?.instructors.map(mapInstructorToAdminDTO) ?? [],

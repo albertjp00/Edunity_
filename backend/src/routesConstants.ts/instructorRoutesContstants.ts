@@ -4,6 +4,7 @@ export const INSTRUCTOR_ROUTES = {
     REGISTER: "/register",
     RESEND_OTP: "/resendOtp",
     VERIFY_OTP: "/verifyOtp",
+    REFRESH :"/refresh-token",
 
     FORGOT_PASSWORD: "/forgotPassword",
     OTP_VERIFY_FORGOT: "/otpVerify",

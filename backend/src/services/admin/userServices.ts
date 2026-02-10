@@ -44,7 +44,6 @@ export class AdminUserService implements IAdminUserServices {
 
   blockUnblockUser = async (id: string): Promise<boolean | null> => {
     try {
-      console.log("admin service block");
 
       const user = await this.userRepository.findById(id);
       if (user?.blocked) {

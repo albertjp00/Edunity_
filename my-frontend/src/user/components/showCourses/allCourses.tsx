@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import "./allCourses.css";
 import { useNavigate } from "react-router-dom";
 import useDebounce from "../../../admin/components/debounce/debounce";

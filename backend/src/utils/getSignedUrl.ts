@@ -10,7 +10,6 @@ const s3Client = new S3Client({
 });
 
 export async function generateSignedUrl(key: string) {
-  console.log('calling signed ', key);
 
   const command = new GetObjectCommand({
     Bucket: process.env.AWS_BUCKET_NAME!,
@@ -21,8 +20,6 @@ export async function generateSignedUrl(key: string) {
   
   const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: SIGNED_URL_EXPIRE });
 
-  console.log("Generated signed URL at:", new Date().toISOString());
-  console.log("URL:", signedUrl);
 
   return signedUrl;
 }

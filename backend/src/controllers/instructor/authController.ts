@@ -11,7 +11,7 @@ import { IInstAuthService } from "../../interfacesServices.ts/instructorServiceI
 import { NextFunction, Request, Response } from "express";
 import { RefreshTokenPayload } from "../../interfaces/userInterfaces";
 
-const SECRET_KEY = process.env.SECRET_KEY || "access_secret";
+const secret: string = process.env.SECRET_KEY || "";
 const REFRESH_KEY = process.env.REFRESH_KEY || "refresh_secret";
 
 export class InstAuthController
@@ -27,8 +27,6 @@ export class InstAuthController
     this._instAuthService = instAuthService;
   }
 
-  
-
   login = async (
     req: Request,
     res: Response,
@@ -42,12 +40,11 @@ export class InstAuthController
       );
 
       if (response.success) {
-
         res.cookie("instructorRefreshToken", response.refreshToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
           sameSite: "strict",
-          maxAge: 24 * 60 * 60 * 1000, 
+          maxAge: 24 * 60 * 60 * 1000,
         });
 
         res.status(HttpStatus.OK).json({
@@ -82,10 +79,8 @@ export class InstAuthController
         password,
       );
 
-
-
       if (result.success) {
-        res.status(HttpStatus.OK).json({success:true});
+        res.status(HttpStatus.OK).json({ success: true });
       } else {
         res.status(HttpStatus.BAD_REQUEST).json(result);
       }
@@ -254,36 +249,43 @@ export class InstAuthController
     }
   };
 
+  refreshToken = (req: Request, res: Response, next: NextFunction): void => {
+    try {
+      const token = req.cookies.instructorRefreshToken;
 
-  
+      if (!token) {
+        res
+          .status(HttpStatus.UNAUTHORIZED)
+          .json({ message: StatusMessage.TOKEN_REQUIRED });
+        return;
+      }
 
-    refreshToken = (req: Request, res: Response, next: NextFunction): void => {
-      try {
-        const token = req.cookies.instructorRefreshToken;
-  
-        if (!token) {
-          res.status(HttpStatus.UNAUTHORIZED).json({ message: StatusMessage.TOKEN_REQUIRED });
-          return;
-        }
-  
-  
-        jwt.verify(token, REFRESH_KEY, (err: VerifyErrors | null, decoded : JwtPayload | string | undefined ) => {
+      jwt.verify(
+        token,
+        REFRESH_KEY,
+        (
+          err: VerifyErrors | null,
+          decoded: JwtPayload | string | undefined,
+        ) => {
           if (err) {
-            res.status(HttpStatus.FORBIDDEN).json({ message: StatusMessage.INVALID_REFRESH_TOKEN });
+            res
+              .status(HttpStatus.FORBIDDEN)
+              .json({ message: StatusMessage.INVALID_REFRESH_TOKEN });
             return;
           }
           if (!process.env.SECRET_KEY) throw new Error("ACCESS_SECRET not set");
           if (!process.env.REFRESH_KEY) throw new Error("REFRESH_TIME not set");
-  
+
           const payload = decoded as RefreshTokenPayload;
-          const newAccessToken = jwt.sign({ id: payload.id }, SECRET_KEY, {
-            expiresIn: '15m',
+          const newAccessToken = jwt.sign({ id: payload.id }, secret, {
+            expiresIn: "5m",
           });
-  
+
           res.json({ accessToken: newAccessToken });
-        });
-      } catch (error) {
-        next(error)
-      }
-    };
+        },
+      );
+    } catch (error) {
+      next(error);
+    }
+  };
 }

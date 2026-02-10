@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./notifications.css"; 
 import InstructorNavbar from "../navbar/navbar";
 import { getNotification } from "../../services/instructorServices";

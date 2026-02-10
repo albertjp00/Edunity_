@@ -1,4 +1,4 @@
-import React, { useState, useEffect, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "./editEvents.css";

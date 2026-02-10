@@ -1,13 +1,4 @@
-import React from "react";
 import type { DashStudent } from "../../interterfaces/instructorInterfaces";
-
-// const recentStudents = [
-//   { name: "Aarav Mehta", course: "React Basics" },
-//   { name: "Priya Sharma", course: "Node.js Mastery" },
-//   { name: "John Doe", course: "UI Design" },
-// ];
-
-
 
 interface RecentStudentsProps {
   students: DashStudent[];

@@ -71,6 +71,8 @@ instructor.post(INSTRUCTOR_ROUTES.AUTH.LOGIN, authController.login);
 instructor.post(INSTRUCTOR_ROUTES.AUTH.REGISTER, authController.register);
 instructor.post(INSTRUCTOR_ROUTES.AUTH.RESEND_OTP, authController.resendOtp);
 instructor.post(INSTRUCTOR_ROUTES.AUTH.VERIFY_OTP, authController.verifyOtp);
+instructor.post(INSTRUCTOR_ROUTES.AUTH.REFRESH, authController.refreshToken);
+
 
 instructor.post(INSTRUCTOR_ROUTES.AUTH.FORGOT_PASSWORD, authController.forgotPassword);
 instructor.post(INSTRUCTOR_ROUTES.AUTH.OTP_VERIFY_FORGOT, authController.verifyOtpForgotPass);

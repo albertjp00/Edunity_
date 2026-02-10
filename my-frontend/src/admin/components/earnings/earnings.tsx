@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./earnings.css";
 import type { IEarning } from "../../adminInterfaces";
 import { getEarnings } from "../../services/adminServices";

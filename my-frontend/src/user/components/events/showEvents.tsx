@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getEvents, getMyEvents } from "../../services/eventServices";
 import type { MyEvent, UEvent } from "../../interfaces";
 import thumbnail from "../../../assets/webinar_thumnail.png";

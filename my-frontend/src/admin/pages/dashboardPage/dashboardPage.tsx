@@ -1,4 +1,3 @@
-import React from 'react'
 import AdminDashboard from '../../components/dashboard/dashboard'
 
 const Dashboard = () => {

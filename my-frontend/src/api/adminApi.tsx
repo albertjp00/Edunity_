@@ -26,7 +26,7 @@ const refreshAdminAccessToken = async () => {
       `${api_url}/admin/refreshToken`,
       {},
       { withCredentials: true }
-    );
+    );    
 
     const newAccessToken = res.data.accessToken;
     localStorage.setItem("admin", newAccessToken);

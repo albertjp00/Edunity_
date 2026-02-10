@@ -147,6 +147,11 @@ export interface IMonthlyEarningDTO {
   earnings: number;
 }
 
+export interface MonthlyEarning {
+  month: string;
+  earnings: number;
+}
+
 export interface IEarningsDTO {
   monthlyEarnings: IMonthlyEarningDTO[];
   totalEarnings: number;

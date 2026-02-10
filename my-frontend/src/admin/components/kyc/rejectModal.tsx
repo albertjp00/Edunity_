@@ -1,5 +1,5 @@
 // components/RejectKycModal.tsx
-import React, { useState } from "react";
+import  { useState } from "react";
 import './rejectmodal.css'
 
 interface RejectKycModalProps {

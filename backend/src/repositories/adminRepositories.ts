@@ -157,7 +157,9 @@ export class AdminRepository implements IAdminRepository {
     enrolledUsers: IUser[];
     totalEnrolled: number;
   } | null> {
-    const course = await CourseModel.findById(courseId);
+    const course = await CourseModel.findById(courseId).lean();
+    console.log(course?.modules);
+    
     if (!course) return null;
 
     const instructor = await InstructorModel.findById(course.instructorId);
@@ -386,7 +388,6 @@ export class AdminRepository implements IAdminRepository {
         },
       ]);
 
-      console.log("monthy", result);
 
       return result;
     } catch (error) {

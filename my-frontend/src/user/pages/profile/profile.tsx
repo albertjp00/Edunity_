@@ -1,4 +1,3 @@
-import React from 'react'
 import Profile from '../../components/profile/userProfile'
 import Navbar from '../../components/navbar/navbar'
 

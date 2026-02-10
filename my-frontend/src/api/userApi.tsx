@@ -34,7 +34,6 @@ const refreshAccessToken = async () => {
       {},
       { withCredentials: true }
     );
-    console.log('refresh token', res.data);
 
     localStorage.setItem("token", res.data.accessToken);
     return res.data.accessToken;

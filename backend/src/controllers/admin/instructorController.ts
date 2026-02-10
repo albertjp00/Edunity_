@@ -97,9 +97,9 @@ export class AdminInstructorController
     try {
       const id = req.params.id!;
 
-      const result = await this._adminInstructorService.getInstructorsRequest(id);
-        console.log('result',result);
-        
+      const result =
+        await this._adminInstructorService.getInstructorsRequest(id);
+      console.log("result", result);
 
       res.status(HttpStatus.OK).json({ success: true, instructor: result });
     } catch (error) {
@@ -135,9 +135,6 @@ export class AdminInstructorController
 
       const result =
         await this._adminInstructorService.getInstructorsCoursesRequest(id);
-      // const mapped = mapCourseDetailsToDTO(result)
-      console.log('get admin course details');
-      
 
       res.status(HttpStatus.OK).json({ success: true, courses: result });
     } catch (error) {

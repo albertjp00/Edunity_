@@ -1,4 +1,3 @@
-import React from 'react'
 import InstructorProfile from '../../components/profile/profile'
 import InstructorNavbar from '../../components/navbar/navbar'
 

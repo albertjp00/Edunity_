@@ -12,7 +12,7 @@ import { AdminLoginMapper, AdminStatsMapper } from "../../mapper/admin.mapper";
 import { IUserRepository } from "../../interfaces/userInterfaces";
 import { getLast12Months, MONTH_NAMES } from "../../utils/data.utils";
 
-const refresh: string = process.env.REFRESH_KEY!;
+const refresh: string = process.env.REFRESH_KEY || "refresh_secret";
 
 
 export class AdminService implements IAdminService {
@@ -38,7 +38,7 @@ export class AdminService implements IAdminService {
       const token = jwt.sign(
         { id: admin._id, email: admin.email, role: "admin" },
         process.env.SECRET_KEY as string,
-        { expiresIn: "1d" },
+        { expiresIn: "5m" },
       );
       const refreshToken = jwt.sign({ id: admin._id }, refresh, { expiresIn: "2h" });
 
@@ -67,7 +67,6 @@ export class AdminService implements IAdminService {
 
   blockUnblockUser = async (id: string): Promise<boolean | null> => {
     try {
-      console.log("admin service block");
 
       const user = await this.userRepository.findById(id);
       if (user?.blocked) {
@@ -125,9 +124,9 @@ getUserOverview = async (): Promise<{ name: string; count: number }[]> => {
 
     const months = getLast12Months();
 
-    usersByMonth.forEach((item: any) => {
+    usersByMonth.forEach((item) => {
       const [year, month] = item._id.split("-");
-      const monthIndex = parseInt(month) - 1;
+      const monthIndex = parseInt(month || '') - 1;
 
       
 

@@ -58,7 +58,7 @@ export class AdminAuthController implements IAdminAuthController {
   };
 
 
-      refreshToken = (req: AdminAuthRequest, res: Response, next: NextFunction): void => {
+      refreshToken = async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
         try {
           const token = req.cookies.adminRefreshToken;
           console.log('admin refresh ');
@@ -78,10 +78,12 @@ export class AdminAuthController implements IAdminAuthController {
             if (!process.env.SECRET_KEY) throw new Error("ACCESS_SECRET not set");
             if (!process.env.REFRESH_KEY) throw new Error("REFRESH_TIME not set");
     
-            const payload = decoded as RefreshTokenPayload;
-            const newAccessToken = jwt.sign({ id: payload.id }, SECRET_KEY, {
-              expiresIn: '15m',
+            const payload = decoded as RefreshTokenPayload;            
+            const newAccessToken = jwt.sign({ id: payload.id , role :"admin" }, SECRET_KEY, {
+              expiresIn: '5m',
             });
+
+            console.log('new ',newAccessToken);
     
             res.json({ accessToken: newAccessToken });
           });

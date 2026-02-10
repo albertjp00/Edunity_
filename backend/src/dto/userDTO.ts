@@ -141,6 +141,7 @@ export interface CourseModuleDTO {
   videoUrl: string;
 }
 
+
 export interface CourseViewDTO {
   _id: string;
   instructorId: string;
@@ -151,13 +152,12 @@ export interface CourseViewDTO {
   skills: string[];
   level: string;
   category: string;
-  accessType: "oneTime" | "subscription";
+  accessType: string;
   totalEnrolled: number;
   onPurchase: boolean;
   blocked: boolean;
   createdAt: Date;
   modules: CourseModuleDTO[];
-  reviewCount: number;
 }
 
 

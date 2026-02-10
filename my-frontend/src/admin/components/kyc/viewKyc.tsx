@@ -1,4 +1,3 @@
-import React from 'react'
 import AdminNavbar from '../navbar/navbar'
 import VerifyKYC from './verifyKyc'
 

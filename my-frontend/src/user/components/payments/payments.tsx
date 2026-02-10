@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./payments.css";
 import { getPaymentHistory } from "../../services/profileServices";
 import type { IPayment } from "../../interfaces";

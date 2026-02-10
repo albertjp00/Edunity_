@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type ChangeEvent } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import "./purchases.css";
 import { exportData, getPurchases } from "../../services/adminServices";
 import { toast } from "react-toastify";
@@ -70,27 +70,31 @@ const Purchases: React.FC = () => {
     fetchPurchases(searchTerm, 1);
   };
 
-  // if (loading)
-  //   return (
-  //     <div className="loader-container">
-  //       <div className="loader"></div>
-  //       <p>Loading...</p>
-  //     </div>
-  //   );
 
-  const exportDetails = async () => {
-    const response = await exportData();
+const exportDetails = async () => {
+  const response = await exportData();
 
-    if (!response) {
-      toast.error("Something went wrong");
-      return;
-    }
+  if (!response) {
+    toast.error("Something went wrong");
+    return;
+  }
 
-    const blob = new Blob([response.data], { type: "application/pdf" });
-    const url = window.URL.createObjectURL(blob);
+  const blob = new Blob([response.data], {
+    type: "application/pdf",
+  });
 
-    window.open(url, "_blank");
-  };
+  const url = window.URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "purchase-details.pdf"; 
+  document.body.appendChild(link);
+  link.click();
+
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
+};
+
 
 
   return (

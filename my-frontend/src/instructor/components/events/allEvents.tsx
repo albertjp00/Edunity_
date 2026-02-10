@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { getMyEvents } from "../../services/instructorServices";
 import type { Ievent } from "../../interterfaces/events";
 import "./allEvents.css";

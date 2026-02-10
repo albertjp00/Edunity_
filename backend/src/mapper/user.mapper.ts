@@ -18,9 +18,11 @@ import {
   UserInstructorDTO,
 } from "../dto/userDTO";
 import { UserDTO } from "../interfaces/userInterfaces";
-import { IFavourites, IQuizService } from "../interfacesServices.ts/userServiceInterfaces";
+import { ICourseView, IFavourites, IQuizService } from "../interfacesServices.ts/userServiceInterfaces";
+import { ICourse, IModule } from "../models/course";
 import { IEvent } from "../models/events";
 import { IInstructor } from "../models/instructor";
+import { IMyCourse } from "../models/myCourses";
 import { IPayment } from "../models/payment";
 import { IUser } from "../models/user";
 import { mapModuleToDTO } from "./instructor.mapper";
@@ -114,7 +116,7 @@ export const mapCourseWithAccessToDTO = (
     thumbnail: rawCourse.thumbnail,
     createdAt: rawCourse.createdAt,
 
-    modules: rawCourse.modules.map((module: any) => ({
+    modules: rawCourse.modules.map((module: IModule) => ({
       id: module._id.toString(),
       title: module.title,
       videoUrl: module.videoUrl,
@@ -137,7 +139,7 @@ export const mapCourseWithAccessToDTO = (
   };
 };
 
-export const mapMyCourseToDTO = (myCourse: any): MyCourseDTO => {
+export const mapMyCourseToDTO = (myCourse: IMyCourse): MyCourseDTO => {
   const raw = myCourse.toObject?.() || myCourse;
   const course = raw.course;
 
@@ -165,12 +167,12 @@ export const mapMyCourseToDTO = (myCourse: any): MyCourseDTO => {
   };
 };
 
-export const mapMyCoursesListToDTO = (courses: any[]) => {
+export const mapMyCoursesListToDTO = (courses :IMyCourse[]) => {
   return courses.map(mapMyCourseToDTO);
 };
 
 export const mapSubscriptionCourseToDTO = (
-  course: any,
+  course: ICourse,
 ): SubscriptionCourseDTO => {
   const raw = course.toObject?.() || course;
 
@@ -190,7 +192,7 @@ export const mapSubscriptionCourseToDTO = (
   };
 };
 
-export const mapCourseToViewDTO = (course: any): CourseViewDTO => {
+export const mapCourseToViewDTO = (course: ICourse): CourseViewDTO => {
   return {
     _id: course._id.toString(),
     instructorId: course.instructorId,
@@ -206,17 +208,17 @@ export const mapCourseToViewDTO = (course: any): CourseViewDTO => {
     onPurchase: course.onPurchase ?? false,
     blocked: course.blocked ?? false,
     createdAt: course.createdAt,
-    reviewCount: course.review?.length ?? 0,
 
     modules: (course.modules ?? []).map(
-      (module: any): CourseModuleDTO => ({
+      (module): CourseModuleDTO => ({
         title: module.title,
         id: module._id.toString(),
-        videoUrl: module.videoUrl,
+        videoUrl: module.videoUrl ?? '',
       }),
     ),
   };
 };
+
 
 export const mapUserInstructorDto = (
   instructor: IInstructor,

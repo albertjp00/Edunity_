@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./myCourses.css";
 import { useNavigate } from "react-router-dom";
 import { getMyCourses } from "../../services/courseServices";

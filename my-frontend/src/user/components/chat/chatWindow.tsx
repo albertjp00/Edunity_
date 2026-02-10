@@ -4,16 +4,7 @@ import attachmentImage from '../../../assets/documentImage.jpg'
 import { io } from "socket.io-client";
 import { getMessages, sendMessagesToInstructor } from "../../services/instructorServices";
 import type { ChatWindowProps, Message } from "../../interfaces";
-// import { connectSocket } from "../../../api/socketApi";
 
-// const socket = connectSocket()
-// if (!socket) throw new Error("Socket not connected")
-
-// const socket = io(import.meta.env.VITE_API_URL);
-
-
-
-// ---------- ChatWindow Component ----------
 const ChatWindow: React.FC<ChatWindowProps> = ({
   userId,
   receiverId,
@@ -35,16 +26,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   },
 });
 
-
-
-
-  // ---------------- Fetch chat history once ----------------
   useEffect(() => {
     if (!receiverId) return;
 
     const fetchMessages = async () => {
       try {
-        // const res = await api.get(`/user/messages/${userId}/${receiverId}`);
         const res = await getMessages(userId, receiverId);
         if (!res) return
         if (res.data.success) {
@@ -82,16 +68,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
       setMessages((prev) => [...prev, message]);
 
-      // Notify parent (UserChat) to update sidebar list
       if (message.text || message.attachment) {
         onMessageSent(message.senderId, message.text, message.attachment);
       }
 
-      // Increase unread if current chat not open
       if (message.senderId !== receiverId) {
         unreadIncrease(message.senderId);
       } else {
-        // Mark as read instantly
         socket.emit("messagesRead", { senderId: receiverId, receiverId: userId });
         resetUnread(receiverId);
       }
@@ -118,7 +101,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // ---------------- Send Message ----------------
+
   const sendMessage = async (file?: File) => {
     if (!receiverId || (!newMsg && !file)) return;
 
@@ -163,7 +146,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
 
 
-  // to 
   useEffect(() => {
     if (!receiverId) return;
 
@@ -192,20 +174,16 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
 
 
-  // Updated input handler
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setNewMsg(value);
 
     if (!receiverId) return;
 
-    // Emit typing
     socket.emit("typing", { senderId: userId, receiverId });
 
-    // Clear previous timeout
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
-    // Set timeout to emit stopTyping after 1.5s of inactivity
     typingTimeoutRef.current = setTimeout(() => {
       socket.emit("stopTyping", { senderId: userId, receiverId });
     }, 1500);
@@ -221,7 +199,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   }, [newMsg]);
 
 
-  // clears timeout when timeout unmounts
   useEffect(() => {
     return () => {
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
@@ -229,7 +206,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   }, []);
 
 
-  //to handle onlin,offline
   useEffect(() => {
     if (!receiverId) return;
 
@@ -254,7 +230,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     };
   }, [receiverId]);
 
-  //to check if online or not 
   useEffect(()=>{
     socket.emit('checkUserOnline',{userId : receiverId})
   },[receiverId])
@@ -307,14 +282,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           </div>
 
         </div>
-        {/* <div className="chat-actions">
-          <button>📞</button>
-          <button>🎥</button>
-          <button>⋮</button>
-        </div> */}
+
       </div>
 
-      {/* Messages */}
 
       <div className="chat-messages">
         {messages.map((msg, idx) => {

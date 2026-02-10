@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import {addCategory,deleteCategory,fetchCategory,} from "../../services/adminServices";
 import type { ICategory } from "../../adminInterfaces";
 import "./category.css";

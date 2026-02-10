@@ -1,14 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import StatsCard from "./statsCard";
 import { getEarnings } from "../../services/instructorServices";
 
-// const data = [
-//   { month: "Jan", earnings: 2000 },
-//   { month: "Feb", earnings: 3200 },
-//   { month: "Mar", earnings: 1800 },
-//   { month: "Apr", earnings: 5000 },
-// ];
 
 interface IEarnings{
   earnings:{

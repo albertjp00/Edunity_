@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getUserInstructors } from "../../services/instructorServices";
 import "./instructors.css";
 import type { IInstructor } from "../../interfaces";

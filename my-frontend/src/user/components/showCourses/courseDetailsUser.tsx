@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./courseDetailsUser.css";
 import { toast } from "react-toastify";
@@ -38,9 +38,7 @@ const CourseDetailsUser: React.FC = () => {
   const [activePayment, setActivePayment] = useState<string | null>(null);
   const [reviews, setReviews] = useState<IReview[]>([]);
   const [fav , setFavourites] = useState<boolean>(false)
-  // const [rating, setRating] = useState<number>(0);
-  // const [comment, setComment] = useState<string>("");
-  // const [loadingReview, setLoadingReview] = useState<boolean>(false); 
+
 
 
   const navigate = useNavigate();

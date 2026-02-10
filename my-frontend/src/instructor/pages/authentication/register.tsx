@@ -1,4 +1,3 @@
-import React from 'react'
 import RegisterInstructor from '../../components/authentication/instructorRegister'
 
 const InstructorRegister = () => {

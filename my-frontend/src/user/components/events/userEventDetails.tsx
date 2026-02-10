@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import{ useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 // import profilePic from "../../../assets/profilePic.png";
 import thumbnail from '../../../assets/webinar_thumnail.png';

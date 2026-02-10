@@ -1,4 +1,3 @@
-import React from 'react'
 import EditEvents from '../../components/events/editEvents'
 import InstructorNavbar from '../../components/navbar/navbar'
 

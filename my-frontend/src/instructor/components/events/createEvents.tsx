@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { addEvent } from "../../services/instructorServices";
 import type { Ievent } from "../../interterfaces/events";
 import "./createEvents.css";

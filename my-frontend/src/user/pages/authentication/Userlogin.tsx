@@ -1,4 +1,3 @@
-import React from 'react'
 import LoginUser from '../../components/login/login'
 import GoogleLoginButton from '../../components/googleLogin/googleLogin'
 

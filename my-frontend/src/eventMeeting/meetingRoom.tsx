@@ -1,5 +1,5 @@
 // MeetingRoom.tsx
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 import "./meetingRoom.css";

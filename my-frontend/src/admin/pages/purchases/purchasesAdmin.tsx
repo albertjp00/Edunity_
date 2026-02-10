@@ -1,4 +1,3 @@
-import React from 'react'
 import Purchases from '../../components/purchases/purchases'
 
 const PurchasesAdmin = () => {

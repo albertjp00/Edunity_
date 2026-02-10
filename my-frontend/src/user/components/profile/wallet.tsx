@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./wallet.css";
 import type { WalletData } from "../../interfaces";
 import { getWallet } from "../../services/profileServices";
