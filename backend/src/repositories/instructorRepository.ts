@@ -14,7 +14,7 @@ import { INotification, NotificationModel } from "../models/notification";
 import { EarningModel } from "../models/earnings";
 import { IWallet, WalletModel } from "../models/wallet";
 import { CategoryModel, ICategory } from "../models/category";
-import { IInstructorDashboardDTO } from "../dto/instructorDTO";
+import { CreateCourseDTO, IInstructorDashboardDTO } from "../dto/instructorDTO";
 import { IInsRepository } from "../interfacesServices.ts/instructorServiceInterface";
 
 export interface ISkills {
@@ -88,7 +88,7 @@ export class InstructorRepository implements IInsRepository {
     return await InstructorModel.findByIdAndUpdate(id, { password: password });
   }
 
-  async addCourse(id: string, data: Partial<ICourse>): Promise<ICourse | null> {
+  async addCourse(id: string, data: CreateCourseDTO): Promise<ICourse | null> {
     return await CourseModel.create({ instructorId: id, ...data });
   }
 

@@ -10,6 +10,7 @@ export interface IModule {
 }
 
 
+export type IModuleInput = Omit<IModule, "_id">;
 
 export interface ICourse extends Document {
   _id: Types.ObjectId; 

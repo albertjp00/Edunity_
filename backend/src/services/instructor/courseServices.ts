@@ -1,4 +1,4 @@
-import { QuizDTO } from "../../dto/instructorDTO";
+import { CreateCourseDTO, QuizDTO } from "../../dto/instructorDTO";
 import {
   CourseResult,
   IPurchaseDetails,
@@ -104,7 +104,7 @@ export class CourseService implements IInstCourseService {
     }
   };
 
-  addCourseRequest = async (id: string, data: Partial<ICourse>) => {
+  addCourseRequest = async (id: string, data: CreateCourseDTO) => {
     try {
       const course = await this.instructorRepository.addCourse(id, data);
       return course;

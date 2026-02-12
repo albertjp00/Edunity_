@@ -1,3 +1,4 @@
+import { IModuleInput } from "../models/course";
 import { IReview } from "../models/review";
 
 export interface InstructorCourseDTO {
@@ -221,3 +222,15 @@ export interface MessagedStudentsDTO {
 }
 
 
+
+export type CreateCourseDTO = {
+  title: string;
+  description: string;
+  skills: string[];
+  price: number;
+  level: string;
+  category: string;
+  accessType: string;
+  thumbnail?: string;
+  modules: IModuleInput[];
+};

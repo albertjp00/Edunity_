@@ -1,5 +1,6 @@
 import { Types } from "mongoose";
 import {
+  CreateCourseDTO,
     IInstructorDashboardDTO,
   IInstructorProfileDTO,
   INotificationDTO,
@@ -73,7 +74,7 @@ export interface IInstCourseService {
 
   addCourseRequest(
     id: string,
-    data: Partial<ICourse>,
+    data: CreateCourseDTO,
   ): Promise<ICourse | string | null>;
 
   editCourseRequest(
@@ -185,7 +186,7 @@ export interface IInsRepository {
 
   changePassword(id: string, password: string): Promise<IInstructor | null>;
 
-  addCourse(id: string, data: Partial<ICourse>): Promise<ICourse | null>;
+  addCourse(id: string, data: CreateCourseDTO): Promise<ICourse | null>;
 
   getCourses(
     id: string,

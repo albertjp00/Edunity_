@@ -3,7 +3,7 @@ import { InstAuthRequest } from "../../middleware/authMiddleware";
 import { uploadToS3 } from "../../utils/s3Upload";
 import fs from "fs";
 import { generateSignedUrl } from "../../utils/getSignedUrl";
-import { IModule } from "../../models/course";
+import { IModule, IModuleInput } from "../../models/course";
 import { HttpStatus } from "../../enums/httpStatus.enums";
 import {
   IInstCourseManageController,
@@ -233,7 +233,7 @@ export class InstCourseController
 
       const moduleIndexes = (req.body.modules as IModule[]).map((_, i) => i);
 
-      const modules: IModule[] = [];
+      const modules: IModuleInput[] = [];
 
       for (const index of moduleIndexes) {
         const title = req.body.modules?.[index]?.title;
@@ -257,7 +257,7 @@ export class InstCourseController
         modules.push({
           title,
           content,
-          ...(videoUrl && { videoUrl }), // ✅ key omitted if undefined
+          ...(videoUrl && { videoUrl }),
         });
       }
 
