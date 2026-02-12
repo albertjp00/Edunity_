@@ -155,7 +155,7 @@ export class InstEventService implements IInstEventService {
 
       await this.InstructorRepository.updateEvent(eventId, {
         isLive: false,
-        meetingLink: undefined,
+        meetingLink: '',
         isOver: true,
       });
 

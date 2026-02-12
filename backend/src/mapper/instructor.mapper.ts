@@ -76,7 +76,7 @@ export const mapModuleToDTO = (module: IModule): IModuleDTO => ({
   content: module.content,
 });
 
-export const mapCourseDetailsToDTO = (course: ICourseService): ICourseDetailsDTO => ({
+export const mapCourseDetailsToDTO = (course: any): ICourseDetailsDTO => ({
   id: course._id.toString(),
   instructorId: course.instructorId ?? '',
   title: course.title,

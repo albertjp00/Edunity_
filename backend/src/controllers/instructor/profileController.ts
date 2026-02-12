@@ -222,6 +222,7 @@ export class InstProfileController
       const result = await this._profileService.getEarnings(
         instructorId as string,
       );
+      if(!result) return
       const earningsDTO = mapEarningsToDTO(result);
 
       res.status(HttpStatus.OK).json({ success: true, earnings: earningsDTO });

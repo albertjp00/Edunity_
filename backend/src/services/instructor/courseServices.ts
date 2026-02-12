@@ -82,6 +82,7 @@ export class CourseService implements IInstCourseService {
       const quiz = await this.instructorRepository.getQuizByCourseId(courseId);
       const quizExists = !!quiz;
 
+      
       return { course: mapCourseDetailsToDTO(course), quizExists };
     } catch (error) {
       console.error("❌ Error fetching course details:", error);
