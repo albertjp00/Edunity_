@@ -41,7 +41,6 @@ export class EventController
   getAllEvents = async (
     req: InstAuthRequest,
     res: Response,
-    next: NextFunction,
   ) => {
     try {
       const search = (req.query.query as string) || "";
@@ -66,7 +65,6 @@ export class EventController
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
-      next(error);
     }
   };
 
@@ -124,7 +122,6 @@ export class EventController
   joinEvent = async (
     req: InstAuthRequest,
     res: Response,
-    next: NextFunction,
   ) => {
     try {
       const instructorId = req.instructor?.id;
@@ -158,14 +155,12 @@ export class EventController
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ message: StatusMessage.INTERNAL_SERVER_ERROR });
-      next(error);
     }
   };
 
   endEvent = async (
     req: InstAuthRequest,
     res: Response,
-    next: NextFunction,
   ) => {
     try {
       const instructorId = req.instructor?.id;
@@ -194,7 +189,6 @@ export class EventController
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: StatusMessage.INTERNAL_SERVER_ERROR });
-      next(error);
     }
   };
 }

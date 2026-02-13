@@ -27,7 +27,6 @@ export class InstProfileController
   getProfile = async (
     req: InstAuthRequest,
     res: Response,
-    next: NextFunction,
   ) => {
     try {
       const userId = req.instructor?.id;
@@ -46,14 +45,12 @@ export class InstProfileController
     } catch (error) {
       console.error("Get profile error:", error);
       res.status(500).json({ error: "Internal server error" });
-      next(error);
     }
   };
 
   editProfile = async (
     req: InstAuthRequest,
     res: Response,
-    next: NextFunction,
   ) => {
     try {
       const userId = req.instructor?.id; // Assuming `req.user` is set by auth middleware
@@ -90,14 +87,12 @@ export class InstProfileController
     } catch (error) {
       console.error("Update profile error:", error);
       res.status(500).json({ error: "Internal server error" });
-      next(error);
     }
   };
 
   changePassword = async (
     req: InstAuthRequest,
     res: Response,
-    next: NextFunction,
   ) => {
     try {
       const id = req.instructor?.id;
@@ -130,14 +125,12 @@ export class InstProfileController
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
-      next(error);
     }
   };
 
   kycSubmit = async (
     req: InstAuthRequest,
     res: Response,
-    next: NextFunction,
   ) => {
     try {
       const id = req.instructor?.id;
@@ -168,14 +161,12 @@ export class InstProfileController
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
-      next(error);
     }
   };
 
   getNotifications = async (
     req: InstAuthRequest,
     res: Response,
-    next: NextFunction,
   ) => {
     try {
       const id = req.instructor?.id;
@@ -191,7 +182,6 @@ export class InstProfileController
     } catch (error) {
       console.error(error);
       res.status(500).json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
-      next(error);
     }
   };
 

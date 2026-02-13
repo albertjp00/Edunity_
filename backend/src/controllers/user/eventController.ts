@@ -50,7 +50,7 @@ export class UserEventController
         .status(HttpStatus.OK)
         .json({ success: true, event: result, enrolled: enrolled });
     } catch (error) {
-      // console.log(error);
+      console.log(error)
       next(error);
     }
   };
@@ -74,7 +74,7 @@ export class UserEventController
 
       res.status(HttpStatus.OK).json({ success: true });
     } catch (error) {
-      // console.log(error);
+      console.log(error);
       next(error);
     }
   };

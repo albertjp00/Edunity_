@@ -35,7 +35,7 @@ export class UserCourseController
     this._courseService = courseService;
   }
 
-  showCourses = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  showCourses = async (req: AuthRequest, res: Response) => {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 6;
@@ -53,7 +53,6 @@ export class UserCourseController
       });
     } catch (error) {
       console.error(error);
-      next(error);
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({
@@ -66,7 +65,6 @@ export class UserCourseController
   getAllCourses = async (
     req: AuthRequest,
     res: Response,
-    next: NextFunction,
   ): Promise<void> => {
     try {
       const {
@@ -80,7 +78,6 @@ export class UserCourseController
         limit = 10,
         search,
       } = req.query;
-      // console.log("search ", search);
 
       const query: FilterQuery<ICourse> = {};
 
@@ -129,7 +126,6 @@ export class UserCourseController
       });
     } catch (error) {
       console.log("Error in getAllCourses:", error);
-      next(error);
       res.status(500).json({ message: StatusMessage.FAILED_TO_GET_COURSES });
     }
   };
@@ -158,7 +154,6 @@ export class UserCourseController
   buyCourse = async (
     req: AuthRequest,
     res: Response,
-    next: NextFunction,
   ): Promise<void> => {
     try {
       const userId = req.user?.id as string;
@@ -179,7 +174,6 @@ export class UserCourseController
         courseId,
       });
     } catch (error) {
-      next(error);
 
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -190,7 +184,6 @@ export class UserCourseController
   verifyPayment = async (
     req: AuthRequest,
     res: Response,
-    next: NextFunction,
   ): Promise<void> => {
     try {
       const {
@@ -219,7 +212,6 @@ export class UserCourseController
         res.status(400).json(result);
       }
     } catch (error) {
-      next(error);
       res
         .status(500)
         .json({
@@ -243,7 +235,6 @@ export class UserCourseController
   buySubscription = async (
     req: AuthRequest,
     res: Response,
-    next: NextFunction,
   ): Promise<void> => {
     try {
       const userId = req.user?.id as string;
@@ -262,7 +253,6 @@ export class UserCourseController
         key: process.env.RAZORPAY_KEY_ID,
       });
     } catch (error) {
-      next(error);
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: StatusMessage.PAYMENT_FAILURE });
@@ -408,7 +398,6 @@ export class UserCourseController
   updateProgress = async (
     req: AuthRequest,
     res: Response,
-    next: NextFunction,
   ) => {
     try {
       const userId = req.user?.id as string;
@@ -432,7 +421,6 @@ export class UserCourseController
 
       res.status(HttpStatus.OK).json({ success: true});
     } catch (error) {
-      next(error);
       res
         .status(500)
         .json({ success: false, message: HttpStatus.INTERNAL_SERVER_ERROR });
@@ -481,7 +469,6 @@ export class UserCourseController
   getInstructors = async (
     req: AuthRequest,
     res: Response,
-    next: NextFunction,
   ) => {
     try {
       const instructor = await this._courseService.getInstructorsRequest();
@@ -492,7 +479,6 @@ export class UserCourseController
 
     } catch (error) {
       console.error(error);
-      next(error);
       res
         .status(500)
         .json({ success: false, message: HttpStatus.INTERNAL_SERVER_ERROR });
@@ -502,7 +488,6 @@ export class UserCourseController
   addtoFavourites = async (
     req: AuthRequest,
     res: Response,
-    next: NextFunction,
   ) => {
     try {
       const userId = req.user?.id as string;
@@ -517,7 +502,6 @@ export class UserCourseController
       res.status(HttpStatus.OK).json({ success: true, fav: result });
     } catch (error) {
       console.log(error);
-      next(error);
       res
         .status(500)
         .json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });

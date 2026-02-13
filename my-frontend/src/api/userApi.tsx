@@ -4,8 +4,6 @@ import { store } from "../redux/store";
 
 const api_url = import.meta.env.VITE_API_URL
 
-// const ngrok_api_url = import.meta.env.VITE_NGROK_API_URL
-
 const api: AxiosInstance = axios.create({
   baseURL: api_url,
   headers: {

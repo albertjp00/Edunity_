@@ -93,7 +93,7 @@ export class InstCourseController
     }
   };
 
-  refreshVideoUrl = async (req: Request, res: Response, next: NextFunction) => {
+  refreshVideoUrl = async (req: Request, res: Response) => {
     try {
       const { key } = req.query;
       if (!key) {
@@ -110,7 +110,6 @@ export class InstCourseController
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: StatusMessage.ERROR_LINK });
-      next(error);
     }
   };
 
@@ -144,7 +143,7 @@ export class InstCourseController
   editCourse = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+   
   ): Promise<void> => {
     try {
       const courseId = req.params.id!;
@@ -217,14 +216,12 @@ export class InstCourseController
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
-      next(error);
     }
   };
 
   addCourse = async (
     req: InstAuthRequest,
     res: Response,
-    next: NextFunction,
   ): Promise<void> => {
     try {
       const id = req.instructor?.id;
@@ -283,11 +280,10 @@ export class InstCourseController
       res
         .status(500)
         .json({ success: false, message: StatusMessage.ERROR_ADDING_COURSE });
-      next(error);
     }
   };
 
-  addQuiz = async (req: InstAuthRequest, res: Response, next: NextFunction) => {
+  addQuiz = async (req: InstAuthRequest, res: Response) => {
     try {
       const { id } = req.params;
       const { title, questions } = req.body;
@@ -310,7 +306,6 @@ export class InstCourseController
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ success: false, message });
-      next(error);
     }
   };
 

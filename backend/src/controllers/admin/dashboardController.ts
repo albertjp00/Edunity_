@@ -43,7 +43,6 @@ export class AdminDashboardController implements IAdminDashboardController {
         success: false,
         message: StatusMessage.FAILED_TO_FETCH_DATA,
       });
-      next(error);
     }
   };
 

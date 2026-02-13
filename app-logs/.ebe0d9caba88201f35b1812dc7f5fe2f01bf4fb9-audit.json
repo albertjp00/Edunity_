@@ -1,0 +1,20 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 2
+    },
+    "auditLog": "C:\\Edunity_\\app-logs\\.ebe0d9caba88201f35b1812dc7f5fe2f01bf4fb9-audit.json",
+    "files": [
+        {
+            "date": 1770913964033,
+            "name": "C:\\Edunity_\\app-logs\\combined-2026-02-12.log",
+            "hash": "e85fa2b1e2b0217a535a32a0b88e95ec9de33902407e3389f52db0306d2e93c3"
+        },
+        {
+            "date": 1770952313641,
+            "name": "C:\\Edunity_\\app-logs\\combined-2026-02-13.log",
+            "hash": "6d2ed593e2ddf71171c013413c31b70970f1e9a99f5f02634a5ddd36bd037d9e"
+        }
+    ],
+    "hashType": "sha256"
+}

@@ -105,7 +105,7 @@ export class AuthController
 
 
 
-  logoutUser = async (req: Request, res: Response, next: NextFunction):Promise<void> => {
+  logoutUser = async (req: Request, res: Response):Promise<void> => {
     try {
       res.clearCookie("refreshToken", {
         httpOnly: true,
@@ -116,9 +116,7 @@ export class AuthController
 
       res.status(HttpStatus.OK).json({ success: true });
     } catch (err) {
-      next(err)
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false });
-
     }
   };
 
@@ -139,7 +137,7 @@ export class AuthController
 
 
 
-  register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  register = async (req: Request, res: Response): Promise<void> => {
     try {
       const { name, email, password } = req.body;
       const result = await this._authService.registerRequest(name, email, password);
@@ -151,7 +149,6 @@ export class AuthController
         res.status(HttpStatus.BAD_REQUEST).json(result); // Failure
       }
     } catch (error) {
-      next(error)
       res
         .status(HttpStatus.BAD_REQUEST)
         .json({ success: false, message: StatusMessage.REGISTRATION_FAILED });
@@ -159,7 +156,7 @@ export class AuthController
   };
 
 
-  resendOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  resendOtp = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email } = req.body;
 
@@ -172,7 +169,6 @@ export class AuthController
       res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.OTP_SENT });
     } catch (error) {
       console.error(error);
-      next(error)
       res.status(500).json({ success: false, message: StatusMessage.OTP_RESEND_FAILED });
     }
   };
@@ -197,7 +193,7 @@ export class AuthController
 
 
 
-  googleSignIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  googleSignIn = async (req: Request, res: Response): Promise<void> => {
     try {
       const { token } = req.body;
     
@@ -218,12 +214,11 @@ export class AuthController
 
       res.json({ success: true, token: accessToken  });
     } catch (error) {
-      next(error)
       res.status(500).json({ message:  StatusMessage.GOOGLE_SIGN_IN_FALIED });
     }
   };
 
-  forgotPassword = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  forgotPassword = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { email } = req.body;
 
@@ -237,12 +232,11 @@ export class AuthController
       res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.OTP_SENT });
     } catch (error) {
       console.error(error);
-      next(error)
       res.status(500).json({ message: StatusMessage.INTERNAL_SERVER_ERROR });
     }
   };
 
-  verifyOtpForgotPass = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  verifyOtpForgotPass = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
 
       const { email, otp } = req.body;
@@ -256,12 +250,11 @@ export class AuthController
 
       res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.OTP_VERIFIED });
     } catch (error) {
-      next(error)
       res.status(500).json({ message: StatusMessage.INTERNAL_SERVER_ERROR });
     }
   };
 
-  resendOtpForgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  resendOtpForgotPassword = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email } = req.body;
 
@@ -275,13 +268,12 @@ export class AuthController
 
       res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.OTP_SENT });
     } catch (error) {
-      // console.error(error);
-      next(error)
+      console.error(error);
       res.status(500).json({ success: false, message: StatusMessage.OTP_RESEND_FAILED });
     }
   };
 
-  resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  resetPassword = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, newPassword } = req.body;
 
@@ -298,7 +290,6 @@ export class AuthController
       res.json({ success: true, message: StatusMessage.PASSWORD_CHANGED });
     } catch (error) {
       console.error(error);
-      next(error)
       res.json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
     }
   };

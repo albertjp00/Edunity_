@@ -6,8 +6,6 @@ interface CustomError extends Error {
   statusCode?: number;
 }
 
-
-
 export function errorHandler(
   err: CustomError,
   req: Request,

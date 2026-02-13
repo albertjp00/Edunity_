@@ -22,7 +22,7 @@ export class ProfileController implements
 
 
 
-    getProfile = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+    getProfile = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
             const userId = req.user?.id
 
@@ -39,15 +39,14 @@ export class ProfileController implements
                 res.status(HttpStatus.NOT_FOUND).json({ error: StatusMessage.PROFILE_NOT_FOUND });
             }
         } catch (error) {
-            // console.error('Get profile error:', error);
-            next(error)
+            console.error('Get profile error:', error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: StatusMessage.INTERNAL_SERVER_ERROR });
         }
     };
 
 
 
-    editProfile = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+    editProfile = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
             const userId = req.user?.id; 
 
@@ -74,19 +73,16 @@ export class ProfileController implements
                 res.status(HttpStatus.NOT_FOUND).json({ error: StatusMessage.PROFILE_NOT_FOUND });
             }
         } catch (error) {
-            // console.error('Update profile error:', error);
-            next(error)
+            console.error('Update profile error:', error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: StatusMessage.INTERNAL_SERVER_ERROR });
         }
     };
 
 
-    changePassword = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+    changePassword = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
             const id = req.user?.id;
             const { newPassword, oldPassword } = req.body;
-
-            // console.log(newPassword);
 
 
             if (!id) {
@@ -95,7 +91,6 @@ export class ProfileController implements
             }
 
             const result = await this._profileService.passwordChange(id, newPassword, oldPassword)
-            // console.log(result);
 
             if (result) {
                 res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.PASSWORD_CHANGED })
@@ -103,8 +98,7 @@ export class ProfileController implements
                 res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: StatusMessage.INCORRECT_PASSWORD })
             }
         } catch (error) {
-            // console.error(error);
-            next(error)
+            console.error(error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: StatusMessage.INTERNAL_SERVER_ERROR });
         }
     };
@@ -126,8 +120,6 @@ export class ProfileController implements
             const userId = req.user?.id
             const page = Number(req.params.page)
             const payment = await this._profileService.getPayment(userId as string, page)
-            // console.log(payment);
-
             res.status(HttpStatus.OK).json({ success: true, payments: payment })
 
         } catch (error) {

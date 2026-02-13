@@ -30,7 +30,7 @@ export class AdminUserController implements IAdminUserManagementController {
     }
   };
 
-  getUsers = async (req: Request, res: Response, next: NextFunction) => {
+  getUsers = async (req: Request, res: Response) => {
     try {
       const { search, page } = req.query;
 
@@ -52,7 +52,6 @@ export class AdminUserController implements IAdminUserManagementController {
       res
         .status(500)
         .json({ message: StatusMessage.FAILED_TO_FETCH_DATA, error });
-      next(error);
     }
   };
 

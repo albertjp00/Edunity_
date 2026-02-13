@@ -42,7 +42,6 @@ export class AdminCourseController
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: StatusMessage.FAILED_TO_GET_COURSES });
-      next(error);
     }
   };
 
@@ -64,7 +63,6 @@ export class AdminCourseController
         success: false,
         message: StatusMessage.FAILED_TO_GET_COURSE_DETAILS,
       });
-      next(error);
     }
   };
 
@@ -115,6 +113,7 @@ export class AdminCourseController
       res.send(pdfBuffer);
     } catch (error) {
       console.log(error);
+      
     }
   };
 
