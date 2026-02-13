@@ -29,9 +29,7 @@ app.use(express.json());
 
 
 app.use(
-  cors({
-    // origin: 'https://spoke-indices-questions-announcement.trycloudflare.com',
-    
+  cors({    
     origin: [process.env.FRONTEND_URL].filter(Boolean) as string[],
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
@@ -47,14 +45,12 @@ app.use("/admin", adminRoutes);
 app.use("/messages", messageRoutes);
 
 
-// ✅ Initialize socket.io
 const io = new Server(server, {
   
   cors: {
     origin: [
     
     process.env.FRONTEND_URL,
-    //  'https://spoke-indices-questions-announcement.trycloudflare.com'
   ].filter(Boolean) as string[],
 
     credentials: true,
@@ -64,10 +60,7 @@ const io = new Server(server, {
 
 
 
-setupSocket(io); // ✅ attach all socket handlers
-
-// io.use(socketAuthMiddleware)
-
+setupSocket(io);
 app.use(errorHandler)
 
 

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { HttpStatus } from "../enums/httpStatus.enums";
 import logger from "../utils/logger";
 
@@ -12,7 +12,7 @@ export function errorHandler(
   err: CustomError,
   req: Request,
   res: Response,
-  // _next: NextFunction
+  _next: NextFunction
 ) {
   const status = err.statusCode || HttpStatus.INTERNAL_SERVER_ERROR;
 
