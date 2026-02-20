@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux';
 import { logoutSuccess } from '../../../redux/slices/authSlice';
 import { logout } from '../../services/authServices';
 import { socket } from '../../../socket/socket';
+import { getSubscriptionPlan } from '../../services/courseServices';
 // import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 // import { logoutSuccess } from '../../../redux/slices/authSlice';
 
@@ -30,7 +31,7 @@ const Navbar = () => {
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-
+  const [subscription , setSubscription] = useState(false)
 
   const toggleMenu = () => setMenuOpen(prev => !prev);
   
@@ -65,6 +66,18 @@ const Navbar = () => {
     }
     getNotifications()
   }, [])
+
+  useEffect(()=>{
+    const checkSubscription = async ()=>{
+      const subscription = await getSubscriptionPlan()
+      if(!subscription) return
+    if(subscription.data.subscription){
+      setSubscription(true)
+    }
+    }
+
+    checkSubscription()
+  },[])
 
 
 
@@ -114,7 +127,8 @@ const Navbar = () => {
           {hasUnread && <span className="notification-dot"></span>}
         </div>
 
-        <Link to="/user/subscription"><p>Subscription</p></Link>
+
+        {subscription &&  <Link to="/user/subscription"><p>Subscription</p></Link>}
         <Link to="/user/favourites"><p>Favourites</p></Link>
         <Link to="/user/myCourses"><p>My Courses</p></Link>
         <Link to="/user/chat"><p>Messages</p></Link>

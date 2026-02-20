@@ -24,6 +24,8 @@ import { INotification, NotificationModel } from "../models/notification";
 import { IReview, ReviewModel } from "../models/review";
 import { IReport, ReportModel } from "../models/report";
 import { INotifications } from "../interfacesServices.ts/userServiceInterfaces";
+import { query } from "winston";
+import { ISubscriptionPlan, SubscriptionModel } from "../models/subscription";
 
 export class UserRepository
   extends BaseRepository<IUser>
@@ -492,8 +494,27 @@ export class UserRepository
     }
   }
 
-  async getEvents(): Promise<IEvent[] | null> {
-    return await EventModel.find();
+  async getEvents(search : string , page : number): Promise<{events : IEvent[] , totalPages:number} | null> {
+
+    const limit = 4
+    const skip = Math.ceil(page -1 )*limit
+    console.log('serarch event ',search);
+    
+    
+  const query: FilterQuery<IEvent> = {};
+
+    if(search){
+      query.$or = [
+        {title : {$regex : search , $options : 'i'}},
+        {description : {$regex : search , $options : 'i'}}
+      ]
+    }
+
+    const totalPages = Math.floor(await EventModel.countDocuments()%limit)
+
+    const events =  await EventModel.find(query).skip(skip).limit(limit).sort({created : -1});
+
+    return {events , totalPages}
   }
 
   async getMyEvent(id: string): Promise<IMyEvent | null> {
@@ -631,6 +652,16 @@ export class UserRepository
       return false;
     }
     return user.subscription;
+  }
+
+  async getSubscriptionPlan(): Promise<ISubscriptionPlan | null>{
+    try {
+      const plan = await SubscriptionModel.findOne();
+    return plan;
+    } catch (error) {
+      console.log(error);
+      return null
+    }
   }
 
   async getSubscriptionCourses(

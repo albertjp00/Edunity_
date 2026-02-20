@@ -127,7 +127,7 @@ export const setupSocket = (io: Server) => {
 
       if (!eventParticipants[eventId]) eventParticipants[eventId] = [];
 
-      const participant = { socketId: socket.id, userId, role, name }; // ✅ include name
+      const participant = { socketId: socket.id, userId, role, name }; 
       eventParticipants[eventId].push(participant);
 
       // send all participants (including self) to the new user

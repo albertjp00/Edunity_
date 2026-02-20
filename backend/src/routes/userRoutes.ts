@@ -119,6 +119,7 @@ router.get(ROUTES.COURSES.BUY_SUB, authMiddleware, courseController.buySubscript
 router.post(ROUTES.COURSES.VERIFY_SUBSCRIPTION_PAYMENT, authMiddleware, courseController.verifySubscriptionPayment);
 router.get(ROUTES.COURSES.SUB_CHECK, authMiddleware, profileController.subscriptionCheck);
 router.get(ROUTES.COURSES.SUB_COURSES, authMiddleware,courseController.mySubscriptionCourses);
+router.get(ROUTES.COURSES.SUB_PLANS, authMiddleware, profileController.getSubscriptionPlan);
 
 router.get(ROUTES.COURSES.VIEW_MY_COURSE, authMiddleware, courseController.viewMyCourse);
 router.post(ROUTES.COURSES.UPDATE_PROGRESS, authMiddleware, courseController.updateProgress);
@@ -130,7 +131,7 @@ router.delete(ROUTES.COURSES.CANCEL_COURSE, authMiddleware, courseController.can
 router.post(ROUTES.COURSES.REPORT_COURSE, authMiddleware, courseController.reportCourse);
 
 // Events
-router.get(ROUTES.EVENTS.LIST, authMiddleware, eventController.getEvents);
+router.post(ROUTES.EVENTS.LIST, authMiddleware, eventController.getEvents);
 router.get(ROUTES.EVENTS.DETAILS, authMiddleware, eventController.getEventDetails);
 router.get(ROUTES.EVENTS.ENROLL, authMiddleware, eventController.enrollEvent);
 router.get(ROUTES.EVENTS.MY_EVENTS, authMiddleware, eventController.getMyEvents);

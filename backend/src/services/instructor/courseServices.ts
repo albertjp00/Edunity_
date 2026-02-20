@@ -19,7 +19,7 @@ import { IQuestion, IQuiz } from "../../models/quiz";
 import { generateSignedUrl } from "../../utils/getSignedUrl";
 
 export class CourseService implements IInstCourseService {
-  constructor(private instructorRepository: IInsRepository) {}
+  constructor(private _instructorRepository: IInsRepository) {}
 
   fetchCourses = async (
     id: string,
@@ -31,11 +31,11 @@ export class CourseService implements IInstCourseService {
       const skip = (page - 1) * limit;
 
       const [courses, totalItems] = await Promise.all([
-        this.instructorRepository.getCourses(id, search, skip, limit),
-        this.instructorRepository.countCourses(id),
-        this.instructorRepository.findSkills(),
+        this._instructorRepository.getCourses(id, search, skip, limit),
+        this._instructorRepository.countCourses(id),
+        this._instructorRepository.findSkills(),
       ]);
-      const instructor = await this.instructorRepository.findById(id);
+      const instructor = await this._instructorRepository.findById(id);
 
       return {
         courses: courses?.map(mapInstructorCourseToDTO) ?? [],
@@ -52,7 +52,7 @@ export class CourseService implements IInstCourseService {
 
   fetchCourseDetails = async (courseId: string) => {
     try {
-      const course = await this.instructorRepository.getCourseDetails(courseId);
+      const course = await this._instructorRepository.getCourseDetails(courseId);
       if (!course) return null;
       
       
@@ -79,7 +79,7 @@ export class CourseService implements IInstCourseService {
         }
       }
 
-      const quiz = await this.instructorRepository.getQuizByCourseId(courseId);
+      const quiz = await this._instructorRepository.getQuizByCourseId(courseId);
       const quizExists = !!quiz;
 
       
@@ -94,7 +94,7 @@ export class CourseService implements IInstCourseService {
     id: string,
   ): Promise<IPurchaseDetails[] | null> => {
     try {
-      const details = await this.instructorRepository.purchaseDetails(id);
+      const details = await this._instructorRepository.purchaseDetails(id);
       if (!details) return null;
 
       return details?.map(mapPurchaseDetailsToDTO);
@@ -106,7 +106,7 @@ export class CourseService implements IInstCourseService {
 
   addCourseRequest = async (id: string, data: CreateCourseDTO) => {
     try {
-      const course = await this.instructorRepository.addCourse(id, data);
+      const course = await this._instructorRepository.addCourse(id, data);
       return course;
     } catch (error) {
       console.error("Add Course Error:", error);
@@ -119,7 +119,7 @@ export class CourseService implements IInstCourseService {
     data: Partial<ICourse>,
   ): Promise<ICourse | null> => {
     try {
-      return await this.instructorRepository.editCourse(id, data);
+      return await this._instructorRepository.editCourse(id, data);
     } catch (error) {
       console.log(error);
       return null;
@@ -128,7 +128,7 @@ export class CourseService implements IInstCourseService {
 
   async addQuiz(courseId: string, title: string, questions: IQuestion[]) {
     try {
-      await this.instructorRepository.addQuiz(courseId, title, questions);
+      await this._instructorRepository.addQuiz(courseId, title, questions);
     } catch (error) {
       throw new Error("Error while adding quiz: " + (error as Error).message);
     }
@@ -136,7 +136,7 @@ export class CourseService implements IInstCourseService {
 
   async getQuiz(courseId: string): Promise<QuizDTO | null> {
     try {
-      const quiz = await this.instructorRepository.getQuizByCourseId(courseId);
+      const quiz = await this._instructorRepository.getQuizByCourseId(courseId);
       if (!quiz) return null;
       return mapQuizToDTO(quiz);
     } catch (error) {
@@ -147,7 +147,7 @@ export class CourseService implements IInstCourseService {
 
   async updateQuiz(id: string, data: Partial<IQuiz>) {
     try {
-      await this.instructorRepository.editQuiz(id, data);
+      await this._instructorRepository.editQuiz(id, data);
     } catch (error) {
       console.log(error);
     }
@@ -155,7 +155,7 @@ export class CourseService implements IInstCourseService {
 
   async getCategoryRequest(): Promise<ICategory[] | null> {
     try {
-      const category = await this.instructorRepository.getCategory();
+      const category = await this._instructorRepository.getCategory();
       console.log("category edit", category);
 
       return category;

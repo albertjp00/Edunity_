@@ -215,6 +215,8 @@ export interface IInsRepository {
 
   getEvent(id: string): Promise<IEvent | null>;
 
+  getEventCount(id: string , date : Date): Promise<number | null>;
+
   updateEvent(id: string, data: Partial<IEvent>): Promise<IEvent | null>;
 
   addQuiz(courseId: string, title: string, questions: IQuestion[]): Promise<IQuiz>;

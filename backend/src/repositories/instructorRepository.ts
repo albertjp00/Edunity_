@@ -189,7 +189,6 @@ export class InstructorRepository implements IInsRepository {
   ): Promise<IEventResult | null> {
     const limit = 3;
     const skip = (parseInt(page) - 1) * limit;
-    // console.log(search);
 
     const query: any = { instructorId: id };
 
@@ -216,6 +215,11 @@ export class InstructorRepository implements IInsRepository {
   async getEvent(id: string): Promise<IEvent | null> {
     const event = await EventModel.findById(id);
     return event;
+  }
+
+  async getEventCount(id: string , date : Date): Promise<number | null> {
+    const number = await EventModel.countDocuments({date:date});
+    return number;
   }
 
   async updateEvent(id: string, data: Partial<IEvent>): Promise<IEvent | null> {

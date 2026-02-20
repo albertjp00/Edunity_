@@ -34,16 +34,16 @@ export class UserEventService implements IUserEventService {
 
 
     constructor(
-        private userRepository: IUserRepository, 
-        private instructorRepository: IInsRepository
+        private _userRepository: IUserRepository, 
+        private _instructorRepository: IInsRepository
     ) {}
 
-    getEventsRequest = async (): Promise<EventDTO[] | null> => {
+    getEventsRequest = async (search : string , page : number): Promise<{events : EventDTO[] , totalPages : number } | null> => {
         try {
-            const result = await this.userRepository.getEvents()
+            const result = await this._userRepository.getEvents(search , page)
             console.log('events',result);
             if(!result) return null
-            return result?.map(mapEventToDTO)
+            return {events : result?.events.map(mapEventToDTO) , totalPages : result?.totalPages}
         } catch (error) {
             console.log(error);
             return null
@@ -52,7 +52,7 @@ export class UserEventService implements IUserEventService {
 
     getIfEnrolled = async (id: string): Promise<IMyEvent | boolean | null> => {
         try {
-            const result = await this.userRepository.getMyEvent(id)
+            const result = await this._userRepository.getMyEvent(id)
 
             if (result) {
                 return true
@@ -67,7 +67,7 @@ export class UserEventService implements IUserEventService {
 
     getEventDetailsRequest = async (id: string): Promise<EventDTO | null> => {
         try {
-            const result = await this.instructorRepository.getEvent(id)            
+            const result = await this._instructorRepository.getEvent(id)            
             if(!result){
                 return null
             }
@@ -81,7 +81,7 @@ export class UserEventService implements IUserEventService {
 
     eventEnrollRequest = async (id: string, eventId: string): Promise<IMyEvent | null> => {
         try {
-            const result = await this.userRepository.enrollEvent(id, eventId)
+            const result = await this._userRepository.enrollEvent(id, eventId)
             return result
         } catch (error) {
             console.log(error);
@@ -93,7 +93,7 @@ export class UserEventService implements IUserEventService {
 
     getMyEvents = async (userId: string): Promise<EventDTO[] | null> => {
         try {
-            const result = await this.userRepository.getMyEvents(userId)
+            const result = await this._userRepository.getMyEvents(userId)
             if(!result) return null           
             return result.map(mapEventToDTO)
         } catch (error) {
@@ -106,13 +106,13 @@ export class UserEventService implements IUserEventService {
 
     joinUserEventRequest = async (eventId: string, userId: string): Promise<{ success: boolean; message: string; meetingLink?: string } | null> => {
         try {
-            const myEvent = await this.userRepository.getMyEvent(eventId);
+            const myEvent = await this._userRepository.getMyEvent(eventId);
 
             if (!myEvent) return { success: false, message: StatusMessage.NO_EVENT_FOUND };
             if (myEvent.userId !== userId)
                 return { success: false, message: "Not authorized" };
 
-            const event = await this.instructorRepository.getEvent(eventId);
+            const event = await this._instructorRepository.getEvent(eventId);
             if (!event) return { success: false, message: StatusMessage.NO_EVENT_FOUND };
 
             if (!event.isLive)

@@ -17,8 +17,8 @@ const refresh: string = process.env.REFRESH_KEY || "refresh_secret";
 
 export class AdminService implements IAdminService {
   constructor(
-    private adminRepository: IAdminRepository,
-    private userRepository: IUserRepository,
+    private _adminRepository: IAdminRepository,
+    private _userRepository: IUserRepository,
   ) {}
 
   loginRequest = async (
@@ -26,7 +26,7 @@ export class AdminService implements IAdminService {
     password: string,
   ): Promise<AdminLoginDTO> => {
     try {
-      const admin = await this.adminRepository.findByEmail(email, password);
+      const admin = await this._adminRepository.findByEmail(email, password);
 
       if (!admin) {
         return {
@@ -38,7 +38,7 @@ export class AdminService implements IAdminService {
       const token = jwt.sign(
         { id: admin._id, email: admin.email, role: "admin" },
         process.env.SECRET_KEY as string,
-        { expiresIn: "5m" },
+        { expiresIn: "1h" },
       );
       const refreshToken = jwt.sign({ id: admin._id }, refresh, { expiresIn: "2h" });
 
@@ -57,7 +57,7 @@ export class AdminService implements IAdminService {
     page: number,
   ): Promise<PaginatedUsers | null> => {
     try {
-      const result = await this.adminRepository.findUsers(search, page);
+      const result = await this._adminRepository.findUsers(search, page);
       return result;
     } catch (error) {
       console.log(error);
@@ -68,11 +68,11 @@ export class AdminService implements IAdminService {
   blockUnblockUser = async (id: string): Promise<boolean | null> => {
     try {
 
-      const user = await this.userRepository.findById(id);
+      const user = await this._userRepository.findById(id);
       if (user?.blocked) {
-        return await this.adminRepository.unblockUser(id);
+        return await this._adminRepository.unblockUser(id);
       } else {
-        return await this.adminRepository.blockUser(id);
+        return await this._adminRepository.blockUser(id);
       }
     } catch (error) {
       console.log(error);
@@ -82,7 +82,7 @@ export class AdminService implements IAdminService {
 
   unblockUser = async (id: string): Promise<boolean | null> => {
     try {
-      const result = await this.adminRepository.unblockUser(id);
+      const result = await this._adminRepository.unblockUser(id);
       return result;
     } catch (error) {
       console.log(error);
@@ -92,10 +92,10 @@ export class AdminService implements IAdminService {
 
   getStats = async (): Promise<AdminStatsDTO> => {
     try {
-      const totalUsers = await this.adminRepository.getTotalUsers();
-      const totalInstructors = await this.adminRepository.getTotalInstructors();
-      const totalCourses = await this.adminRepository.getCourses();
-      const totalEnrolled = await this.adminRepository.getTotalEnrolled();
+      const totalUsers = await this._adminRepository.getTotalUsers();
+      const totalInstructors = await this._adminRepository.getTotalInstructors();
+      const totalCourses = await this._adminRepository.getCourses();
+      const totalEnrolled = await this._adminRepository.getTotalEnrolled();
 
       return AdminStatsMapper({
         totalUsers,
@@ -120,7 +120,7 @@ getUserOverview = async (): Promise<{ name: string; count: number }[]> => {
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
     const usersByMonth =
-      await this.adminRepository.getUserOverview(oneYearAgo);
+      await this._adminRepository.getUserOverview(oneYearAgo);
 
     const months = getLast12Months();
 
@@ -168,7 +168,7 @@ const monthName = `${MONTH_NAMES[monthIndex]} ${year}`;
     if (sort === "adminLow") sortOption = { adminEarnings: 1 };
     if (sort === "latest") sortOption = { lastUpdated: -1 };
 
-      const earningsData = await this.adminRepository.getEarningsData(page ,filter , sortOption);
+      const earningsData = await this._adminRepository.getEarningsData(page ,filter , sortOption);
 
       const earnings = earningsData?.earnings || [];
       const totalPages = earningsData?.totalPages || 0;

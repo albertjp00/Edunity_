@@ -53,6 +53,12 @@ export interface IAdminCategoryController {
   ): Promise<void>;
 }
 
+export interface IAdminSubscriptionController{
+    addSubscription(req: AdminAuthRequest,res: Response,next: NextFunction):Promise<void>
+
+  getSubscription(req: AdminAuthRequest,res: Response,next: NextFunction):Promise<void>
+}
+
 //controller.ts
 //  AUTH INTERFACE
 export interface IAdminAuthController {
@@ -169,13 +175,16 @@ export interface IAdminCourseService {
   addCategoryRequest(
     category: string,
     skills: string[],
-  ): Promise<ICategory | null>;
+  ): Promise<ICategory | string | null>;
 
   getCategoryRequest(): Promise<CategoryDTO[] | null>;
 
   deleteCategoryRequest(category: string): Promise<boolean | null>;
   blockCourseRequest(courseId: string): Promise<boolean | null>;
   getReportsRequest(): Promise<ReportDTO[] | null>;
+  addSubscription(data : ISubscriptionPlan): Promise<boolean | null>;
+  getSubscription():Promise<ISubscriptionPlan[] | null>
+  updateSubscription(id : string , data : Partial<ISubscriptionPlan>):Promise<boolean | null>
 }
 
 export interface IAdminAuthService {
@@ -301,6 +310,7 @@ export interface CourseDetailsServiceResult {
 import { Types } from "mongoose";
 import { UserDTO } from "./userInterfaces";
 import { InstructorDTO } from "./instructorInterfaces";
+import { ISubscriptionPlan } from "../models/subscription";
 
 export interface CourseRaw {
   _id: Types.ObjectId;

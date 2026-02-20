@@ -18,11 +18,11 @@ export class MessageController
     InstructorMessageController,
     MessageReadController
 {
-  private messageService: IMessageService;
+  private _messageService: IMessageService;
 
   constructor(messageService: IMessageService) {
     // const repo = new MessageRepository();
-    this.messageService = messageService;
+    this._messageService = messageService;
   }
 
   getInstructor = async (
@@ -33,7 +33,7 @@ export class MessageController
     try {
       const { instructorId } = req.params;
       const userId = req.user?.id;
-      const instructor = await this.messageService.getInstructor(
+      const instructor = await this._messageService.getInstructor(
         instructorId as string,
         userId as string,
       );
@@ -53,7 +53,7 @@ export class MessageController
   ) => {
     try {
       const { id } = req.params;
-      const instructor = await this.messageService.getInstructorToMessage(
+      const instructor = await this._messageService.getInstructorToMessage(
         id as string,
       );
       if (!instructor) {
@@ -89,7 +89,7 @@ export class MessageController
   ) => {
     try {
       const userId = req.user?.id;
-      const result = await this.messageService.getInstructors(userId as string);
+      const result = await this._messageService.getInstructors(userId as string);
       res.status(HttpStatus.OK).json({ data: result, userId });
     } catch (error) {
       console.log(error);
@@ -105,7 +105,7 @@ export class MessageController
     try {
       const userId = req.user?.id;
       const { instructorId } = req.params!;
-      const result = await this.messageService.getUnreadMessages(
+      const result = await this._messageService.getUnreadMessages(
         userId as string,
         instructorId as string,
       );
@@ -123,7 +123,7 @@ export class MessageController
 
       const file = req.file ? req.file.filename : "";
 
-      const message = await this.messageService.sendMessage(
+      const message = await this._messageService.sendMessage(
         userId,
         receiverId,
         text,
@@ -150,7 +150,7 @@ export class MessageController
 
       console.log(userId);
 
-      const messages = await this.messageService.getChatHistory(
+      const messages = await this._messageService.getChatHistory(
         userId as string,
         receiverId as string,
       );
@@ -174,7 +174,7 @@ export class MessageController
     try {
       const instructorId = req.instructor?.id;
 
-      const result = await this.messageService.getStudents(
+      const result = await this._messageService.getStudents(
         instructorId as string,
       );
       res
@@ -196,7 +196,7 @@ export class MessageController
 
       const instructorId = req.instructor?.id;
 
-      const messages = await this.messageService.getMessages(
+      const messages = await this._messageService.getMessages(
         instructorId as string,
         receiverId as string,
       );
@@ -221,7 +221,7 @@ export class MessageController
       console.log(file);
       const receiverId = req.params.receiverId!;
       const instructorId = req.instructor?.id as string;
-      const message = await this.messageService.sendInstructorMessage(
+      const message = await this._messageService.sendInstructorMessage(
         instructorId,
         receiverId,
         text,
@@ -239,7 +239,7 @@ export class MessageController
 
   markAsRead = async (senderId: string, receiverId: string) => {
     try {
-      await this.messageService.markMessagesAsRead(senderId, receiverId);
+      await this._messageService.markMessagesAsRead(senderId, receiverId);
     } catch (error) {
       console.log(error);
     }

@@ -11,34 +11,34 @@ import { IMessageRepository } from "../../repositories/messageRepositories";
 
 
 export class MessageService implements IMessageService{
-    private messageRepository: IMessageRepository;
+    private _messageRepository: IMessageRepository;
 
     
     constructor(messageRepository: IMessageRepository) {
-        this.messageRepository = messageRepository
+        this._messageRepository = messageRepository
     }
 
     async getInstructor(instructorId:string , userId : string):Promise<IMessagedInstructor | null> {
         
-        const instructor = await this.messageRepository.getInstructor(instructorId , userId )
+        const instructor = await this._messageRepository.getInstructor(instructorId , userId )
         return instructor
     }
 
     async getInstructorToMessage(instructorId : string):Promise<IInstructor | null>{
-        return await this.messageRepository.getInstructorOnly(instructorId )
+        return await this._messageRepository.getInstructorOnly(instructorId )
     }
 
     async getInstructors(userId: string): Promise<IMessagedInstructor[] > {
-        return await this.messageRepository.getInstructors(userId)
+        return await this._messageRepository.getInstructors(userId)
     }
 
     async getUnreadMessages(userId:string , instructorId:string) : Promise<ILastMessage | null>{
-        return await this.messageRepository.getUnreadMessages(userId , instructorId)
+        return await this._messageRepository.getUnreadMessages(userId , instructorId)
     }
 
     async sendMessage(senderId: string, receiverId: string, text: string , file: string | null): Promise<IMessage | null> {
         try {
-            return await this.messageRepository.createMessage(senderId, receiverId, text , file);
+            return await this._messageRepository.createMessage(senderId, receiverId, text , file);
         } catch (error) {
             console.log(error);
             return null
@@ -48,21 +48,21 @@ export class MessageService implements IMessageService{
 
 
     async getChatHistory(userId: string, receiverId: string): Promise<MessageDTO[]> {
-        const messages =  await this.messageRepository.getMessages(userId, receiverId);
+        const messages =  await this._messageRepository.getMessages(userId, receiverId);
         return messages.map(mapMessageToDTO)
     }
 
     async   markMessagesAsRead(senderId: string, receiverId: string): Promise<boolean> {
         console.log('repository',senderId , receiverId);
         
-        return await this.messageRepository.markAsRead(senderId, receiverId);
+        return await this._messageRepository.markAsRead(senderId, receiverId);
     }
 
 
         // Instructor side 
     async getStudents(instructorId: string ): Promise<MessagedStudentsDTO[] | null> {
         try {
-            const students = await this.messageRepository.getUsers(instructorId)      
+            const students = await this._messageRepository.getUsers(instructorId)      
             console.log('service students',students);
                   
             if(!students) return null
@@ -78,7 +78,7 @@ export class MessageService implements IMessageService{
 
     async getMessages(instructorId : string , receiverId : string):Promise<MessageDTO[] | null>{
         try {
-            const messages = await this.messageRepository.getUserMessages(instructorId , receiverId)
+            const messages = await this._messageRepository.getUserMessages(instructorId , receiverId)
             console.log(messages);
             return messages.map(mapMessageToDTO)
 
@@ -90,6 +90,6 @@ export class MessageService implements IMessageService{
     }
 
     async sendInstructorMessage(instructorId:string , receiverId:string , text:string , file : string | null):Promise<IMessage>{
-        return await this.messageRepository.sendInstructorsMessage(instructorId, receiverId , text , file)
+        return await this._messageRepository.sendInstructorsMessage(instructorId, receiverId , text , file)
     }
 }

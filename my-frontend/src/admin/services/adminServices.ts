@@ -1,5 +1,5 @@
 import adminApi from "../../api/adminApi";
-import type { LoginFormData } from "../adminInterfaces";
+import type { CreateSubscriptionDTO, LoginFormData } from "../adminInterfaces";
 
 
 
@@ -237,4 +237,36 @@ export const deleteCategory = async(category:string) => {
 export const getReports = async() => {
   const res =  await adminApi.get(`/admin/getReports`);
   return res
+};
+
+
+
+
+
+
+export const createSubscriptionPlan = async (
+  data: CreateSubscriptionDTO
+) => {
+  const response = await adminApi.post("/admin/subscriptionPlan",
+    data,
+    { withCredentials: true }
+  );
+
+  return response;
+};
+
+export const updateSubscriptionPlan = async ( id:string , data: CreateSubscriptionDTO) => {
+  const response = await adminApi.patch(`/admin/updateSubscriptionPlan/${id}`,
+    data 
+   );
+
+  return response;
+};
+
+
+
+
+export const getSubscriptionPlans = async () => {
+  const response = await adminApi.get("/admin/getSubscriptionPlans");
+  return response;
 };

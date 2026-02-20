@@ -11,6 +11,7 @@ export interface ICategory extends Document {
 const CategorySchema: Schema<ICategory> = new Schema({
   name: {
     type: String,
+    unique: true
   },
   skills:{
     type:[String],

@@ -18,7 +18,7 @@ const Purchases: React.FC = () => {
       setLoading(true);
       const res = await getPurchases(search, page)
       const resData = res.data.purchases
-
+      
       setPurchases(resData);
       setPages(res.data.totalPages);
       setCurrentPage(res.data.currentPage);
@@ -144,7 +144,7 @@ const exportDetails = async () => {
                 <td data-label="Amount Paid">₹{p.amountPaid}</td>
                 <td data-label="Status">{p.paymentStatus}</td>
                 <td data-label="Date">
-                  {new Date(p.purchasedAt).toLocaleDateString('en-GB')}
+                  {new Date(p.createdAt).toLocaleDateString('en-GB')}
 
                 </td>
               </tr>

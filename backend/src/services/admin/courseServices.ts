@@ -8,17 +8,18 @@ import { AdminPurchaseService, CategoryDTO,  ReportDTO } from "../../dto/adminDT
 import { IAdminRepository } from "../../interfacesServices.ts/adminServiceInterfaces";
 import { IInsRepository } from "../../interfacesServices.ts/instructorServiceInterface";
 import { InstructorDTO } from "../../interfaces/instructorInterfaces";
+import { ISubscriptionPlan } from "../../models/subscription";
 
 export class AdminCourseService implements IAdminCourseService {
   constructor(
-    private adminRepository: IAdminRepository,
-    private instructorRepository: IInsRepository,
-    private userRepository: IUserRepository,
+    private _adminRepository: IAdminRepository,
+    private _instructorRepository: IInsRepository,
+    private _userRepository: IUserRepository,
   ) {}
 
   getInstructorsRequest = async (id: string):Promise<InstructorDTO | null> => {
     try {
-      const result = await this.instructorRepository.findById(id);
+      const result = await this._instructorRepository.findById(id);
 
       console.log("instructor",result);
     
@@ -44,12 +45,12 @@ export class AdminCourseService implements IAdminCourseService {
       }
 
       const courses =
-        (await this.userRepository.getAllCourses(query, skip, limit, {
+        (await this._userRepository.getAllCourses(query, skip, limit, {
           createdAt: -1,
         })) || [];
 
 
-      const totalCourses = await this.userRepository.countCourses();
+      const totalCourses = await this._userRepository.countCourses();
 
       const courseDTOs = (courses ?? []).map(mapCourseToDTO);
 
@@ -66,7 +67,7 @@ export class AdminCourseService implements IAdminCourseService {
 
   getCourseDetailsRequest = async (courseId: string) => {
     try {
-      const details = await this.adminRepository.getFullCourseDetails(courseId);
+      const details = await this._adminRepository.getFullCourseDetails(courseId);
       
       return details
     } catch (err) {
@@ -77,7 +78,7 @@ export class AdminCourseService implements IAdminCourseService {
 
   getQuizRequest = async (courseId: string) => {
     try {
-      const details = await this.adminRepository.getQuiz(courseId);
+      const details = await this._adminRepository.getQuiz(courseId);
       console.log(details);
       
       return details;
@@ -90,7 +91,7 @@ export class AdminCourseService implements IAdminCourseService {
 
   getPurchaseDetails = async (search: string, page: number):Promise<AdminPurchaseService | null | undefined> => {
     try {
-      const data = await this.adminRepository.getPurchases(search, page);
+      const data = await this._adminRepository.getPurchases(search, page);
         data?.purchases.map(mapPurchaseToDTO)
         
         return data
@@ -137,9 +138,9 @@ export class AdminCourseService implements IAdminCourseService {
   addCategoryRequest = async (
     category: string,
     skills: string[],
-  ): Promise<ICategory | null> => {
+  ): Promise<ICategory | string | null> => {
     try {
-      const data = await this.adminRepository.addCategory(category, skills);
+      const data = await this._adminRepository.addCategory(category, skills);
 
       return data;
     } catch (error) {
@@ -150,7 +151,7 @@ export class AdminCourseService implements IAdminCourseService {
 
   getCategoryRequest = async (): Promise<CategoryDTO[] | null> => {
     try {
-      const data = await this.adminRepository.getCategory();
+      const data = await this._adminRepository.getCategory();
 
 
       const category = data?.map(mapCategoryDto)
@@ -165,7 +166,7 @@ export class AdminCourseService implements IAdminCourseService {
 
   deleteCategoryRequest = async (category: string) => {
     try {
-      await this.adminRepository.deleteCategory(category);
+      await this._adminRepository.deleteCategory(category);
 
       return true;
     } catch (error) {
@@ -176,7 +177,7 @@ export class AdminCourseService implements IAdminCourseService {
 
   blockCourseRequest = async (courseId: string) => {
     try {
-      const data = await this.adminRepository.blockCourse(courseId);
+      const data = await this._adminRepository.blockCourse(courseId);
 
       return data;
     } catch (error) {
@@ -187,13 +188,43 @@ export class AdminCourseService implements IAdminCourseService {
 
   getReportsRequest = async (): Promise<ReportDTO[] | null> => {
     try {
-      const data = await this.adminRepository.getReports();
+      const data = await this._adminRepository.getReports();
       if(!data) return null
       const report = data?.map(mapReportDto)
       return report;
     } catch (error) {
       console.log(error);
       return null;
+    }
+  };
+
+  addSubscription = async (data : ISubscriptionPlan) => {
+    try {
+      await this._adminRepository.addSubscription(data);
+      return true
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+  };
+
+  getSubscription = async ():Promise<ISubscriptionPlan[] | null> => {
+    try {
+      const subscription = await this._adminRepository.getSubscription();
+      return subscription
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+  };
+
+  updateSubscription = async (id : string , data : Partial<ISubscriptionPlan>):Promise<boolean | null> => {
+    try {
+      const result = await this._adminRepository.updateSubscription(id , data);
+      return result
+    } catch (error) {
+      console.log(error);
+      return null
     }
   };
 }

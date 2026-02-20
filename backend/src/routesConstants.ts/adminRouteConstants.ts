@@ -28,7 +28,10 @@ export const ADMIN_ROUTES = {
     EXPORT_PDF: "/exportPdf",
     BLOCK_COURSE:"/blockCourse/:id",
     GET_REPORTS : "/getReports",
-    GET_QUIZ : "/getQuiz/:id"
+    GET_QUIZ : "/getQuiz/:id",
+    ADD_SUBSCRIPTION : "/subscriptionPlan",
+    GET_SUBSCRIPTION : "/getSubscriptionPlans",
+    UPDATE_SUBSCRIPTION : "/updateSubscriptionPlan/:id"
   },
 
   DASHBOARD: {

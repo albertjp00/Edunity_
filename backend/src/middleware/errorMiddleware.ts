@@ -27,6 +27,10 @@ export function errorHandler(
     console.error(`[ERROR] ${status} - ${err.message}`);
   }
 
+  if (res.headersSent) {
+    return;
+  }
+
   res.status(status).json({
     success: false,
     message: err.message || "Internal Server Error",

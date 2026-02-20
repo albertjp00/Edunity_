@@ -186,3 +186,14 @@ export interface IReportAdmin{
   userId : string;
   createdAt : Date
 }
+
+
+
+
+export interface CreateSubscriptionDTO {
+  name: string;
+  price: number;
+  durationInDays: number;
+  features: string[];
+  isActive: boolean;
+}

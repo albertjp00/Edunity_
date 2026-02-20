@@ -11,6 +11,7 @@ import AdminEarnings from "../components/earnings/earnings";
 import Category from "../components/category/category";
 import Reports from "../components/reports/reports";
 import CoursesAdmin from "../components/adminCourses/adminCourse";
+import SubscriptionPlan from "../components/subscription/addSubscription";
 
 const AdminHome: React.FC = () => {
   const [select] = useState<"dashboard" | "users" | "instructors">(
@@ -38,6 +39,7 @@ const AdminHome: React.FC = () => {
             <Route path="earnings" element={<AdminEarnings />} />
             <Route path="category" element={<Category />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="subscription" element={<SubscriptionPlan />} />
 
           </Routes>
         </div>

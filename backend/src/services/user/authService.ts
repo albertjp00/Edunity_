@@ -24,13 +24,13 @@ const SECRET_KEY = process.env.SECRET_KEY || "access_secret";
 
 // Main Auth Service
 export class AuthService implements IUserAuthService {
-    constructor(private userRepository: IUserRepository) { }    
+    constructor(private _userRepository: IUserRepository) { }    
 
 
 
     loginRequest = async (email: string, password: string): Promise<LoginDTO | LoginResult> => {
         try {
-            const user = await this.userRepository.findByEmail(email);
+            const user = await this._userRepository.findByEmail(email);
 
             if (!user) {
                 return { success: false, message: StatusMessage.USER_NOT_FOUND };
@@ -61,7 +61,7 @@ export class AuthService implements IUserAuthService {
 
     isBlocked = async (id : string):Promise< boolean | null> =>{
         try {
-            const blocked = await this.userRepository.isBlocked(id)
+            const blocked = await this._userRepository.isBlocked(id)
             if(blocked ){
                 return true
             }
@@ -80,7 +80,7 @@ export class AuthService implements IUserAuthService {
         password: string,
     ): Promise<RegisterResult> => {
         try {
-            const userExists = await this.userRepository.findByEmail(email);
+            const userExists = await this._userRepository.findByEmail(email);
             if (userExists) {
                 return { success: false, message: StatusMessage.EMAIL_EXISTS };
             }
@@ -166,7 +166,7 @@ export class AuthService implements IUserAuthService {
 
             const hashedPassword = await bcrypt.hash(storedData.password, 10);
 
-            await this.userRepository.create({
+            await this._userRepository.create({
                 name: storedData.name,
                 email: storedData.email,
                 password: hashedPassword,
@@ -197,11 +197,11 @@ export class AuthService implements IUserAuthService {
         const { sub, email, name } = payload;
         const data: any = { name, email, sub };
 
-        let user = await this.userRepository.findByEmail(email as string);
+        let user = await this._userRepository.findByEmail(email as string);
         if (!user) {
             data.googleId = data.sub
             data.provider = 'google'
-            user = await this.userRepository.create(data);
+            user = await this._userRepository.create(data);
         }
 
         const accessToken = jwt.sign({ id: user._id, email: user.email }, SECRET_KEY, { expiresIn: "1h" });
@@ -214,7 +214,7 @@ export class AuthService implements IUserAuthService {
 
     forgotPassword = async (email: string): Promise<{ success: boolean; message: string }> => {
         try {
-            const user = await this.userRepository.findByEmail(email);
+            const user = await this._userRepository.findByEmail(email);
             if (!user) {
                 return { success: false, message: StatusMessage.EMAIL_NOT_EXISTS };
             }
@@ -267,14 +267,14 @@ export class AuthService implements IUserAuthService {
     
     async resetPassword(email: string, newPassword: string): Promise<{ success: boolean; message: string }> {
         try {
-            const user = await this.userRepository.findByEmail(email);
+            const user = await this._userRepository.findByEmail(email);
             if (!user) {
                 return { success: false, message: StatusMessage.USER_NOT_FOUND };
             }
 
             const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-            await this.userRepository.changePassword(user._id, hashedPassword);
+            await this._userRepository.changePassword(user._id, hashedPassword);
 
             return { success: true, message: StatusMessage.PASSWORD_CHANGED };
         } catch (error) {

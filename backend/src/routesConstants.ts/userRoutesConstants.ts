@@ -44,10 +44,11 @@ export const ROUTES = {
     VERIFY_PAYMENT: "/payment/verify",
     CANCEL_PAYMENT: "/cancelPayment/:courseId",
 
-    BUY_SUB:"/subscribe",
+    BUY_SUB:"/subscribe/:id",
     VERIFY_SUBSCRIPTION_PAYMENT: "/paymentSubscription/verify",
     SUB_CHECK : '/getSubscription',
     SUB_COURSES : '/getSubscriptionCourses/:page',
+    SUB_PLANS : '/getSubscriptionPlan',
 
     VIEW_MY_COURSE: "/viewMyCourse/:id",
     UPDATE_PROGRESS: "/updateProgress",

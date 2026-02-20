@@ -155,6 +155,17 @@ export class ProfileController implements
         }
     }
 
+    getSubscriptionPlan = async (req: AuthRequest, res: Response, next: NextFunction) => {
+        try {
+            const subscription = await this._profileService.getSubscriptionPlan() 
+            
+            res.status(HttpStatus.OK).json({ subscription })
+        } catch (error) {
+            console.log(error);
+            next(error)
+        }
+    }
+
 
     subscriptionCheck = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
@@ -168,4 +179,6 @@ export class ProfileController implements
             next(error)
         }
     }
+
+
 }

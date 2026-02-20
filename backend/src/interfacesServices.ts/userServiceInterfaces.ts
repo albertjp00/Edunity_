@@ -115,14 +115,14 @@ export interface IUserCourseService {
         userId: string
     ): Promise<{ success: boolean; message: string }>;
 
-    buySubscriptionRequest(userId : string): Promise<IRazorpayOrder>
+    buySubscriptionRequest(userId : string , id : string): Promise<IRazorpayOrder | null>
 
     verifySubscriptionPaymentRequest(   
         razorpay_order_id: string,
         razorpay_payment_id: string,
         razorpay_signature: string,
         userId: string
-    ): Promise<{ success: boolean; message: string }>;
+    ): Promise<{ success: boolean; message: string } | null>;
 
     myCoursesRequest(
         id: string,
@@ -201,7 +201,7 @@ export interface IUserCourseService {
 
 
 export interface IUserEventService {
-  getEventsRequest(): Promise<EventDTO[] | null>;
+  getEventsRequest(search : string , page : number): Promise<{events : EventDTO[] , totalPages : number } | null>;
   getIfEnrolled(id: string): Promise<IMyEvent | boolean | null>;
   getEventDetailsRequest(id: string): Promise<EventDTO | null>;
   eventEnrollRequest(id: string, eventId: string): Promise<IMyEvent | null>;
@@ -220,6 +220,7 @@ export interface IUserProfileService {
   getNotifications(userId: string , page : number): Promise<INotifications | null>;
   notificationsMarkRead(userId: string): Promise<INotification[] | null>;
   subscriptionCheckRequest(id:string):Promise<ISubscription | boolean | null>;
+  getSubscriptionPlan():Promise<ISubscriptionPlan | null>;
 }
 
 
@@ -267,6 +268,7 @@ export interface IFavourites{
 
 import { Types } from "mongoose";
 import { WalletDto } from "../dto/instructorDTO";
+import { ISubscriptionPlan } from "../models/subscription";
 
 export interface IQuizQuestion {
   _id: Types.ObjectId;

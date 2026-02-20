@@ -352,4 +352,22 @@ export class InstCourseController
       next(error);
     }
   };
+
+
 }
+
+
+// interface IPaymentProcessor{
+//   processPayment(type: string, amount: number):Promise<string | null>
+// }
+
+
+// class PaymentProcessor implements IPaymentProcessor {
+//   processPayment(type: string, amount: number) {
+//     if (type === "credit") {
+//       console.log("Processing credit card payment:", amount);
+//     } else if (type === "paypal") {
+//       console.log("Processing PayPal payment:", amount);
+//     }
+//   }
+// }

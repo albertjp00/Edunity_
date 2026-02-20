@@ -20,6 +20,7 @@ import { IMyCourse, MyCourseModel } from "../models/myCourses";
 import { INotification, NotificationModel } from "../models/notification";
 import { IQuiz, QuizModel } from "../models/quiz";
 import { IReport, ReportModel } from "../models/report";
+import { ISubscriptionPlan, SubscriptionModel } from "../models/subscription";
 import { IUser, UserModel } from "../models/user";
 
 export class AdminRepository implements IAdminRepository {
@@ -260,8 +261,18 @@ export class AdminRepository implements IAdminRepository {
   async addCategory(
     category: string,
     skills: string[],
-  ): Promise<ICategory | null> {
-    return await CategoryModel.create({ name: category, skills: skills });
+  ): Promise<ICategory | string | null> {
+    try {
+
+      const categoryExists = await CategoryModel.find({name : category})
+      if(categoryExists) {return 'Category already exists'}
+      else{
+      return await CategoryModel.create({ name: category, skills: skills });
+      }
+    } catch (error) {
+      console.log(error);
+      return null
+    }
   }
 
   async getCategory(): Promise<ICategory[] | null> {
@@ -270,7 +281,9 @@ export class AdminRepository implements IAdminRepository {
 
   async deleteCategory(category: string): Promise<boolean | null> {
     try {
-      await CategoryModel.findByIdAndDelete(category);
+      console.log("category",category);
+      
+      await CategoryModel.findOneAndDelete({name : category});
       return true;
     } catch (error) {
       console.log(error);
@@ -502,5 +515,40 @@ export class AdminRepository implements IAdminRepository {
       );
     }
     return true;
+  }
+
+
+   async addSubscription(data: ISubscriptionPlan): Promise<boolean | null> {
+    try {
+      console.log('subscription',data);
+      
+      await SubscriptionModel.create(data)
+    return true;
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+  }
+
+  async getSubscription(): Promise<ISubscriptionPlan[] | null> {
+    try {      
+     const plan =  await SubscriptionModel.find()
+    return plan
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+  }
+
+  async updateSubscription(id : string , data :Partial<ISubscriptionPlan>): Promise<boolean | null> {
+    try {      
+      console.log(id , data);
+      
+     await SubscriptionModel.findByIdAndUpdate(id , data)
+    return true
+    } catch (error) {
+      console.log(error);
+      return null
+    }
   }
 }

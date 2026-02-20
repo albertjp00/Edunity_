@@ -47,6 +47,11 @@ const Sidebar = () => {
             <p>Reports</p>
           </NavLink>
         </li>
+        <li>
+          <NavLink to="/admin/subscription" className="sidebar-option">
+            <p>Subscription</p>
+          </NavLink>
+        </li>
       </ul>
     </div>
   )

@@ -7,18 +7,26 @@ import { IInsRepository, IInstEventService } from "../../interfacesServices.ts/i
 import { mapEventDetailsDTO, mapEventsDTO } from "../../mapper/instructor.mapper";
 
 export class InstEventService implements IInstEventService {
-  constructor(private InstructorRepository: IInsRepository) {}
+  constructor(private _InstructorRepository: IInsRepository) {}
 
   createEventRequest = async (
     id: string,
     data: Partial<IEvent>,
   ): Promise<IEvent | null> => {
     try {
-      const instructor = await this.InstructorRepository.findById(id);
+      const instructor = await this._InstructorRepository.findById(id);
       if (!instructor || !instructor.name) {
         throw new Error("Instructor not found or has no name");
       }
-      const event = await this.InstructorRepository.addEvent(
+
+      console.log("event add",data)
+      const date = data.date!
+      
+      const eventCount = await this._InstructorRepository.getEventCount(id , date)
+      console.log("event count ",eventCount);
+      
+
+      const event = await this._InstructorRepository.addEvent(
         id,
         instructor?.name,
         data,
@@ -36,7 +44,7 @@ export class InstEventService implements IInstEventService {
     page: string,
   ): Promise<IEventResultService | null> => {
     try {
-      const result = await this.InstructorRepository.getMyEvents(
+      const result = await this._InstructorRepository.getMyEvents(
         id,
         search,
         page,
@@ -55,7 +63,7 @@ export class InstEventService implements IInstEventService {
 
   getEventRequest = async (id: string): Promise<IEventDetailsService | null> => {
     try {
-      const event = await this.InstructorRepository.getEvent(id);
+      const event = await this._InstructorRepository.getEvent(id);
       if (!event) return null;
 
       const now = new Date();
@@ -76,7 +84,7 @@ export class InstEventService implements IInstEventService {
       );
 
       if (now >= eventDateTime && !event.isLive && !event.isOver) {
-        await this.InstructorRepository.updateEvent(event._id.toString(), {
+        await this._InstructorRepository.updateEvent(event._id.toString(), {
           isLive: true,
         });
 
@@ -95,7 +103,7 @@ export class InstEventService implements IInstEventService {
     data: Partial<IEvent>,
   ): Promise<IEvent | null> => {
     try {
-      const event = await this.InstructorRepository.updateEvent(id, data);
+      const event = await this._InstructorRepository.updateEvent(id, data);
       return event;
     } catch (error) {
       console.log(error);
@@ -112,7 +120,7 @@ export class InstEventService implements IInstEventService {
     meetingLink?: string;
   } | null> => {
     try {
-      const event = await this.InstructorRepository.getEvent(eventId);
+      const event = await this._InstructorRepository.getEvent(eventId);
 
       if (!event) {
         return { success: false, message: "Event not found" };
@@ -126,7 +134,7 @@ export class InstEventService implements IInstEventService {
         event.meetingLink ||
         `${process.env.FRONTEND_URL}/joinEvent/${event._id}`;
 
-      await this.InstructorRepository.updateEvent(eventId, {
+      await this._InstructorRepository.updateEvent(eventId, {
         isLive: true,
         meetingLink,
       });
@@ -143,7 +151,7 @@ export class InstEventService implements IInstEventService {
     instructorId: string,
   ): Promise<{ success: boolean; message: string } | null> => {
     try {
-      const event = await this.InstructorRepository.getEvent(eventId);
+      const event = await this._InstructorRepository.getEvent(eventId);
 
       if (!event) {
         return { success: false, message: "Event not found" };
@@ -153,7 +161,7 @@ export class InstEventService implements IInstEventService {
         return { success: false, message: "Not authorized" };
       }
 
-      await this.InstructorRepository.updateEvent(eventId, {
+      await this._InstructorRepository.updateEvent(eventId, {
         isLive: false,
         meetingLink: '',
         isOver: true,

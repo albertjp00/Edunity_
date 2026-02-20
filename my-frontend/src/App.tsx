@@ -85,6 +85,7 @@ import EventDetailsPage from './instructor/pages/events/eventDetails'
 import AllEventsPage from './instructor/pages/events/allEvents'
 import AddQuizPage from './instructor/pages/course/addQuiz'
 import EditQuizPage from './instructor/pages/course/editQuizPage'
+import AllEventsUser from './user/pages/event/allEvents'
 // import PurchasesAdmin from './admin/pages/purchases/purchasesAdmin'
 
 function App() {
@@ -145,6 +146,8 @@ function App() {
 
             <Route path='/user/quiz/:courseId' element={<ProtectedRoute><DoQuiz /></ProtectedRoute>} />
 
+
+            <Route path='/user/allEvents' element={<ProtectedRoute><AllEventsUser /></ProtectedRoute>} />
             <Route path='/user/joinEvent/:eventId' element={<ProtectedRoute><UserEvent /></ProtectedRoute>} />
 
             

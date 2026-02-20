@@ -70,7 +70,7 @@ export interface IUserRepository {
 
   getMyEvent(id: string): Promise<IMyEvent | null>
 
-  getEvents(): Promise<IEvent[] | null>
+  getEvents(search : string , page : number): Promise<{events : IEvent[] ,totalPages : number} | null>
 
   enrollEvent(userId: string, eventId: string): Promise<IMyEvent>
 
@@ -83,6 +83,8 @@ export interface IUserRepository {
   addParticipant(eventId: string, userId: string): Promise<IEvent | null>
 
   getSubscriptionActive(id: string): Promise<ISubscription | boolean>
+
+  getSubscriptionPlan(): Promise<ISubscriptionPlan | null>
 
   getSubscriptionCourses(id: string, page: number): Promise<ISubscriptionCourses | null>
 
@@ -108,6 +110,8 @@ export interface IUserRepository {
 
   decreaseCourseEnrollment(courseId: string):Promise<boolean>
 
+  
+
 }
 
 
@@ -124,6 +128,7 @@ import { FilterQuery, SortOrder } from "mongoose";
 import { CourseListAggregation } from "../dto/adminDTO";
 import { SubscriptionCourseDTO } from "../dto/userDTO";
 import { IQuiz } from "../models/quiz";
+import { ISubscriptionPlan } from "../models/subscription";
 
 
 //authController

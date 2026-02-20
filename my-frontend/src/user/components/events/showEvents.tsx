@@ -14,9 +14,9 @@ const Events: React.FC = () => {
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      const response = await getEvents();
+      const response = await getEvents('',1);
       if (response?.data.success) {
-        setEvents(response.data.events);
+        setEvents(response.data.events.splice(1,3));
       }
     } finally {
       setLoading(false);
@@ -56,17 +56,24 @@ const fetchMyEvents = async () => {
     fetchMyEvents();
   }, []);
 
+
   return (
     <section className="events-wrapper">
       <p className="events-subtitle">📅 Our Events</p>
-      <h2 className="events-heading">Yearly Events And Program</h2>
+      <div className="event-header">
+        <h2 className="events-heading">Yearly Events And Program</h2>
+
+        <button onClick={()=>navigate('/user/allEvents')} className="load-more-btn">All Events →</button>
+      </div>
 
       {loading ? (
         <p className="events-loading">Loading events...</p>
       ) : events.length === 0 ? (
         <p className="events-empty">No upcoming events found.</p>
       ) : (
+        
         <div className="events-grid">
+          
           {events.map((event) => {
             const eventDate = new Date(event.date);
             const day = eventDate.getDate();

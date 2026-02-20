@@ -41,9 +41,16 @@ const Category = () => {
       return toast.error("Add at least one skill");
 
     try {
+      
       const res = await addCategory(categoryName, skills);
 
+      if(!res.data.success){
+          toast.error('Category already exists')
+          return
+        }
+      
       if (res.data.success) {
+        
         setCategories((prev) => [...prev, res.data.category]);
         setSkills((prev)=>[...prev , res.data.skills])
         setCategoryName("");
@@ -55,12 +62,10 @@ const Category = () => {
     }
   };
 
-  // ✅ Delete category
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (name: string) => {
     try {
-      await deleteCategory(id);
-      toast.success("Category deleted");
-      setCategories((prev) => prev.filter((c) => c._id !== id));
+      await deleteCategory(name);
+      setCategories((prev) => prev.filter((c) => c.name !== name));
     } catch (error) {
       console.log(error);
     }
@@ -118,7 +123,7 @@ const Category = () => {
                   <li key={i}>{s}</li>
                 ))}
               </ul>
-              <span onClick={() => handleDelete(cat._id!)}>X</span>
+              <span onClick={() => handleDelete(cat.name!)}>X</span>
             </li>
           ))}
         </ul>

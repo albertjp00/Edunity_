@@ -27,9 +27,10 @@ export class UserEventController
     next: NextFunction,
   ): Promise<void | null> => {
     try {
-      const result = await this._userEventService.getEventsRequest();
+      const {search , page } = req.body
+      const result = await this._userEventService.getEventsRequest(search , page);
 
-      res.status(HttpStatus.OK).json({ success: true, events: result });
+      res.status(HttpStatus.OK).json({ success: true, events: result?.events , totalPages : result?.totalPages });
     } catch (error) {
       console.log(error);
       next(error);

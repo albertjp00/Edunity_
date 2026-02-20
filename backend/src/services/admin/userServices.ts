@@ -9,13 +9,13 @@ import { IUser } from "../../models/user";
 
 export class AdminUserService implements IAdminUserServices {
   constructor(
-    private adminRepository: IAdminRepository,
-    private userRepository: IUserRepository,
+    private _adminRepository: IAdminRepository,
+    private _userRepository: IUserRepository,
   ) {}
 
   getUserRequest = async (id: string): Promise<IUser | null> => {
     try {
-      const result = await this.userRepository.findById(id);
+      const result = await this._userRepository.findById(id);
       return result;
     } catch (error) {
       console.log(error);
@@ -28,7 +28,7 @@ export class AdminUserService implements IAdminUserServices {
     page: number,
   ): Promise<PaginatedUsersService | null> => {
     try {
-      const result = await this.adminRepository.findUsers(search, page);
+      const result = await this._adminRepository.findUsers(search, page);
       if (!result) return null;
       return {
         users: result.users.map(mapUserToDTO),
@@ -45,11 +45,11 @@ export class AdminUserService implements IAdminUserServices {
   blockUnblockUser = async (id: string): Promise<boolean | null> => {
     try {
 
-      const user = await this.userRepository.findById(id);
+      const user = await this._userRepository.findById(id);
       if (user?.blocked) {
-        return await this.adminRepository.unblockUser(id);
+        return await this._adminRepository.unblockUser(id);
       } else {
-        return await this.adminRepository.blockUser(id);
+        return await this._adminRepository.blockUser(id);
       }
     } catch (error) {
       console.log(error);
@@ -59,7 +59,7 @@ export class AdminUserService implements IAdminUserServices {
 
   unblockUser = async (id: string): Promise<boolean | null> => {
     try {
-      const result = await this.adminRepository.unblockUser(id);
+      const result = await this._adminRepository.unblockUser(id);
       return result;
     } catch (error) {
       console.log(error);
@@ -70,7 +70,7 @@ export class AdminUserService implements IAdminUserServices {
   getUsersCoursesRequest = async (id: string): Promise<ICourse[] | null> => {
     try {
       // const page = 1
-      const result = await this.adminRepository.findUserCourses(id);
+      const result = await this._adminRepository.findUserCourses(id);
       return result;
     } catch (error) {
       console.log(error);

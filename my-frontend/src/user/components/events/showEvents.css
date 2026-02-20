@@ -11,6 +11,12 @@
   margin-bottom: 8px;
 }
 
+.event-header{
+  display: flex;
+  justify-content: space-between;
+  max-height: 50px;
+}
+
 .events-heading {
   font-size: 28px;
   font-weight: 600;

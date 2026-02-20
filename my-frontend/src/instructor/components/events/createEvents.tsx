@@ -94,6 +94,7 @@ const EventForm: React.FC = () => {
   };
 
   return (
+    
     <div className="event-card">
       <h2 className="form-title">📅 Create New Event</h2>
       <form onSubmit={handleSubmit} className="event-form">

@@ -239,12 +239,15 @@ export class UserCourseController
     try {
       const userId = req.user?.id as string;
 
-      const key = `buyCourse_${userId}`;
+      const id = req.params.id
+      console.log('buy  subbbbb',id);
 
+      const key = `buyCourse_${userId}`;
       const subscribe = await debounceCall(key, 2000, async () => {
-        return await this._courseService.buySubscriptionRequest(userId);
+        return await this._courseService.buySubscriptionRequest(userId , id as string);
       });
 
+      if(!subscribe) return
       res.status(HttpStatus.OK).json({
         success: true,
         orderId: subscribe.id,
@@ -281,7 +284,7 @@ export class UserCourseController
         );
       });
 
-      if (result.success) {
+      if (result?.success) {
         res.status(200).json({ success: true, result });
       } else {
         res.status(400).json(result);

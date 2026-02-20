@@ -16,14 +16,14 @@ import { IInstructor } from "../../models/instructor";
 import bcrypt from "bcrypt";
 
 export class InstructorProfileService implements IInstructorProfileService {
-  private instructorRepository: IInsRepository;
+  private _instructorRepository: IInsRepository;
 
   constructor(instructorRepository: IInsRepository) {
-    this.instructorRepository = instructorRepository;
+    this._instructorRepository = instructorRepository;
   }
   async getProfile(userId: string): Promise<IInstructorProfileDTO | null> {
     try {
-      const user = await this.instructorRepository.findById(userId);
+      const user = await this._instructorRepository.findById(userId);
       if (!user) return null;
 
       return mapInstructorProfileToDTO(user);
@@ -37,12 +37,10 @@ export class InstructorProfileService implements IInstructorProfileService {
     try {
       console.log("id data", id, updateData);
 
-      const updatedUser = await this.instructorRepository.updateProfile(
+      const updatedUser = await this._instructorRepository.updateProfile(
         id,
         updateData,
       );
-      // console.log('updatede',updatedUser);
-
       if (!updatedUser) return null;
 
       return true;
@@ -58,7 +56,7 @@ export class InstructorProfileService implements IInstructorProfileService {
     oldPassword: string,
   ): Promise<boolean> {
     try {
-      const instructor = await this.instructorRepository.findById(id);
+      const instructor = await this._instructorRepository.findById(id);
       if (!instructor) return false;
 
       const isMatch = await bcrypt.compare(oldPassword, instructor.password);
@@ -66,7 +64,7 @@ export class InstructorProfileService implements IInstructorProfileService {
 
       const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-      await this.instructorRepository.updatePassword(id, hashedPassword);
+      await this._instructorRepository.updatePassword(id, hashedPassword);
       return true;
     } catch (error) {
       console.error(error);
@@ -80,7 +78,7 @@ export class InstructorProfileService implements IInstructorProfileService {
     addressProof: string,
   ): Promise<boolean | null> => {
     try {
-      await this.instructorRepository.kycSubmit(id, idProof, addressProof);
+      await this._instructorRepository.kycSubmit(id, idProof, addressProof);
       return true;
     } catch (error) {
       console.log(error);
@@ -91,7 +89,7 @@ export class InstructorProfileService implements IInstructorProfileService {
   getNotifications = async (id: string): Promise<INotificationDTO[] | null> => {
     try {
       const notifications =
-        await this.instructorRepository.getNotifications(id);
+        await this._instructorRepository.getNotifications(id);
       if (!notifications) return null;
       return notifications?.map(mapNotificationToDTO);
     } catch (error) {
@@ -102,7 +100,7 @@ export class InstructorProfileService implements IInstructorProfileService {
 
   getDashboard = async (id: string): Promise<InstructorDashboardRaw | null> => {
     try {
-      const data = await this.instructorRepository.getDashboard(id);
+      const data = await this._instructorRepository.getDashboard(id);
       if (!data) return null;
       return mapDashboardToDTO(data);
     } catch (error) {
@@ -119,9 +117,9 @@ export class InstructorProfileService implements IInstructorProfileService {
   } | null> => {
     try {
       const monthlyEarnings =
-        await this.instructorRepository.getMonthlyEarnings(id);
+        await this._instructorRepository.getMonthlyEarnings(id);
       const totalEarnings =
-        (await this.instructorRepository.totalEarnings(id)) ?? 0;
+        (await this._instructorRepository.totalEarnings(id)) ?? 0;
 
       const mapped = mapEarningsToDTO({ monthlyEarnings, totalEarnings });
 
@@ -134,7 +132,7 @@ export class InstructorProfileService implements IInstructorProfileService {
 
   getWallet = async (id: string): Promise<WalletDto | null> => {
     try {
-      const wallet = await this.instructorRepository.getWallet(id);
+      const wallet = await this._instructorRepository.getWallet(id);
       if (!wallet) return null;
 
       return walleToDto(wallet);

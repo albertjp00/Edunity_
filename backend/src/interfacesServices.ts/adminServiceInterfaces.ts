@@ -19,6 +19,7 @@ import { IMyCourse } from "../models/myCourses";
 import { INotification } from "../models/notification";
 import { IQuiz } from "../models/quiz";
 import { IReport } from "../models/report";
+import { ISubscriptionPlan } from "../models/subscription";
 import { IUser } from "../models/user";
 
 export interface IAdminService {
@@ -84,7 +85,7 @@ export interface IAdminRepository {
 
   getPurchases(search: string, page: number): Promise<PurchaseResult | null>;
 
-  addCategory(category: string, skills: string[]): Promise<ICategory | null>;
+  addCategory(category: string, skills: string[]): Promise<ICategory | string | null>;
   getCategory(): Promise<ICategory[] | null>;
   deleteCategory(category: string): Promise<boolean | null>;
 
@@ -111,6 +112,12 @@ export interface IAdminRepository {
     instructorEarning: number,
     adminEarning: number,
   ): Promise<void>;
+
+  addSubscription(data: ISubscriptionPlan):Promise<boolean | null>
+
+  getSubscription(): Promise<ISubscriptionPlan[] | null>
+
+  updateSubscription(id : string , data : Partial<ISubscriptionPlan>): Promise<boolean | null>
 }
 
 export interface AdminLoginResult {

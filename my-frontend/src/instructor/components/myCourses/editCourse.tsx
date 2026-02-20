@@ -179,12 +179,10 @@ const EditCourse: React.FC = () => {
   formData.append(`modules[${i}][title]`, mod.title);
   formData.append(`modules[${i}][content]`, mod.content);
 
-  // ✅ send existing videoUrl
   if (mod.videoUrl) {
     formData.append(`modules[${i}][videoUrl]`, mod.videoUrl);
   }
 
-  // ✅ overwrite only if new video selected
   if (mod.videoFile) {
     formData.append(`modules[${i}][video]`, mod.videoFile);
   }
@@ -202,7 +200,6 @@ const EditCourse: React.FC = () => {
     }
   };
 
-  /* ===================== JSX ===================== */
 
   return (
     <div className="edit-container">
@@ -292,8 +289,9 @@ const EditCourse: React.FC = () => {
       onChange={(e) => updateModule(i, "content", e.target.value)}
     />
 
-    {/* ✅ ADD VIDEO INPUT */}
-    <input
+
+    <div className="videofile">
+      <input
       type="file"
       accept="video/*"
       onChange={(e) => {
@@ -302,6 +300,8 @@ const EditCourse: React.FC = () => {
         }
       }}
     />
+    <p className="filename">File Name - {mod.videoUrl && mod.videoUrl.split("/").pop()?.split("?")[0]}</p>
+    </div>
 
     <button type="button" onClick={() => removeModule(i)}>
       Remove

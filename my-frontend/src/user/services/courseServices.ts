@@ -62,9 +62,9 @@ export const paymentCancel = async (courseId : string)=>{
 }
 
 
-export const subscribe = async ()=>{
+export const subscribe = async (id : string)=>{
   try {
-    const res = await api.get('/user/subscribe')
+    const res = await api.get(`/user/subscribe/${id}`)
     return res
   } catch (error) {
     console.log(error);
@@ -86,6 +86,16 @@ export const subscribe = async ()=>{
 export const getSubscription = async ()=>{
   try {
     const res = await api.get('/user/getSubscription')
+    return res
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
+export const getSubscriptionPlan = async ()=>{
+  try {
+    const res = await api.get('/user/getSubscriptionPlan')
     return res
   } catch (error) {
     console.log(error);

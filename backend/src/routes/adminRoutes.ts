@@ -94,43 +94,13 @@ admin.patch(ADMIN_ROUTES.CATEGORY.DELETE_CATEGORY, adminAuthMiddleware, courseCo
 
 admin.get(ADMIN_ROUTES.COURSES.GET_REPORTS, adminAuthMiddleware, courseController.getReports);
 
-// admin.post('/login',authController.adminLogin)
+admin.post(ADMIN_ROUTES.COURSES.ADD_SUBSCRIPTION, adminAuthMiddleware, courseController.addSubscription);
 
-// admin.get('/getUsers',adminAuthMiddleware,userController.getUsers)
+admin.get(ADMIN_ROUTES.COURSES.GET_SUBSCRIPTION, adminAuthMiddleware, courseController.getSubscription);
 
-
-// admin.put('/blockUser/:id',adminAuthMiddleware ,userController.blockUnblock)
-
-// // admin.put('/unblockUsers/:id',dashboardController.unblockUser)
+admin.patch(ADMIN_ROUTES.COURSES.UPDATE_SUBSCRIPTION, adminAuthMiddleware, courseController.updateSubscription);
 
 
-// admin.get('/getInstructors', adminAuthMiddleware ,instructorController.getInstructor)
 
-// admin.get('/getKyc/:id' , adminAuthMiddleware ,instructorController.getKyc)
-
-// admin.put('/verifyKyc/:id' , adminAuthMiddleware, instructorController.verifyKyc)
-
-// admin.put('/rejectKyc/:id' , adminAuthMiddleware, instructorController.rejectKyc)
-
-// admin.get('/instructors/:id', adminAuthMiddleware,instructorController.getInstructors)
-
-// admin.get('/instructorsCourses/:id', adminAuthMiddleware,instructorController.getInstructorsCourses)
-
-// admin.get('/user/:id',userController.getUser)
-
-// admin.get('/userCourses/:id', adminAuthMiddleware,userController.getUserCourses)
-
-
-// admin.get('/courses', adminAuthMiddleware,courseController.getCourses)
-
-// admin.get('/courseDetails/:id', adminAuthMiddleware,courseController.getCourseDetails)
-
-// admin.get("/purchases", adminAuthMiddleware, courseController.getAllPurchases);
-
-
-// admin.get('/stats',adminAuthMiddleware , dashboardController.dashboardStats)
-// admin.get('/userOverview',adminAuthMiddleware,dashboardController.getUserOverview)
-
-// admin.get('/getEarnings',adminAuthMiddleware,dashboardController.getEarnings)
 
 export default admin

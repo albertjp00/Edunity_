@@ -15,8 +15,8 @@ import { kycRejectMail } from "../../utils/sendMail";
 
 export class AdminInstructorService implements IAdminInstructorService {
   constructor(
-    private adminRepository: IAdminRepository,
-    private instructorRepository: IInsRepository,
+    private _adminRepository: IAdminRepository,
+    private _instructorRepository: IInsRepository,
   ) {}
 
   getInstructors = async (
@@ -24,7 +24,7 @@ export class AdminInstructorService implements IAdminInstructorService {
     search: string,
   ): Promise<PaginatedInstructorsService | null> => {
     try {
-      const result = await this.adminRepository.findInstructors(page, search);
+      const result = await this._adminRepository.findInstructors(page, search);
 
       return {
         instructors: result?.instructors.map(mapInstructorToAdminDTO) ?? [],
@@ -40,7 +40,7 @@ export class AdminInstructorService implements IAdminInstructorService {
 
   getKycDetails = async (id: string): Promise<DTOKyc | null> => {
     try {
-      const result = await this.adminRepository.getKycDetails(id);
+      const result = await this._adminRepository.getKycDetails(id);
       if (!result) return null;
       const dto = mapKycToDTO(result);
       return dto;
@@ -52,9 +52,9 @@ export class AdminInstructorService implements IAdminInstructorService {
 
   verifyKyc = async (id: string): Promise<void | null> => {
     try {
-      const result = await this.adminRepository.verifyKyc(id);
+      const result = await this._adminRepository.verifyKyc(id);
       if (result) {
-        await this.adminRepository.verifyKycNotification(id);
+        await this._adminRepository.verifyKycNotification(id);
       }
       return result;
     } catch (error) {
@@ -64,7 +64,7 @@ export class AdminInstructorService implements IAdminInstructorService {
 
   rejectKyc = async (id: string, reason: string): Promise<void | null> => {
     try {
-      const result = await this.adminRepository.rejectKyc(id);
+      const result = await this._adminRepository.rejectKyc(id);
       const defaultEmail = "albertjpaul@gmail.com";
 
       await kycRejectMail(defaultEmail, reason);
@@ -76,7 +76,7 @@ export class AdminInstructorService implements IAdminInstructorService {
 
   getInstructorsRequest = async (id: string): Promise<IInstructor | null> => {
     try {
-      const result = await this.instructorRepository.findById(id);
+      const result = await this._instructorRepository.findById(id);
       return result;
     } catch (error) {
       console.log(error);
@@ -86,7 +86,7 @@ export class AdminInstructorService implements IAdminInstructorService {
 
   blockInstructorRequest = async (id: string): Promise<boolean | null> => {
     try {
-      await this.adminRepository.blockUnblockInstructor(id);
+      await this._adminRepository.blockUnblockInstructor(id);
       return true;
     } catch (error) {
       console.log(error);
@@ -98,7 +98,7 @@ export class AdminInstructorService implements IAdminInstructorService {
     id: string,
   ): Promise<ICourse[] | null> => {
     try {
-      const result = await this.adminRepository.getInstructorCourses(id);
+      const result = await this._adminRepository.getInstructorCourses(id);
       return result;
     } catch (error) {
       console.log(error);

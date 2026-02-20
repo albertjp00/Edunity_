@@ -6,6 +6,7 @@ import {
   IAdminCourseReadController,
   IAdminCourseService,
   IAdminPurchaseController,
+  IAdminSubscriptionController,
 } from "../../interfaces/adminInterfaces";
 import { StatusMessage } from "../../enums/statusMessage";
 
@@ -13,7 +14,8 @@ export class AdminCourseController
   implements
     IAdminCourseReadController,
     IAdminPurchaseController,
-    IAdminCategoryController
+    IAdminCategoryController,
+    IAdminSubscriptionController
 {
   private _courseService: IAdminCourseService;
 
@@ -131,6 +133,12 @@ export class AdminCourseController
         skills,
       );
 
+      if(categories == 'Category already exists'){
+          res.json({success :false})
+          return
+        }
+      
+
       res.json({ success: true, category: categories });
     } catch (error) {
       console.log(error);
@@ -160,7 +168,6 @@ export class AdminCourseController
   ) => {
     try {
       const category = req.body.category;
-      console.log("category delete", category);
 
       await this._courseService.deleteCategoryRequest(category);
 
@@ -202,4 +209,54 @@ export class AdminCourseController
       next(error);
     }
   };
+
+
+  addSubscription = async (
+    req: AdminAuthRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const data = req.body
+      console.log("controller ",data)
+      const reports = await this._courseService.addSubscription(data);
+
+      res.json({ success: true });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  };
+
+  getSubscription = async (
+    req: AdminAuthRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const subscription = await this._courseService.getSubscription();
+      res.json({ success: true , subscription });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  };
+
+    updateSubscription = async (
+    req: AdminAuthRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const id = req.params.id
+      const data = req.body
+      const update = await this._courseService.updateSubscription(id as string, data );
+      res.json({ success: update});
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  };
+
+
 }

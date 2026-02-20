@@ -18,13 +18,13 @@ const secret: string = process.env.SECRET_KEY || "";
 const refresh: string = process.env.REFRESH_KEY || "";
 
 export class InstAuthService implements IInstAuthService {
-  constructor(private instructorRepository: IInsRepository) {}
+  constructor(private _instructorRepository: IInsRepository) {}
 
   instructorLogin = async (
     email: string,
     password: string,
   ): Promise<LoginResultService> => {
-    const instructor = await this.instructorRepository.findByEmail(email);
+    const instructor = await this._instructorRepository.findByEmail(email);
 
     if (!instructor) {
       return { success: false, message: "Invalid email or password" };
@@ -65,7 +65,7 @@ export class InstAuthService implements IInstAuthService {
     password: string,
   ): Promise<RegisterResultService> => {
     try {
-      const userExists = await this.instructorRepository.findByEmail(email);
+      const userExists = await this._instructorRepository.findByEmail(email);
       if (userExists) {
         return { success: false, message: "Email already registered" };
       }
@@ -140,7 +140,7 @@ export class InstAuthService implements IInstAuthService {
         return { success: false, message: "Incorrect OTP" };
       }
 
-      const existingInstructor = await this.instructorRepository.findByEmail(
+      const existingInstructor = await this._instructorRepository.findByEmail(
         storedData.email,
       );
       if (existingInstructor) {
@@ -150,7 +150,7 @@ export class InstAuthService implements IInstAuthService {
 
       const hashedPassword = await bcrypt.hash(storedData.password, 10);
 
-      await this.instructorRepository.create({
+      await this._instructorRepository.create({
         name: storedData.name,
         email: storedData.email,
         password: hashedPassword,
@@ -174,7 +174,7 @@ export class InstAuthService implements IInstAuthService {
     try {
       console.log("forgotPassword user service");
 
-      const instructor = await this.instructorRepository.findByEmail(email);
+      const instructor = await this._instructorRepository.findByEmail(email);
       if (!instructor) {
         return { success: false, message: "Email doesn't exist" };
       }
@@ -232,14 +232,14 @@ export class InstAuthService implements IInstAuthService {
     newPassword: string,
   ): Promise<{ success: boolean; message: string }> {
     try {
-      const instructor = await this.instructorRepository.findByEmail(email);
+      const instructor = await this._instructorRepository.findByEmail(email);
       if (!instructor) {
         return { success: false, message: "User not found" };
       }
 
       const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-      await this.instructorRepository.changePassword(
+      await this._instructorRepository.changePassword(
         instructor._id as string,
         hashedPassword,
       );
