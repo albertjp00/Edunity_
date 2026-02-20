@@ -174,7 +174,8 @@ export class UserCourseController
         courseId,
       });
     } catch (error) {
-
+      console.log(error);
+      
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: StatusMessage.PAYMENT_FAILURE });
@@ -212,6 +213,8 @@ export class UserCourseController
         res.status(400).json(result);
       }
     } catch (error) {
+      console.log(error);
+      
       res
         .status(500)
         .json({
@@ -256,6 +259,8 @@ export class UserCourseController
         key: process.env.RAZORPAY_KEY_ID,
       });
     } catch (error) {
+      console.log(error);
+      
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: StatusMessage.PAYMENT_FAILURE });
@@ -424,6 +429,8 @@ export class UserCourseController
 
       res.status(HttpStatus.OK).json({ success: true});
     } catch (error) {
+      console.log(error);
+      
       res
         .status(500)
         .json({ success: false, message: HttpStatus.INTERNAL_SERVER_ERROR });
@@ -569,7 +576,7 @@ export class UserCourseController
       const { courseId } = req.params;
 
       const answers = req.body;
-
+      
       const data = await this._courseService.submitQuiz(
         userId,
         courseId as string,

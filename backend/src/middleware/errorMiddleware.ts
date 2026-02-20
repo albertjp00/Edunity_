@@ -31,9 +31,11 @@ export function errorHandler(
     return;
   }
 
-  res.status(status).json({
-    success: false,
-    message: err.message || "Internal Server Error",
-  });
+  
+
+  // res.status(status).json({
+  //   success: false,
+  //   message: err.message || "Internal Server Error",
+  // });
 }
 

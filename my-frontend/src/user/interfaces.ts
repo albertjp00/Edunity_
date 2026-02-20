@@ -263,7 +263,7 @@ export interface IOption {
 }
 
 export interface IQuestion {
-  _id: string;
+  id: string;
   question: string;
   options: IOption[];
   correctAnswer: string;
@@ -271,7 +271,7 @@ export interface IQuestion {
 }
 
 export interface IQuiz {
-  _id: string;
+  id: string;
   courseId: string;
   title: string;
   questions: IQuestion[];

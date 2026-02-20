@@ -25,7 +25,6 @@ import {
   IPurchaseDetails,
 } from "../interfaces/instructorInterfaces";
 import { IMessagedUser } from "../interfaces/userInterfaces";
-import { ICourseService } from "../interfacesServices.ts/instructorServiceInterface";
 import { ICategory } from "../models/category";
 import { ICourse, IModule } from "../models/course";
 import { IEvent } from "../models/events";

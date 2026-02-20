@@ -177,7 +177,7 @@ export interface IUserCourseService {
     submitQuiz(
         userId: string,
         courseId: string,
-        answers: string
+        answers: Record<string , string >
     ): Promise<ISubmitQuiz>;
 
     cancelCourseRequest(

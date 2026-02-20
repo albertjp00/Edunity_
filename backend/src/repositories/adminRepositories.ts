@@ -265,7 +265,7 @@ export class AdminRepository implements IAdminRepository {
     try {
 
       const categoryExists = await CategoryModel.find({name : category})
-      if(categoryExists) {return 'Category already exists'}
+      if(categoryExists) return 'Category already exists'
       else{
       return await CategoryModel.create({ name: category, skills: skills });
       }

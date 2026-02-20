@@ -31,7 +31,6 @@ export const getAllCourses = async (page: number, limit: number) => {
       page: page.toString(),
       limit: limit.toString(),
     })}`);
-    console.log(response);
     
     return response.data;  // { courses, totalCount }
   } catch (error) {
@@ -106,7 +105,6 @@ export const getSubscriptionPlan = async ()=>{
 export const getSubscriptionCourses = async (page:number)=>{
   try {
     const res = await api.get(`/user/getSubscriptionCourses/${page}`)
-    console.log('',res);
     
     return res
   } catch (error) {
@@ -180,7 +178,6 @@ export const cancelCourse = async (selectedCourseId:string)=>{
 
 export const submitReview = async (courseId : string , rating : number , reviewText : string)=>{
   try {
-    console.log(courseId , rating , reviewText);
     
     const res = await api.post("/user/review", {
         courseId: courseId,
@@ -327,7 +324,6 @@ export const refreshKey= async (key:string)=>{
 
 export const getCertificate = async(courseId:string )=>{
     try {
-        console.log(courseId);
         
         const res = await api.get(`/user/certificate/${courseId}`)
       return res

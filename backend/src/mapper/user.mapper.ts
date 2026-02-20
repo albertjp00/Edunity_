@@ -18,7 +18,7 @@ import {
   UserInstructorDTO,
 } from "../dto/userDTO";
 import { UserDTO } from "../interfaces/userInterfaces";
-import { ICourseView, IFavourites, IQuizService } from "../interfacesServices.ts/userServiceInterfaces";
+import {  IFavourites, IQuizService } from "../interfacesServices.ts/userServiceInterfaces";
 import { ICourse, IModule } from "../models/course";
 import { IEvent } from "../models/events";
 import { IInstructor } from "../models/instructor";

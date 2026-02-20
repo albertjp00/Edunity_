@@ -19,6 +19,8 @@ const DoQuiz: React.FC = () => {
       try {
         if(!courseId) return
         const res = await getQuiz(courseId)
+        console.log('qiuz',res);
+        
         if(!res) return
         setQuiz(res.data.quiz);
       } catch (err) {
@@ -37,7 +39,9 @@ const DoQuiz: React.FC = () => {
 
     try {
       if(!courseId) return
-      const quizId = quiz._id
+      const quizId = quiz.id
+      console.log('anserrr',answers);
+      
       const res = await submitQuiz(courseId , quizId  , answers)
       if(!res) return
       if (res.data.success) {
@@ -52,7 +56,6 @@ const DoQuiz: React.FC = () => {
     }
   };
 
-
   if (!quiz) return <p>Loading quiz...</p>;
 
   return (
@@ -60,7 +63,7 @@ const DoQuiz: React.FC = () => {
     <h2>{quiz.title}</h2>
 
     {quiz.questions.map((q, index) => (
-      <div key={q._id} className="question-card">
+      <div key={q.id} className="question-card">
         <h4>
           {index + 1}. {q.question}
         </h4>
@@ -69,10 +72,10 @@ const DoQuiz: React.FC = () => {
             <label key={i} className="option">
               <input
                 type="radio"
-                name={q._id}
+                name={q.id}
                 value={opt.text}
-                checked={answers[q._id] === opt.text}
-                onChange={() => handleAnswerChange(q._id, opt.text)}
+                checked={answers[q.id] === opt.text}
+                onChange={() => handleAnswerChange(q.id, opt.text)}
               />
               {opt.text}
             </label>

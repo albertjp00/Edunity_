@@ -36,7 +36,7 @@ export class AdminAuthController implements IAdminAuthController {
         res.cookie("adminRefreshToken", result.refreshToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
+          sameSite: "none",
           maxAge: 24 * 60 * 60 * 1000, 
         });
 
@@ -80,7 +80,7 @@ export class AdminAuthController implements IAdminAuthController {
     
             const payload = decoded as RefreshTokenPayload;            
             const newAccessToken = jwt.sign({ id: payload.id , role :"admin" }, SECRET_KEY, {
-              expiresIn: '5m',
+              expiresIn: '10m',
             });
 
             console.log('new ',newAccessToken);

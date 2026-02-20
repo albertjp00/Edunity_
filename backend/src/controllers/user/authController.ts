@@ -50,7 +50,7 @@ export class AuthController
         res.cookie("refreshToken", result.refreshToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
+          sameSite: "none",
           maxAge: 24 * 60 * 60 * 1000, 
         });
 
@@ -110,12 +110,13 @@ export class AuthController
       res.clearCookie("refreshToken", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production", // use HTTPS in production
-        sameSite: "strict",
+        sameSite: "none",
         path: "/", // must match the cookie path you set when issuing it
       });
 
       res.status(HttpStatus.OK).json({ success: true });
     } catch (err) {
+      console.log(err);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false });
     }
   };
@@ -149,6 +150,8 @@ export class AuthController
         res.status(HttpStatus.BAD_REQUEST).json(result); // Failure
       }
     } catch (error) {
+      console.log(error);
+      
       res
         .status(HttpStatus.BAD_REQUEST)
         .json({ success: false, message: StatusMessage.REGISTRATION_FAILED });
@@ -207,13 +210,15 @@ export class AuthController
         res.cookie("refreshToken", refreshToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
-          sameSite:"strict",
+          sameSite:"none",
           maxAge: 60 * 60 * 1000, 
         });
       }
 
       res.json({ success: true, token: accessToken  });
     } catch (error) {
+      console.log(error);
+      
       res.status(500).json({ message:  StatusMessage.GOOGLE_SIGN_IN_FALIED });
     }
   };
@@ -250,6 +255,8 @@ export class AuthController
 
       res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.OTP_VERIFIED });
     } catch (error) {
+      console.log(error);
+      
       res.status(500).json({ message: StatusMessage.INTERNAL_SERVER_ERROR });
     }
   };

@@ -120,7 +120,6 @@ export class UserCourseService implements IUserCourseService {
       const courses = result?.courses;
 
       const totalPages = result?.totalPages;
-      console.log(courses[0]?.modules);
 
       return { courses: courses?.map(mapSubscriptionCourseToDTO), totalPages };
     } catch (error) {
@@ -433,7 +432,6 @@ export class UserCourseService implements IUserCourseService {
       if (!instructor) return null;
 
       const quiz = await this._userRepository.getQuiz(course.id);
-      console.log(quiz);
       let quizExists = false;
       if (quiz) {
         quizExists = true;
@@ -441,7 +439,6 @@ export class UserCourseService implements IUserCourseService {
 
       const review = await this._userRepository.getReview(id, course.id);
 
-      console.log('view course',course);
       
 
       return {
@@ -527,7 +524,6 @@ export class UserCourseService implements IUserCourseService {
     review: string,
   ): Promise<IReview | null | string | undefined> {
     try {
-      console.log("in servire review");
 
       const user = await this._userRepository.findById(userId);
       if (user) {
@@ -613,7 +609,6 @@ export class UserCourseService implements IUserCourseService {
         userId,
         courseId,
       );
-      console.log('fav course',favCourse);
       
       if (favCourse) {
         return true;
@@ -643,8 +638,7 @@ export class UserCourseService implements IUserCourseService {
   submitQuiz = async (userId: string, courseId: string, answers: any) => {
     try {
       const quiz = await this._userRepository.getQuiz(courseId);
-      console.log(quiz?.questions);
-
+      
       if (!quiz) {
         throw new Error("Quiz not found");
       }
@@ -652,20 +646,13 @@ export class UserCourseService implements IUserCourseService {
       let score = 0;
       let totalPoints = 0;
 
-      // unwrap nested answers if necessary
+      
       const flatAnswers = answers.answers ? answers.answers : answers;
 
       quiz.questions.forEach((q) => {
         totalPoints += q.points;
         const userAnswer = flatAnswers[q._id.toString()];
-        console.log(
-          "QID:",
-          q._id.toString(),
-          "Correct:",
-          q.correctAnswer,
-          "User:",
-          userAnswer,
-        );
+        
 
         if (
           userAnswer &&

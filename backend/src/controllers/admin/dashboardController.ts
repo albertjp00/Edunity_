@@ -29,7 +29,7 @@ export class AdminDashboardController implements IAdminDashboardController {
     }
   };
 
-  getUserOverview = async (req: Request, res: Response, next: NextFunction) => {
+  getUserOverview = async (req: Request, res: Response) => {
     try {
       const result = await this._adminService.getUserOverview();
 

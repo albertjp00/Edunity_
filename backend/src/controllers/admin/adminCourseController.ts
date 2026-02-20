@@ -23,7 +23,7 @@ export class AdminCourseController
     this._courseService = adminCourseService;
   }
 
-  getCourses = async (req: Request, res: Response, next: NextFunction) => {
+  getCourses = async (req: Request, res: Response) => {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 6;
@@ -41,6 +41,8 @@ export class AdminCourseController
         currentPage: data.currentPage,
       });
     } catch (error) {
+      console.log(error);
+      
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: StatusMessage.FAILED_TO_GET_COURSES });
@@ -50,7 +52,6 @@ export class AdminCourseController
   getCourseDetails = async (
     req: Request,
     res: Response,
-    next: NextFunction,
   ) => {
     try {
       const id = req.params.id!;
@@ -219,7 +220,7 @@ export class AdminCourseController
     try {
       const data = req.body
       console.log("controller ",data)
-      const reports = await this._courseService.addSubscription(data);
+      await this._courseService.addSubscription(data);
 
       res.json({ success: true });
     } catch (error) {
