@@ -45,7 +45,7 @@ export class AuthService implements IUserAuthService {
                 return { success: false, message: StatusMessage.INCORRECT_PASSWORD };
             }
 
-            const accessToken = jwt.sign({ id: user._id }, secret, { expiresIn: "15m" });
+            const accessToken = jwt.sign({ id: user._id }, secret, { expiresIn: "1h" });
             const refreshToken = jwt.sign({ id: user._id }, refresh, { expiresIn: "2h" });
 
             const loginMapped = LoginMapper({ success : true, message: StatusMessage.LOGIN_SUCCESS,accessToken,refreshToken})

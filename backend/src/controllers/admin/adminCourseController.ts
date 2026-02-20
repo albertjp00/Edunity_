@@ -28,7 +28,6 @@ export class AdminCourseController
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 6;
       const search = req.query.search as string;
-      console.log("get courses");
       const data = await this._courseService.getCoursesRequest(
         page,
         search,
@@ -127,7 +126,6 @@ export class AdminCourseController
   ) => {
     try {
       const { category, skills } = req.body;
-      console.log(category, skills);
 
       const categories = await this._courseService.addCategoryRequest(
         category,
@@ -219,7 +217,6 @@ export class AdminCourseController
   ) => {
     try {
       const data = req.body
-      console.log("controller ",data)
       await this._courseService.addSubscription(data);
 
       res.json({ success: true });

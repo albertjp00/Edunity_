@@ -32,11 +32,7 @@ export const setupSocket = (io: Server) => {
   // ----------------- Socket.IO -----------------
   io.on("connection", (socket) => {
 
-
-
     const userData = socket.data.user
-    console.log("Client connected:", socket.id, userData);
-
 
     // ----------------- Chat -----------------
 
@@ -47,7 +43,6 @@ export const setupSocket = (io: Server) => {
     socket.on("joinRoom", ({ userId, receiverId }) => {
       const room = [userId, receiverId].sort().join("_");
       socket.join(room);
-      console.log(`User ${userId} joined chat room ${room}`);
 
     });
 
@@ -55,16 +50,12 @@ export const setupSocket = (io: Server) => {
       const { senderId, receiverId } = message;
       const room = [senderId, receiverId].sort().join("_");
 
-      // chat window (when open)
       io.to(room).emit("receiveMessage", message);
 
-      // sidebar / unread updates (ALWAYS)
       io.to(`user_${receiverId}`).emit("receiveMessage", message);
       io.to(`user_${senderId}`).emit("receiveMessage", message);
 
-      //notification send
-      console.log('send messages to',receiverId);
-      
+            
       
       io.to(`user_${receiverId}`).emit("messageNotification", {
         senderId,
@@ -87,7 +78,6 @@ export const setupSocket = (io: Server) => {
     //typing
     socket.on("typing", ({ senderId, receiverId }) => {
       const room = [senderId, receiverId].sort().join("_");
-      console.log(`Typing received from ${senderId}, emitting to ${room}`);
       io.to(room).emit("userTyping", { senderId });
     });
 
@@ -107,7 +97,6 @@ export const setupSocket = (io: Server) => {
       onlineUsers.set(userId, socket.id);
       socket.join(`user_${userId}`);
 
-      console.log("🟢 User online:", userId);
       io.emit("userOnline", userId);
     });
 
@@ -180,8 +169,6 @@ export const setupSocket = (io: Server) => {
           socket.to(eventId).emit("user-left", leftParticipant);
         }
       }
-
-      console.log(`User ${userId} left event ${eventId}`);
     });
 
     // ----------------- Disconnect -----------------
@@ -189,7 +176,6 @@ export const setupSocket = (io: Server) => {
       if (!currentUserId) return;
 
       onlineUsers.delete(currentUserId);
-      console.log("🔴 User offline:", currentUserId);
       io.emit("userOffline", currentUserId);
 
       Object.keys(eventParticipants).forEach((eventId) => {
@@ -201,10 +187,7 @@ export const setupSocket = (io: Server) => {
           const [leftParticipant] = participants.splice(idx, 1);
           if (leftParticipant) {
             socket.to(eventId).emit("user-left", leftParticipant);
-            console.log(
-              `Participant ${leftParticipant.name} (${leftParticipant.userId}) disconnected from event ${eventId}`
-            );
-            console.log("Remaining participants:", participants.map((p) => p.name));
+            
           }
         }
       });

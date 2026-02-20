@@ -42,7 +42,6 @@ export class UserCourseController
 
       const data = await this._courseService.getCourses(page, limit);
 
-      console.log("result", data);
 
       res.status(HttpStatus.OK).json({
         success: true,
@@ -243,7 +242,6 @@ export class UserCourseController
       const userId = req.user?.id as string;
 
       const id = req.params.id
-      console.log('buy  subbbbb',id);
 
       const key = `buyCourse_${userId}`;
       const subscribe = await debounceCall(key, 2000, async () => {
@@ -409,10 +407,7 @@ export class UserCourseController
   ) => {
     try {
       const userId = req.user?.id as string;
-      const { courseId, moduleTitle } = req.body;
-
-      console.log('update progress',courseId , moduleTitle , req.body);
-      
+      const { courseId, moduleTitle } = req.body;      
 
       if (!userId || !courseId || !moduleTitle) {
         res
@@ -546,7 +541,6 @@ export class UserCourseController
         res.json({ success: false });
         
       }else{
-        console.log('resuld fac courses',result);
         
       res.json({ success: true});
       }

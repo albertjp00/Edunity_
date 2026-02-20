@@ -148,8 +148,6 @@ export class MessageController
 
       const userId = req.user?.id;
 
-      console.log(userId);
-
       const messages = await this._messageService.getChatHistory(
         userId as string,
         receiverId as string,
@@ -218,7 +216,6 @@ export class MessageController
       const { text } = req.body;
 
       const file = req.file ? req.file.filename : null;
-      console.log(file);
       const receiverId = req.params.receiverId!;
       const instructorId = req.instructor?.id as string;
       const message = await this._messageService.sendInstructorMessage(

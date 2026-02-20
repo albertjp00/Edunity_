@@ -44,7 +44,7 @@ export class InstAuthService implements IInstAuthService {
     }
 
     const accessToken = jwt.sign({ id: instructor._id }, secret, {
-      expiresIn: "5m",
+      expiresIn: "1h",
     });
     const refreshToken = jwt.sign({ id: instructor._id }, refresh, {
       expiresIn: "2h",

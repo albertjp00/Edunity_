@@ -99,7 +99,6 @@ export class AdminInstructorController
 
       const result =
         await this._adminInstructorService.getInstructorsRequest(id);
-      console.log("result", result);
 
       res.status(HttpStatus.OK).json({ success: true, instructor: result });
     } catch (error) {

@@ -41,7 +41,6 @@ export class UserEventService implements IUserEventService {
     getEventsRequest = async (search : string , page : number): Promise<{events : EventDTO[] , totalPages : number } | null> => {
         try {
             const result = await this._userRepository.getEvents(search , page)
-            console.log('events',result);
             if(!result) return null
             return {events : result?.events.map(mapEventToDTO) , totalPages : result?.totalPages}
         } catch (error) {

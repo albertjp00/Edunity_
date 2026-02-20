@@ -41,7 +41,7 @@ export class InstAuthController
       if (response.success) {
         res.cookie("instructorRefreshToken", response.refreshToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
+          secure: true,
           sameSite: "none",
           maxAge: 24 * 60 * 60 * 1000,
         });
@@ -118,7 +118,6 @@ export class InstAuthController
     try {
       const { otp, email } = req.body;
       const result = await this._instAuthService.verifyOtpRequest(otp, email);
-      console.log(result);
 
       if (result.success) {
         res.status(HttpStatus.OK).json({ success: true });
@@ -139,7 +138,6 @@ export class InstAuthController
     try {
       const { email } = req.body;
 
-      console.log(email);
 
       const result = await this._instAuthService.forgotPassword(email);
 

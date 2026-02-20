@@ -21,7 +21,6 @@ export class AdminUserController implements IAdminUserManagementController {
       const id = req.params.id!;
 
       const result = await this._userService.getUserRequest(id);
-      console.log("user", result);
 
       res.status(HttpStatus.OK).json({ success: true, user: result });
     } catch (error) {
@@ -58,7 +57,6 @@ export class AdminUserController implements IAdminUserManagementController {
   blockUnblock = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = req.params.id!;
-      console.log(id);
 
       const result = await this._userService.blockUnblockUser(id);
       if (result) {

@@ -176,7 +176,6 @@ export class InstCourseController
             videoFile.originalname,
             videoFile.mimetype,
           );
-          console.log(`✅ Uploaded video for module ${index}: ${videoUrl}`);
         }
 
         updatedModules.push({
@@ -287,7 +286,6 @@ export class InstCourseController
     try {
       const { id } = req.params;
       const { title, questions } = req.body;
-      console.log(title, questions);
 
       if (!id || !title || !questions) {
         res
@@ -312,7 +310,6 @@ export class InstCourseController
   getQuiz = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { courseId } = req.params;
-      console.log(courseId);
 
       const result = await this._courseService.getQuiz(courseId as string);
 

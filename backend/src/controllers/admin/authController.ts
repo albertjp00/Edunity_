@@ -29,13 +29,12 @@ export class AdminAuthController implements IAdminAuthController {
       const { email, password } = req.body;
 
       const result = await this._adminAuthService.loginRequest(email, password);
-      console.log("login", result);
 
       if (result?.success) {
 
         res.cookie("adminRefreshToken", result.refreshToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
+          secure: true,
           sameSite: "none",
           maxAge: 24 * 60 * 60 * 1000, 
         });
@@ -60,9 +59,7 @@ export class AdminAuthController implements IAdminAuthController {
 
       refreshToken = async (req: AdminAuthRequest, res: Response, next: NextFunction) => {
         try {
-          const token = req.cookies.adminRefreshToken;
-          console.log('admin refresh ');
-          
+          const token = req.cookies.adminRefreshToken;          
     
           if (!token) {
             res.status(HttpStatus.UNAUTHORIZED).json({ message: StatusMessage.TOKEN_REQUIRED });
@@ -81,10 +78,7 @@ export class AdminAuthController implements IAdminAuthController {
             const payload = decoded as RefreshTokenPayload;            
             const newAccessToken = jwt.sign({ id: payload.id , role :"admin" }, SECRET_KEY, {
               expiresIn: '10m',
-            });
-
-            console.log('new ',newAccessToken);
-    
+            });    
             res.json({ accessToken: newAccessToken });
           });
         } catch (error) {

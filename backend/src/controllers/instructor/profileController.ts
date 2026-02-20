@@ -170,7 +170,6 @@ export class InstProfileController
   ) => {
     try {
       const id = req.instructor?.id;
-      console.log(id);
 
       const notifications = await this._profileService.getNotifications(
         id as string,
