@@ -107,6 +107,10 @@ export interface IUserCourseService {
         courseId: string
     ): Promise<void>;
 
+    walletPayment( userId : string ,
+        id: string
+    ): Promise<boolean | null>;
+
     verifyPaymentRequest(
         razorpay_order_id: string,
         razorpay_payment_id: string,
@@ -155,6 +159,8 @@ export interface IUserCourseService {
     ): Promise<IReview | null | string | undefined>;
 
     getInstructorsRequest(): Promise<UserInstructorDTO[] | null>;
+
+    getInstructorDetails(id:string): Promise<IInstructor | null>;
 
     addtoFavourites(
         userId: string,

@@ -511,7 +511,7 @@ const ViewMyCourse: React.FC = () => {
               </p>
               <p>{instructor.bio || "No bio available."}</p>
 
-              <button
+              <button 
                 className="chat-btn"
                 onClick={() =>
                   (window.location.href = `/user/chat/${instructor._id}`)
@@ -519,6 +519,7 @@ const ViewMyCourse: React.FC = () => {
               >
                 💬 Chat with Instructor
               </button>
+              <button className="chat-btn" onClick={()=>navigate(`/user/instructorDetails/${instructor._id}`)}>🤵‍♂️View Instructor</button>
             </div>
           )}
 

@@ -206,6 +206,16 @@ export const addToFavourites= async (id : string)=>{
 }
 
 
+export const buyFromWallet = async (id : string)=>{
+  try {    
+    const res = await api.get(`/user/walletBuy/${id}`)    
+    return res
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
 
 
 export const fetchFavourites= async (id:string)=>{

@@ -26,6 +26,8 @@ export interface IUserRepository {
 
   getWallet(userId: string): Promise<IWallet | null>
 
+  walletPayment(userId: string , balance : number , course : ICourse): Promise<IWallet | null>
+
   getPayment(userId: string, page: number): Promise<IPaymentDetails | null>
 
   getCourse(id: string): Promise<ICourse | null>
@@ -49,6 +51,8 @@ export interface IUserRepository {
   getCourseDetails(id: string, courseId: string): Promise<IMyCourse | null>
 
   findInstructors(): Promise<IInstructor[] | null>
+
+  instructorDetails(id:string): Promise<IInstructor | null>
 
   addMyCourse(id: string, data: Partial<ICourse>): Promise<IMyCourse | null>
 

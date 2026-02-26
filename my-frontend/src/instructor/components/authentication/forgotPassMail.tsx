@@ -8,9 +8,20 @@ import axios from "axios";
 const InstructorForgotPassword: React.FC = () => {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
+  const [error , setError] = useState('')
+
+
+  const validate = ()=>{
+    if(email.trim() ==''){
+      setError("Enter registered email")
+      return false
+    }
+    return true
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if(!validate()) return 
 
     try {
       const response = await forgotPassword(email)
@@ -48,8 +59,8 @@ const InstructorForgotPassword: React.FC = () => {
           value={email}
           name="email"
           onChange={(e) => setEmail(e.target.value)}
-          required
         />
+        {error && <p className="error">{error}</p>}
         <button type="submit" className="auth-button">
           Submit
         </button>

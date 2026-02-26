@@ -40,7 +40,7 @@ export class InstAuthService implements IInstAuthService {
 
     const isMatch = await bcrypt.compare(password, instructor.password);
     if (!isMatch) {
-      return { success: false, message: "Invalid email or password" };
+      return { success: false, message: "Invalid  password" };
     }
 
     const accessToken = jwt.sign({ id: instructor._id }, secret, {

@@ -234,6 +234,24 @@ export class UserCourseController
     }
   };
 
+
+  walletPayment = async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const id = req.params.id;
+      const userId = req.user?.id
+
+      console.log("controeller",id , userId );
+    
+
+      const wallet  = await this._courseService.walletPayment(userId as string, id as string);
+      
+      res.status(HttpStatus.OK).json({ success: wallet });
+      
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   buySubscription = async (
     req: AuthRequest,
     res: Response,
@@ -477,10 +495,32 @@ export class UserCourseController
   ) => {
     try {
       const instructor = await this._courseService.getInstructorsRequest();
-
+      console.log('instr',instructor);
+      
       res
         .status(HttpStatus.OK)
         .json({ success: true, instructors: instructor });
+
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ success: false, message: HttpStatus.INTERNAL_SERVER_ERROR });
+    }
+  };
+
+  getInstructorDetails = async (
+    req: AuthRequest,
+    res: Response,
+  ) => {
+    try {
+      const id = req.params.id
+      const instructor = await this._courseService.getInstructorDetails(id as string);
+      console.log("get instructors details",instructor);
+      
+      res
+        .status(HttpStatus.OK)
+        .json({ success: true, instructor: instructor });
 
     } catch (error) {
       console.error(error);

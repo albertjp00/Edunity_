@@ -39,6 +39,7 @@ import {
 import { IAdminRepository } from "../../interfacesServices.ts/adminServiceInterfaces";
 import { IInsRepository } from "../../interfacesServices.ts/instructorServiceInterface";
 import { ISubscriptionPlan } from "../../models/subscription";
+import { IInstructor } from "../../models/instructor";
 
 
 export interface ICourseDetails extends ICourse {
@@ -210,6 +211,27 @@ export class UserCourseService implements IUserCourseService {
       await this._userRepository.cancelPurchase(courseId);
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  walletPayment = async (userId :string , id: string): Promise<boolean | null> => {
+    try {
+
+      const course = await this._userRepository.getCourse(id)
+      const wallet = await this._userRepository.getWallet(userId);
+      if(!wallet || !course) return null
+      if(wallet?.balance > course?.price){
+        const balance = wallet.balance - course.price
+        await this._userRepository.walletPayment(userId , balance , course)
+        await this._userRepository.addMyCourse(userId, course);
+        return true
+      }
+      
+      return false
+
+    } catch (error) {
+      console.log(error);
+      return null
     }
   };
 
@@ -552,6 +574,18 @@ export class UserCourseService implements IUserCourseService {
       if (!result) return null;
 
       return result?.map(mapUserInstructorDto);
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  async getInstructorDetails(id : string): Promise<IInstructor | null> {
+    try {
+      const result = await this._userRepository.instructorDetails(id);
+      if (!result) return null;
+
+      return result
     } catch (error) {
       console.log(error);
       return null;

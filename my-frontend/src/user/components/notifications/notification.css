@@ -6,6 +6,12 @@
   font-family: "Inter", sans-serif;
 }
 
+.header{
+  display: flex;
+  justify-content: space-between;
+  padding: 30px;
+}
+
 .notifications-title {
   font-size: 1.8rem;
   font-weight: 700;

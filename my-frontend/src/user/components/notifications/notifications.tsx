@@ -3,6 +3,7 @@ import "./notification.css";
 import api from "../../../api/userApi";
 import Navbar from "../navbar/navbar";
 import { fetchNotifications } from "../../services/profileServices";
+import { toast } from "react-toastify";
 
 interface Notification {
   _id: string;
@@ -29,7 +30,7 @@ const UserNotifications = () => {
         setNotifications(res.data.notifications);
         setTotalPages(Math.ceil(res.data.total / limit))
 
-        await api.put(`/user/notificationsMarkRead`);
+        
       } catch (error) {
         console.error("Error fetching notifications:", error);
       }
@@ -38,6 +39,15 @@ const UserNotifications = () => {
   }, [page]);
 
 
+  const markAsRead = async()=>{
+    try {
+      await api.put(`/user/notificationsMarkRead`);
+      toast.success('Marked as read')
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
 
 
 
@@ -46,7 +56,10 @@ const UserNotifications = () => {
     <>
       <Navbar />
       <div className="notifications-container">
-        <h2 className="notifications-title">All Notifications</h2>
+        <div className="header">
+          <h2 className="notifications-title">All Notifications</h2>
+        <button className="load-more-btn" onClick={markAsRead}>Mark as read</button>
+        </div>
 
         {notifications.length === 0 ? (
           <p className="notifications-empty">No notifications yet.</p>

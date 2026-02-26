@@ -34,10 +34,21 @@ const LoginUser: React.FC = () => {
     });
   };
 
+  const validate = ()=>{
+    if(value.email =='' || value.password ==''){
+      toast.error('email and password required')
+      return false
+    }
+
+    return true
+  }
+
   const onSubmitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       
+      if(!validate()) return 
+
       const response = await login(value)     
        
       

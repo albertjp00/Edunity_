@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 import instructorApi from "../../api/instructorApi"
 import api from "../../api/userApi";
 import type { UserRegisterForm } from "../../user/interfaces";
@@ -7,6 +8,16 @@ import type { IQuizSaveDTO, QuizData, QuizPayload } from "../interterfaces/instr
 
 
 
+
+
+export const instructorLogin = async (value:{email : string , password : string})=>{
+  try {
+    const res = await instructorApi.post('/instructor/login', value)
+    return res
+  } catch (error) {
+    throw error
+  }
+}
 
 //course services 
 
@@ -112,7 +123,7 @@ export const  forgotPassword = async (email:string)=>{
     const res = await api.post("/instructor/forgotPassword", { email });
     return res
   } catch (error) {
-    console.log(error);
+    throw error
     
   }
 }

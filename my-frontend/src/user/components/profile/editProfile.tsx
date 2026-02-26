@@ -89,13 +89,6 @@ const EditProfile = () => {
             }
             return "";
 
-
-            
-
-            
-
-        
-
             default:
                 return "";
 

@@ -224,6 +224,7 @@ export const mapUserInstructorDto = (
   instructor: IInstructor,
 ): UserInstructorDTO => {
   return {
+    id : instructor._id,
     name: instructor.name,
     expertise: instructor.expertise ?? "",
     profileImage: instructor.profileImage ?? "",

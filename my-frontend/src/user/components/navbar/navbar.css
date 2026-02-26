@@ -94,6 +94,30 @@
 }
 
 
+.notification-img {
+  position: relative;   /* parent reference */
+  cursor: pointer;
+  display: inline-block;
+}
+
+.noti-img {
+  width: 28px;
+  height: 28px;
+}
+
+.notification-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  border-radius: 50%;
+
+  border: 2px solid white; 
+}
+
 
 @media (max-width: 768px) {
   .hamburger {

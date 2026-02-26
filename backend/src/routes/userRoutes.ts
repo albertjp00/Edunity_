@@ -107,6 +107,7 @@ router.post(ROUTES.COURSES.ADD_REVIEW, authMiddleware, courseController.addRevie
 
 router.get(ROUTES.COURSES.MY_COURSES, authMiddleware, courseController.myCourses);
 router.get(ROUTES.COURSES.GET_INSTRUCTORS, authMiddleware, courseController.getInstructors);
+router.get(ROUTES.COURSES.INSTRUCTOR_DETAILS, authMiddleware, courseController.getInstructorDetails);
 router.get(ROUTES.COURSES.FAVOURITES, authMiddleware, courseController.getFavorites);
 router.get(ROUTES.COURSES.ADD_FAVOURITES, authMiddleware, courseController.addtoFavourites);
 router.get(ROUTES.COURSES.FAV_COURSE_DETAILS, authMiddleware, courseController.favCourseDetails);
@@ -114,6 +115,7 @@ router.get(ROUTES.COURSES.FAV_COURSE_DETAILS, authMiddleware, courseController.f
 router.get(ROUTES.COURSES.BUY, authMiddleware, courseController.buyCourse);
 router.post(ROUTES.COURSES.VERIFY_PAYMENT, authMiddleware, courseController.verifyPayment);
 router.get(ROUTES.COURSES.CANCEL_PAYMENT, authMiddleware, courseController.cancelPayment);
+router.get(ROUTES.COURSES.WALLET_PAYMENT, authMiddleware, courseController.walletPayment);
 
 router.get(ROUTES.COURSES.BUY_SUB, authMiddleware, courseController.buySubscription);
 router.post(ROUTES.COURSES.VERIFY_SUBSCRIPTION_PAYMENT, authMiddleware, courseController.verifySubscriptionPayment);
@@ -146,85 +148,6 @@ router.get(ROUTES.CHAT.MESSAGED_INSTRUCTORS, authMiddleware, messageController.g
 router.get(ROUTES.CHAT.UNREAD_MESSAGES, authMiddleware, messageController.getUnreadMessages);
 router.get(ROUTES.CHAT.INSTRUCTOR_TO_MESSAGE, authMiddleware, messageController.getInstructorToMessage);
 
-
-
-
-// router.post("/login", authController.login);
-// router.post("/auth/googleLogin", authController.googleSignIn);
-// router.post("/refresh-token", authController.refreshToken);
-// router.post("/logout", authController.logoutUser);
-
-// router.get('/isBlocked',authMiddleware,authController.checkBlocked)
-
-// router.post('/forgotPassword',authController.forgotPassword)
-// router.post('/otpVerify',authController.verifyOtpForgotPass)
-// router.post('/resendOtpForgotPass',authController.resendOtpForgotPassword)
-// router.put('/resetPassword',authController.resetPassword)
-
-// router.post("/register", authController.register);
-// router.post("/verifyOtp", authController.verifyOtp);
-// router.post("/resendOtp", authController.resendOtp);
-
-// // Profile Routes (Protected)
-// router.get("/profile", authMiddleware, profileController.getProfile);
-// router.patch("/profile",authMiddleware,upload.single("profileImage"),profileController.editProfile);
-// router.put('/passwordChange',authMiddleware,profileController.changePassword)
-// router.get('/wallet',authMiddleware , profileController.getWallet)
-// router.get('/payment',authMiddleware,profileController.getPayment)
-// router.get('/notifications',authMiddleware,profileController.notifications)
-// router.put('/notificationsMarkRead',authMiddleware,profileController.notificationsMarkRead)
-
-
-// router.get('/getCourses',authMiddleware, courseController.showCourses)
-// router.get('/getAllCourses',authMiddleware, courseController.getAllCourses)
-// router.get('/courseDetails',authMiddleware,courseController.courseDetails)
-// router.get("/refresh",authMiddleware, courseController.refreshVideoUrl); 
-// router.get('/certificate/:courseId',authMiddleware,courseController.getCertificate)
-// router.post('/review',authMiddleware,courseController.addReview)
-
-
-// router.get('/myCourses/:page',authMiddleware , courseController.myCourses)
-// router.get('/getInstructors',authMiddleware , courseController.getInstructors)
-// router.get('/getFavourites',authMiddleware ,courseController.getFavourites)
-// router.get('/addtoFavourites/:id',authMiddleware,courseController.addtoFavourites)
-// router.get('/favouritesCourseDetails/:id',authMiddleware,courseController.favCourseDetails)
-
-
-
-// router.get('/buyCourse/:id',authMiddleware , courseController.buyCourse)
-// router.post('/payment/verify',authMiddleware , courseController.verifyPayment)
-// router.get('/cancelPayment/:courseId',authMiddleware , courseController.cancelPayment)
-
-
-
-// router.get('/viewMyCourse/:id',authMiddleware , courseController.viewMyCourse)
-// router.post("/updateProgress", authMiddleware, courseController.updateProgress);
-
-// router.get("/quiz/:courseId",authMiddleware,courseController.getQuiz)
-// router.post("/quiz/:courseId/:quizId",authMiddleware ,courseController.submitQuiz)
-
-
-
-// router.get('/events',authMiddleware , eventController.getEvents)
-// router.get('/event/:id',authMiddleware , eventController.getEventDetails)
-// router.get('/eventEnroll/:id',authMiddleware , eventController.enrollEvent)
-// router.get('/myEvents',authMiddleware , eventController.getMyEvents)
-
-
-// router.get("/joinEvent/:eventId",authMiddleware ,eventController.joinUserEvent);
-
-
-// router.post("/chat",authMiddleware ,upload.single("attachment"),messageController.sendMessage);
-// router.get("/getInstructor/:instructorId",authMiddleware , messageController.getInstructor)
-// router.get("/messages/:userId/:receiverId",authMiddleware , messageController.getChatHistory);
-// router.get("/messagedInstructors",authMiddleware,messageController.getMessagedInstructors)
-// router.get("/getUnreadMessages/:instructorId",authMiddleware,messageController.getUnreadMessages)
-
-
-// router.get("/instructor/:id", authMiddleware, messageController.getInstructorToMessage);
-
-
-// router.delete('/cancelCourse/:id',authMiddleware,courseController.cancelCourse);
 
 
 export default router;

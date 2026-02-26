@@ -24,9 +24,18 @@ const LoginAdmin: React.FC = () => {
     });
   };
 
+  const validate = ()=>{
+    if(value.email.trim() == '' || value.password.trim() ==''){
+      toast.error("Email and Password required")
+      return false
+    }
+    return true
+  }
+
   const onSubmitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      if(!validate()) return
       const response = await adminLogin(value)
       if(!response) {
         return

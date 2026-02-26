@@ -168,6 +168,7 @@ export interface loginInput{
   refreshToken : string}
 
 export interface UserInstructorDTO {
+  id : string;
   name: string;
   expertise: string;
   profileImage: string;

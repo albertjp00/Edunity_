@@ -234,6 +234,7 @@ export class AuthController
         return;
       }
 
+      
       res.status(HttpStatus.OK).json({ success: true, message: StatusMessage.OTP_SENT });
     } catch (error) {
       console.error(error);

@@ -1,0 +1,178 @@
+/* ===== Main Card ===== */
+.instructor-card {
+  max-width: 900px;
+  margin: 60px auto;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  font-family: "Inter", sans-serif;
+  transition: transform 0.3s ease;
+}
+
+.instructor-card:hover {
+  transform: translateY(-5px);
+}
+
+/* ===== Header Banner ===== */
+.instructor-header {
+  height: 140px;
+  background: linear-gradient(135deg, #4f46e5, #9333ea);
+}
+
+/* ===== Body ===== */
+.instructor-body {
+  padding: 40px;
+  position: relative;
+}
+
+/* ===== Avatar ===== */
+.instructor-avatar-wrapper {
+  position: absolute;
+  top: -60px;
+  left: 40px;
+}
+
+.instructor-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #4f46e5;
+  color: #ffffff;
+  font-size: 48px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 5px solid #ffffff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== Name Section ===== */
+.instructor-name-section {
+  margin-left: 180px;
+  margin-bottom: 20px;
+}
+
+.instructor-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.instructor-name {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.instructor-verified-icon {
+  color: #10b981;
+  width: 22px;
+  height: 22px;
+}
+
+.instructor-expertise {
+  font-size: 16px;
+  color: #6b7280;
+  margin-top: 5px;
+}
+
+/* ===== Bio ===== */
+.instructor-bio {
+  margin: 25px 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #374151;
+}
+
+/* ===== Info Section ===== */
+.instructor-info-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.instructor-info-row {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+.instructor-info-icon {
+  background: #f3f4f6;
+  padding: 10px;
+  border-radius: 10px;
+  color: #4f46e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.instructor-info-label {
+  font-size: 13px;
+  color: #9ca3af;
+  margin-bottom: 3px;
+}
+
+.instructor-info-value {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+/* ===== Skills Section ===== */
+.instructor-skills-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 15px;
+  color: #4f46e5;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.instructor-skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.instructor-skill-badge {
+  padding: 8px 16px;
+  border-radius: 30px;
+  background: #eef2ff;
+  color: #4f46e5;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: default;
+}
+
+.instructor-skill-badge:hover {
+  background: #4f46e5;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .instructor-name-section {
+    margin-left: 0;
+    margin-top: 80px;
+  }
+
+  .instructor-avatar-wrapper {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .instructor-info-list {
+    grid-template-columns: 1fr;
+  }
+
+  .instructor-body {
+    padding: 30px 20px;
+  }
+}

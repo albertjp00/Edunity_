@@ -2,11 +2,24 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./courseDetailsUser.css";
 import { toast } from "react-toastify";
-import buyNowImage from '../../../assets/buyCourse.png'
+import buyNowImage from "../../../assets/buyCourse.png";
 import VideoPlayerUser from "../videoPlayer/videoPlayer";
-import { addToFavourites, buyCourseService, courseDetails, fetchFavourites, paymentCancel, verifyPayment } from "../../services/courseServices";
-import type {  IInstructor, IModule, IReview, RazorpayInstance, RazorpayOptions } from "../../interfaces";
-
+import {
+  addToFavourites,
+  buyCourseService,
+  buyFromWallet,
+  courseDetails,
+  fetchFavourites,
+  paymentCancel,
+  verifyPayment,
+} from "../../services/courseServices";
+import type {
+  IInstructor,
+  IModule,
+  IReview,
+  RazorpayInstance,
+  RazorpayOptions,
+} from "../../interfaces";
 
 declare global {
   interface Window {
@@ -37,27 +50,25 @@ const CourseDetailsUser: React.FC = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [activePayment, setActivePayment] = useState<string | null>(null);
   const [reviews, setReviews] = useState<IReview[]>([]);
-  const [fav , setFavourites] = useState<boolean>(false)
-
-
+  const [fav, setFavourites] = useState<boolean>(false);
+  const [walletModal, setWalletModal] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
   const fetchCourse = async () => {
     try {
-      if(!id) return
-      const res = await courseDetails(id)
-      console.log('res detauls',res);
-      if(!res) return
-      if(res.data.success=='exists'){
-        navigate(`/user/viewMyCourse/${id}`,{replace:true})
-        return
+      if (!id) return;
+      const res = await courseDetails(id);
+      console.log("res detauls", res);
+      if (!res) return;
+      if (res.data.success == "exists") {
+        navigate(`/user/viewMyCourse/${id}`, { replace: true });
+        return;
       }
       setCourse(res.data.course);
       setInstructor(res.data.course.instructor);
       setHasAccess(res.data.course.hasAccess);
       setReviews(res.data.course.review || []);
-
     } catch (err) {
       console.error("Error fetching course:", err);
     }
@@ -79,10 +90,10 @@ const CourseDetailsUser: React.FC = () => {
     setActivePayment(courseId);
 
     try {
-      const res = await buyCourseService(courseId)
+      const res = await buyCourseService(courseId);
       console.log(res);
-      if (!res) return
-      const { data } = res
+      if (!res) return;
+      const { data } = res;
 
       const options: RazorpayOptions = {
         key: data.key,
@@ -93,18 +104,18 @@ const CourseDetailsUser: React.FC = () => {
         order_id: data.orderId,
         handler: async function (response) {
           try {
-            const res = await verifyPayment(response  , courseId)
-            if(!res) return
-            console.log('respionse ', res);
-            
-            if(res.data.success){
-            toast.success("Payment Successful! Course Unlocked.");
-            navigate("/user/myCourses");
+            const res = await verifyPayment(response, courseId);
+            if (!res) return;
+            console.log("respionse ", res);
+
+            if (res.data.success) {
+              toast.success("Payment Successful! Course Unlocked.");
+              navigate("/user/myCourses");
             }
           } finally {
             setActivePayment(null);
             localStorage.removeItem("payment_in_progress");
-            navigate('/user/paymentSuccess')
+            navigate("/user/paymentSuccess");
           }
         },
         modal: {
@@ -114,7 +125,7 @@ const CourseDetailsUser: React.FC = () => {
             } finally {
               setActivePayment(null);
               localStorage.removeItem("payment_in_progress");
-              navigate('/user/paymentFailed')
+              navigate("/user/paymentFailed");
             }
           },
         },
@@ -123,7 +134,6 @@ const CourseDetailsUser: React.FC = () => {
 
       const rzp = new window.Razorpay(options);
 
-
       rzp.open();
     } catch (error) {
       console.error("Payment error:", error);
@@ -131,55 +141,61 @@ const CourseDetailsUser: React.FC = () => {
       setActivePayment(null);
       localStorage.removeItem("payment_in_progress");
     }
-  }
+  };
 
+  useEffect(() => {
+    const getFavourites = async () => {
+      try {
+        if (!id) return;
+        const res = await fetchFavourites(id);
+        if (!res) return;
+        console.log("favvv", res);
 
-  useEffect(()=>{
-    const getFavourites = async()=>{
+        if (res.data.success) {
+          setFavourites(res.data.success);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getFavourites();
+  }, []);
+
+  const handleAddtofavourites = async (id: string) => {
     try {
-      if(!id) return
-      const res = await fetchFavourites(id)
-      if(!res) return
-      console.log('favvv',res);
-      
-      if(res.data.success){
-        setFavourites(res.data.success)
+      const res = await addToFavourites(id);
+      if (!res) return;
+      console.log("added fav ", res);
+
+      if (res.data.success) {
+        if (res.data.fav == "added") {
+          setFavourites(true);
+          toast.success("Added to favourites");
+        } else if (res.data.fav == "removed") {
+          setFavourites(false);
+          toast.success("Removed from favourites");
+        }
       }
     } catch (error) {
       console.log(error);
-      
     }
-  }
-  getFavourites()
-  },[])
+  };
 
-
-  const handleAddtofavourites = async (id:string)=>{
+  const walletBuy = async (id: string) => {
     try {
-      const res = await addToFavourites(id)
-      if(!res) return
-      console.log('added fav ', res);
-      
-    if(res.data.success){
-      if(res.data.fav == 'added'){
-        setFavourites(true)
-          toast.success('Added to favourites')
-      }else if(res.data.fav=='removed'){
-          setFavourites(false)
-          toast.success('Removed from favourites') 
-        }
-    }
-      
+      const res = await buyFromWallet(id);
+      if (res?.data.success) {
+        setWalletModal(false);
+        navigate("/user/paymentSuccess");
+      } else {
+        setWalletModal(false)
+        toast.error("Insufficient wallet balance");
+      }
     } catch (error) {
       console.log(error);
+      toast.error("payment error");
     }
-  }
-
-
-
-
-
-
+  };
 
   useEffect(() => {
     fetchCourse();
@@ -189,10 +205,7 @@ const CourseDetailsUser: React.FC = () => {
 
   return (
     <div className="contain">
-
       <header className="course-header">
-
-
         <h1>COURSE DETAILS</h1>
         <p>Home / Course</p>
       </header>
@@ -252,9 +265,9 @@ const CourseDetailsUser: React.FC = () => {
 
               <h3>What Will I Learn From This Course?</h3>
               <p>
-                This course covers everything from basic HTML and CSS to advanced
-                full-stack development topics. Learn at your own pace and become a
-                professional web developer.
+                This course covers everything from basic HTML and CSS to
+                advanced full-stack development topics. Learn at your own pace
+                and become a professional web developer.
               </p>
             </div>
           )}
@@ -267,7 +280,9 @@ const CourseDetailsUser: React.FC = () => {
                   <summary>{module.title || `Module ${idx + 1}`}</summary>
                   {hasAccess ? (
                     <div className="video-wrapper">
-                      {module.videoUrl && <VideoPlayerUser initialUrl={module.videoUrl} />}
+                      {module.videoUrl && (
+                        <VideoPlayerUser initialUrl={module.videoUrl} />
+                      )}
                     </div>
                   ) : (
                     <p className="locked-message">
@@ -278,7 +293,6 @@ const CourseDetailsUser: React.FC = () => {
               ))}
             </div>
           )}
-
 
           {activeTab === "instructor" && instructor && (
             <div className="tab-content instructor-tab">
@@ -314,9 +328,7 @@ const CourseDetailsUser: React.FC = () => {
                         <p className="review-date">
                           {new Date(rev.createdAt).toLocaleDateString()}
                         </p>
-
                       </div>
-
                     </div>
                     <p className="review-rating">⭐ {rev.rating}/5</p>
                     <p className="review-comment">{rev.comment}</p>
@@ -325,35 +337,22 @@ const CourseDetailsUser: React.FC = () => {
               ) : (
                 <p>No reviews yet.</p>
               )}
-
-              
-
-              
             </div>
           )}
-
-          
-
-
-
         </div>
 
         {/* Right Sidebar */}
         <div className="course-right">
           <div className="course-card">
-            <img
-              src={buyNowImage}
-              alt="Thumbnail"
-              className="sidebar-img"
-            />
+            <img src={buyNowImage} alt="Thumbnail" className="sidebar-img" />
 
-            {!hasAccess &&
+            {!hasAccess && (
               <div className="price-section">
                 <span className="discount-price">₹{course.price}</span>
                 <span className="original-price">₹120</span>
                 <p className="guarantee-text">7-Day Money-Back Guarantee</p>
               </div>
-            }
+            )}
 
             {/* If course is subscription-only → show Subscribe message */}
 
@@ -373,26 +372,45 @@ const CourseDetailsUser: React.FC = () => {
             ) : (
               /* One-time purchase button */
               !hasAccess && (
-                <button
-                  onClick={() => buyCourse(course._id)}
-                  className="buy-btn"
-                  disabled={activePayment === course._id}
-                >
-                  {activePayment === course._id ? "Processing..." : "BUY NOW"}
-                </button>
+                <div>
+                  <button
+                    onClick={() => buyCourse(course._id)}
+                    className="buy-btn"
+                    disabled={activePayment === course._id}
+                  >
+                    {activePayment === course._id ? "Processing..." : "BUY NOW"}
+                  </button>
+
+                  <button
+                    className="buy-btn"
+                    onClick={() => setWalletModal(true)}
+                  >
+                    Buy with Wallet
+                  </button>
+                </div>
               )
             )}
 
-            <button className="buy-btn" onClick={()=>handleAddtofavourites(course._id)}>
-              {fav ?  "Remove from favourites" : "Add to Favourites"}
+            <button
+              className="buy-btn"
+              onClick={() => handleAddtofavourites(course._id)}
+            >
+              {fav ? "Remove from favourites" : "Add to Favourites"}
             </button>
 
-
             <ul className="course-info">
-              <li><strong>Enrolled:</strong> {course.enrolled || 100}</li>
-              <li><strong>Lectures:</strong> {course.lectures || 80}</li>
-              <li><strong>Skill Level:</strong> {course.level}</li>
-              <li><strong>Language:</strong> {course.language || "English"}</li>
+              <li>
+                <strong>Enrolled:</strong> {course.enrolled || 100}
+              </li>
+              <li>
+                <strong>Lectures:</strong> {course.lectures || 80}
+              </li>
+              <li>
+                <strong>Skill Level:</strong> {course.level}
+              </li>
+              <li>
+                <strong>Language:</strong> {course.language || "English"}
+              </li>
 
               {/* New field */}
               <li>
@@ -402,11 +420,53 @@ const CourseDetailsUser: React.FC = () => {
                   : "One-Time Purchase"}
               </li>
             </ul>
-
           </div>
         </div>
       </div>
       {/* </div> */}
+
+      {walletModal && (
+  <div className="wallet-modal-overlay">
+    <div className="wallet-modal">
+
+      <h2 className="wallet-title">
+        Confirm Wallet Payment
+      </h2>
+
+      <div className="wallet-details">
+        <div className="wallet-row">
+          <span>Course Price</span>
+          <strong>₹{course?.price}</strong>
+        </div>
+
+        <div className="wallet-row total">
+          <span>Total Payable</span>
+          <strong>₹{course?.price}</strong>
+        </div>
+      </div>
+
+      <div className="modal-actions">
+        <button
+          className="cancel-btn"
+          onClick={() => setWalletModal(false)}
+        >
+          Cancel
+        </button>
+
+        <button
+          className="confirm-btn"
+          disabled={activePayment === course._id}
+          onClick={() => walletBuy(course._id)}
+        >
+          {activePayment === course._id
+            ? "Processing..."
+            : "Confirm Payment"}
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
     </div>
   );
 };

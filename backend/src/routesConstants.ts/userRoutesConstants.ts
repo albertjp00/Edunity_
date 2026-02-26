@@ -36,6 +36,7 @@ export const ROUTES = {
 
     MY_COURSES: "/myCourses/:page",
     GET_INSTRUCTORS: "/getInstructors",
+    INSTRUCTOR_DETAILS:"/getInstructorDetails/:id",
     FAVOURITES: "/getFavourites",
     ADD_FAVOURITES: "/addtoFavourites/:id",
     FAV_COURSE_DETAILS: "/favouritesCourseDetails/:id",
@@ -43,6 +44,7 @@ export const ROUTES = {
     BUY: "/buyCourse/:id",
     VERIFY_PAYMENT: "/payment/verify",
     CANCEL_PAYMENT: "/cancelPayment/:courseId",
+    WALLET_PAYMENT:"/walletBuy/:id", 
 
     BUY_SUB:"/subscribe/:id",
     VERIFY_SUBSCRIPTION_PAYMENT: "/paymentSubscription/verify",

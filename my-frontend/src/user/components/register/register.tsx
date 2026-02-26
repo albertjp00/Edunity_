@@ -76,7 +76,7 @@ const Register = () => {
   }));
   };
 
-  const validateOnSubmit = () => {
+  const   validateOnSubmit = () => {
   const newErrors: Record<string, string> = {};
 
   (Object.keys(formData) as Array<keyof UserRegisterForm>).forEach((key) => {
@@ -93,8 +93,7 @@ const Register = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // if (!validate()) return;
-    if(!validateOnSubmit) return
+    if(!validateOnSubmit()) return
 
     try {
       localStorage.setItem("otpEmail", formData.email);

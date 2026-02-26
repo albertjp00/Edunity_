@@ -53,6 +53,8 @@ export class InstAuthController
           refreshToken: response.refreshToken,
         });
       } else {
+        console.log('invalid ',response.message);
+        
         res.status(HttpStatus.UNAUTHORIZED).json({
           success: false,
           message: response.message,

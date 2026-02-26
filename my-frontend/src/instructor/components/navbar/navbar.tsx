@@ -99,11 +99,10 @@ const InstructorNavbar = () => {
 
   return (
     <div className="navbar">
-      <div className="logo">
+      <div className="logo" onClick={()=>navigate('/instructor/home')}>
         <img src={logo} alt="logo" />
         <p>EDUNITY</p>
       </div>
-
       <div className="profile-section">
         <div className="nav-right">
           {/* ✅ 2. Pass instructor._id to NotificationBell */}

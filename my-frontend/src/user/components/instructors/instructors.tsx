@@ -2,16 +2,20 @@ import { useEffect, useState } from "react";
 import { getUserInstructors } from "../../services/instructorServices";
 import "./instructors.css";
 import type { IInstructor } from "../../interfaces";
+import { useNavigate } from "react-router-dom";
 
 
 const Instructors: React.FC = () => {
   const [instructors, setInstructors] = useState<IInstructor[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate()
 
   const fetchInstructors = async () => {
     try {
       setLoading(true);
       const res = await getUserInstructors();
+      console.log('instructorssssss',res);
+      
       if (res?.data.success) {
         setInstructors(res.data.instructors);
       }
@@ -48,7 +52,7 @@ const Instructors: React.FC = () => {
           <p>No instructors found.</p>
         ) : (
           instructors.map((instructor, index) => (
-            <div key={index} className="instructor-card">
+            <div key={index} className="instructor-card" onClick={()=>navigate(`/user/instructorDetails/${instructor.id}`)}>
               <div className="instructor-img-wrapper">
                 <img
                   src={`${import.meta.env.VITE_API_URL}/assets/${instructor.profileImage}`}

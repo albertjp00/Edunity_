@@ -86,6 +86,7 @@ import AllEventsPage from './instructor/pages/events/allEvents'
 import AddQuizPage from './instructor/pages/course/addQuiz'
 import EditQuizPage from './instructor/pages/course/editQuizPage'
 import AllEventsUser from './user/pages/event/allEvents'
+import InstructorDetailsUser from './user/components/instructors/instructorDetails'
 // import PurchasesAdmin from './admin/pages/purchases/purchasesAdmin'
 
 function App() {
@@ -128,6 +129,8 @@ function App() {
             <Route path='/user/resetPassword' element={<UserResetPassword />} />
 
             <Route path='/user/courseDetails/:id' element={<ProtectedRoute><UserCourseDetails /></ProtectedRoute>} />
+
+            <Route path='/user/instructorDetails/:id' element={<ProtectedRoute><InstructorDetailsUser /></ProtectedRoute>} />
             <Route path='/user/myCourses' element={<ProtectedRoute><ShowUserMyCourses /></ProtectedRoute>} />
             <Route path='/user/paymentSuccess' element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
             <Route path='/user/paymentFailed' element={<ProtectedRoute><PaymentFailed /></ProtectedRoute>} />

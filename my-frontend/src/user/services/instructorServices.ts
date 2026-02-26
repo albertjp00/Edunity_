@@ -21,6 +21,15 @@ export const getUserInstructors = async()=>{
     }
 }
 
+export const getUserInstructorsDetails = async(id : string)=>{
+    try {
+        const res = await api.get(`/user/getInstructorDetails/${id}`)
+        return res
+    } catch (error) {
+        console.log(error);
+        throw error
+    }
+}
 
 
 

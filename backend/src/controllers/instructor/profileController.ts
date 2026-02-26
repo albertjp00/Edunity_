@@ -36,7 +36,8 @@ export class InstProfileController
         return;
       }
       const profile = await this._profileService.getProfile(userId);
-
+      console.log(profile);
+      
       if (profile) {
         res.status(HttpStatus.OK).json({ data: profile });
       } else {

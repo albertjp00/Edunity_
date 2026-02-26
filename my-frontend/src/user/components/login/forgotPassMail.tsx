@@ -7,14 +7,26 @@ import axios from "axios";
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState("");
+  const [error , setError] = useState('')
   const navigate = useNavigate();
+
+
+  const validate = ()=>{
+    if(email.trim() ==''){
+      setError("Enter registered email")
+      return false
+    }
+    return true
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if(!validate()) return 
     try {
       const response = await forgotPassword(email)
       if(!response) return
+      
       
       if (response.data.success) {
         navigate("/user/otpVerification", {
@@ -27,11 +39,16 @@ const ForgotPassword: React.FC = () => {
   console.error(error);
 
   if (axios.isAxiosError(error)) {
-    toast.error(error.response?.data?.message || "Something went wrong");
+  const errMsg =
+    error.response?.data?.message ??
+    error.response?.data ??
+    "Something went wrong";
+
+  toast.error(errMsg);
+
   } else {
     toast.error("Network error, please try again later");
   }
-  
     }
   };
 
@@ -46,8 +63,8 @@ const ForgotPassword: React.FC = () => {
           value={email}
           name="email"
           onChange={(e) => setEmail(e.target.value)}
-          required
         />
+        {error && <p className="error">{error}</p>}
         <button type="submit" className="auth-button">
           Submit
         </button>

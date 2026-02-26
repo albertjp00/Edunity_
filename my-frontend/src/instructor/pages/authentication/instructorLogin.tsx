@@ -3,10 +3,10 @@ import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react'
 import './instructorLogin.css'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import instructorApi from '../../../api/instructorApi'
 import eye from '../../../assets/eye-icon.png'
 import { useAppDispatch } from '../../../redux/hooks'
 import { fetchInstructorProfile } from '../../../redux/slices/authSlice'
+import { instructorLogin } from '../../services/instructorServices'
 
 const InstructorLogin = () => {
 
@@ -19,14 +19,25 @@ const InstructorLogin = () => {
 
   const dispatch = useAppDispatch()
 
+  const validate = ()=>{
+    console.log("Validate triggered", value)
+    if(value.email.trim() =='' || value.password.trim() == ''){
+      toast.error("Email and password Required")
+      return false
+    }
+
+    return true
+  }
+
   const onSubmitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault() 
-    console.log("Ui ", value)
+
+    if(!validate()) return
 
     try {
-      const response = await instructorApi.post('/instructor/login', value);
-
-      localStorage.setItem('instructor', response.data.token);
+      const response = await instructorLogin(value)
+      
+      localStorage.setItem('instructor', response?.data.token);
       dispatch(fetchInstructorProfile())
       navigate('/instructor/home');
     } catch (error: unknown) {

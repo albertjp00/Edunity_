@@ -89,12 +89,13 @@ export class AuthService implements IUserAuthService {
             const defaultEmail = "albertjpaul@gmail.com";
             await sendOtp(defaultEmail, otp);
 
+
             otpStore.set(email, {
                 name,
                 email,
                 password,
                 otp,
-                expiresAt: Date.now() + 5 * 60 * 1000,
+                expiresAt: Date.now() + 5 * 60 * 1000, 
             });
 
             console.log("otpStore:", otpStore);
@@ -241,6 +242,9 @@ export class AuthService implements IUserAuthService {
     verifyForgotPasswordOtp = async (otp: string, email: string): Promise<{ success: boolean; message: string }> => {
         try {
             const storedData = otpStore.get(email);
+
+            console.log('verify otp password',storedData);
+        
 
             if (!storedData) {
                 return { success: false, message: StatusMessage.OTP_NOT_FOUND };

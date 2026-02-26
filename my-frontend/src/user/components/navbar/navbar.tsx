@@ -60,26 +60,12 @@ const Navbar = () => {
       if (!res) return
 
       const notifications = res.data.notifications
-      const unreadExists = notifications.some((n: { isRead: boolean }) => !n.isRead);
+      const unreadExists = notifications.some((n: { isRead: boolean }) => !n.isRead);      
       setUnread(unreadExists);
 
     }
     getNotifications()
   }, [])
-
-  // useEffect(()=>{
-  //   const checkSubscription = async ()=>{
-  //     const subscription = await getSubscriptionPlan()
-  //     if(!subscription) return
-  //   if(subscription.data.subscription){
-  //     setSubscription(true)
-  //   }
-  //   }
-
-  //   checkSubscription()
-  // },[])
-
-
 
 
   useEffect(() => {
@@ -117,8 +103,8 @@ const Navbar = () => {
   return (
     <div className="navbar">
       <div className="logo">
-        <img alt="Logo" src={logo} />
-        <p>EDUNITY</p>
+        <Link to = '/user/home'><img alt="Logo" src={logo}/></Link>
+        <Link to='/user/home'><p>EDUNITY</p></Link>
       </div>
 
       <div className={`profile-section ${menuOpen ? "open" : ""}`}>

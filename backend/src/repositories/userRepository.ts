@@ -76,6 +76,12 @@ export class UserRepository
     return await WalletModel.findOne({ userId: userId });
   }
 
+  async walletPayment(userId: string , balance : number , course : ICourse): Promise<IWallet | null> {    
+    return await WalletModel.findOneAndUpdate({ userId: userId },{$set:{balance : balance , transactions:{type : "debit",
+      amount : course.price , courseId : course._id ,description : `Payment for course  ${course.title}` 
+    }}});
+  }
+
   async getPayment(
     userId: string,
     page: number,
@@ -258,12 +264,15 @@ export class UserRepository
     return await InstructorModel.find().limit(4);
   }
 
+  async instructorDetails(id:string): Promise<IInstructor | null> {
+    return await InstructorModel.findById(id)
+  }
+
   async addMyCourse(
     userId: string,
     courseData: Partial<ICourse>,
   ): Promise<IMyCourse | null> {
     try {
-      console.log("added to my course");
 
       const existingCourse = await MyCourseModel.findOne({
         userId,

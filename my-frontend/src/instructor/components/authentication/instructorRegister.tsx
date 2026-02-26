@@ -16,6 +16,7 @@ const RegisterInstructor = () => {
     confirmPassword: "",
   });
 
+
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
 
@@ -55,8 +56,18 @@ const RegisterInstructor = () => {
     return "";
   };
 
+  const validateOnSubmit = ()=>{
+    if(!formData.name.trim() || !formData.email || !formData.password || 
+      !formData.confirmPassword){
+        setMessage("Fields are empty")
+        return false
+      }
+      return true
+  }
+
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    
     const {name , value } = e.target
     setFormData({ ...formData, [e.target.name]: e.target.value });
     const error = validate(name, value);
@@ -65,7 +76,7 @@ const RegisterInstructor = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // if (!validate()) return;
+    if (!validateOnSubmit()) return;
 
     try {
       localStorage.setItem("instOtpEmail", formData.email);
