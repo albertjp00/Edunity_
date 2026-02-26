@@ -76,11 +76,31 @@ export class UserRepository
     return await WalletModel.findOne({ userId: userId });
   }
 
-  async walletPayment(userId: string , balance : number , course : ICourse): Promise<IWallet | null> {    
-    return await WalletModel.findOneAndUpdate({ userId: userId },{$set:{balance : balance , transactions:{type : "debit",
-      amount : course.price , courseId : course._id ,description : `Payment for course  ${course.title}` 
-    }}});
-  }
+  async walletPayment(
+  userId: string,
+  balance: number,
+  course: ICourse
+): Promise<IWallet | null> {
+
+  return await WalletModel.findOneAndUpdate(
+    { userId },
+    {
+      $set: {
+        balance: balance
+      },
+      $push: {
+        transactions: {
+          type: "debit",
+          amount: course.price,
+          courseId: course._id,
+          description: `Payment for course ${course.title}`,
+          createdAt: new Date()
+        }
+      }
+    },
+    { new: true }
+  );
+}
 
   async getPayment(
     userId: string,
