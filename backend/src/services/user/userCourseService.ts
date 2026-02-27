@@ -312,9 +312,9 @@ export class UserCourseService implements IUserCourseService {
   };
 
   //subscription
-  buySubscriptionRequest = async (userId: string) => {
+  buySubscriptionRequest = async (userId: string , subscriptionId : string) => {
 
-    const plan = await this._userRepository.getSubscriptionPlan()
+    const plan = await this._userRepository.getSubscriptionPlan(subscriptionId)
     if(!plan) return null
 
     try {
@@ -338,10 +338,12 @@ export class UserCourseService implements IUserCourseService {
     razorpay_payment_id: string,
     razorpay_signature: string,
     userId: string,
+    planId : string
   ): Promise<{ success: boolean; message: string } | null> => {
     try {
 
-      const plan = await this._userRepository.getSubscriptionPlan()
+      const plan = await this._userRepository.getSubscriptionPlan(planId)
+      
     if(!plan) return null
 
       const sign = razorpay_order_id + "|" + razorpay_payment_id;

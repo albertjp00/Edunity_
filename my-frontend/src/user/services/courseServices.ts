@@ -300,13 +300,17 @@ export const subscriptionVerify= async (response: {
     razorpay_payment_id: string;
     razorpay_order_id: string;
     razorpay_signature: string;
-  })=>{
+    
+  },
+planId : string | null
+)=>{
   try {    
 
     const res = await api.post("/user/paymentSubscription/verify", {
               razorpay_payment_id: response.razorpay_payment_id,
     razorpay_order_id: response.razorpay_order_id,
     razorpay_signature: response.razorpay_signature,
+    planId : planId
     
             });
     

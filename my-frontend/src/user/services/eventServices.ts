@@ -17,7 +17,6 @@ export const getEvents = async(search : string , page : number)=>{
         const res = await api.post(`/user/events`,{
             search , page
         });
-        console.log('rseult ',res);
         
         return res
     } catch (error) {

@@ -119,9 +119,9 @@ export class ProfileService implements IUserProfileService {
     }
   }
 
-  async getSubscriptionPlan():Promise<ISubscriptionPlan | null> {
+  async getSubscriptionPlans():Promise<ISubscriptionPlan[] | null> {
     try {
-      const plan = await this._userRepository.getSubscriptionPlan()
+      const plan = await this._userRepository.getSubscriptionPlans()
       return plan
     } catch (error) {
       console.log(error);

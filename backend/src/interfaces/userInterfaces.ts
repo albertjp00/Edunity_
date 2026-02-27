@@ -88,7 +88,9 @@ export interface IUserRepository {
 
   getSubscriptionActive(id: string): Promise<ISubscription | boolean>
 
-  getSubscriptionPlan(): Promise<ISubscriptionPlan | null>
+  getSubscriptionPlans(): Promise<ISubscriptionPlan[] | null>
+
+  getSubscriptionPlan(subcscriptionId : string): Promise<ISubscriptionPlan | null>
 
   getSubscriptionCourses(id: string, page: number): Promise<ISubscriptionCourses | null>
 

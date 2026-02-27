@@ -29,6 +29,7 @@ const SubscriptionPlan: React.FC = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
 
   const fetchPlans = async () => {
     try {
@@ -65,7 +66,7 @@ const SubscriptionPlan: React.FC = () => {
   };
 
   const handleCreate = async () => {
-    if (plans.length > 0) {
+    if (plans.length > 3) {
       toast.error("Plan already exists. Edit instead.");
       return;
     }
@@ -111,6 +112,7 @@ const SubscriptionPlan: React.FC = () => {
       if (res.data.success) {
         toast.success("Subscription updated successfully");
         resetForm();
+        setShowForm(false)
         fetchPlans();
       }
     } catch (err) {
@@ -132,6 +134,7 @@ const SubscriptionPlan: React.FC = () => {
   };
 
   const handleEdit = (plan: ISubscription) => {
+    setShowForm(true);
     setIsEditing(true);
     setEditingId(plan._id);
 
@@ -145,11 +148,22 @@ const SubscriptionPlan: React.FC = () => {
   return (
     <div className="admin-container">
       {/* LEFT SIDE */}
-      {plans.length === 0 || isEditing ? (
+      {showForm || isEditing ? (
         <div className="subscription-card">
-          <div className="subscription-header">
-            <h2>Create Subscription Plan</h2>
-            <p>Define pricing and features</p>
+          <div className="header-close">
+            <div className="subscription-header">
+              <h2>Create Subscription Plan</h2>
+              <p>Define pricing and features</p>
+            </div>
+            <p
+              className="close-edit"
+              onClick={() => {
+                setShowForm(false);
+                resetForm();
+              }}
+            >
+              X
+            </p>
           </div>
 
           <form className="subscription-form" onSubmit={submitHandler}>
@@ -218,24 +232,44 @@ const SubscriptionPlan: React.FC = () => {
             </div>
 
             <div className="buttons">
-                <button className="submit-btn" disabled={loading}>
-              {loading
-                ? isEditing
-                  ? "Updating..."
-                  : "Creating..."
-                : isEditing
-                  ? "Update Plan"
-                  : "Create Plan"}
-            </button>
-            <button onClick={()=>setIsEditing(false)} className="submit-btn">cancel</button>
+              <button className="submit-btn" disabled={loading}>
+                {loading
+                  ? isEditing
+                    ? "Updating..."
+                    : "Creating..."
+                  : isEditing
+                    ? "Update Plan"
+                    : "Create Plan"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowForm(false);
+                  resetForm();
+                }}
+                className="submit-btn"
+              >
+                Cancel
+              </button>
             </div>
           </form>
         </div>
       ) : null}
 
       {/* RIGHT SIDE */}
+
       <div className="plans-container">
-        <h2>Current Plan</h2>
+        <div className="plan-header">
+          <h2>Current Plan</h2>
+          <button
+            onClick={() => {
+              resetForm();
+              setShowForm(true);
+            }}
+          >
+            Add Plan
+          </button>
+        </div>
 
         {plans.length === 0 ? (
           <p>No plans available</p>

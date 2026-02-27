@@ -119,13 +119,14 @@ export interface IUserCourseService {
         userId: string
     ): Promise<{ success: boolean; message: string }>;
 
-    buySubscriptionRequest(userId : string , id : string): Promise<IRazorpayOrder | null>
+    buySubscriptionRequest(userId : string , subscriptionId : string): Promise<IRazorpayOrder | null>
 
     verifySubscriptionPaymentRequest(   
         razorpay_order_id: string,
         razorpay_payment_id: string,
         razorpay_signature: string,
-        userId: string
+        userId: string,
+        planId : string
     ): Promise<{ success: boolean; message: string } | null>;
 
     myCoursesRequest(
@@ -226,7 +227,7 @@ export interface IUserProfileService {
   getNotifications(userId: string , page : number): Promise<INotifications | null>;
   notificationsMarkRead(userId: string): Promise<INotification[] | null>;
   subscriptionCheckRequest(id:string):Promise<ISubscription | boolean | null>;
-  getSubscriptionPlan():Promise<ISubscriptionPlan | null>;
+  getSubscriptionPlans():Promise<ISubscriptionPlan[] | null>;
 }
 
 

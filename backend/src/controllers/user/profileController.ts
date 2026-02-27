@@ -156,7 +156,7 @@ export class ProfileController implements
 
     getSubscriptionPlan = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
-            const subscription = await this._profileService.getSubscriptionPlan() 
+            const subscription = await this._profileService.getSubscriptionPlans() 
             
             res.status(HttpStatus.OK).json({ subscription })
         } catch (error) {
@@ -165,12 +165,13 @@ export class ProfileController implements
         }
     }
 
-
     subscriptionCheck = async (req: AuthRequest, res: Response, next: NextFunction) => {
         try {
             const id = req.user?.id as  string
 
             const result = await this._profileService.subscriptionCheckRequest(id) 
+            console.log('check',result);
+            
             
             res.status(HttpStatus.OK).json({ result })
         } catch (error) {

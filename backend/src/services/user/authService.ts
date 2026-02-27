@@ -50,8 +50,6 @@ export class AuthService implements IUserAuthService {
 
             const loginMapped = LoginMapper({ success : true, message: StatusMessage.LOGIN_SUCCESS,accessToken,refreshToken})
 
-
-
             return loginMapped
         } catch (error) {
             console.error(error);
@@ -86,7 +84,7 @@ export class AuthService implements IUserAuthService {
             }
 
             const otp = generateOtp();
-            const defaultEmail = "albertjpaul@gmail.com";
+            const defaultEmail = email;
             await sendOtp(defaultEmail, otp);
 
 
@@ -95,7 +93,7 @@ export class AuthService implements IUserAuthService {
                 email,
                 password,
                 otp,
-                expiresAt: Date.now() + 5 * 60 * 1000, 
+                expiresAt: Date.now() + 60 * 1000, 
             });
 
             console.log("otpStore:", otpStore);
@@ -112,20 +110,16 @@ export class AuthService implements IUserAuthService {
 
         try {
             const otp = generateOtp();
-            console.log('request resend otp', otp, email);
 
 
             console.log(otpStore);
             const storedData = otpStore.get(email)
-            console.log(storedData);
-
             if (!storedData) {
                 return { success: false }
             }
             console.log(storedData);
 
-
-            const defaultEmail = "albertjpaul@gmail.com";
+            const defaultEmail = email;
             await sendOtp(defaultEmail, otp);
 
             otpStore.set(email, {
@@ -150,8 +144,7 @@ export class AuthService implements IUserAuthService {
     async verifyOtpRequest(otp: string, email: string): Promise<{ success: boolean; message: string }> {
         try {
             const storedData = otpStore.get(email);
-            console.log('verify otp user', email);
-
+            console.log('verify otp user', email , otp);
             if (!storedData) {
                 return { success: false, message: StatusMessage.OTP_NOT_FOUND };
             }

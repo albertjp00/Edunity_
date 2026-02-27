@@ -230,6 +230,8 @@ export class InstProfileController
     try {
       const id = req.instructor?.id;
       const wallet = await this._profileService.getWallet(id as string);
+      console.log(wallet);
+      
       res.status(HttpStatus.OK).json({ success: true, wallet });
     } catch (error) {
       console.log(error);

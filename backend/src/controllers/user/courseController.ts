@@ -259,11 +259,11 @@ export class UserCourseController
     try {
       const userId = req.user?.id as string;
 
-      const id = req.params.id
+      const subscriptionId = req.params.id      
 
       const key = `buyCourse_${userId}`;
       const subscribe = await debounceCall(key, 2000, async () => {
-        return await this._courseService.buySubscriptionRequest(userId , id as string);
+        return await this._courseService.buySubscriptionRequest(userId , subscriptionId as string);
       });
 
       if(!subscribe) return
@@ -293,7 +293,9 @@ export class UserCourseController
         req.body;
 
       const userId = req.user?.id as string;
+      const planId = req.body.planId
 
+      
       const key = `verifySubscription_${userId}`;
 
       const result = await debounceCall(key, 2000, async () => {
@@ -302,6 +304,7 @@ export class UserCourseController
           razorpay_payment_id,
           razorpay_signature,
           userId,
+          planId
         );
       });
 

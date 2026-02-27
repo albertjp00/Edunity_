@@ -149,6 +149,7 @@ export const verifyOtp  = async (email :  string , otp:string)=>{
       })
     return res
   } catch (error) {
+    throw error
     console.log(error);
     
   }

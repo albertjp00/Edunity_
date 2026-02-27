@@ -180,7 +180,6 @@ export class AuthController
     try {
       const { otp, email } = req.body;
       const result = await this._authService.verifyOtpRequest(otp, email);
-      logger.info(result);
 
       if (result.success) {
         res.status(HttpStatus.OK).json({ success: true });

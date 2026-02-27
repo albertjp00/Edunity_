@@ -152,6 +152,7 @@ export class UserRepository
       { subscription: data },
       { new: true },
     );
+    
     return true;
   }
 
@@ -539,7 +540,7 @@ export class UserRepository
       ]
     }
 
-    const totalPages = Math.floor(await EventModel.countDocuments()%limit)
+    const totalPages = Math.ceil(await EventModel.countDocuments()/limit)
 
     const events =  await EventModel.find(query).skip(skip).limit(limit).sort({created : -1});
 
@@ -683,9 +684,19 @@ export class UserRepository
     return user.subscription;
   }
 
-  async getSubscriptionPlan(): Promise<ISubscriptionPlan | null>{
+  async getSubscriptionPlans(): Promise<ISubscriptionPlan[] | null>{
     try {
-      const plan = await SubscriptionModel.findOne();
+      const plan = await SubscriptionModel.find();
+    return plan;
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+  }
+
+  async getSubscriptionPlan(id:string): Promise<ISubscriptionPlan | null>{
+    try {
+      const plan = await SubscriptionModel.findById(id);
     return plan;
     } catch (error) {
       console.log(error);

@@ -27,6 +27,15 @@
   margin-bottom: 28px;
 }
 
+.header-close{
+  display: flex;
+  justify-content: space-between;
+}
+
+.close-edit{
+  cursor: pointer;
+}
+
 /* Form */
 .subscription-form {
   display: flex;
@@ -207,3 +216,5 @@
   align-items: center;
   gap: 5px;
 }
+
+

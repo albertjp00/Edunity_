@@ -13,7 +13,7 @@ interface Transaction {
 interface WalletData {
   userId: string;
   balance: number;
-  transactions: Transaction[];
+  transactions: Transaction[] | [];
 }
 
 
@@ -27,6 +27,8 @@ const UserWallet: React.FC = () => {
         // setLoading(true);
         
         const res = await getWallet()
+        console.log(res);
+        
 
         if(!res) return
         setWallet(res.data);
@@ -34,7 +36,7 @@ const UserWallet: React.FC = () => {
         console.log(err);
         
       } finally {
-        // setLoading(false); 
+        // setLoading(false);  
       }
     };
 
@@ -49,12 +51,12 @@ const UserWallet: React.FC = () => {
 
       <div className="wallet-balance">
         <h3>Current Balance</h3>
-        <p>₹{wallet?.balance.toFixed(2)}</p>
+        <p>₹{wallet?.balance}</p>
       </div>
 
       <div className="wallet-transactions">
         <h3>Transaction History</h3>
-        {wallet?.transactions.length ? (
+        {wallet?.transactions?.length ? (
           <table className="wallet-table">
             <thead>
               <tr>
@@ -65,10 +67,7 @@ const UserWallet: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {wallet?.transactions
-                .slice()
-                .reverse()
-                .map((tx, index) => (
+              {wallet?.transactions?.slice().reverse().map((tx, index) => (
                   <tr
                     key={index}
                     className={tx.type === "credit" ? "credit" : "debit"}
@@ -83,7 +82,9 @@ const UserWallet: React.FC = () => {
           </table>
         ) : (
           <p>No transactions found.</p>
-        )}
+        )
+        
+        }
       </div>
     </div>
   );

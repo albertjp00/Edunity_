@@ -18,11 +18,10 @@ const VerifyOtp : React.FC = () => {
     try {
       const email = localStorage.getItem('otpEmail')!
       const res = await otpVerified(email , otp)
+      console.log('verify otp ',res);
+      
       if(!res) return
       if (res.data.success) {
-        //     localStorage.setItem('token',res.data.result.token)
-        //   alert("Verified and Registered!");
-        //   console.log("Token/User:", res.data.result.token);
         toast.success('OTP verified')
         localStorage.removeItem('otpEmail')
         navigate('/user/login')

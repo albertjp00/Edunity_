@@ -26,7 +26,8 @@ declare global {
 }
 
 export interface ISubscriptionPlan {
-    _id : string;
+  _id: string;
+  name : string,
   durationInDays: number;
   features: string[];
   isActive: boolean;
@@ -35,16 +36,19 @@ export interface ISubscriptionPlan {
 
 const Subscription = () => {
   const [isActive, setIsActive] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [pageLoading, setPageLoading] = useState(true);
   const [subscription, setSubscription] = useState<ISubscription | null>(null);
-  const [plan, setPlan] = useState<ISubscriptionPlan>();
+  const [plans, setPlans] = useState<ISubscriptionPlan[] | null>(null);
+  const [processingPlanId, setProcessingPlanId] =
+  useState<string | null>(null);
 
   const [activePayment, setActivePayment] = useState(false);
 
   const CheckSubscription = async () => {
     try {
       const res = await getSubscription();
-      console.log(res);
+      console.log('check',res);
+      
       if (!res) return;
       setIsActive(res?.data.result);
       setSubscription(res?.data?.result);
@@ -52,8 +56,8 @@ const Subscription = () => {
       console.log(error);
       setIsActive(false);
     } finally {
-      setLoading(false);
-    }
+  setPageLoading(false);
+}
   };
 
   useEffect(() => {
@@ -67,20 +71,23 @@ const Subscription = () => {
       const res = await getSubscriptionPlan();
       console.log("subss ", res);
       if (!res) return;
-      setPlan(res.data.subscription);
+      setPlans(res.data.subscription);
     } catch (error) {
       console.log(error);
       setIsActive(false);
     } finally {
-      setLoading(false);
+      setPageLoading(false);
     }
   };
 
   useEffect(() => {
-    if (!loading && !isActive) {
+    if (!pageLoading && !isActive) {
       getSubscriptionPlans();
     }
-  }, [loading, isActive]);
+    if(localStorage.getItem('payment_in_progress')){
+      localStorage.removeItem('payment_in_progress')
+    }
+  }, [pageLoading, isActive]);
 
   const daysLeft = subscription?.endDate
     ? Math.ceil(
@@ -89,7 +96,7 @@ const Subscription = () => {
       )
     : null;
 
-  const handleSubscribe = async (id : string) => {
+  const handleSubscribe = async (id: string) => {
     if (activePayment) {
       toast.warning("Payment window is already open!");
       return;
@@ -100,13 +107,12 @@ const Subscription = () => {
       return;
     }
 
-    setLoading(true);
     setActivePayment(true);
+    setProcessingPlanId(id);
     localStorage.setItem("payment_in_progress", "true");
 
     try {
-      console.log("sub ",id);
-      
+
       const res = await subscribe(id);
       if (!res) throw new Error("Failed to create subscription order.");
 
@@ -122,14 +128,13 @@ const Subscription = () => {
 
         handler: async function (response) {
           try {
-            await subscriptionVerify(response);
-
+            await subscriptionVerify(response , id);
             toast.success("Subscription Activated!");
             CheckSubscription();
           } finally {
-            setLoading(false);
             setActivePayment(false);
             localStorage.removeItem("payment_in_progress");
+            setProcessingPlanId(null);
           }
         },
 
@@ -139,7 +144,6 @@ const Subscription = () => {
               toast.info("Payment cancelled!");
               // await paymentSubscriptionCancel();  // Enable later if needed
             } finally {
-              setLoading(false);
               setActivePayment(false);
               localStorage.removeItem("payment_in_progress");
             }
@@ -153,48 +157,53 @@ const Subscription = () => {
     } catch (error) {
       console.error(error);
       toast.error("Payment failed. Try again.");
-      setLoading(false);
       setActivePayment(false);
       localStorage.removeItem("payment_in_progress");
     }
   };
+  
 
-  // const isActive = false; // Later replace with user subscription status
+  const activePlans =
+  plans?.filter((plan) => plan.isActive) ?? [];
 
   return (
     <div className="subscription-container">
       <h1 className="subscription-title">Subscription Plan</h1>
 
-      {loading && <p>Checking subscription...</p>}
+      {pageLoading && <p>Checking subscription...</p>}
 
-      {!loading && !isActive && (
-        <div className="subscription-card">
-          {plan && plan.isActive ? (
-            <div className="">
-              <h2>Premium Access</h2>
+      {!pageLoading && !isActive && (
+        <div className="subscription-wrapper">
+          {activePlans.length > 0 ? (
+            <div className="subscription-wrapper">
+              {activePlans.map((plan) => (
+                <div key={plan._id} className="subscription-card">
+                  <h2>{plan.name}</h2>
 
-              <p className="subscription-desc">
-                Unlock all subscription-enabled courses and watch unlimited
-                content.
-              </p>
+                  <p className="subscription-desc">
+                    Unlock all subscription-enabled courses and watch unlimited
+                    content.
+                  </p>
 
-              <ul className="subscription-benefits">
-                {plan.features.map((feature, index) => (
-                  <li key={index}>✔ {feature}</li>
-                ))}
-              </ul>
+                  <ul className="subscription-benefits">
+                    {plan.features.map((feature, index) => (
+                      <li key={index}>✔ {feature}</li>
+                    ))}
+                  </ul>
 
-              <h3 className="subscription-price">
-                ₹{plan.price} / {plan.durationInDays} days
-              </h3>
+                  <h3 className="subscription-price">
+                    ₹{plan.price} / {plan.durationInDays} days
+                  </h3>
 
-              <button
-                className="btn-subscribe"
-                onClick={()=>handleSubscribe(plan._id)}
-                disabled={loading || activePayment}
-              >
-                {loading ? "Processing..." : "Subscribe Now"}
-              </button>
+                  <button
+                    className="btn-subscribe"
+                    onClick={() => handleSubscribe(plan._id)}
+                    disabled={activePayment}
+                  >
+                    {processingPlanId ===plan._id ? "Processing..." : "Subscribe Now"}
+                  </button>
+                </div>
+              ))}
             </div>
           ) : (
             <p>No active subscription plan available.</p>
@@ -202,7 +211,7 @@ const Subscription = () => {
         </div>
       )}
 
-      {!loading && isActive && subscription && (
+      {!pageLoading && isActive && subscription && (
         <>
           {/* SUBSCRIPTION DETAILS */}
           <div className="subscription-strip">
@@ -233,7 +242,10 @@ const Subscription = () => {
                 {/* <p>{subscription?.billingCycle}</p> */}
               </div>
 
-              <div className="days-badge">⏳ {daysLeft && daysLeft > 0 ? `${daysLeft} days left` : "Expired"}</div>
+              <div className="days-badge">
+                ⏳{" "}
+                {daysLeft && daysLeft > 0 ? `${daysLeft} days left` : "Expired"}
+              </div>
             </div>
           </div>
 

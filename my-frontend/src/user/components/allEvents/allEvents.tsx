@@ -52,7 +52,7 @@ const UserAllEventList: React.FC = () => {
 
 
   const EventDetails = (id: string) => {
-    navigate(`/instructor/eventDetails/${id}`);
+    navigate(`/user/eventDetails/${id}`);
   };
 
   useEffect(() => {
@@ -92,7 +92,7 @@ const UserAllEventList: React.FC = () => {
                 />
                 <span className="tile-instructor">{event.instructorName}</span>
                 <span
-                  className={`tile-edit ${!event.isOver}`}
+                  className='tile-edit'
                   
                 >
                   {event.isOver && "Event Over"}
@@ -101,7 +101,7 @@ const UserAllEventList: React.FC = () => {
 
               <div
                 className="tile-content"
-                onClick={() => EventDetails(event.id!)}
+                onClick={() => EventDetails(event._id!)}
               >
                 <h3 className="tile-title">{event.title}</h3>
                 <p className="tile-desc">{event.description}</p>

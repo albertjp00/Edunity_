@@ -11,6 +11,10 @@
   margin-bottom: 20px;
 }
 
+.subscription-wrapper{
+  display: flex;
+}
+
 .subscription-card {
   width: 380px;
   padding: 30px;
@@ -18,6 +22,7 @@
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   background: #fff;
+  margin: 20px;
 }
 
 .subscription-card h2 {

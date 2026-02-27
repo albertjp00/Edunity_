@@ -21,6 +21,8 @@ export class AdminDashboardController implements IAdminDashboardController {
   ) => {
     try {
       const result = await this._adminService.getStats();
+      console.log('stats',result);
+      
 
       res.status(HttpStatus.OK).json({ success: true, stats: result });
     } catch (error) {

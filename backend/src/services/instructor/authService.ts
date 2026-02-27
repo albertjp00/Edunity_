@@ -71,7 +71,7 @@ export class InstAuthService implements IInstAuthService {
       }
 
       const otp = generateOtp();
-      const defaultEmail = "albertjpaul@gmail.com";
+      const defaultEmail = email;
       await sendOtp(defaultEmail, otp);
 
       otpStore.set(email, {
@@ -102,7 +102,7 @@ export class InstAuthService implements IInstAuthService {
       }
       // console.log(storedData);
 
-      const defaultEmail = "albertjpaul@gmail.com";
+      const defaultEmail = email;
       await sendOtp(defaultEmail, otp);
 
       otpStore.set(email, {
@@ -125,7 +125,7 @@ export class InstAuthService implements IInstAuthService {
   ): Promise<{ success: boolean; message: string }> {
     try {
       const storedData = otpStore.get(email);
-      console.log("verify otp instructor", email);
+      console.log("verify otp instructor", email , otp);
 
       if (!storedData) {
         return { success: false, message: "OTP not found or expired" };

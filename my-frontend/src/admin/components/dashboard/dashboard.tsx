@@ -1,7 +1,6 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 // import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import {
-
   XAxis,
   YAxis,
   Tooltip,
@@ -10,17 +9,12 @@ import {
   Area,
   AreaChart,
   BarChart,
-  Bar
+  Bar,
 } from "recharts";
-
-
 
 
 import type { DashboardStats } from "../../adminInterfaces";
 import { getOverview, getStats } from "../../services/adminServices";
-
-
-
 
 const StatCard: React.FC<{
   title: string;
@@ -59,46 +53,50 @@ const StatCard: React.FC<{
       <h2 style={{ fontSize: "1.8rem", fontWeight: 700, marginBottom: "6px" }}>
         {value.toLocaleString()}
       </h2>
-      <ResponsiveContainer width="100%" height={40}>
-        <BarChart data={data}>
-          <Tooltip cursor={false} />
-          <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-        </BarChart>
-      </ResponsiveContainer>
+      <ResponsiveContainer width="100%" height={60}>
+  <BarChart data={data}>
+    
+    <Tooltip
+      formatter={(value: number) => [`${value} Enrollments`, ""]}
+      labelFormatter={(label) => `Month: ${label}`}
+    />
+
+    <Bar
+      dataKey="value"
+      fill="#3b82f6"
+      radius={[6, 6, 0, 0]}
+    />
+    
+  </BarChart>
+</ResponsiveContainer>
     </div>
   );
 };
 
-
-
-
-
-
-
 export interface IUserOverview {
-  name: string;  // "Oct 2025"
+  name: string; // "Oct 2025"
   count: number;
 }
-
 
 export interface IMonthlyOverview {
   month: string;
   enrolled: number;
 }
 
-
-
 const AdminDashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [monthlyOverview, setmonthlyOverview] = useState<IUserOverview[]>([]);
+
+  const barData =
+    monthlyOverview.length > 0
+      ? monthlyOverview
+      : [{ name: "No Data", count: 0 }];
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
         const res = await getStats();
         const data = res.data.stats;
-
-
 
         // ---------- summary cards ----------
         setStats({
@@ -134,8 +132,7 @@ const AdminDashboard: React.FC = () => {
               count: item.enrolled,
             };
           });
-        console.log('mponthy', monthlyData.reverse());
-
+        console.log("mponthy", monthlyData.reverse());
 
         setmonthlyOverview(monthlyData);
       } catch (error) {
@@ -146,52 +143,41 @@ const AdminDashboard: React.FC = () => {
     fetchStats();
   }, []);
 
-
-
   const [userOverview, setUserOverview] = useState<IUserOverview[]>([]);
 
   useEffect(() => {
-
     const fetchUserOverview = async () => {
       try {
-        const res = await getOverview()
+        const res = await getOverview();
         console.log(res);
-
 
         const raw = res.data.data;
 
         const formatted = Array.isArray(raw)
-          ? raw.map((item: {name:string , count:number}) => ({
-            name: item.name,
-            count: Number(item.count) || 0,
-          }))
+          ? raw.map((item: { name: string; count: number }) => ({
+              name: item.name,
+              count: Number(item.count) || 0,
+            }))
           : [];
 
         setUserOverview(formatted);
-
-
       } catch (error) {
         console.log(error);
-
       }
-    }
+    };
 
-    fetchUserOverview()
-  }, [])
-
-
-
-  const sparkData = Array.from({ length: 7 }, (_, i) => ({
-    name: `Day ${i + 1}`,
-    value: Math.floor(Math.random() * 100) + 20,
-  }));
+    fetchUserOverview();
+  }, []);
 
   if (!stats)
     return (
-      <p style={{ color: "#374151", padding: "30px" }}>
-        Loading dashboard...
-      </p>
+      <p style={{ color: "#374151", padding: "30px" }}>Loading dashboard...</p>
     );
+
+    const statCardBarData = barData.map((item) => ({
+  name: item.name,
+  value: item.count,
+}));
 
   return (
     <div
@@ -215,26 +201,21 @@ const AdminDashboard: React.FC = () => {
           title="Total Instructors"
           value={stats.totalInstructors}
           change={stats.statsChange.instructors}
-          data={sparkData}
+          data={statCardBarData}
         />
+
         <StatCard
           title="Total Courses"
           value={stats.totalCourses}
           change={stats.statsChange.courses}
-          data={sparkData}
+          data={statCardBarData}
         />
+
         <StatCard
           title="Total Enrolled"
           value={stats.totalEnrolled}
           change={stats.statsChange.enrolled}
-          data={sparkData}
-        />
-
-        <StatCard
-          title="Total Earnings"
-          value={stats.totalEarnings}
-          change={stats.statsChange.earnings}
-          data={sparkData}
+          data={statCardBarData}
         />
       </div>
 
@@ -256,16 +237,28 @@ const AdminDashboard: React.FC = () => {
             boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
           }}
         >
-          <h4 style={{ color: "#374151" }}>Active Users</h4>
-          <h2
-            style={{ fontSize: "1.8rem", fontWeight: 700, marginTop: "4px" }}
-          >
-            {stats.activeUsers.toLocaleString()}
-          </h2>
-          <p style={{ color: "#10b981", fontSize: "0.9rem" }}>↑ 6.7% Increase</p>
+
+          <h4 style={{ color: "#374151" }}>
+  Active Users
+</h4>
+
+<p style={{ fontSize: "12px", color: "#6b7280", marginTop: "2px" }}>
+  Monthly Course Enrollments
+</p>
+
+<h2
+  style={{ fontSize: "1.8rem", fontWeight: 700, marginTop: "6px" }}
+>
+  {stats.activeUsers.toLocaleString()}
+</h2>
+
+
+          <p style={{ color: "#10b981", fontSize: "0.9rem" }}>
+            ↑ 6.7% Increase
+          </p>
           <ResponsiveContainer width="100%" height={80}>
-            <BarChart data={sparkData}>
-              <Bar dataKey="value" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+            <BarChart data={barData}>
+              <Bar dataKey="count" fill="#3b82f6" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -281,20 +274,21 @@ const AdminDashboard: React.FC = () => {
           }}
         >
           <h4 style={{ color: "#374151" }}>Total Users</h4>
-          <h2
-            style={{ fontSize: "1.8rem", fontWeight: 700, marginTop: "4px" }}
-          >
+          <h2 style={{ fontSize: "1.8rem", fontWeight: 700, marginTop: "4px" }}>
             {stats.totalUsers.toLocaleString()}
           </h2>
-          <p style={{ color: "#10b981", fontSize: "0.9rem" }}>↑ 6.7% Increase</p>
+
+          
+          <p style={{ color: "#10b981", fontSize: "0.9rem" }}>
+            ↑ 6.7% Increase
+          </p>
           <ResponsiveContainer width="100%" height={80}>
-            <BarChart data={sparkData}>
-              <Bar dataKey="value" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+            <BarChart data={barData}>
+              <Bar dataKey="count" fill="#3b82f6" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
-
 
       <div
         style={{
@@ -303,7 +297,7 @@ const AdminDashboard: React.FC = () => {
           borderRadius: "16px",
           boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
           marginTop: "40px",
-          margin: "40px"
+          margin: "40px",
         }}
       >
         <h3
@@ -359,11 +353,10 @@ const AdminDashboard: React.FC = () => {
           </AreaChart>
         </ResponsiveContainer>
 
-
         <br />
         <br />
 
-        <h3>Monthly Course  Overview</h3>
+        <h3>Monthly Course Overview</h3>
         <ResponsiveContainer width="100%" height={300}>
           <AreaChart
             data={monthlyOverview}
@@ -406,9 +399,6 @@ const AdminDashboard: React.FC = () => {
           </AreaChart>
         </ResponsiveContainer>
       </div>
-
-
-
     </div>
   );
 };

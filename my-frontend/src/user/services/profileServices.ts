@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 import api from "../../api/userApi";
 
 
@@ -108,11 +109,12 @@ export const isBlocked= async()=>{
 
 export const resendOtpProfile = async(email:string)=>{
     try {
-        const res = await api.post('/user/verifyOtp', {
+        const res = await api.post('/user/resendOtp', {
         email
       })
         return res
     } catch (error) {
+        throw error
         console.log(error);
         
     }
@@ -126,7 +128,7 @@ export const otpVerified = async(email:string , otp:string)=>{
       })
         return res
     } catch (error) {
-        console.log(error);
+        throw error
         
     }
 }

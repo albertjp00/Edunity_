@@ -15,6 +15,8 @@ const Events: React.FC = () => {
     try {
       setLoading(true);
       const response = await getEvents('',1);
+      console.log('eventsss',events);
+      
       if (response?.data.success) {
         setEvents(response.data.events.splice(1,3));
       }
@@ -26,6 +28,7 @@ const Events: React.FC = () => {
 const fetchMyEvents = async () => {
   try {
     const res = await getMyEvents()
+    
     if(!res) return
     const registeredIds = res.data.events.map((e: MyEvent) => e.eventId);
     setMyRegisteredEvents(registeredIds);
