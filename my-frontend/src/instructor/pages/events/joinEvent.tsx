@@ -23,7 +23,6 @@ const InstructorEvent: React.FC = () => {
         if(!res) return
         if (res.data.success) {
           setMeetingLink(res.data.meetingLink || eventId); 
-          console.log('dadaaadadad',res.data);
           
         } else {
           toast.error("Failed to join event")

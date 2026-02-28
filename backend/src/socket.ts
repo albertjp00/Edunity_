@@ -4,7 +4,6 @@ import { MessageRepository } from "./repositories/messageRepositories.js";
 import { MessageService } from "./services/message/messageService.js";
 // import { socketAuthMiddleware } from "./middleware/authMiddleware.js";
 
-
 interface Participant {
   socketId: string;
   userId: string;
@@ -12,38 +11,26 @@ interface Participant {
   role: "instructor" | "user";
 }
 
-
-
-const messageRepo = new MessageRepository()
-const messageService = new MessageService(messageRepo)
-const messageController = new MessageController(messageService)
-
+const messageRepo = new MessageRepository();
+const messageService = new MessageService(messageRepo);
+const messageController = new MessageController(messageService);
 
 export const setupSocket = (io: Server) => {
-
-
-
-
   // Map of eventId -> participants
   const eventParticipants: Record<string, Participant[]> = {};
   const onlineUsers = new Map<string, string>(); // userId -> socketId
 
-
   // ----------------- Socket.IO -----------------
   io.on("connection", (socket) => {
-
-    const userData = socket.data.user
+    const userData = socket.data.user;
 
     // ----------------- Chat -----------------
 
-
     let currentUserId: string | null = null;
-
 
     socket.on("joinRoom", ({ userId, receiverId }) => {
       const room = [userId, receiverId].sort().join("_");
       socket.join(room);
-
     });
 
     socket.on("sendMessage", (message) => {
@@ -55,18 +42,14 @@ export const setupSocket = (io: Server) => {
       io.to(`user_${receiverId}`).emit("receiveMessage", message);
       io.to(`user_${senderId}`).emit("receiveMessage", message);
 
-            
-      
       io.to(`user_${receiverId}`).emit("messageNotification", {
         senderId,
       });
     });
 
-
     // socket.on("sendMessage", (message) => {
     //   const { senderId, receiverId } = message;
 
-      
     // });
 
     socket.on("messagesRead", async ({ senderId, receiverId }) => {
@@ -87,8 +70,6 @@ export const setupSocket = (io: Server) => {
       io.to(room).emit("userStopTyping", { senderId });
     });
 
-
-
     socket.on("joinPersonalRoom", ({ userId }) => {
       if (!userId) return;
 
@@ -100,44 +81,41 @@ export const setupSocket = (io: Server) => {
       io.emit("userOnline", userId);
     });
 
-    socket.on('checkUserOnline', ({ userId }) => {
-      const isOnline = onlineUsers.has(userId)
-      socket.emit('userOnlineStatus', { userId, isOnline })
-    })
-
-
-
-
-
+    socket.on("checkUserOnline", ({ userId }) => {
+      const isOnline = onlineUsers.has(userId);
+      socket.emit("userOnlineStatus", { userId, isOnline });
+    });
 
     // ----------------- Join Event -----------------
+    // store participants
+    const eventParticipants: Record<string, any[]> = {};
+
     socket.on("joinEvent", ({ eventId, userId, role, name }) => {
       socket.join(eventId);
 
       if (!eventParticipants[eventId]) eventParticipants[eventId] = [];
 
-      const participant = { socketId: socket.id, userId, role, name }; 
+      const participant = {
+        socketId: socket.id,
+        userId,
+        role,
+        name,
+      };
+
       eventParticipants[eventId].push(participant);
 
-      // send all participants (including self) to the new user
+      // send existing users to new user
       socket.emit("participants", eventParticipants[eventId]);
 
-      // notify others about the new participant
+      // notify others
       socket.to(eventId).emit("user-joined", participant);
-
     });
-
-
-
-
 
     // ----------------- WebRTC Signaling -----------------
     socket.on("offer", ({ eventId, offer, from, to }: any) => {
       if (to) io.to(to).emit("offer", { offer, from });
       else socket.to(eventId).emit("offer", { offer, from });
     });
-
-
 
     socket.on("answer", ({ eventId, answer, from, to }: any) => {
       if (to) io.to(to).emit("answer", { answer, from });
@@ -159,15 +137,17 @@ export const setupSocket = (io: Server) => {
     });
 
     // ----------------- Leave Event -----------------
-    socket.on("leaveEvent", ({ eventId, userId }: { eventId: string; userId: string }) => {
+    socket.on("leaveEvent", ({ eventId }) => {
       socket.leave(eventId);
 
-      if (eventParticipants[eventId]) {
-        const idx = eventParticipants[eventId].findIndex((p) => p.socketId === socket.id);
-        if (idx !== -1) {
-          const [leftParticipant] = eventParticipants[eventId].splice(idx, 1);
-          socket.to(eventId).emit("user-left", leftParticipant);
-        }
+      const list = eventParticipants[eventId];
+      if (!list) return;
+
+      const index = list.findIndex((p) => p.socketId === socket.id);
+
+      if (index !== -1) {
+        const [left] = list.splice(index, 1);
+        socket.to(eventId).emit("user-left", left);
       }
     });
 
@@ -179,19 +159,17 @@ export const setupSocket = (io: Server) => {
       io.emit("userOffline", currentUserId);
 
       Object.keys(eventParticipants).forEach((eventId) => {
-        const participants = eventParticipants[eventId];
-        if (!participants) return;
+        const list = eventParticipants[eventId];
 
-        const idx = participants.findIndex((p) => p.socketId === socket.id);
-        if (idx !== -1) {
-          const [leftParticipant] = participants.splice(idx, 1);
-          if (leftParticipant) {
-            socket.to(eventId).emit("user-left", leftParticipant);
-            
-          }
+        if(!list) return
+
+        const index = list.findIndex((p) => p.socketId === socket.id);
+
+        if (index !== -1) {
+          const [left] = list.splice(index, 1);
+          socket.to(eventId).emit("user-left", left);
         }
       });
     });
   });
-
 };

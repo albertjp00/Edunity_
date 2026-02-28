@@ -12,7 +12,6 @@
   max-width: 1300px;
   margin: 0 auto;
 }
-
 /* =============================
    Section Header
 ============================= */
@@ -58,13 +57,11 @@
 
 .load-more-btn:hover {
   background-color: #1e40af;
-  transform: translateY(-2px);
 }
-
 
 .course-structure {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
 }
 
@@ -77,7 +74,7 @@
 
 
 .course-card {
-  width: 320px;
+  width: 100%;
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
@@ -85,7 +82,6 @@
   transition: all 0.3s ease;
   position: relative;
   background-image: url('https://www.transparenttextures.com/patterns/clean-gray-paper.png');
-  background-size: cover;
 }
 
 .course-card:hover {
@@ -103,8 +99,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
 }
 
 .course-category {
@@ -145,17 +139,17 @@
 
 .course-meta {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   color: #555;
-  font-size: 10px;
-  font-weight: 500;
+  font-size: 12px;
   margin-bottom: 16px;
   border: 1px solid #e0e0e0;
   border-radius: 10px;
-  padding: 10px 8px;
+  padding: 10px;
   background-color: #fafafa;
-  white-space: nowrap;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .course-meta span{
@@ -167,6 +161,8 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .instructor {
@@ -198,3 +194,60 @@
 .enroll-btn:hover {
   background: #5840e0;
 }
+
+
+@media (max-width: 1024px) {
+  .section-text h2 {
+    font-size: 1.7rem;
+  }
+
+  .course-thumbnail-wrapper {
+    height: 160px;
+  }
+}
+
+
+@media (max-width: 768px) {
+
+  .course-container {
+    padding: 2rem 4%;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .load-more-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .course-title {
+    font-size: 15px;
+  }
+
+  .enroll-btn {
+    width: 100%;
+  }
+
+  .course-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .section-text h2 {
+    font-size: 1.4rem;
+  }
+
+  .course-meta {
+    font-size: 11px;
+  }
+
+  .price {
+    font-size: 13px;
+  }
+} 

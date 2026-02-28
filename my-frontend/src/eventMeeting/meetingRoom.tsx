@@ -23,7 +23,6 @@ interface RemoteUser {
   name?: string;
 }
 
-
 interface Participant {
   socketId: string;
   userId: string;
@@ -31,11 +30,13 @@ interface Participant {
   role?: "instructor" | "user"; // optional if you send role too
 }
 
-
-const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }) => {
+const MeetingRoom: React.FC<MeetingRoomProps> = ({
+  eventId,
+  userId,
+  role,
+  name,
+}) => {
   const navigate = useNavigate();
-
-  console.log('propssss', eventId, userId, role, name);
 
 
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
@@ -45,7 +46,9 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
   const [micOn, setMicOn] = useState(true);
   const [camOn, setCamOn] = useState(true);
 
-  const upsertRemoteUser = (update: Partial<RemoteUser> & { socketId: string }) => {
+  const upsertRemoteUser = (
+    update: Partial<RemoteUser> & { socketId: string },
+  ) => {
     setRemoteUsers((prev) => {
       const idx = prev.findIndex((p) => p.socketId === update.socketId);
       if (idx === -1) {
@@ -72,7 +75,10 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
     let cancelled = false;
     (async () => {
       try {
-        const media = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        const media = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
         if (cancelled) {
           media.getTracks().forEach((t) => t.stop());
           return;
@@ -80,14 +86,13 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
         localStreamRef.current = media;
         if (localVideoRef.current) localVideoRef.current.srcObject = media;
 
-        socket.emit("joinEvent", { eventId, userId, role , name });
+        socket.emit("joinEvent", { eventId, userId, role, name });
 
         socket.emit("update-status", { eventId, micOn: true, camOn: true });
       } catch (err) {
         console.error("Failed to getUserMedia", err);
       }
     })();
-
 
     socket.off("user-joined");
     socket.off("offer");
@@ -96,38 +101,77 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
     socket.off("user-left");
     socket.off("status-updated");
 
-
-
-
-
     // When receiving participants list
-    socket.on("participants", (list: Participant[]) => {
-  list.forEach((participant) => {
-    const { socketId, userId, name } = participant;
-    if (socketId === socket.id) return;
+    socket.on("participants", async (list: Participant[]) => {
+      for (const participant of list) {
+        if (participant.socketId === socket.id) continue;
 
-    const pc = createPeerConnection(socketId);
-    pcMap.current[socketId] = pc;
+        const socketId = participant.socketId;
 
-    const localStream = localStreamRef.current;
-    if (localStream) localStream.getTracks().forEach((t) => pc.addTrack(t, localStream));
+        const pc = createPeerConnection(socketId);
+        pcMap.current[socketId] = pc;
 
-    upsertRemoteUser({ socketId, userId, name, micOn: true, camOn: true });
-  });
-});
+        const localStream = localStreamRef.current;
+
+        if (localStream) {
+          localStream
+            .getTracks()
+            .forEach((track) => pc.addTrack(track, localStream));
+        }
+
+        // ✅ CREATE OFFER
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+
+        socket.emit("offer", {
+          eventId,
+          offer,
+          from: socket.id,
+          to: socketId,
+        });
+
+        upsertRemoteUser({
+          socketId,
+          userId: participant.userId,
+          name: participant.name,
+        });
+      }
+    });
 
 
-    socket.on("user-joined", (participant: Participant) => {
-      const { socketId, userId, name } = participant;
-      console.log('participant',participant)
+
+    socket.on("user-joined", async (participant: Participant) => {
+      const socketId = participant.socketId;
+
       const pc = createPeerConnection(socketId);
       pcMap.current[socketId] = pc;
 
       const localStream = localStreamRef.current;
-      if (localStream) localStream.getTracks().forEach((t) => pc.addTrack(t, localStream));
 
-      upsertRemoteUser({ socketId, userId, name, micOn: true, camOn: true }); // name here
+      if (localStream) {
+        localStream
+          .getTracks()
+          .forEach((track) => pc.addTrack(track, localStream));
+      }
+
+      // ✅ SEND OFFER TO NEW USER
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+
+      socket.emit("offer", {
+        eventId,
+        offer,
+        from: socket.id,
+        to: socketId,
+      });
+
+      upsertRemoteUser({
+        socketId,
+        userId: participant.userId,
+        name: participant.name,
+      });
     });
+
 
 
     socket.on("user-left", (participant: Participant) => {
@@ -137,11 +181,10 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
       if (pc) pc.close();
       delete pcMap.current[participant.socketId];
 
-      setRemoteUsers(prev => prev.filter(u => u.socketId !== participant.socketId));
+      setRemoteUsers((prev) =>
+        prev.filter((u) => u.socketId !== participant.socketId),
+      );
     });
-
-
-
 
     socket.on("offer", async ({ from, offer }) => {
       console.log("offer from", from);
@@ -149,13 +192,14 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
       pcMap.current[from] = pc;
 
       const localStream = localStreamRef.current;
-      if (localStream) localStream.getTracks().forEach((t) => pc.addTrack(t, localStream));
+      if (localStream)
+        localStream.getTracks().forEach((t) => pc.addTrack(t, localStream));
 
       try {
         await pc.setRemoteDescription(new RTCSessionDescription(offer));
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
-        socket.emit("answer", { eventId, answer, from: userId, to: from });
+        socket.emit("answer", { eventId, answer, from: socket.id, to: from });
       } catch (err) {
         console.error("Error handling offer:", err);
       }
@@ -181,11 +225,12 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
       }
     });
 
-
-
-    socket.on("status-updated", ({ socketId, micOn: rMicOn, camOn: rCamOn }) => {
-      upsertRemoteUser({ socketId, micOn: rMicOn, camOn: rCamOn });
-    });
+    socket.on(
+      "status-updated",
+      ({ socketId, micOn: rMicOn, camOn: rCamOn }) => {
+        upsertRemoteUser({ socketId, micOn: rMicOn, camOn: rCamOn });
+      },
+    );
 
     return () => {
       cancelled = true;
@@ -195,7 +240,6 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
           pc.close();
         } catch (error) {
           console.log(error);
-
         }
       });
       pcMap.current = {};
@@ -212,31 +256,48 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
       socket.off("user-left");
       socket.off("status-updated");
     };
-   
   }, []);
 
 
-  const createPeerConnection = (socketId: string) => {
-    // If already exists, return it
-    if (pcMap.current[socketId]) return pcMap.current[socketId];
 
-    const pc = new RTCPeerConnection();
+const createPeerConnection = (socketId: string) => {
 
-    pc.onicecandidate = (ev) => {
-      if (ev.candidate) {
-        socket.emit("ice-candidate", { eventId, candidate: ev.candidate, from: userId, to: socketId });
-      }
-    };
+  if (pcMap.current[socketId])
+    return pcMap.current[socketId];
 
-    pc.ontrack = (ev) => {
-      const incomingStream = ev.streams && ev.streams[0];
-      if (!incomingStream) return;
+  const pc = new RTCPeerConnection({
+    iceServers: [
+      { urls: "stun:stun.l.google.com:19302" }
+    ]
+  });
 
-      upsertRemoteUser({ socketId, stream: incomingStream, micOn: true, camOn: true });
-    };
-
-    return pc;
+  pc.onicecandidate = (event) => {
+    if (event.candidate) {
+      socket.emit("ice-candidate", {
+        eventId,
+        candidate: event.candidate,
+        from: socket.id,
+        to: socketId,
+      });
+    }
   };
+
+  pc.ontrack = (event) => {
+    const stream = event.streams[0];
+    if (!stream) return;
+
+    upsertRemoteUser({
+      socketId,
+      stream,
+    });
+  };
+
+  pcMap.current[socketId] = pc;
+
+  return pc;
+};
+
+
 
   const toggleMic = () => {
     const s = localStreamRef.current;
@@ -279,9 +340,6 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
           <p className="video-name">{name} (You)</p>
         </div>
 
-
-
-
         {remoteUsers.map((user) => (
           <div key={user.socketId} className="video-tile">
             <video
@@ -301,7 +359,9 @@ const MeetingRoom: React.FC<MeetingRoomProps> = ({ eventId, userId, role, name }
 
       <div className="controls">
         <button onClick={toggleMic}>{micOn ? "Mute Mic" : "Unmute Mic"}</button>
-        <button onClick={toggleCam}>{camOn ? "Turn Off Cam" : "Turn On Cam"}</button>
+        <button onClick={toggleCam}>
+          {camOn ? "Turn Off Cam" : "Turn On Cam"}
+        </button>
         <button className="end-event-btn" onClick={leaveMeeting}>
           Leave Meeting
         </button>

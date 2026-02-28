@@ -1,7 +1,7 @@
 .instructors-section {
   display: grid;
   grid-template-columns: 1fr 1.5fr;
-  gap: 2rem;
+  gap: 2.5rem;
   align-items: center;
   max-width: 1200px;
   margin: 3rem auto;
@@ -18,7 +18,7 @@
   color: #8b5cf6;
   background: #f3e8ff;
   display: inline-block;
-  padding: 0.2rem 0.6rem;
+  padding: 0.25rem 0.7rem;
   border-radius: 6px;
   margin-bottom: 0.8rem;
 }
@@ -28,6 +28,7 @@
   font-weight: 700;
   color: #111827;
   margin-bottom: 1rem;
+  line-height: 1.3;
 }
 
 .description {
@@ -40,11 +41,16 @@
   background: #6366f1;
   color: white;
   border: none;
-  padding: 0.7rem 1.5rem;
+  padding: 0.8rem 1.6rem;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: 0.3s ease;
+}
+
+.contact-btn:hover {
+  background: #4f46e5;
+  transform: translateY(-2px);
 }
 
 .contact-btn:hover {
@@ -53,32 +59,39 @@
 
 .instructors-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.2rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
 }
 
 .instructor-card {
   background: #fff;
   border: 2px solid #e5e7eb;
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
   text-align: center;
-  position: relative;
-  transition: transform 0.2s;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .instructor-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
 }
 
 .instructor-img-wrapper {
-  position: relative;
+  width: 100%;
+  overflow: hidden;
 }
 
 .instructor-img {
   width: 100%;
   height: 220px;
   object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.instructor-card:hover .instructor-img {
+  transform: scale(1.05);
 }
 
 .share-btn {
@@ -108,4 +121,59 @@
 .instructor-role {
   font-size: 0.9rem;
   color: #6b7280;
+}
+
+
+
+@media (max-width: 1024px) {
+
+  .instructors-section {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .instructors-intro {
+    text-align: center;
+  }
+
+  .title {
+    font-size: 1.8rem;
+  }
+}
+
+
+@media (max-width: 768px) {
+
+  .instructors-section {
+    padding: 1.5rem 1rem;
+    gap: 2rem;
+  }
+
+  .title {
+    font-size: 1.6rem;
+  }
+
+  .description {
+    font-size: 0.9rem;
+  }
+
+  .contact-btn {
+    width: 100%;
+  }
+
+  .instructor-img {
+    height: 200px;
+  }
+}
+
+
+@media (max-width: 480px) {
+
+  .title {
+    font-size: 1.4rem;
+  }
+
+  .instructor-img {
+    height: 180px;
+  }
 }
