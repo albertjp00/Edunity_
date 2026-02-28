@@ -82,7 +82,6 @@ export class InstAuthService implements IInstAuthService {
         expiresAt: Date.now() + 5 * 60 * 1000,
       });
 
-      console.log("otpStore:", otpStore);
 
       return { success: true, message: "OTP sent to your email" };
     } catch (error) {
@@ -94,13 +93,11 @@ export class InstAuthService implements IInstAuthService {
   async resendOtpRequest(email: string): Promise<{ success: boolean }> {
     try {
       const otp = generateOtp();
-      console.log("request resend otp instructor", otp, email);
 
       const storedData = otpStore.get(email);
       if (!storedData) {
         return { success: false };
       }
-      // console.log(storedData);
 
       const defaultEmail = email;
       await sendOtp(defaultEmail, otp);
@@ -110,7 +107,6 @@ export class InstAuthService implements IInstAuthService {
         otp,
         expiresAt: Date.now() + 5 * 60 * 1000,
       });
-      console.log(otpStore);
 
       return { success: true };
     } catch (error) {
@@ -125,7 +121,6 @@ export class InstAuthService implements IInstAuthService {
   ): Promise<{ success: boolean; message: string }> {
     try {
       const storedData = otpStore.get(email);
-      console.log("verify otp instructor", email , otp);
 
       if (!storedData) {
         return { success: false, message: "OTP not found or expired" };
@@ -172,7 +167,6 @@ export class InstAuthService implements IInstAuthService {
     email: string,
   ): Promise<{ success: boolean; message: string }> => {
     try {
-      console.log("forgotPassword user service");
 
       const instructor = await this._instructorRepository.findByEmail(email);
       if (!instructor) {

@@ -97,10 +97,12 @@ const VerifyOtp : React.FC = () => {
             {isDisabled ? "OTP Expired" : "Verify OTP"}
           </button>
 
-        </form>
-        <button onClick={resendotp} className="button-resend" disabled={!isDisabled}>
+          <button onClick={resendotp} className="button-resend" disabled={!isDisabled}>
         Resend OTP
       </button>
+
+        </form>
+        
       </div>
 
       

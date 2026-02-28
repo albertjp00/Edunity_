@@ -72,7 +72,7 @@ export interface IUserRepository {
 
   addReview(userId: string, userName: string, userImage: string, courseId: string, rating: number, comment: string): Promise<IReview>
 
-  getMyEvent(id: string): Promise<IMyEvent | null>
+  getMyEvent(id: string , userId : string): Promise<IMyEvent | null>
 
   getEvents(search : string , page : number): Promise<{events : IEvent[] ,totalPages : number} | null>
 

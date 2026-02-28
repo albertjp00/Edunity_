@@ -43,9 +43,13 @@ export class UserEventController
     next: NextFunction,
   ): Promise<void | null> => {
     try {
+      const userId = req.user?.id
       const id = req.params.id!;
-      const enrolled = await this._userEventService.getIfEnrolled(id);
+      const enrolled = await this._userEventService.getIfEnrolled(id , userId as string);
       const result = await this._userEventService.getEventDetailsRequest(id);
+
+      console.log(result);
+      
 
       res
         .status(HttpStatus.OK)
@@ -104,6 +108,9 @@ export class UserEventController
         eventId,
         userId,
       );
+
+      console.log(result);
+      
 
       if (!result || !result.success) {
         res

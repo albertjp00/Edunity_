@@ -11,6 +11,7 @@ export interface Ievent {
   date: string;        
   time:string;
   isOver?:string;
+  isLive:boolean;
   // ampm :string;
 }
 

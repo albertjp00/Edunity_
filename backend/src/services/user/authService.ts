@@ -96,7 +96,6 @@ export class AuthService implements IUserAuthService {
                 expiresAt: Date.now() + 60 * 1000, 
             });
 
-            console.log("otpStore:", otpStore);
 
             return { success: true, message: StatusMessage.OTP_SEND_to_MAIL };
         } catch (error) {
@@ -112,12 +111,10 @@ export class AuthService implements IUserAuthService {
             const otp = generateOtp();
 
 
-            console.log(otpStore);
             const storedData = otpStore.get(email)
             if (!storedData) {
                 return { success: false }
             }
-            console.log(storedData);
 
             const defaultEmail = email;
             await sendOtp(defaultEmail, otp);
@@ -127,7 +124,6 @@ export class AuthService implements IUserAuthService {
                 otp,
                 expiresAt: Date.now() + 5 * 60 * 1000,
             });
-            console.log(otpStore);
 
 
             return { success: true }

@@ -209,7 +209,7 @@ export interface IUserCourseService {
 
 export interface IUserEventService {
   getEventsRequest(search : string , page : number): Promise<{events : EventDTO[] , totalPages : number } | null>;
-  getIfEnrolled(id: string): Promise<IMyEvent | boolean | null>;
+  getIfEnrolled(id: string , userId : string): Promise<IMyEvent | boolean | null>;
   getEventDetailsRequest(id: string): Promise<EventDTO | null>;
   eventEnrollRequest(id: string, eventId: string): Promise<IMyEvent | null>;
   getMyEvents(userId: string): Promise<EventDTO[] | null>;

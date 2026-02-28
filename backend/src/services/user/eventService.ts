@@ -49,9 +49,9 @@ export class UserEventService implements IUserEventService {
         }
     }
 
-    getIfEnrolled = async (id: string): Promise<IMyEvent | boolean | null> => {
+    getIfEnrolled = async (id: string , userId : string): Promise<IMyEvent | boolean | null> => {
         try {
-            const result = await this._userRepository.getMyEvent(id)
+            const result = await this._userRepository.getMyEvent(id , userId )
 
             if (result) {
                 return true
@@ -102,10 +102,9 @@ export class UserEventService implements IUserEventService {
     }
 
     
-
     joinUserEventRequest = async (eventId: string, userId: string): Promise<{ success: boolean; message: string; meetingLink?: string } | null> => {
         try {
-            const myEvent = await this._userRepository.getMyEvent(eventId);
+            const myEvent = await this._userRepository.getMyEvent(eventId , userId);
 
             if (!myEvent) return { success: false, message: StatusMessage.NO_EVENT_FOUND };
             if (myEvent.userId !== userId)

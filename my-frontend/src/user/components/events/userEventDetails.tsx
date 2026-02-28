@@ -1,8 +1,8 @@
-import{ useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 // import profilePic from "../../../assets/profilePic.png";
-import thumbnail from '../../../assets/webinar_thumnail.png';
-import './userEventDetails.css';
+import thumbnail from "../../../assets/webinar_thumnail.png";
+import "./userEventDetails.css";
 import { eventEnroll, getDetailsEvent } from "../../services/eventServices";
 import { toast } from "react-toastify";
 import type { Ievent } from "../../../instructor/interterfaces/events";
@@ -14,12 +14,14 @@ const EventDetails: React.FC = () => {
   const [event, setEvent] = useState<Ievent | null>(null);
   // const [instructor, setInstructor] = useState<string>();
   const [isEnrolled, setIsEnrolled] = useState(false);
-  const [user, setUser] = useState<string>()
+  const [user, setUser] = useState<string>();
 
   useEffect(() => {
     const fetchEvent = async () => {
       if (!id) return;
       const res = await getDetailsEvent(id);
+      console.log(res);
+
       if (!res) return;
 
       if (res.data.success) {
@@ -27,7 +29,6 @@ const EventDetails: React.FC = () => {
         // setInstructor(res.data.instructor);
         setIsEnrolled(res.data.enrolled);
         console.log(res);
-
       }
     };
     fetchEvent();
@@ -35,23 +36,32 @@ const EventDetails: React.FC = () => {
 
   useEffect(() => {
     const getUser = async () => {
-      const res = await getUserProfile()
-      if (!res) return
-      setUser(res.data.data.name)
+      const res = await getUserProfile();
+      if (!res) return;
+      setUser(res.data.data.name);
+    };
+    getUser();
+  }, []);
 
-
-    }
-    getUser()
-  }, [])
-
-  // ✅ Check if user can join based on current time
+  //Check if user can join based on current time
   const canJoin = useMemo(() => {
     if (!event) return false;
 
     const now = new Date();
-    const eventDateTime = new Date(event.date);
+
+    const eventDate = new Date(event.date);
+
     const [hours, minutes] = event.time.split(":").map(Number);
-    eventDateTime.setHours(hours, minutes, 0, 0);
+
+    const eventDateTime = new Date(
+      eventDate.getFullYear(),
+      eventDate.getMonth(),
+      eventDate.getDate(),
+      hours,
+      minutes,
+      0,
+      0,
+    );
 
     return now >= eventDateTime;
   }, [event]);
@@ -71,7 +81,7 @@ const EventDetails: React.FC = () => {
   const handleJoinEvent = () => {
     if (!event) return;
     navigate(`/user/joinEvent/${event._id}`, {
-      state: { name: user }
+      state: { name: user },
     });
   };
 
@@ -80,7 +90,6 @@ const EventDetails: React.FC = () => {
   return (
     <div className="ue-event-container">
       <div className="ue-event-card">
-
         <img src={thumbnail} alt="Event Thumbnail" className="ue-event-image" />
 
         <h2 className="ue-event-title">{event.title}</h2>
@@ -88,8 +97,7 @@ const EventDetails: React.FC = () => {
         <p className="ue-event-description">{event.description}</p>
 
         <p className="ue-event-datetime">
-          📅 {new Date(event.date).toLocaleDateString()} | ⏱ {event.time} mins
-
+          📅 {new Date(event.date).toLocaleDateString()} | ⏱ {event.time}
         </p>
 
         <p className="ue-event-online">🌐 Online Event</p>
@@ -98,28 +106,22 @@ const EventDetails: React.FC = () => {
           !isEnrolled ? (
             <button onClick={handleEnroll} className="ue-enroll-btn">
               Enroll Now
-
             </button>
-
-          ) : canJoin ? (
+          ) : event.isLive && canJoin ? (
             <button onClick={handleJoinEvent} className="ue-join-btn">
-              Join Event
+              Join Live Event
             </button>
           ) : (
             <p className="ue-event-notice">
-              Event can be joined at {event.time} on {new Date(event.date).toLocaleDateString()}
+              ⏳ Waiting for instructor to start the event
             </p>
           )
         ) : (
-          <p className="text-red">
-            ❌ This event has ended.
-          </p>
+          <p className="text-red">❌ This event has ended.</p>
         )}
-
       </div>
     </div>
   );
-
 };
 
 export default EventDetails;

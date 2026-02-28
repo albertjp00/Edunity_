@@ -83,13 +83,13 @@ export class InstEventService implements IInstEventService {
         0,
       );
 
-      if (now >= eventDateTime && !event.isLive && !event.isOver) {
-        await this._InstructorRepository.updateEvent(event._id.toString(), {
-          isLive: true,
-        });
+      // if (now >= eventDateTime && !event.isLive && !event.isOver) {
+      //   await this._InstructorRepository.updateEvent(event._id.toString(), {
+      //     isLive: true,
+      //   });
 
-        event.isLive = true;
-      }      
+      //   event.isLive = true;
+      // }      
 
       return {event :mapEventDetailsDTO(event)}
     } catch (error) {
@@ -121,6 +121,8 @@ export class InstEventService implements IInstEventService {
   } | null> => {
     try {
       const event = await this._InstructorRepository.getEvent(eventId);
+
+      
 
       if (!event) {
         return { success: false, message: "Event not found" };

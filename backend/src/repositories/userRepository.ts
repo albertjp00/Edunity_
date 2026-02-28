@@ -547,8 +547,8 @@ export class UserRepository
     return {events , totalPages}
   }
 
-  async getMyEvent(id: string): Promise<IMyEvent | null> {
-    return await MyEventModel.findOne({ eventId: id });
+  async getMyEvent(id: string , userId: string ): Promise<IMyEvent | null> {
+    return await MyEventModel.findOne({ eventId: id  , userId : userId});
   }
 
   async enrollEvent(userId: string, eventId: string): Promise<IMyEvent> {
