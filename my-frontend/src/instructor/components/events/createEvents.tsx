@@ -11,7 +11,7 @@ const EventForm: React.FC = () => {
     description: "",
     date: "",
     time: '',
-    // ampm: ''
+    isLive : false
     
   });
 
@@ -88,7 +88,7 @@ const EventForm: React.FC = () => {
     if (!res) return
     if (res.data.success) {
       toast.success("Event Created")
-      setFormData({ title: "", topic: "", description: "", date: "", time: ''});
+      setFormData({ title: "", topic: "", description: "", date: "", time: '' , isLive : false});
       setErrors({});
     }
   };
