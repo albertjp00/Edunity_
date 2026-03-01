@@ -11,6 +11,8 @@ const GoogleLoginButton = () => {
   const handleSuccess = async (credentialResponse: any) => {
   try {
     const res = await googleLogin(credentialResponse)
+    console.log(res);
+    
     if(!res) return
 
     const {token , user } = res.data;

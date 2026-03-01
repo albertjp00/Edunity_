@@ -74,7 +74,7 @@ export const userVerifyOtp = async(email:string , otp:string)=>{
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const googleLogin = async(credentialResponse:any)=>{
     try {
-        const res = await axios.post(`${import.meta.env.VITE_API_URL}/auth/googleLogin`, {
+        const res = await axios.post(`${import.meta.env.VITE_API_URL}/user/auth/googleLogin`, {
               token: credentialResponse.credential,
             }, { withCredentials: true });
         return res

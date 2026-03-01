@@ -198,6 +198,7 @@ export class AuthController
   googleSignIn = async (req: Request, res: Response): Promise<void> => {
     try {
       const { token } = req.body;
+    console.log('google login');
     
 
       if (!token) {
