@@ -4,6 +4,8 @@ import './App.css'
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import Home from './user/pages/home/homePage'
 import { ToastContainer } from 'react-toastify'
+import { Toaster } from "react-hot-toast";
+
 import Login from './user/pages/authentication/Userlogin'
 import Register from './user/components/register/register'
 import VerifyOtp from './user/components/register/verifyOtp'
@@ -87,6 +89,7 @@ import AddQuizPage from './instructor/pages/course/addQuiz'
 import EditQuizPage from './instructor/pages/course/editQuizPage'
 import AllEventsUser from './user/pages/event/allEvents'
 import InstructorDetailsUser from './user/components/instructors/instructorDetails'
+import GroupCall from './user/components/videoPlayer/groupCall';
 // import PurchasesAdmin from './admin/pages/purchases/purchasesAdmin'
 
 function App() {
@@ -104,6 +107,7 @@ function App() {
     <>
       <div>
         <ToastContainer />
+        <Toaster position="top-center" />
 
         <Router>
           <Routes>
@@ -152,6 +156,7 @@ function App() {
 
             <Route path='/user/allEvents' element={<ProtectedRoute><AllEventsUser /></ProtectedRoute>} />
             <Route path='/user/joinEvent/:eventId' element={<ProtectedRoute><UserEvent /></ProtectedRoute>} />
+            <Route path='/user/groupEvent/:roomId' element={<ProtectedRoute><GroupCall /></ProtectedRoute>} />
 
             
 
@@ -188,6 +193,8 @@ function App() {
             <Route path='/instructor/eventDetails/:eventId' element={<InstProtectedRoute><EventDetailsPage /></InstProtectedRoute>} />
 
             <Route path='/instructor/joinEvent/:eventId' element={<InstProtectedRoute><InstructorEvent /></InstProtectedRoute>} />
+
+            <Route path='/instructor/groupEvent/:roomId' element={<InstProtectedRoute><GroupCall /></InstProtectedRoute>} />
 
             <Route path='/instructor/allEvents' element={<InstProtectedRoute><AllEventsPage /></InstProtectedRoute>} />
 

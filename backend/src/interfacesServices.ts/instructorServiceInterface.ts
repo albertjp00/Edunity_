@@ -114,7 +114,7 @@ export interface IInstEventService {
   ): Promise<{
     success: boolean;
     message: string;
-    meetingLink?: string;
+    roomId?: string;
   } | null>;
 
   endEventRequest(
@@ -205,7 +205,7 @@ export interface IInsRepository {
 
   findSkills(): Promise<ISkills>;
 
-  addEvent(id: string, name: string, data: Partial<IEvent>): Promise<IEvent>;
+  addEvent(id: string, name: string, data: Partial<IEvent> , roomId : string): Promise<IEvent>;
 
   getMyEvents(
     id: string,

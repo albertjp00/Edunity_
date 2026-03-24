@@ -201,6 +201,8 @@ export class AdminCourseController
   ) => {
     try {
       const reports = await this._courseService.getReportsRequest();
+      console.log(reports);
+      
 
       res.json({ success: true, reports: reports });
     } catch (error) {

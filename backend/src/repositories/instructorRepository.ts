@@ -174,11 +174,13 @@ export class InstructorRepository implements IInsRepository {
     id: string,
     name: string,
     data: Partial<IEvent>,
+    roomId : string
   ): Promise<IEvent> {
     return await EventModel.create({
       instructorId: id,
       instructorName: name,
       ...data,
+      roomId
     });
   }
 

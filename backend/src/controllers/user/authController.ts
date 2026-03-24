@@ -9,6 +9,7 @@ import { IAuthBasicController, IAuthForgotPasswordController,
    RefreshTokenPayload} from "../../interfaces/userInterfaces";
 import { IUserAuthService } from "../../interfacesServices.ts/userServiceInterfaces";
 import { StatusMessage } from "../../enums/statusMessage";
+import { ForgotPasswordInputDto, GoogleSignInInputDto, LoginInputDto, RegisterInputDto, ResendOtpForgotPasswordInputDto, ResendOtpInputDto, ResetPasswordInputDto, VerifyForgotPasswordOtpInputDto, VerifyOtpInputDto } from "../../dto/inputUserDto";
 
 
 
@@ -36,7 +37,7 @@ export class AuthController
 
   login = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { email, password } = req.body;
+      const { email, password } : LoginInputDto = req.body;
       
       if (!email || !password) {
         res.status(HttpStatus.BAD_REQUEST).json({ message: StatusMessage.EMAIL_AND_PASWWORD });
@@ -140,7 +141,7 @@ export class AuthController
 
   register = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { name, email, password } = req.body;
+      const { name, email, password } : RegisterInputDto = req.body;
       const result = await this._authService.registerRequest(name, email, password);
 
       if (result.success) {
@@ -161,7 +162,7 @@ export class AuthController
 
   resendOtp = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { email } = req.body;
+      const { email } : ResendOtpInputDto = req.body;
 
       if (!email) {
         res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: StatusMessage.EMAIL_REQUIRED });
@@ -178,7 +179,7 @@ export class AuthController
 
   verifyOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { otp, email } = req.body;
+      const { otp, email } : VerifyOtpInputDto = req.body;
       const result = await this._authService.verifyOtpRequest(otp, email);
 
       if (result.success) {
@@ -197,7 +198,7 @@ export class AuthController
 
   googleSignIn = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { token } = req.body;
+      const { token } : GoogleSignInInputDto = req.body;
     console.log('google login');
     
 
@@ -225,7 +226,7 @@ export class AuthController
 
   forgotPassword = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const { email } = req.body;
+      const { email } : ForgotPasswordInputDto = req.body;
 
       const result = await this._authService.forgotPassword(email);
 
@@ -245,7 +246,7 @@ export class AuthController
   verifyOtpForgotPass = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
 
-      const { email, otp } = req.body;
+      const { email, otp } : VerifyForgotPasswordOtpInputDto = req.body;
 
       const result = await this._authService.verifyForgotPasswordOtp(otp, email);
 
@@ -264,7 +265,7 @@ export class AuthController
 
   resendOtpForgotPassword = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { email } = req.body;
+      const { email } : ResendOtpForgotPasswordInputDto = req.body;
 
 
       if (!email) {
@@ -283,7 +284,7 @@ export class AuthController
 
   resetPassword = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { email, newPassword } = req.body;
+      const { email, newPassword } : ResetPasswordInputDto = req.body;
 
       const result = await this._authService.resetPassword(
         email,

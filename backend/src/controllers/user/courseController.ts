@@ -18,6 +18,7 @@ import { IUserCourseService } from "../../interfacesServices.ts/userServiceInter
 import { StatusMessage } from "../../enums/statusMessage";
 import { ICourse } from "../../models/course";
 import { FilterQuery } from "mongoose";
+import { AddReviewInputDto, GetAllCoursesQueryDto, RefreshVideoUrlQueryDto, ReportCourseInputDto, ShowCoursesQueryDto, UpdateProgressInputDto, VerifyPaymentInputDto, VerifySubscriptionPaymentInputDto } from "../../dto/inputUserDto";
 
 export class UserCourseController
   implements
@@ -31,17 +32,20 @@ export class UserCourseController
   private _courseService: IUserCourseService;
 
   constructor(courseService: IUserCourseService) {
-
     this._courseService = courseService;
   }
 
   showCourses = async (req: AuthRequest, res: Response) => {
     try {
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 6;
+      const { page, limit }: ShowCoursesQueryDto = req.query;
 
-      const data = await this._courseService.getCourses(page, limit);
+      const pageNumber = parseInt(page || "1");
+      const limitNumber = parseInt(limit || "6");
 
+      const data = await this._courseService.getCourses(
+        pageNumber,
+        limitNumber,
+      );
 
       res.status(HttpStatus.OK).json({
         success: true,
@@ -52,19 +56,14 @@ export class UserCourseController
       });
     } catch (error) {
       console.error(error);
-      res
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({
-          success: false,
-          messaage: StatusMessage.FAILED_TO_GET_COURSES,
-        });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        messaage: StatusMessage.FAILED_TO_GET_COURSES,
+      });
     }
   };
 
-  getAllCourses = async (
-    req: AuthRequest,
-    res: Response,
-  ): Promise<void> => {
+  getAllCourses = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const {
         categories,
@@ -76,7 +75,7 @@ export class UserCourseController
         page = 1,
         limit = 10,
         search,
-      } = req.query;
+      } : GetAllCoursesQueryDto = req.query;
 
       const query: FilterQuery<ICourse> = {};
 
@@ -113,10 +112,10 @@ export class UserCourseController
         Number(page),
         Number(limit),
         sortOption,
-      );      
-      if(!result) return
+      );
+      if (!result) return;
 
-      const { courses, totalCount } = result
+      const { courses, totalCount } = result;
 
       res.json({
         courses,
@@ -141,7 +140,6 @@ export class UserCourseController
       if (result === "myCourseExists") {
         res.status(HttpStatus.OK).json({ success: "exists" });
       }
-      
 
       res.status(HttpStatus.OK).json({ success: true, course: result });
     } catch (error) {
@@ -150,10 +148,7 @@ export class UserCourseController
     }
   };
 
-  buyCourse = async (
-    req: AuthRequest,
-    res: Response,
-  ): Promise<void> => {
+  buyCourse = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const userId = req.user?.id as string;
       const courseId = req.params.id!;
@@ -174,24 +169,21 @@ export class UserCourseController
       });
     } catch (error) {
       console.log(error);
-      
+
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: StatusMessage.PAYMENT_FAILURE });
     }
   };
 
-  verifyPayment = async (
-    req: AuthRequest,
-    res: Response,
-  ): Promise<void> => {
+  verifyPayment = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const {
         razorpay_order_id,
         razorpay_payment_id,
         razorpay_signature,
         courseId,
-      } = req.body;
+      } : VerifyPaymentInputDto = req.body;
       const userId = req.user?.id as string;
 
       const key = `verifyPayment_${userId}_${courseId}`;
@@ -213,13 +205,11 @@ export class UserCourseController
       }
     } catch (error) {
       console.log(error);
-      
-      res
-        .status(500)
-        .json({
-          success: false,
-          message: StatusMessage.PAYMENT_VERIFICATION_FAILURE,
-        });
+
+      res.status(500).json({
+        success: false,
+        message: StatusMessage.PAYMENT_VERIFICATION_FAILURE,
+      });
     }
   };
 
@@ -234,39 +224,39 @@ export class UserCourseController
     }
   };
 
-
   walletPayment = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const id = req.params.id;
-      const userId = req.user?.id
+      const userId = req.user?.id;
 
-      console.log("controeller",id , userId );
-    
+      console.log("controeller", id, userId);
 
-      const wallet  = await this._courseService.walletPayment(userId as string, id as string);
-      
+      const wallet = await this._courseService.walletPayment(
+        userId as string,
+        id as string,
+      );
+
       res.status(HttpStatus.OK).json({ success: wallet });
-      
     } catch (error) {
       console.log(error);
     }
   };
 
-  buySubscription = async (
-    req: AuthRequest,
-    res: Response,
-  ): Promise<void> => {
+  buySubscription = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const userId = req.user?.id as string;
 
-      const subscriptionId = req.params.id      
+      const subscriptionId = req.params.id;
 
       const key = `buyCourse_${userId}`;
       const subscribe = await debounceCall(key, 2000, async () => {
-        return await this._courseService.buySubscriptionRequest(userId , subscriptionId as string);
+        return await this._courseService.buySubscriptionRequest(
+          userId,
+          subscriptionId as string,
+        );
       });
 
-      if(!subscribe) return
+      if (!subscribe) return;
       res.status(HttpStatus.OK).json({
         success: true,
         orderId: subscribe.id,
@@ -276,7 +266,7 @@ export class UserCourseController
       });
     } catch (error) {
       console.log(error);
-      
+
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: StatusMessage.PAYMENT_FAILURE });
@@ -289,13 +279,13 @@ export class UserCourseController
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+      const { razorpay_order_id, razorpay_payment_id, 
+        razorpay_signature } : VerifySubscriptionPaymentInputDto =
         req.body;
 
       const userId = req.user?.id as string;
-      const planId = req.body.planId
+      const planId = req.body.planId;
 
-      
       const key = `verifySubscription_${userId}`;
 
       const result = await debounceCall(key, 2000, async () => {
@@ -304,7 +294,7 @@ export class UserCourseController
           razorpay_payment_id,
           razorpay_signature,
           userId,
-          planId
+          planId,
         );
       });
 
@@ -359,7 +349,6 @@ export class UserCourseController
       );
       if (!result) return;
 
-    
       res.status(HttpStatus.OK).json({
         success: true,
         courses: result.courses,
@@ -381,21 +370,19 @@ export class UserCourseController
       const id = req.user?.id as string;
       const myCourseId = req.params.id!;
 
-      const result = await this._courseService.viewMyCourseRequest( 
+      const result = await this._courseService.viewMyCourseRequest(
         id,
         myCourseId,
-      );      
+      );
 
-      res
-        .status(HttpStatus.OK)
-        .json({
-          success: true,
-          course: result,
-          review: result?.review,
-          instructor: result?.instructor,
-          quiz: result?.quizExists,
-          createdAt: result?.enrolledAt,
-        });
+      res.status(HttpStatus.OK).json({
+        success: true,
+        course: result,
+        review: result?.review,
+        instructor: result?.instructor,
+        quiz: result?.quizExists,
+        createdAt: result?.enrolledAt,
+      });
     } catch (error) {
       console.log(error);
       next(error);
@@ -404,7 +391,7 @@ export class UserCourseController
 
   refreshVideoUrl = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const { key } = req.query;
+      const { key } = req.query ;
 
       if (!key) {
         res
@@ -422,13 +409,10 @@ export class UserCourseController
     }
   };
 
-  updateProgress = async (
-    req: AuthRequest,
-    res: Response,
-  ) => {
+  updateProgress = async (req: AuthRequest, res: Response) => {
     try {
       const userId = req.user?.id as string;
-      const { courseId, moduleTitle } = req.body;      
+      const { courseId, moduleTitle } : UpdateProgressInputDto= req.body;
 
       if (!userId || !courseId || !moduleTitle) {
         res
@@ -437,16 +421,12 @@ export class UserCourseController
         return;
       }
 
-      await this._courseService.updateProgress(
-        userId,
-        courseId,
-        moduleTitle,
-      );
+      await this._courseService.updateProgress(userId, courseId, moduleTitle);
 
-      res.status(HttpStatus.OK).json({ success: true});
+      res.status(HttpStatus.OK).json({ success: true });
     } catch (error) {
       console.log(error);
-      
+
       res
         .status(500)
         .json({ success: false, message: HttpStatus.INTERNAL_SERVER_ERROR });
@@ -456,7 +436,7 @@ export class UserCourseController
   getCertificate = async (req: AuthRequest, res: Response) => {
     try {
       const userId = req.user?.id as string;
-      const { courseId } = req.params;
+      const { courseId }  = req.params;
 
       const result = await this._courseService.getCertificateRequest(
         userId as string,
@@ -471,7 +451,7 @@ export class UserCourseController
 
   addReview = async (req: AuthRequest, res: Response) => {
     try {
-      const { courseId, rating, review } = req.body;
+      const { courseId, rating, review } : AddReviewInputDto = req.body;
 
       const userId = req.user?.id as string;
 
@@ -492,18 +472,14 @@ export class UserCourseController
     }
   };
 
-  getInstructors = async (
-    req: AuthRequest,
-    res: Response,
-  ) => {
+  getInstructors = async (req: AuthRequest, res: Response) => {
     try {
       const instructor = await this._courseService.getInstructorsRequest();
-      console.log('instr',instructor);
-      
+      console.log("instr", instructor);
+
       res
         .status(HttpStatus.OK)
         .json({ success: true, instructors: instructor });
-
     } catch (error) {
       console.error(error);
       res
@@ -512,19 +488,15 @@ export class UserCourseController
     }
   };
 
-  getInstructorDetails = async (
-    req: AuthRequest,
-    res: Response,
-  ) => {
+  getInstructorDetails = async (req: AuthRequest, res: Response) => {
     try {
-      const id = req.params.id
-      const instructor = await this._courseService.getInstructorDetails(id as string);
-      console.log("get instructors details",instructor);
-      
-      res
-        .status(HttpStatus.OK)
-        .json({ success: true, instructor: instructor });
+      const id = req.params.id;
+      const instructor = await this._courseService.getInstructorDetails(
+        id as string,
+      );
+      console.log("get instructors details", instructor);
 
+      res.status(HttpStatus.OK).json({ success: true, instructor: instructor });
     } catch (error) {
       console.error(error);
       res
@@ -533,10 +505,7 @@ export class UserCourseController
     }
   };
 
-  addtoFavourites = async (
-    req: AuthRequest,
-    res: Response,
-  ) => {
+  addtoFavourites = async (req: AuthRequest, res: Response) => {
     try {
       const userId = req.user?.id as string;
       const courseId = req.params.id!;
@@ -545,7 +514,6 @@ export class UserCourseController
         userId,
         courseId,
       );
-
 
       res.status(HttpStatus.OK).json({ success: true, fav: result });
     } catch (error) {
@@ -563,7 +531,7 @@ export class UserCourseController
   ) => {
     try {
       const userId = req.user?.id as string;
-      const data = await this._courseService.getFavorites(userId);      
+      const data = await this._courseService.getFavorites(userId);
       res.status(HttpStatus.OK).json({ success: true, favourites: data });
     } catch (error) {
       console.log(error);
@@ -582,10 +550,8 @@ export class UserCourseController
       const result = await this._courseService.favCourseDetails(id, courseId);
       if (result === false) {
         res.json({ success: false });
-        
-      }else{
-        
-      res.json({ success: true});
+      } else {
+        res.json({ success: true });
       }
     } catch (error) {
       console.log(error);
@@ -610,10 +576,10 @@ export class UserCourseController
     try {
       const userId = req.user?.id as string;
 
-      const { courseId } = req.params;
+      const { courseId }  = req.params;
 
       const answers = req.body;
-      
+
       const data = await this._courseService.submitQuiz(
         userId,
         courseId as string,
@@ -656,9 +622,8 @@ export class UserCourseController
     try {
       const userId = req.user?.id as string;
 
-      const courseId = req.body.courseId;
+      const {courseId , report} : ReportCourseInputDto = req.body;
 
-      const report = req.body.report;
 
       await this._courseService.reportCourseRequest(
         userId,

@@ -51,9 +51,13 @@ const EventDetails: React.FC = () => {
     if (!event || !instructor) return;
     try {
       const res = await eventJoin(event.id)
-      console.log(res);
+      console.log('joinnn',res);
       
-      navigate(`/instructor/joinEvent/${event.id}`, {
+      // navigate(`/instructor/joinEvent/${event.id}`, {
+      //   state: { instructorName }
+      // });
+
+      navigate(`/instructor/groupEvent/${res.data.roomId}`, {
         state: { instructorName }
       });
     } catch (error) {

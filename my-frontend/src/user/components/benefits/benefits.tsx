@@ -38,6 +38,7 @@ const Benefits = () => {
   return (
     <section className="benefits">
       <div className="benefits-header">
+        
         <h2>Benefits</h2>
         <p>
           Lorem ipsum dolor sit amet consectetur. Tempus tincidunt etiam eget

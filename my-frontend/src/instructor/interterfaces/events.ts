@@ -13,5 +13,6 @@ export interface Ievent {
   isOver?:string;
   isLive:boolean;
   // ampm :string;
+  roomId : string;
 }
 

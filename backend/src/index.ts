@@ -11,7 +11,7 @@ import userRoutes from "./routes/userRoutes";
 import instructorRoutes from "./routes/instructorRoutes";
 import adminRoutes from "./routes/adminRoutes";
 import messageRoutes from "./routes/messageRoutes";
-import { setupSocket } from "./socket"; 
+import { setupSocket } from "./socket";
 import { errorHandler } from "./middleware/errorMiddleware";
 // import { socketAuthMiddleware } from "./middleware/authMiddleware";
 
@@ -24,6 +24,7 @@ const PORT = process.env.PORT;
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(express.json());
+
 
 
 

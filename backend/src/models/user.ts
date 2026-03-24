@@ -11,7 +11,7 @@ export interface IUser extends Document {
   phone?: string;
   location?: string;
   dob?: string;
-  gender?: 'Male' | 'Female' | 'Other';
+  gender?: 'Male' | 'Female';
   blocked: boolean;
   createdAt: Date;
   googleId : string;

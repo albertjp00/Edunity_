@@ -359,9 +359,9 @@ export const mapEventToDTO = (event: IEvent): EventDTO => {
     participantsList: event.participantsList,
     isLive: event.isLive,
     isOver: event.isOver,
-    ...(event.meetingLink ? { meetingLink: event.meetingLink } : {}),
     createdAt: event.createdAt,
     updatedAt: event.updatedAt,
+    roomId : event.roomId
   };
 };
 
@@ -379,8 +379,8 @@ export const mapEventDetailsToDto = (event: IEvent): EventDTO => {
     participantsList: event.participantsList,
     isLive: event.isLive,
     isOver: event.isOver,
-    ...(event.meetingLink ? { meetingLink: event.meetingLink } : {}),
     createdAt: event.createdAt,
     updatedAt: event.updatedAt,
+    roomId : event.roomId
   };
 };

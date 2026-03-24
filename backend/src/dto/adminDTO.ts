@@ -191,6 +191,7 @@ export interface ReportDTO {
   userId: string;
   courseId: string;
   reason: string;
+  message:string;
   createdAt: Date;
 }
 

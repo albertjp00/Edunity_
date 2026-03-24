@@ -40,6 +40,7 @@ export interface ICourse {
   lectures?: number;
   language?: string;
   accessType: string;
+  category : string;
 }
 
 const CourseDetailsUser: React.FC = () => {
@@ -204,271 +205,260 @@ const CourseDetailsUser: React.FC = () => {
   if (!course) return <p>Loading...</p>;
 
   return (
-    <div className="contain">
-      <header className="course-header">
-        <h1>COURSE DETAILS</h1>
-        <p>Home / Course</p>
-      </header>
+  <div className="min-h-screen bg-slate-50">
+    {/* PREMIUM HEADER / BREADCRUMBS */}
+    <header className="bg-slate-900 pt-32 pb-20 px-6 text-center relative overflow-hidden">
+      <div className="relative z-10 max-w-4xl mx-auto">
+        <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-4 italic uppercase">
+          Course Details
+        </h1>
+        <nav className="flex justify-center items-center gap-3 text-slate-400 text-sm font-bold uppercase tracking-widest">
+          <span className="hover:text-white cursor-pointer transition-colors" onClick={() => navigate('/user/home')}>Home</span>
+          <span className="text-slate-600">/</span>
+          <span className="text-indigo-400">Course</span>
+        </nav>
+      </div>
+      {/* Decorative Blur */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/20 blur-[120px] rounded-full -mr-48 -mt-48"></div>
+    </header>
 
-      <div className="course-content">
-        <div className="course-left">
-          <img
-            src={`${import.meta.env.VITE_API_URL}/assets/${course.thumbnail}`}
-            alt="Course Thumbnail"
-            className="course-banner"
-          />
+    <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="flex flex-col lg:flex-row gap-12">
+        
+        {/* LEFT COLUMN: CONTENT */}
+        <div className="lg:w-2/3 space-y-10">
+          <div className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm border border-slate-100">
+            <img
+              src={`${import.meta.env.VITE_API_URL}/assets/${course.thumbnail}`}
+              alt="Course Thumbnail"
+              className="w-full aspect-video object-cover"
+            />
+            <div className="p-8 md:p-12">
+              <div className="flex items-center gap-4 mb-6">
+                <span className="px-4 py-1.5 bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-widest rounded-full">
+                  {course.level} Level
+                </span>
+                <span className="text-slate-400 font-bold text-sm">📚 10 Lessons</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-black text-slate-900 leading-tight mb-8">
+                {course.title}
+              </h2>
 
-          <h2 className="course-title">{course.title}</h2>
-          <p className="lesson-count">Lesson 10</p>
+              {/* TABS NAVIGATION */}
+              <div className="flex flex-wrap gap-2 p-1.5 bg-slate-50 rounded-2xl mb-10 border border-slate-100">
+                {["overview", "curriculum", "instructor", "reviews"].map((tab) => (
+                  <button
+                    key={tab}
+                    className={`flex-1 py-3 px-6 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                      activeTab === tab 
+                        ? "bg-white text-indigo-600 shadow-sm" 
+                        : "text-slate-400 hover:text-slate-600"
+                    }`}
+                    onClick={() => setActiveTab(tab)}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
 
-          {/* Tabs */}
-          <div className="tabs">
-            <button
-              className={activeTab === "overview" ? "active" : ""}
-              onClick={() => setActiveTab("overview")}
-            >
-              Overview
-            </button>
-            <button
-              className={activeTab === "curriculum" ? "active" : ""}
-              onClick={() => setActiveTab("curriculum")}
-            >
-              Curriculum
-            </button>
-            <button
-              className={activeTab === "instructor" ? "active" : ""}
-              onClick={() => setActiveTab("instructor")}
-            >
-              Instructor
-            </button>
-
-            <button
-              className={activeTab === "reviews" ? "active" : ""}
-              onClick={() => setActiveTab("reviews")}
-            >
-              Reviews
-            </button>
-
-            {/* <button
-              className={activeTab === "report" ? "active" : ""}
-              onClick={() => setActiveTab("report")}
-            >
-              Report
-            </button> */}
-          </div>
-
-          {/* Tab content */}
-          {activeTab === "overview" && (
-            <div className="tab-content">
-              <h3>Course Description</h3>
-              <p>{course.description}</p>
-
-              <h3>What Will I Learn From This Course?</h3>
-              <p>
-                This course covers everything from basic HTML and CSS to
-                advanced full-stack development topics. Learn at your own pace
-                and become a professional web developer.
-              </p>
-            </div>
-          )}
-
-          {activeTab === "curriculum" && (
-            <div className="tab-content">
-              <h3>Curriculum</h3>
-              {course.modules.map((module, idx) => (
-                <details key={idx} className="module-item">
-                  <summary>{module.title || `Module ${idx + 1}`}</summary>
-                  {hasAccess ? (
-                    <div className="video-wrapper">
-                      {module.videoUrl && (
-                        <VideoPlayerUser initialUrl={module.videoUrl} />
-                      )}
+              {/* TAB CONTENT */}
+              <div className="min-h-[300px] animate-in fade-in duration-500">
+                {activeTab === "overview" && (
+                  <div className="space-y-8">
+                    <div>
+                      <h3 className="text-xl font-bold text-slate-900 mb-4 italic">Description</h3>
+                      <p className="text-slate-500 leading-relaxed text-lg">{course.description}</p>
                     </div>
-                  ) : (
-                    <p className="locked-message">
-                      Purchase the course to unlock this video.
-                    </p>
-                  )}
-                </details>
-              ))}
-            </div>
-          )}
+                    <div className="bg-indigo-50/50 p-8 rounded-3xl border border-indigo-100/50">
+                      <h3 className="text-xl font-bold text-indigo-900 mb-4">What Will I Learn?</h3>
+                      <p className="text-indigo-700/80 leading-relaxed">
+                        This course covers everything from basic fundamentals to advanced implementation. 
+                        Learn at your own pace and become a professional in {course.category || "this field"}.
+                      </p>
+                    </div>
+                  </div>
+                )}
 
-          {activeTab === "instructor" && instructor && (
-            <div className="tab-content instructor-tab">
-              <img
-                src={`${import.meta.env.VITE_API_URL}/assets/${instructor.profileImage}`}
-                alt={instructor.name}
-                className="instructor-photo"
-              />
-              <h3>{instructor.name}</h3>
-              <p>{instructor.bio}</p>
-              <p>
-                <strong>Expertise:</strong> {instructor.expertise}
-              </p>
-            </div>
-          )}
+                {activeTab === "curriculum" && (
+                  <div className="space-y-4">
+                    {course.modules.map((module, idx) => (
+                      <details key={idx} className="group border border-slate-100 rounded-2xl overflow-hidden bg-white hover:border-indigo-200 transition-all">
+                        <summary className="flex items-center justify-between p-6 cursor-pointer font-bold text-slate-900 list-none group-open:bg-slate-50">
+                          <div className="flex items-center gap-4">
+                            <span className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs">0{idx + 1}</span>
+                            {module.title || `Module ${idx + 1}`}
+                          </div>
+                          <span className="text-slate-400 transition-transform group-open:rotate-180">▼</span>
+                        </summary>
+                        <div className="p-6 bg-white border-t border-slate-50">
+                          {hasAccess ? (
+                            <div className="rounded-2xl overflow-hidden border border-slate-100 shadow-inner">
+                              {module.videoUrl && <VideoPlayerUser initialUrl={module.videoUrl} />}
+                            </div>
+                          ) : (
+                            <div className="py-10 text-center space-y-4">
+                              <span className="text-3xl">🔒</span>
+                              <p className="text-slate-400 font-bold text-sm uppercase tracking-widest">Enroll to unlock this lesson</p>
+                            </div>
+                          )}
+                        </div>
+                      </details>
+                    ))}
+                  </div>
+                )}
 
-          {activeTab === "reviews" && (
-            <div className="tab-content reviews-tab">
-              <h3>Student Reviews</h3>
-
-              {/* Review List */}
-              {reviews.length > 0 ? (
-                reviews.map((rev, idx) => (
-                  <div key={idx} className="review-item">
-                    <div className="review-header">
-                      <img
-                        src={`${import.meta.env.VITE_API_URL}/assets/${rev.userImage || "default.png"}`}
-                        alt={rev.userName}
-                        className="review-avatar"
-                      />
-                      <div className="date-rating">
-                        <strong>{rev.userName}</strong>
-                        <p className="review-date">
-                          {new Date(rev.createdAt).toLocaleDateString()}
-                        </p>
+                {activeTab === "instructor" && instructor && (
+                  <div className="flex flex-col md:flex-row gap-8 items-start">
+                    <img
+                      src={`${import.meta.env.VITE_API_URL}/assets/${instructor.profileImage}`}
+                      alt={instructor.name}
+                      className="w-32 h-32 rounded-3xl object-cover shadow-lg shrink-0"
+                    />
+                    <div className="space-y-4">
+                      <h3 className="text-2xl font-black text-slate-900 tracking-tight">{instructor.name}</h3>
+                      <p className="text-slate-500 leading-relaxed">{instructor.bio}</p>
+                      <div className="inline-block px-4 py-2 bg-slate-100 rounded-xl text-xs font-bold text-slate-600">
+                        Expertise: {instructor.expertise}
                       </div>
                     </div>
-                    <p className="review-rating">⭐ {rev.rating}/5</p>
-                    <p className="review-comment">{rev.comment}</p>
                   </div>
-                ))
-              ) : (
-                <p>No reviews yet.</p>
-              )}
+                )}
+
+                {activeTab === "reviews" && (
+                  <div className="space-y-6">
+                    {reviews.length > 0 ? (
+                      reviews.map((rev, idx) => (
+                        <div key={idx} className="p-8 rounded-3xl border border-slate-100 space-y-4">
+                          <div className="flex justify-between items-start">
+                            <div className="flex items-center gap-4">
+                              <img
+                                src={`${import.meta.env.VITE_API_URL}/assets/${rev.userImage || "default.png"}`}
+                                alt={rev.userName}
+                                className="w-12 h-12 rounded-full border border-slate-200"
+                              />
+                              <div>
+                                <h4 className="font-bold text-slate-900">{rev.userName}</h4>
+                                <p className="text-xs text-slate-400 font-medium uppercase tracking-tighter">
+                                  {new Date(rev.createdAt).toLocaleDateString()}
+                                </p>
+                              </div>
+                            </div>
+                            <span className="px-3 py-1 bg-yellow-50 text-yellow-600 text-xs font-black rounded-lg">⭐ {rev.rating}/5</span>
+                          </div>
+                          <p className="text-slate-500 italic">"{rev.comment}"</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-10 italic text-slate-400">No reviews yet.</div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
-          )}
+          </div>
         </div>
 
-        {/* Right Sidebar */}
-        <div className="course-right">
-          <div className="course-card">
-            <img src={buyNowImage} alt="Thumbnail" className="sidebar-img" />
+        {/* RIGHT COLUMN: STICKY SIDEBAR */}
+        <div className="lg:w-1/3">
+          <div className="sticky top-24 space-y-6">
+            <div className="bg-white rounded-[2.5rem] p-8 shadow-xl border border-slate-100 flex flex-col items-center text-center">
+              <img src={buyNowImage} alt="Thumbnail" className="w-full h-48 rounded-3xl object-cover mb-8 shadow-inner" />
 
-            {!hasAccess && (
-              <div className="price-section">
-                <span className="discount-price">₹{course.price}</span>
-                <span className="original-price">₹120</span>
-                <p className="guarantee-text">7-Day Money-Back Guarantee</p>
-              </div>
-            )}
-
-            {/* If course is subscription-only → show Subscribe message */}
-
-            {course.accessType === "subscription" ? (
-              !hasAccess ? (
-                <button
-                  className="buy-btn"
-                  onClick={() => navigate("/user/subscription")}
-                >
-                  Subscribe to Unlock
-                </button>
-              ) : (
-                <button className="buy-btn" disabled>
-                  Included in Your Subscription
-                </button>
-              )
-            ) : (
-              /* One-time purchase button */
-              !hasAccess && (
-                <div>
-                  <button
-                    onClick={() => buyCourse(course._id)}
-                    className="buy-btn"
-                    disabled={activePayment === course._id}
-                  >
-                    {activePayment === course._id ? "Processing..." : "BUY NOW"}
-                  </button>
-
-                  <button
-                    className="buy-btn"
-                    onClick={() => setWalletModal(true)}
-                  >
-                    Buy with Wallet
-                  </button>
+              {!hasAccess && (
+                <div className="mb-8">
+                  <div className="flex items-center justify-center gap-3">
+                    <span className="text-4xl font-black text-slate-900">₹{course.price}</span>
+                    <span className="text-lg text-slate-300 line-through font-bold">₹120</span>
+                  </div>
+                  <p className="text-xs font-black text-indigo-600 uppercase tracking-widest mt-2">7-Day Money-Back Guarantee</p>
                 </div>
-              )
-            )}
+              )}
 
-            <button
-              className="buy-btn"
-              onClick={() => handleAddtofavourites(course._id)}
-            >
-              {fav ? "Remove from favourites" : "Add to Favourites"}
-            </button>
+              <div className="w-full space-y-3">
+                {course.accessType === "subscription" ? (
+                  !hasAccess ? (
+                    <button className="w-full py-4 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100" onClick={() => navigate("/user/subscription")}>
+                      SUBSCRIBE TO UNLOCK
+                    </button>
+                  ) : (
+                    <div className="py-4 bg-slate-50 text-slate-400 font-bold rounded-2xl border-2 border-dashed border-slate-200">
+                      Included in Subscription
+                    </div>
+                  )
+                ) : (
+                  !hasAccess && (
+                    <>
+                      <button
+                        onClick={() => buyCourse(course._id)}
+                        className="w-full py-4 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 active:scale-95"
+                        disabled={activePayment === course._id}
+                      >
+                        {activePayment === course._id ? "Processing..." : "BUY NOW"}
+                      </button>
 
-            <ul className="course-info">
-              <li>
-                <strong>Enrolled:</strong> {course.enrolled || 100}
-              </li>
-              <li>
-                <strong>Lectures:</strong> {course.lectures || 80}
-              </li>
-              <li>
-                <strong>Skill Level:</strong> {course.level}
-              </li>
-              <li>
-                <strong>Language:</strong> {course.language || "English"}
-              </li>
+                      <button className="w-full py-4 bg-slate-900 text-white font-black rounded-2xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 active:scale-95" onClick={() => setWalletModal(true)}>
+                        Buy with Wallet
+                      </button>
+                    </>
+                  )
+                )}
 
-              {/* New field */}
-              <li>
-                <strong>Access Type:</strong>{" "}
-                {course.accessType === "subscription"
-                  ? "Subscription Required"
-                  : "One-Time Purchase"}
-              </li>
-            </ul>
+                <button className={`w-full py-4 font-black rounded-2xl transition-all border-2 ${fav ? "bg-red-50 text-red-500 border-red-100" : "bg-white text-slate-400 border-slate-100 hover:border-slate-200"}`} onClick={() => handleAddtofavourites(course._id)}>
+                  {fav ? "❤️ Remove Favourite" : "♡ Add to Favourites"}
+                </button>
+              </div>
+
+              <div className="w-full mt-10 pt-8 border-t border-slate-50">
+                <ul className="space-y-4 text-left">
+                  {[
+                    { label: "Enrolled", val: `${course.enrolled || 100} students` },
+                    { label: "Lectures", val: `${course.lectures || 80} videos` },
+                    { label: "Skill Level", val: course.level },
+                    { label: "Language", val: course.language || "English" },
+                    { label: "Access", val: course.accessType === "subscription" ? "Subscription" : "Lifetime" }
+                  ].map((item, i) => (
+                    <li key={i} className="flex justify-between items-center text-sm">
+                      <span className="font-bold text-slate-400 uppercase tracking-tighter">{item.label}</span>
+                      <span className="font-black text-slate-700">{item.val}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      {/* </div> */}
-
-      {walletModal && (
-  <div className="wallet-modal-overlay">
-    <div className="wallet-modal">
-
-      <h2 className="wallet-title">
-        Confirm Wallet Payment
-      </h2>
-
-      <div className="wallet-details">
-        <div className="wallet-row">
-          <span>Course Price</span>
-          <strong>₹{course?.price}</strong>
-        </div>
-
-        <div className="wallet-row total">
-          <span>Total Payable</span>
-          <strong>₹{course?.price}</strong>
-        </div>
-      </div>
-
-      <div className="modal-actions">
-        <button
-          className="cancel-btn"
-          onClick={() => setWalletModal(false)}
-        >
-          Cancel
-        </button>
-
-        <button
-          className="confirm-btn"
-          disabled={activePayment === course._id}
-          onClick={() => walletBuy(course._id)}
-        >
-          {activePayment === course._id
-            ? "Processing..."
-            : "Confirm Payment"}
-        </button>
-      </div>
-
     </div>
+
+    {/* WALLET MODAL */}
+    {walletModal && (
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+        <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setWalletModal(false)}></div>
+        <div className="relative bg-white rounded-[2.5rem] p-10 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 text-center">
+          <div className="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl shadow-inner">💳</div>
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight mb-2">Wallet Payment</h2>
+          <p className="text-slate-400 text-sm font-medium mb-8">Confirm purchase from your digital balance.</p>
+          
+          <div className="bg-slate-50 rounded-2xl p-6 mb-8 border border-slate-100">
+            <div className="flex justify-between items-center font-bold">
+              <span className="text-slate-400">Price</span>
+              <span className="text-slate-900">₹{course?.price}</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <button className="w-full py-4 bg-slate-900 text-white font-black rounded-2xl shadow-lg hover:bg-indigo-600 transition-all" onClick={() => walletBuy(course._id)} disabled={activePayment === course._id}>
+              {activePayment === course._id ? "Processing..." : "Confirm Purchase"}
+            </button>
+            <button className="w-full py-4 text-slate-400 font-bold hover:text-slate-600 transition-all" onClick={() => setWalletModal(false)}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
   </div>
-)}
-    </div>
-  );
+);
 };
 
 export default CourseDetailsUser;

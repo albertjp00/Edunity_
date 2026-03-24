@@ -1,5 +1,4 @@
 import { toast } from "react-toastify";
-import "./subscription.css";
 import { useEffect, useState } from "react";
 import {
   getSubscription,
@@ -27,7 +26,7 @@ declare global {
 
 export interface ISubscriptionPlan {
   _id: string;
-  name : string,
+  name: string;
   durationInDays: number;
   features: string[];
   isActive: boolean;
@@ -39,16 +38,15 @@ const Subscription = () => {
   const [pageLoading, setPageLoading] = useState(true);
   const [subscription, setSubscription] = useState<ISubscription | null>(null);
   const [plans, setPlans] = useState<ISubscriptionPlan[] | null>(null);
-  const [processingPlanId, setProcessingPlanId] =
-  useState<string | null>(null);
+  const [processingPlanId, setProcessingPlanId] = useState<string | null>(null);
 
   const [activePayment, setActivePayment] = useState(false);
 
   const CheckSubscription = async () => {
     try {
       const res = await getSubscription();
-      console.log('check',res);
-      
+      console.log("check", res);
+
       if (!res) return;
       setIsActive(res?.data.result);
       setSubscription(res?.data?.result);
@@ -56,8 +54,8 @@ const Subscription = () => {
       console.log(error);
       setIsActive(false);
     } finally {
-  setPageLoading(false);
-}
+      setPageLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -84,8 +82,8 @@ const Subscription = () => {
     if (!pageLoading && !isActive) {
       getSubscriptionPlans();
     }
-    if(localStorage.getItem('payment_in_progress')){
-      localStorage.removeItem('payment_in_progress')
+    if (localStorage.getItem("payment_in_progress")) {
+      localStorage.removeItem("payment_in_progress");
     }
   }, [pageLoading, isActive]);
 
@@ -112,7 +110,6 @@ const Subscription = () => {
     localStorage.setItem("payment_in_progress", "true");
 
     try {
-
       const res = await subscribe(id);
       if (!res) throw new Error("Failed to create subscription order.");
 
@@ -128,7 +125,7 @@ const Subscription = () => {
 
         handler: async function (response) {
           try {
-            await subscriptionVerify(response , id);
+            await subscriptionVerify(response, id);
             toast.success("Subscription Activated!");
             CheckSubscription();
           } finally {
@@ -161,102 +158,140 @@ const Subscription = () => {
       localStorage.removeItem("payment_in_progress");
     }
   };
-  
 
-  const activePlans =
-  plans?.filter((plan) => plan.isActive) ?? [];
+  const activePlans = plans?.filter((plan) => plan.isActive) ?? [];
+return (
+  <div className="min-h-screen bg-slate-50 p-8">
+    <div className="max-w-6xl mx-auto">
+      <header className="text-center mb-12">
+        <h1 className="text-4xl font-extrabold text-slate-900 mb-3 tracking-tight">
+          Choose Your Plan
+        </h1>
+        <p className="text-slate-600 max-w-md mx-auto">
+          Unlock premium content and take your skills to the next level with our flexible subscriptions.
+        </p>
+      </header>
 
-  return (
-    <div className="subscription-container">
-      <h1 className="subscription-title">Subscription Plan</h1>
-
-      {pageLoading && <p>Checking subscription...</p>}
-
-      {!pageLoading && !isActive && (
-        <div className="subscription-wrapper">
-          {activePlans.length > 0 ? (
-            <div className="subscription-wrapper">
-              {activePlans.map((plan) => (
-                <div key={plan._id} className="subscription-card">
-                  <h2>{plan.name}</h2>
-
-                  <p className="subscription-desc">
-                    Unlock all subscription-enabled courses and watch unlimited
-                    content.
-                  </p>
-
-                  <ul className="subscription-benefits">
-                    {plan.features.map((feature, index) => (
-                      <li key={index}>✔ {feature}</li>
-                    ))}
-                  </ul>
-
-                  <h3 className="subscription-price">
-                    ₹{plan.price} / {plan.durationInDays} days
-                  </h3>
-
-                  <button
-                    className="btn-subscribe"
-                    onClick={() => handleSubscribe(plan._id)}
-                    disabled={activePayment}
-                  >
-                    {processingPlanId ===plan._id ? "Processing..." : "Subscribe Now"}
-                  </button>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p>No active subscription plan available.</p>
-          )}
+      {pageLoading && (
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
+          <p className="text-slate-500 font-medium">Verifying your status...</p>
         </div>
       )}
 
+      {/* PRICING CARDS */}
+      {!pageLoading && !isActive && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-center items-start">
+          {activePlans.map((plan) => (
+            <div
+              key={plan._id}
+              className={`relative bg-white border rounded-3xl p-8 transition-all duration-300 group hover:shadow-2xl hover:-translate-y-2 
+                ${plan.name.toLowerCase().includes('pro') ? 'border-indigo-500 ring-2 ring-indigo-500 ring-opacity-10' : 'border-slate-200'}`}
+            >
+              {/* Optional "Popular" Badge */}
+              {plan.name.toLowerCase().includes('pro') && (
+                <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                  Most Popular
+                </span>
+              )}
+
+              <div className="mb-6">
+                <h2 className="text-xl font-bold text-slate-800 mb-2">{plan.name}</h2>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-4xl font-black text-slate-900">₹{plan.price}</span>
+                  <span className="text-slate-500 font-medium">/{plan.durationInDays} days</span>
+                </div>
+              </div>
+
+              <div className="h-px bg-slate-100 w-full mb-6" />
+
+              <ul className="space-y-4 mb-8">
+                {plan.features.map((feature, index) => (
+                  <li key={index} className="flex items-start gap-3 text-slate-600 text-sm leading-tight">
+                    <div className="mt-0.5 rounded-full bg-indigo-50 p-1">
+                      <svg className="w-3 h-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+
+              <button
+                onClick={() => handleSubscribe(plan._id)}
+                disabled={activePayment}
+                className={`w-full py-4 px-6 rounded-xl font-bold text-sm transition-all duration-200 shadow-md active:scale-95
+                  ${activePayment 
+                    ? "bg-slate-100 text-slate-400 cursor-not-allowed" 
+                    : "bg-slate-900 text-white hover:bg-indigo-600 hover:shadow-indigo-200"
+                  }`}
+              >
+                {processingPlanId === plan._id ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Processing
+                  </span>
+                ) : "Get Started Now"}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ACTIVE SUBSCRIPTION */}
       {!pageLoading && isActive && subscription && (
-        <>
-          {/* SUBSCRIPTION DETAILS */}
-          <div className="subscription-strip">
-            <div className="strip-top">
-              <h2>Premium Subscription</h2>
-              <span className="pill-active">
-                {subscription.isActive ? "Active" : "Expired"}
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-white border border-slate-200 shadow-xl rounded-3xl overflow-hidden mb-12">
+            <div className="bg-indigo-600 px-8 py-4 flex justify-between items-center text-white">
+              <h2 className="font-bold text-lg tracking-tight">Active Membership</h2>
+              <span className="bg-white/20 backdrop-blur-md px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">
+                {subscription.isActive ? "● Premium" : "Expired"}
               </span>
             </div>
 
-            <div className="strip-timeline">
-              <div className="timeline-item">
-                <p className="label">Started</p>
-                <p>{new Date(subscription.startDate).toDateString()}</p>
+            <div className="p-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center mb-8">
+                <div className="text-center md:text-left">
+                  <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Started On</p>
+                  <p className="font-semibold text-slate-800">{new Date(subscription.startDate).toLocaleDateString()}</p>
+                </div>
+                
+                <div className="hidden md:flex flex-col items-center">
+                   <div className="w-full h-0.5 bg-slate-100 relative">
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-indigo-600" />
+                   </div>
+                </div>
+
+                <div className="text-center md:text-right">
+                  <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Renews/Ends</p>
+                  <p className="font-semibold text-slate-800">{new Date(subscription.endDate).toLocaleDateString()}</p>
+                </div>
               </div>
 
-              <div className="timeline-line" />
-
-              <div className="timeline-item">
-                <p className="label">Ends On</p>
-                <p>{new Date(subscription.endDate).toDateString()}</p>
-              </div>
-            </div>
-
-            <div className="strip-footer">
-              <div className="billing-info">
-                <p className="label">Access </p>
-                {/* <p>{subscription?.billingCycle}</p> */}
-              </div>
-
-              <div className="days-badge">
-                ⏳{" "}
-                {daysLeft && daysLeft > 0 ? `${daysLeft} days left` : "Expired"}
+              <div className="bg-indigo-50 rounded-2xl p-5 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-xl">⏳</div>
+                  <div>
+                    <p className="text-indigo-900 font-bold leading-none">
+                       {daysLeft && daysLeft > 0 ? `${daysLeft} Days Remaining` : "Membership Expired"}
+                    </p>
+                    <p className="text-indigo-600/70 text-xs mt-1">Thank you for being a member</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* COURSES */}
-          <div className="courses-section">
+          <div className="mt-8">
+            <h3 className="text-2xl font-bold text-slate-800 mb-6 px-2">Your Premium Courses</h3>
             <SubscriptionCourses />
           </div>
-        </>
+        </div>
       )}
     </div>
-  );
+  </div>
+);
 };
 
 export default Subscription;

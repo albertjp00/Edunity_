@@ -313,9 +313,9 @@ export interface EventDTO {
   participantsList: string[];
   isLive: boolean;
   isOver: boolean;
-  meetingLink?: string;
   createdAt: Date;
   updatedAt: Date;
+  roomId : string;
 }
 
 

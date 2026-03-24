@@ -147,7 +147,7 @@ export class EventController
       res.status(HttpStatus.OK).json({
         success: true,
         message: result.message,
-        meetingLink: result.meetingLink,
+        roomId: result.roomId,
         instructorId: instructorId,
       });
     } catch (error) {

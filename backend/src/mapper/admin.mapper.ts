@@ -214,6 +214,7 @@ export const mapReportDto = (report :IReport ):ReportDTO=>{
     id:report.id,
     userId: report.userId,
     courseId: report.courseId,
+    message : report.message,
     reason: report.reason,
     createdAt: report.createdAt,
   }

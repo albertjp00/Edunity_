@@ -19,6 +19,7 @@ export interface IEvent extends Document {
   createdAt: Date;
   updatedAt: Date;
   isOver: boolean;
+  roomId : string;
 }
 
 const EventSchema: Schema = new Schema<IEvent>(
@@ -36,6 +37,7 @@ const EventSchema: Schema = new Schema<IEvent>(
     meetingLink: { type: String },
     recordingUrl: { type: String },
     isOver: { type: Boolean, default: false },
+    roomId : {type : String}
   },
   { timestamps: true },
 );

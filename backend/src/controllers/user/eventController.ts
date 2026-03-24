@@ -8,6 +8,7 @@ import {
 import { HttpStatus } from "../../enums/httpStatus.enums";
 import { IUserEventService } from "../../interfacesServices.ts/userServiceInterfaces";
 import { StatusMessage } from "../../enums/statusMessage";
+import { GetEventsInputDto, JoinEventParamDto } from "../../dto/inputUserDto";
 
 export class UserEventController
   implements
@@ -27,8 +28,8 @@ export class UserEventController
     next: NextFunction,
   ): Promise<void | null> => {
     try {
-      const {search , page } = req.body
-      const result = await this._userEventService.getEventsRequest(search , page);
+      const {search , page } : GetEventsInputDto = req.body
+      const result = await this._userEventService.getEventsRequest(search as string , page);
 
       res.status(HttpStatus.OK).json({ success: true, events: result?.events , totalPages : result?.totalPages });
     } catch (error) {
@@ -102,7 +103,7 @@ export class UserEventController
   ): Promise<void | null> => {
     try {
       const userId = req.user?.id as string;
-      const eventId = req.params.eventId!;
+    const { eventId } = req.params as unknown as JoinEventParamDto;
 
       const result = await this._userEventService.joinUserEventRequest(
         eventId,

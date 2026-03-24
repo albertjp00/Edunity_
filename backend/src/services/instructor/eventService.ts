@@ -5,6 +5,7 @@ import {
 import { IEvent } from "../../models/events";
 import { IInsRepository, IInstEventService } from "../../interfacesServices.ts/instructorServiceInterface";
 import { mapEventDetailsDTO, mapEventsDTO } from "../../mapper/instructor.mapper";
+import { v4 as uuidv4 } from "uuid";
 
 export class InstEventService implements IInstEventService {
   constructor(private _InstructorRepository: IInsRepository) {}
@@ -22,14 +23,16 @@ export class InstEventService implements IInstEventService {
       console.log("event add",data)
       const date = data.date!
       
-      const eventCount = await this._InstructorRepository.getEventCount(id , date)
-      console.log("event count ",eventCount);
+      // const eventCount = await this._InstructorRepository.getEventCount(id , date)
+      // console.log("event count ",eventCount);
       
+       let roomId =  uuidv4()
 
       const event = await this._InstructorRepository.addEvent(
         id,
         instructor?.name,
         data,
+        roomId
       );
       return event;
     } catch (error) {
@@ -117,7 +120,7 @@ export class InstEventService implements IInstEventService {
   ): Promise<{
     success: boolean;
     message: string;
-    meetingLink?: string;
+    roomId?: string;
   } | null> => {
     try {
       const event = await this._InstructorRepository.getEvent(eventId);
@@ -141,7 +144,7 @@ export class InstEventService implements IInstEventService {
         meetingLink,
       });
 
-      return { success: true, message: "Event started", meetingLink };
+      return { success: true, message: "Event started", roomId: event.roomId };
     } catch (error) {
       console.error(error);
       return null;

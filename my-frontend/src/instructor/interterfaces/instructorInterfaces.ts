@@ -128,6 +128,7 @@ export interface IEvent {
   createdAt: string;
   updatedAt: string;
   isOver: boolean
+  roomId : string;
 }
 
 

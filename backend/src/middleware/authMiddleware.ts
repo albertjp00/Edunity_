@@ -13,8 +13,6 @@ if (!process.env.SECRET_KEY) {
 const secret = process.env.SECRET_KEY as string;
 
 
-
-
 export interface JwtUserPayload extends JwtPayload {
   id: string;
   email: string;
