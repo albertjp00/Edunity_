@@ -212,6 +212,7 @@ const mapQuizQuestionToDTO = (question: IQuestion): QuizQuestionDTO => ({
   question: question.question,
   options: question.options,
   points: question.points,
+  correctAnswer : question.correctAnswer
 });
 
 export const mapCategoryDTO = (data: ICategory): CategoryDTO => ({

@@ -125,7 +125,7 @@ return (
           <div className="flex items-center gap-5 border-l border-slate-200 pl-6">
             {/* NOTIFICATION */}
             <div className="relative cursor-pointer group" onClick={gotoNotifications}>
-              <img src={notification} alt="Notifications" className="h-6 w-6 bg-black  opacity-60 group-hover:opacity-100 transition-opacity" />
+              <img src={notification} alt="Notifications" className="h-6 w-6 bg-black border rounded-full opacity-60 group-hover:opacity-100 transition-opacity" />
               {hasUnread && (
                 <span className="absolute -top-1 -right-1 flex h-3 w-3">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>

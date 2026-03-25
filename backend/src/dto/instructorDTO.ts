@@ -199,6 +199,7 @@ export interface QuizQuestionDTO {
   question: string;
   options: string[];
   points: number;
+  correctAnswer : string
 }
 
 

@@ -98,64 +98,114 @@ const InstructorNavbar = () => {
 
 
   return (
-    <div className="navbar">
-      <div className="logo" onClick={()=>navigate('/instructor/home')}>
-        <img src={logo} alt="logo" />
-        <p>EDUNITY</p>
-      </div>
-      <div className="profile-section">
-        <div className="nav-right">
-          {/* ✅ 2. Pass instructor._id to NotificationBell */}
-          {/* {instructor && (
-            <div className="flex items-center gap-4">
-              <NotificationBell userId={instructor} />
-            </div>
-          )} */}
-
-
-          <div className="notification-img" onClick={gotoNotifications}>
-            <img src={notificationImg} alt="" className="noti-img" />
-          </div>
-          <p className="add-course" onClick={addCourse}>Create Course</p>
-          <p className="add-course" onClick={addEvent}>Create Event</p>
-
-          <div className="messages-icon" onClick={goToMessages} title="Messages">
-            <p>Messages</p>
-          </div>
-
-          <p className="logout" onClick={()=>setShowLogoutModal(true)}>Logout</p>
-
-          <Link to="/instructor/profile">
-            <img src={`${import.meta.env.VITE_API_URL}/assets/${user?.profileImage}`} alt="Profile" className={"profile-img"} />
-          </Link>
+  <nav className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-slate-100 px-6 py-3">
+    <div className="max-w-7xl mx-auto flex items-center justify-between">
+      
+      {/* LEFT: Logo Section */}
+      <div 
+        className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity" 
+        onClick={() => navigate('/instructor/home')}
+      >
+        <div className="w-10 h-10  rounded-xl flex items-center justify-center">
+          <img src={logo} alt="logo" className="w-6 h-6" />
         </div>
+        <p className="text-xl font-black tracking-tighter text-slate-900">EDUNITY</p>
       </div>
 
-      {showLogoutModal &&
-      <div className="logout-modal-overlay">
-        <div className="logout-modal">
-          <h3>Confirm Logout</h3>
-          <p>Are you sure you want to logout?</p>
+      {/* RIGHT: Navigation Items */}
+      <div className="flex items-center gap-6">
+        
+        {/* Action Buttons Group */}
+        <div className="hidden md:flex items-center gap-3 border-r border-slate-200 pr-6 mr-2">
+          <button 
+            onClick={addCourse}
+            className="px-4 py-2 bg-blue-50 text-blue-700 text-xs font-black uppercase tracking-widest rounded-xl hover:bg-blue-100 transition-colors"
+          >
+            + Course
+          </button>
+          <button 
+            onClick={addEvent}
+            className="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-black uppercase tracking-widest rounded-xl hover:bg-slate-200 transition-colors"
+          >
+            + Event
+          </button>
+        </div>
 
-          <div className="logout-actions">
-            <div className="cancel-btn" onClick={()=>setShowLogoutModal(false)}>
-              Cancel
-            </div>
+        {/* Icons Group */}
+        <div className="flex items-center gap-5">
+          {/* Messages */}
+          <button 
+  onClick={goToMessages} 
+  className="flex items-center gap-2 px-3 py-2 text-slate-500 hover:text-slate-900 transition-all group"
+  title="Messages"
+>
+  <span className="text-sm font-black uppercase tracking-widest ">
+    Messages
+  </span>
+  
+  
+</button>
 
-            <button className='confirm-btn' onClick={()=> {
-              setShowLogoutModal(false); 
-              handleLogout();
-              }}>
-              
-              logout
+          {/* Notifications */}
+          <button 
+            onClick={gotoNotifications}
+            className="p-2 text-slate-500 hover:text-slate-900 transition-colors"
+          >
+            <img src={notificationImg} alt="Notifications" className="w-6 h-6 grayscale hover:grayscale-0 transition-all" />
+          </button>
+
+          {/* Profile & Logout Group */}
+          <div className="flex items-center gap-3 pl-4 border-l border-slate-100">
+            <button 
+              onClick={() => setShowLogoutModal(true)}
+              className="text-xs font-bold text-slate-400 hover:text-red-500 transition-colors uppercase tracking-widest"
+            >
+              Logout
             </button>
-
+            <Link to="/instructor/profile" className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full opacity-0 group-hover:opacity-100 blur transition duration-300"></div>
+              <img 
+                src={`${import.meta.env.VITE_API_URL}/assets/${user?.profileImage}`} 
+                alt="Profile" 
+                className="relative w-10 h-10 rounded-full object-cover border-2 border-white bg-slate-100 shadow-sm" 
+              />
+            </Link>
           </div>
         </div>
       </div>
-      }
     </div>
-  );
+
+    {/* LOGOUT MODAL: Glassmorphism Overlay */}
+    {showLogoutModal && (
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300"></div>
+        <div className="relative bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center space-y-6 animate-in zoom-in-95 duration-200">
+          <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto text-2xl">
+            🚪
+          </div>
+          <div>
+            <h3 className="text-xl font-black text-slate-900">Confirm Logout</h3>
+            <p className="text-slate-500 mt-2 font-medium">Are you sure you want to end your current session?</p>
+          </div>
+          <div className="flex flex-col gap-3">
+            <button 
+              className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-lg shadow-red-100 transition-all active:scale-95" 
+              onClick={() => { setShowLogoutModal(false); handleLogout(); }}
+            >
+              Log me out
+            </button>
+            <button 
+              className="w-full py-3 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200 transition-all" 
+              onClick={() => setShowLogoutModal(false)}
+            >
+              Stay Logged In
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+  </nav>
+);
 };
 
 export default InstructorNavbar;

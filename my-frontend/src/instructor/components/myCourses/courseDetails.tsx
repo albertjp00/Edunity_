@@ -81,115 +81,145 @@ const InstructorCourseDetails: React.FC = () => {
   if (!course) return <p>Loading...</p>;
 
   return (
-    <div className="details">
-      <Navbar />
-      <div className="course-detail-page">
-        <div className="course-title">
-          <h2>{course.title}</h2>
+  <div className="min-h-screen bg-gray-50">
+    <Navbar />
 
-          {!quizExists ? (
-            <button onClick={() => addQuiz(course.id)} className="edit-button">
-              📑 Add Quiz
-            </button>
-          ) : (
-            <>
-              <button onClick={() => navigate(`/instructor/editQuiz/${course.id}`)} className="edit-button">
-                📘 View Quiz
+    {/* Header / Banner Section */}
+    <div className="bg-slate-900 text-white py-12">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-8">
+          <div className="flex-1">
+            <h1 className="text-4xl font-extrabold mb-4">{course.title}</h1>
+            <p className="text-slate-300 text-lg max-w-2xl line-clamp-3">
+              {course.description}
+            </p>
+            
+            <div className="flex flex-wrap gap-3 mt-6">
+              {!quizExists ? (
+                <button onClick={() => addQuiz(course.id)} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-semibold transition-all flex items-center gap-2 shadow-lg shadow-blue-900/20">
+                  📑 Add Quiz
+                </button>
+              ) : (
+                <button onClick={() => navigate(`/instructor/editQuiz/${course.id}`)} className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 px-5 py-2.5 rounded-lg font-semibold transition-all">
+                  📘 View Quiz
+                </button>
+              )}
+              <button onClick={() => purchaseDetails(course.id)} className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 px-5 py-2.5 rounded-lg font-semibold transition-all">
+                📚 Purchase Details
               </button>
-              {/* <button onClick={() => editQuiz(course.id)} className="edit-button">
-                ✏️ Edit Quiz
-              </button> */}
-            </>
-          )}
-
-          <button onClick={() => purchaseDetails(course.id)} className='edit-button'>
-            📚Purchase Details</button>
-
-          <button onClick={() => handleEdit(course.id)} className="edit-button">
-            ✏️ Edit Course
-          </button>
-        </div>
-
-
-        {course.thumbnail && (
-          <img
-            src={`${import.meta.env.VITE_API_URL}/assets/${course.thumbnail}`}
-            alt="Course Thumbnail"
-            className="detail-thumbnail"
-          />
-        )}
-
-        <p><strong>Description:</strong> {course.description}</p>
-        <p><strong>Price:</strong> ₹{course.price}</p>
-
-        <div className="course-highlights">
-          <div className="highlight-row">
-            <div className="highlight-item">
-              <p>🧑‍🎓 <strong>{course.level} level</strong></p>
-              <span>No prior experience required</span>
-            </div>
-            <div className="highlight-item">
-              <p>⏱️ <strong>Estimated Time</strong></p>
-              <span>12 hours</span>
-            </div>
-            <div className="highlight-item">
-              <p>🎯 <strong>Learn at your own pace</strong></p>
+              <button onClick={() => handleEdit(course.id)} className="bg-amber-500 hover:bg-amber-600 text-slate-900 px-5 py-2.5 rounded-lg font-bold transition-all flex items-center gap-2">
+                ✏️ Edit Course
+              </button>
             </div>
           </div>
-        </div>
-
-        {/* Skills Box */}
-        {course.skills && course.skills.length > 0 && (
-          <div className="skills-box">
-            <p className="skills-title">Skills you'll gain</p>
-            <div className="skills-list">
-              {course.skills.map((skill, index) => (
-                <button key={index} className="skill-button">{skill}</button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Modules */}
-        <div className="modules">
-          <h3>Modules:</h3>
-          {course.modules.length > 0 ? (
-            <div className="modules-list">
-              {course.modules.map((module, idx) => (
-                <div key={idx} className="module">
-                  <div
-                    className="module-header"
-                    onClick={() => toggleModule(idx)}
-                    style={{
-                      cursor: 'pointer',
-                      background: '#f0f0f0',
-                      padding: '10px',
-                      borderRadius: '5px',
-                    }}
-                  >
-                    <h4>📘 {module.title || `Module ${idx + 1}`}</h4>
+          
+          {/* Main Card (Desktop Right) */}
+          <div className="w-full md:w-80 bg-white rounded-2xl shadow-xl overflow-hidden text-slate-900 border border-gray-100">
+            {course.thumbnail && (
+              <img
+                src={`${import.meta.env.VITE_API_URL}/assets/${course.thumbnail}`}
+                alt="Course Thumbnail"
+                className="w-full aspect-video object-cover"
+              />
+            )}
+            <div className="p-6">
+              <div className="text-3xl font-bold mb-4">₹{course.price}</div>
+              <div className="space-y-4 text-sm text-gray-600">
+                <div className="flex items-center gap-3">
+                  <span className="text-xl">🧑‍🎓</span>
+                  <div>
+                    <p className="font-bold text-gray-900">{course.level} Level</p>
+                    <p>No prior experience required</p>
                   </div>
-                  {expandedIndex === idx && (
-                    <div className="module-body" style={{ padding: '10px 20px' }}>
-                      <div>
-                        <strong>🎥 Video:</strong>
-                        {module.videoUrl && <VideoPlayer initialUrl={module.videoUrl} />}
-
-
-                      </div>
-                      <p><strong>📝 Content:</strong> {module.content}</p>
-                    </div>
-                  )}
                 </div>
-              ))}
+                <div className="flex items-center gap-3">
+                  <span className="text-xl">⏱️</span>
+                  <div>
+                    <p className="font-bold text-gray-900">12 Hours</p>
+                    <p>Estimated total time</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-xl">🎯</span>
+                  <p className="font-bold text-gray-900">Self-paced learning</p>
+                </div>
+              </div>
             </div>
-          ) : (
-            <p>No modules found.</p>
-          )}
+          </div>
         </div>
       </div>
     </div>
-  );
+
+    {/* Content Section */}
+    <div className="max-w-6xl mx-auto px-4 py-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="lg:col-span-2 space-y-10">
+          
+          {/* Skills Section */}
+          {course.skills && course.skills.length > 0 && (
+            <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
+              <h3 className="text-xl font-bold mb-6 text-gray-900">Skills you'll gain</h3>
+              <div className="flex flex-wrap gap-2">
+                {course.skills.map((skill, index) => (
+                  <span key={index} className="bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium border border-blue-100">
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Modules Section */}
+          <div>
+            <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
+              Course Content 
+              <span className="text-sm font-normal text-gray-500">• {course.modules.length} modules</span>
+            </h3>
+            
+            {course.modules.length > 0 ? (
+              <div className="space-y-4">
+                {course.modules.map((module, idx) => (
+                  <div key={idx} className="bg-white border border-gray-200 rounded-xl overflow-hidden transition-all hover:border-blue-300">
+                    <button
+                      className="w-full flex items-center justify-between p-5 bg-white hover:bg-gray-50 transition-colors text-left"
+                      onClick={() => toggleModule(idx)}
+                    >
+                      <div className="flex items-center gap-4">
+                        <span className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-500">
+                          {idx + 1}
+                        </span>
+                        <h4 className="font-bold text-gray-800">{module.title || `Module ${idx + 1}`}</h4>
+                      </div>
+                      <span className={`transform transition-transform ${expandedIndex === idx ? 'rotate-180' : ''}`}>
+                        ▼
+                      </span>
+                    </button>
+                    
+                    {expandedIndex === idx && (
+                      <div className="p-6 border-t border-gray-100 bg-gray-50/50">
+                        <div className="mb-6 rounded-lg overflow-hidden shadow-inner bg-black">
+                           {module.videoUrl && <VideoPlayer initialUrl={module.videoUrl} />}
+                        </div>
+                        <div className="prose prose-slate max-w-none">
+                          <h5 className="text-sm font-bold uppercase tracking-wider text-gray-400 mb-2">Module Description</h5>
+                          <p className="text-gray-700 leading-relaxed">{module.content}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 bg-gray-100 rounded-xl border-2 border-dashed border-gray-300">
+                <p className="text-gray-500">No modules found.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
 };
 
 export default InstructorCourseDetails;

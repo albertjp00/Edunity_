@@ -52,7 +52,6 @@ const EditQuiz: React.FC = () => {
       try {
         const res = await getQuiz(id);
 
-        console.log('quiz', res);
 
         if (!res) return
         const quiz = res.data.quiz;
@@ -115,7 +114,6 @@ const EditQuiz: React.FC = () => {
 
   function removeQuestion(id: string) {
 
-    console.log('remove ', id);
 
     setQuestions((prev) => {
       if (prev.length === 1) {

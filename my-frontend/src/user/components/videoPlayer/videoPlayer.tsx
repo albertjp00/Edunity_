@@ -33,11 +33,11 @@ const VideoPlayerUser: React.FC<VideoPlayerProps> = ({ initialUrl, onComplete })
       }
 
       // schedule next refresh
-      refreshTimer.current = setTimeout(scheduleRefresh, 55 * 60 * 1000);
+      refreshTimer.current = setTimeout(scheduleRefresh, 10 * 60 * 1000);
     };
 
     // start countdown
-    refreshTimer.current = setTimeout(scheduleRefresh, 10000); // 10 sec test
+    refreshTimer.current = setTimeout(scheduleRefresh, 10 * 60 *  1000); // 10 sec test
 
     return () => {
       console.log("🧹 Unmounted, clearing timer");

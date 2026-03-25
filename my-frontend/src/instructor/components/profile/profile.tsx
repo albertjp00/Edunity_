@@ -13,14 +13,17 @@ const InstructorProfile: React.FC = () => {
   ) as IInstructor | null
   
   return (
-      <>
+  <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8">
       
-
-      <div className="profile-container1">
-        {/* LEFT */}
-        <div className="profile-left">
-          <div className="profile-card1">
-            <div className="user-name-card">
+      {/* LEFT COLUMN: Main Profile Identity */}
+      <div className="lg:w-1/3 space-y-6">
+        <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+          {/* Cover / Header Accent */}
+          <div className="h-24 bg-gradient-to-r from-slate-900 to-blue-900" />
+          
+          <div className="px-6 pb-8">
+            <div className="relative -mt-12 mb-4 flex justify-center lg:justify-start lg:ml-4">
               <img
                 src={
                   user?.profileImage
@@ -28,99 +31,153 @@ const InstructorProfile: React.FC = () => {
                     : profilePic
                 }
                 alt="Profile"
-                className="profile-avatar"
+                className="w-24 h-24 rounded-2xl border-4 border-white object-cover shadow-md bg-white"
               />
-              <div>
-                <h2>{user?.name}</h2>
-                <h5>Email: {user?.email}</h5>
+            </div>
+
+            <div className="text-center lg:text-left space-y-1">
+              <h2 className="text-2xl font-black text-slate-900 leading-tight">{user?.name}</h2>
+              <p className="text-sm text-slate-500 font-medium">{user?.email}</p>
+              
+              <div className="pt-4 flex flex-wrap justify-center lg:justify-start gap-2">
                 <Link to="/instructor/editProfile">
-                  <button className="edit-btn">Edit</button>
+                  <button className="px-4 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-full hover:bg-black transition-all">
+                    Edit Profile
+                  </button>
+                </Link>
+                <Link to="/instrcutor/passwordChange">
+                  <button className="px-4 py-1.5 border border-slate-200 text-slate-600 text-xs font-bold rounded-full hover:bg-slate-50 transition-all">
+                    Key Settings
+                  </button>
                 </Link>
               </div>
             </div>
 
-            <div className="about-me">
-              <h4>Bio</h4>
-              <p>{user?.bio}</p>
+            <hr className="my-6 border-slate-100" />
+
+            {/* Bio Section */}
+            <div className="space-y-3">
+              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">About Me</h4>
+              <p className="text-sm text-slate-600 leading-relaxed italic">
+                "{user?.bio || "No bio added yet."}"
+              </p>
             </div>
 
-            <div className="user-details-box">
-              <p>
-                <i className="fas fa-user"></i> <strong>Role:</strong> Instructor
-              </p>
-              <p>
-                <i className="fas fa-certificate"></i>{' '}
-                <strong>Expertise:</strong> {user?.expertise}
-              </p>
-              <p>
-                <i className="fas fa-check-circle"></i> <strong>KYC:</strong>
-                {user?.KYCstatus === 'verified' ? (
-                  <span style={{ color: 'green', fontWeight: 'bold' }}> Verified</span>
-                ) : user?.KYCstatus === 'pending' ? (
-                  <span style={{ color: 'orange', fontWeight: 'bold' }}> Pending</span>
-                ) : user?.KYCstatus === 'rejected' ? (
-                  <>
-                    <span style={{ color: 'red', fontWeight: 'bold' }}> Rejected</span>
-                    <Link to="/instructor/kyc" style={{ marginLeft: '10px' }}>
-                      <button className="kyc-button">Re-Submit</button>
-                    </Link>
-                  </>
-                ) : (
+            {/* Expertise & KYC */}
+            <div className="mt-6 space-y-4">
+              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <div className="flex items-center gap-3">
+                  <span className="text-lg">🎓</span>
+                  <span className="text-xs font-bold text-slate-700">{user?.expertise || 'Expert'}</span>
+                </div>
+                <span className="text-[9px] font-black text-slate-400 uppercase">Expertise</span>
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <div className="flex items-center gap-3">
+                  <span className="text-lg">🛡️</span>
+                  <div className="text-xs font-bold">
+                    {user?.KYCstatus === 'verified' ? (
+                      <span className="text-emerald-600 flex items-center gap-1">Verified <i className="fas fa-check-circle text-[10px]" /></span>
+                    ) : user?.KYCstatus === 'pending' ? (
+                      <span className="text-amber-500">Pending Review</span>
+                    ) : user?.KYCstatus === 'rejected' ? (
+                      <span className="text-red-500">Rejected</span>
+                    ) : (
+                      <span className="text-slate-400">Unverified</span>
+                    )}
+                  </div>
+                </div>
+                {user?.KYCstatus === 'rejected' || !user?.KYCstatus ? (
                   <Link to="/instructor/kyc">
-                    <button className="kyc-button">Verify</button>
+                    <button className="text-[10px] bg-blue-600 text-white px-3 py-1 rounded-md font-bold">Verify</button>
                   </Link>
-                )}
-              </p>
-            </div>
-
-            <div className="user-details-box">
-              {user?.skills  ? <span>skills : {user?.skills?.join(', ')}</span>
-               : 'No skills added'}
-            </div>
-
-
-
-            <div className="btn-edit">
-              <Link to="/instrcutor/passwordChange">
-                <button className="pass-btn">Change Password</button>
-              </Link>
+                ) : null}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* RIGHT */}
-        <div className="profile-right">
-          <div className="education-box">
-            <h3>Education</h3>
-            <p>{user?.education || 'Not added yet'}</p>
-
-            <h3>Experience</h3>
-            <p>{user?.work}</p>
-          </div>
-
-
-          <div className="dashboard-section">
-            <h3>Your Instructor Dashboard</h3>
-            <p>View your earnings, courses, and analytics in one place.</p>
-            <Link to="/instructor/dashboard">
-              <button className="dashboard-btn">Go to Dashboard</button>
-            </Link>
-
-
-          </div>
-
-          <div className="dashboard-section">
-            <h3>Your Wallet</h3>
-            <Link to="/instructor/wallet">
-              <button className="dashboard-btn">Wallet</button>
-            </Link>
-
-
+        {/* Skills Section */}
+        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+          <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Core Skills</h4>
+          <div className="flex flex-wrap gap-2">
+            {user?.skills ? user.skills.map((skill, i) => (
+              <span key={i} className="px-3 py-1 bg-blue-50 text-blue-700 text-[11px] font-bold rounded-lg border border-blue-100">
+                {skill}
+              </span>
+            )) : <p className="text-xs text-slate-400">No skills added</p>}
           </div>
         </div>
       </div>
-    </>
-  );
+
+      {/* RIGHT COLUMN: Professional Details & Actions */}
+      <div className="lg:w-2/3 space-y-8">
+        
+        {/* Education & Experience */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+              <span className="text-6xl text-slate-900 font-black italic">Edu</span>
+            </div>
+            <h3 className="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
+              <span className="p-2 bg-slate-100 rounded-lg text-sm">🏛️</span> Education
+            </h3>
+            <p className="text-sm text-slate-600 leading-relaxed font-medium">
+              {user?.education || 'Not added yet'}
+            </p>
+          </div>
+
+          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+              <span className="text-6xl text-slate-900 font-black italic">Work</span>
+            </div>
+            <h3 className="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
+              <span className="p-2 bg-slate-100 rounded-lg text-sm">💼</span> Experience
+            </h3>
+            <p className="text-sm text-slate-600 leading-relaxed font-medium">
+              {user?.work || 'Not added yet'}
+            </p>
+          </div>
+        </div>
+
+        {/* Actions Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white-900 p-8 rounded-3xl text-white shadow-xl shadow-slate-200 relative overflow-hidden group">
+            <div className="relative z-10">
+              <h3 className="text-xl font-bold mb-2">Instructor Dashboard</h3>
+              <p className="text-slate-400 text-sm mb-6 max-w-[200px]">View your earnings, courses, and student analytics.</p>
+              <Link to="/instructor/dashboard">
+                <button className="bg-slate-600 hover:bg-blue-500 text-white px-6 py-2 rounded-xl text-xs font-black transition-all">
+                  Launch Dashboard
+                </button>
+              </Link>
+            </div>
+            <div className="absolute -bottom-6 -right-6 text-9xl font-black text-white/5 select-none rotate-12 group-hover:rotate-0 transition-transform duration-500">
+              📈
+            </div>
+          </div>
+
+          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden group">
+            <div className="relative z-10">
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Your Wallet</h3>
+              <p className="text-slate-500 text-sm mb-6 max-w-[200px]">Manage your balance and request payouts.</p>
+              <Link to="/instructor/wallet">
+                <button className="bg-slate-100 hover:bg-slate-200 text-slate-900 px-8 py-2 rounded-xl text-xs font-black transition-all">
+                  Open Wallet
+                </button>
+              </Link>
+            </div>
+            <div className="absolute -bottom-6 -right-6 text-9xl font-black text-slate-900/5 select-none group-hover:-translate-y-2 transition-transform duration-500">
+              💳
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+);
 };
 
 export default InstructorProfile;

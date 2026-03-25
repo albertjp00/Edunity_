@@ -20,6 +20,8 @@ const UserChat = () => {
   const [selected, setSelected] = useState<IInstructorChat | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [typingInstructors, setTypingInstructors] = useState<Record<string, boolean>>({});
+  const [showChatMobile, setShowChatMobile] = useState(false);
+
 
   const socketRef = useRef<Socket | null>(null) 
 
@@ -320,56 +322,71 @@ const UserChat = () => {
 
   if (!instructors.length) return <p>Loading...</p>;
 
-  return (
-    <>
-      <Navbar />
-      <div className="user-chat-container">
-        {/* Left sidebar */}
-        <div className="chat-sidebar">
-          <h2 className="sidebar-title">Instructors</h2>
+// 1. Add a state to handle mobile view toggle
+
+return (
+  <>
+    <Navbar />
+    <div className="flex h-[calc(100vh-64px)] w-full max-w-7xl mx-auto bg-white overflow-hidden shadow-2xl md:border-x border-slate-200">
+      
+      {/* Left Sidebar */}
+      <aside className={`${selected && showChatMobile ? 'hidden' : 'flex'} w-full md:w-80 flex-col bg-slate-50 border-r border-slate-200 md:flex`}>
+        <div className="p-5 border-b border-slate-200 bg-white flex justify-between items-center">
+          <div>
+            <h2 className="text-xl font-black text-slate-800 tracking-tight">Messages</h2>
+            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">Instructors</p>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto custom-scrollbar">
           {instructors.map((inst) => (
             <div
               key={inst.id}
-              className={`sidebar-instructor ${selected?.id === inst.id ? "active" : ""}`}
               onClick={() => {
-                // ✅ Load messages ONLY when user clicks
                 setSelected(inst);
                 resetUnread(inst.id);
+                setShowChatMobile(true); // Switch to chat view on mobile
               }}
+              className={`flex items-center gap-3 px-4 py-4 cursor-pointer transition-all border-l-4 ${
+                selected?.id === inst.id 
+                  ? "bg-white border-indigo-600 shadow-sm" 
+                  : "border-transparent hover:bg-slate-100"
+              }`}
             >
-              <img
-                src={inst.avatar || profileImage}
-                alt={inst.name}
-                className="sidebar-avatar"
-              />
-              <div>
-                <p className="instructor-name">{inst.name}</p>
-                <div className="message-and-time">
-
-                  <p className="last-message">
-                    {typingInstructors[inst.id] ? "Typing..." : inst.lastMessage || "No messages yet"}
-                  </p>
-
-                  <p className="message-time">
-                    {inst.time
-                      ? new Date(inst.time).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
-                      : ""}
-                  </p>
+              <div className="relative flex-shrink-0">
+                <img src={inst.avatar || profileImage} className="w-12 h-12 rounded-full object-cover" alt="" />
+                <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-baseline">
+                  <p className="text-sm font-bold truncate text-slate-700">{inst.name}</p>
+                  <span className="text-[10px] text-slate-400 font-bold">
+                    {inst.time ? new Date(inst.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
+                  </span>
                 </div>
-                {inst.unreadCount > 0 && (
-                  <span className="unread-badge">{inst.unreadCount}</span>
-                )}
+                <p className="text-xs truncate text-slate-500 font-medium">
+                  {typingInstructors[inst.id] ? "Typing..." : inst.lastMessage || "No messages yet"}
+                </p>
               </div>
             </div>
           ))}
         </div>
+      </aside>
 
-        {/* Right chat window */}
-        <div className="chat-main">
-          {selected && userId ? (
+      {/* Right Main Window */}
+      <main className={`${!showChatMobile ? 'hidden' : 'flex'} flex-1 flex-col bg-white md:flex`}>
+        {selected && userId ? (
+          <div className="flex flex-col h-full animate-in slide-in-from-right-5 duration-300">
+            {/* Mobile Back Button - Only visible on small screens */}
+            <div className="md:hidden flex items-center p-3 border-b border-slate-100 bg-white">
+              <button 
+                onClick={() => setShowChatMobile(false)}
+                className="flex items-center text-indigo-600 font-bold text-sm"
+              >
+                <span className="mr-2 text-lg">←</span> Back
+              </button>
+            </div>
+            
             <ChatWindow
               userId={userId}
               receiverId={selected.id}
@@ -379,13 +396,17 @@ const UserChat = () => {
               unreadIncrease={handleUnreadIncrease}
               resetUnread={resetUnread}
             />
-          ) : (
-            <p>Select an instructor to start chatting</p>
-          )}
-        </div>
-      </div>
-    </>
-  );
+          </div>
+        ) : (
+          <div className="hidden md:flex flex-1 flex-col items-center justify-center text-center p-12 bg-slate-50/50">
+             {/* Empty State UI */}
+             <p className="text-slate-500">Select an instructor to start chatting</p>
+          </div>
+        )}
+      </main>
+    </div>
+  </>
+);
 };
 
 export default UserChat;

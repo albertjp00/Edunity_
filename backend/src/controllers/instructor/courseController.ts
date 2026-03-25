@@ -312,6 +312,7 @@ export class InstCourseController
       const { courseId } = req.params;
 
       const result = await this._courseService.getQuiz(courseId as string);
+      
 
       if (!result) {
         res.json({ success: false, message: StatusMessage.QUIZ_NOT_FOUND });

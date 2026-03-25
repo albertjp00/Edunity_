@@ -248,158 +248,213 @@ const AddCourse: React.FC = () => {
     },[form.category , categories])
 
   return (
-    <div className="addCourse">
-      <form className="add-course-form" onSubmit={handleSubmit}>
-        <h2>Add New Course</h2>
-
-        <label>Course Title</label>
-        <input className="title-name" name="title" placeholder="Course Title" onChange={handleChange} />
-
-        <label>Description</label>
-        <textarea
-          name="description"
-          placeholder="Course Description"
-          onChange={handleChange}
-        ></textarea>
-
-
-        <label htmlFor="select-category">Category</label>
-        <select
-          className="select-category"
-          name="category"
-          value={form.category}
-          onChange={handleChange}
-        >
-          {categories.map((c)=>(
-            <option value={c.name}>{c.name}</option>
-          ))}
-        </select>
-
-        <label>Skills</label>
-        <div className="skills-checkbox-group">
-          {skills.map((skill) => (
-            <label key={skill} className="skill-checkbox">
-              <input
-                type="checkbox"
-                value={skill}
-                checked={form.skills.includes(skill)}
-                onChange={handleSkillChange}
-              />
-              {skill}
-            </label>
-          ))}
-        </div>
-
-        <label htmlFor="select-level">Course Level</label>
-        <select
-          className="select-level"
-          name="level"
-          value={form.level}
-          onChange={handleChange}
-        >
-          <option value="Beginner">Beginner</option>
-          <option value="Intermediate">Intermediate</option>
-          <option value="Advanced">Advanced</option>
-        </select>
-
+  <div className="min-h-screen bg-slate-50 py-12 px-4">
+    <div className="max-w-4xl mx-auto">
+      <form className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden" onSubmit={handleSubmit}>
         
-
-        <label>Course Access Type</label>
-        <div className="access-type-group">
-          <label className="access-radio">
-            <input
-              type="radio"
-              name="accessType"
-              value="subscription"
-              checked={form.accessType === "subscription"}
-              onChange={handleChange}
-            />
-            Subscription 
-          </label>
-
-          <label className="access-radio">
-            <input
-              type="radio"
-              name="accessType"
-              value="oneTime"
-              checked={form.accessType === "oneTime"}
-              onChange={handleChange}
-            />
-            One-Time Purchase
-          </label>
-
-          
+        {/* Header */}
+        <div className="bg-slate-900 p-8 text-center">
+          <h2 className="text-3xl font-black text-white italic tracking-tight">Add New Course</h2>
+          <p className="text-slate-400 mt-2">Design your curriculum and reach students worldwide.</p>
         </div>
 
+        <div className="p-8 space-y-10">
+          
+          {/* Section 1: Basic Info */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white text-sm font-bold">1</span>
+              <h3 className="text-xl font-bold text-slate-800">Basic Information</h3>
+            </div>
 
-        {subscription && 
-        <>
-          <label>Price</label>
-        <input
-          name="price"
-          placeholder="Price"
-          type="number"
-          onChange={handleChange}
-        />
-        </>
-        }
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="md:col-span-2 space-y-2">
+                <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Course Title</label>
+                <input 
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" 
+                  name="title" 
+                  placeholder="e.g. Master React in 30 Days" 
+                  onChange={handleChange} 
+                />
+              </div>
 
-        <label>Thumbnail</label>
-        <input
-          type="file"
-          name="thumbnail"
-          accept="image/*"
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setForm({
-              ...form,
-              thumbnail: e.target.files ? e.target.files[0] : null,
-            })
-          }
-        />
+              <div className="md:col-span-2 space-y-2">
+                <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Description</label>
+                <textarea
+                  name="description"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  placeholder="What will students learn in this course?"
+                  onChange={handleChange}
+                  rows={4}
+                />
+              </div>
 
-        <hr />
+              <div className="space-y-2">
+                <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Category</label>
+                <select
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-blue-500 outline-none appearance-none cursor-pointer"
+                  name="category"
+                  value={form.category}
+                  onChange={handleChange}
+                >
+                  {categories.map((c) => (
+                    <option key={c.name} value={c.name}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
 
-        <h3>Modules</h3>
-        {form.modules.map((module, index) => (
-          <div key={index} className="module-card">
-            <input
-              type="text"
-              placeholder="Module Title"
-              value={module.title}
-              onChange={(e) => updateModule(index, "title", e.target.value)}
-            />
-            <textarea
-              placeholder="Module Content"
-              value={module.content}
-              onChange={(e) => updateModule(index, "content", e.target.value)}
-            />
-            <label>Upload Video</label>
-            <input
-              type="file"
-              accept="video/*"
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                updateModule(
-                  index,
-                  "video",
-                  e.target.files ? e.target.files[0] : null
-                )
-              }
-            />
+              <div className="space-y-2">
+                <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Course Level</label>
+                <select
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-blue-500 outline-none appearance-none cursor-pointer"
+                  name="level"
+                  value={form.level}
+                  onChange={handleChange}
+                >
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          {/* Section 2: Skills & Access */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white text-sm font-bold">2</span>
+              <h3 className="text-xl font-bold text-slate-800">Skills & Pricing</h3>
+            </div>
+
+            <div className="space-y-3">
+              <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Target Skills</label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-200 max-h-48 overflow-y-auto">
+                {skills.map((skill) => (
+                  <label key={skill} className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all border ${form.skills.includes(skill) ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-200 text-slate-600 hover:border-blue-400'}`}>
+                    <input
+                      type="checkbox"
+                      className="hidden"
+                      value={skill}
+                      checked={form.skills.includes(skill)}
+                      onChange={handleSkillChange}
+                    />
+                    <span className="text-xs font-bold">{skill}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+              <div className="space-y-3">
+                <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Access Type</label>
+                <div className="flex gap-4">
+                  {["subscription", "oneTime"].map((type) => (
+                    <label key={type} className={`flex-1 flex items-center justify-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${form.accessType === type ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-100 bg-white text-slate-400'}`}>
+                      <input
+                        type="radio"
+                        className="hidden"
+                        name="accessType"
+                        value={type}
+                        checked={form.accessType === type}
+                        onChange={handleChange}
+                      />
+                      <span className="font-bold text-sm uppercase tracking-tight">{type === 'subscription' ? 'Subscription' : 'One-Time'}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {subscription && (
+                <div className="space-y-2 animate-in fade-in slide-in-from-left-4">
+                  <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Pricing (INR)</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">₹</span>
+                    <input
+                      name="price"
+                      type="number"
+                      className="w-full pl-8 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-blue-500 outline-none font-bold text-slate-700"
+                      placeholder="0.00"
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Course Thumbnail</label>
+              <div className="relative group">
+                <input
+                  type="file"
+                  name="thumbnail"
+                  accept="image/*"
+                  onChange={(e) => setForm({ ...form, thumbnail: e.target.files ? e.target.files[0] : null })}
+                  className="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* Section 3: Curriculum */}
+          <section className="space-y-6">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white text-sm font-bold">3</span>
+                <h3 className="text-xl font-bold text-slate-800">Modules & Content</h3>
+              </div>
+              <button 
+                type="button" 
+                onClick={addModule}
+                className="text-xs font-black text-blue-600 uppercase tracking-widest hover:text-blue-800"
+              >
+                + Add Module
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              {form.modules.map((module, index) => (
+                <div key={index} className="group p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-4 relative transition-all hover:bg-white hover:shadow-md">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Module {index + 1}</span>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Module Title"
+                    className="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg outline-none focus:border-blue-500 font-bold"
+                    value={module.title}
+                    onChange={(e) => updateModule(index, "title", e.target.value)}
+                  />
+                  <textarea
+                    placeholder="Briefly explain what this module covers..."
+                    className="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg outline-none focus:border-blue-500 text-sm"
+                    value={module.content}
+                    onChange={(e) => updateModule(index, "content", e.target.value)}
+                  />
+                  <div className="flex items-center gap-4">
+                    <label className="text-[10px] font-black text-slate-500 uppercase">Video Lesson:</label>
+                    <input
+                      type="file"
+                      accept="video/*"
+                      className="text-xs text-slate-500 file:bg-slate-200 file:border-0 file:px-3 file:py-1 file:rounded-md file:text-[10px] file:font-bold hover:file:bg-slate-300"
+                      onChange={(e) => updateModule(index, "video", e.target.files ? e.target.files[0] : null)}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Submit Button */}
+          <div className="pt-10 flex justify-center">
+            <button className="w-full sm:w-80 bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-black text-lg shadow-xl shadow-blue-100 transition-all active:scale-95" type="submit">
+              Launch Course
+            </button>
           </div>
-        ))}
-
-        <button type="button" onClick={addModule}>
-          + Add Module
-        </button>
-
-        <br />
-        <br />
-        <button className="add-course-btn" type="submit">
-          Add Course
-        </button>
+        </div>
       </form>
     </div>
-  );
+  </div>
+);
 };
 
 export default AddCourse;
