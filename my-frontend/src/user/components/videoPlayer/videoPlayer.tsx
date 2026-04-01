@@ -15,6 +15,9 @@ const VideoPlayerUser: React.FC<VideoPlayerProps> = ({ initialUrl, onComplete })
   };
 
   useEffect(() => {
+
+    console.log('url ---',initialUrl);
+    
     
     const keyWithParams = videoUrl.split(".amazonaws.com/")[1];
   const key = keyWithParams.split("?")[0];
@@ -37,7 +40,7 @@ const VideoPlayerUser: React.FC<VideoPlayerProps> = ({ initialUrl, onComplete })
     };
 
     // start countdown
-    refreshTimer.current = setTimeout(scheduleRefresh, 10 * 60 *  1000); // 10 sec test
+    refreshTimer.current = setTimeout(scheduleRefresh, 10 * 60 *  1000);
 
     return () => {
       console.log("🧹 Unmounted, clearing timer");

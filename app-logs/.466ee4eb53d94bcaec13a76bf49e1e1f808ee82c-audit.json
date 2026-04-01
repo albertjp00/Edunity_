@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 2
+    },
+    "auditLog": "C:\\Edunity_\\app-logs\\.466ee4eb53d94bcaec13a76bf49e1e1f808ee82c-audit.json",
+    "files": [
+        {
+            "date": 1774933964090,
+            "name": "C:\\Edunity_\\app-logs\\error-2026-03-31.log",
+            "hash": "0e72fc76f647385cb5c47e1fac30520a86c3a0355097d585e316d4e5a463f64b"
+        }
+    ],
+    "hashType": "sha256"
+}

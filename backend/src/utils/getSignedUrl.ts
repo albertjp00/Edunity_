@@ -20,6 +20,7 @@ export async function generateSignedUrl(key: string) {
   
   const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: SIGNED_URL_EXPIRE });
 
-
+  console.log('url created',process.env.AWS_SECRET_ACCESS_KEY);
+  
   return signedUrl;
 }

@@ -152,6 +152,27 @@ export class UserCourseService implements IUserCourseService {
           await this._userRepository.getSubscriptionActive(userId);
         if (userSubscription) {
           hasAccess = true;
+
+          
+          if (course.modules && course.modules.length > 0) {
+        for (const module of course.modules) {
+          const rawUrl = module.videoUrl;
+
+          if (rawUrl) {
+            let key: string | undefined;
+
+            if (rawUrl.includes(".amazonaws.com/")) {
+              const parts = rawUrl.split(".amazonaws.com/");
+              key = parts[1]?.split("?")[0];
+            } else {
+              key = rawUrl.split("?")[0];
+            }
+            if (key) {
+              module.videoUrl = await generateSignedUrl(key);
+            }
+          }
+        }
+      }
         }
       }
 

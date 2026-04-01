@@ -162,6 +162,7 @@ function App() {
 
 
             {/* Instructor */}
+            <Route path='/instructor' element={<InstructorLogin />} />
             <Route path='/instructor/login' element={<InstructorLogin />} />
             <Route path='/instructor/register' element={<InstructorRegister />} />
             <Route path='/instructor/verifyOtp' element={<InstVerifyOtp />} />
