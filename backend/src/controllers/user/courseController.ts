@@ -368,7 +368,7 @@ export class UserCourseController
   ) => {
     try {
       const id = req.user?.id as string;
-      const myCourseId = req.params.id!;
+      const myCourseId = req.params.id!
 
       const result = await this._courseService.viewMyCourseRequest(
         id,
